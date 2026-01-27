@@ -41,7 +41,18 @@ async function refreshData(password: string): Promise<RefreshResult> {
     body: JSON.stringify({ password }),
   });
 
-  const data = await response.json();
+  // Handle empty responses
+  const text = await response.text();
+  if (!text) {
+    throw new Error("Server returned empty response. Check server logs.");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid server response: ${text.slice(0, 100)}`);
+  }
 
   if (!response.ok) {
     throw new Error(data.error || "Refresh failed");

@@ -58,11 +58,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the Excel file
+    // Find the Excel file - prioritize project's data folder
     const possiblePaths = [
-      path.join(process.cwd(), "..", "Cities.xlsx"),
+      path.join(process.cwd(), "data", "Cities.xlsx"),
       path.join(process.cwd(), "Cities.xlsx"),
-      "/mnt/nvme/fun/cities/Cities.xlsx",
+      path.join(process.cwd(), "..", "Cities.xlsx"),
     ];
 
     let excelPath: string | null = null;
@@ -251,15 +251,19 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Refresh error:", error);
 
-    // Log the failure
-    await prisma.dataRefreshLog.create({
-      data: {
-        triggeredBy: "admin",
-        status: "error",
-        errorMessage: error instanceof Error ? error.message : "Unknown error",
-        completedAt: new Date(),
-      },
-    });
+    // Try to log the failure, but don't let logging failure break the response
+    try {
+      await prisma.dataRefreshLog.create({
+        data: {
+          triggeredBy: "admin",
+          status: "error",
+          errorMessage: error instanceof Error ? error.message : "Unknown error",
+          completedAt: new Date(),
+        },
+      });
+    } catch (logError) {
+      console.error("Failed to log refresh error:", logError);
+    }
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Refresh failed" },

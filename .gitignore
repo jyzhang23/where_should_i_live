@@ -36,6 +36,9 @@ yarn-error.log*
 .env.production
 .env*.local
 
+# data files (large Excel files)
+/data/*.xlsx
+
 # vercel
 .vercel
 
