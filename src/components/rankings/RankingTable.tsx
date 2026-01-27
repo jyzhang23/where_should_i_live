@@ -34,6 +34,7 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
             <TableHead className="text-right">Climate</TableHead>
             <TableHead className="text-right">Cost</TableHead>
             <TableHead className="text-right">Demographics</TableHead>
+            <TableHead className="text-right">QoL</TableHead>
             <TableHead className="text-right">Total</TableHead>
             <TableHead className="w-10"></TableHead>
           </TableRow>
@@ -66,6 +67,9 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
               <TableCell className={`text-right ${getScoreColor(city.demographicsScore)}`}>
                 {city.demographicsScore.toFixed(1)}
               </TableCell>
+              <TableCell className={`text-right ${getScoreColor(city.qualityOfLifeScore)}`}>
+                {city.qualityOfLifeScore.toFixed(1)}
+              </TableCell>
               <TableCell className={`text-right font-bold ${getScoreColor(city.totalScore)}`}>
                 {city.totalScore.toFixed(1)}
               </TableCell>
@@ -85,7 +89,7 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
             <>
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center text-muted-foreground bg-muted/30 py-2"
                 >
                   Excluded ({excludedCities.length} cities)
@@ -108,6 +112,9 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
                     <span className="text-xs text-red-500">
                       {city.exclusionReason}
                     </span>
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    —
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
                     —

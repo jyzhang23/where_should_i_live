@@ -69,10 +69,10 @@ export default function HelpPage() {
             The formula is:
           </p>
           <div className="bg-muted p-4 rounded-lg font-mono text-sm my-4">
-            Total Score = (Climate × W₁ + Cost × W₂ + Demographics × W₃) / (W₁ + W₂ + W₃)
+            Total Score = (Climate × W₁ + Cost × W₂ + Demographics × W₃ + QoL × W₄) / (W₁ + W₂ + W₃ + W₄)
           </div>
           <p className="text-sm text-muted-foreground">
-            Where W₁, W₂, W₃ are your weight settings (0-100 each). Quality of Life is calculated but not yet included in the weighted total.
+            Where W₁, W₂, W₃, W₄ are your weight settings (0-100 each).
           </p>
         </CardContent>
       </Card>
@@ -245,9 +245,6 @@ export default function HelpPage() {
                   pollution_adjustment = (pollution_index - 40) / 4{"\n"}
                   water_adjustment = (water_quality - 70) / 4
                 </div>
-                <p className="text-muted-foreground">
-                  Note: Quality of Life is calculated but not yet weighted into the total score.
-                </p>
               </AccordionContent>
             </AccordionItem>
           </Accordion>

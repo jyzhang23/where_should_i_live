@@ -46,14 +46,15 @@ export function calculateScores(
     const qualityOfLifeScore = calculateQualityOfLifeScore(city, preferences);
 
     // Apply category weights
-    const { climate, costOfLiving, demographics } = preferences.weights;
-    const totalWeight = climate + costOfLiving + demographics;
+    const { climate, costOfLiving, demographics, qualityOfLife } = preferences.weights;
+    const totalWeight = climate + costOfLiving + demographics + qualityOfLife;
 
     const totalScore =
       totalWeight > 0
         ? (climateScore * climate +
             costScore * costOfLiving +
-            demographicsScore * demographics) /
+            demographicsScore * demographics +
+            qualityOfLifeScore * qualityOfLife) /
           totalWeight
         : 0;
 

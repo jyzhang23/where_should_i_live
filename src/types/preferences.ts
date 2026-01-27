@@ -8,6 +8,7 @@ export interface UserPreferences {
     climate: number;
     costOfLiving: number;
     demographics: number;
+    qualityOfLife: number;
   };
 
   // Quick filters (toggles)
@@ -66,6 +67,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     climate: 50,
     costOfLiving: 50,
     demographics: 50,
+    qualityOfLife: 50,
   },
   filters: {
     requiresNFL: false,
@@ -113,6 +115,8 @@ export const TOOLTIPS: Record<string, string> = {
     "How heavily to weight affordability (home prices, taxes) in the final score. Higher = cost matters more.",
   "weights.demographics":
     "How heavily to weight population and diversity factors. Higher = demographics matter more.",
+  "weights.qualityOfLife":
+    "How heavily to weight quality of life factors (walkability, transit, crime, pollution). Higher = QoL matters more.",
 
   // Filters
   "filters.requiresNFL":

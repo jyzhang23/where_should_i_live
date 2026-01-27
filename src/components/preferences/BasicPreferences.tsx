@@ -44,6 +44,13 @@ export function BasicPreferences() {
           onChange={(v) => updateWeight("demographics", v)}
           tooltip={TOOLTIPS["weights.demographics"]}
         />
+
+        <PreferenceSlider
+          label="Quality of Life"
+          value={preferences.weights.qualityOfLife}
+          onChange={(v) => updateWeight("qualityOfLife", v)}
+          tooltip={TOOLTIPS["weights.qualityOfLife"]}
+        />
       </div>
 
       {/* Quick Filters */}
