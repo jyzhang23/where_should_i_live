@@ -115,6 +115,50 @@ export const usePreferencesStore = create<PreferencesState>()(
     }),
     {
       name: "city-preferences",
+      // Merge stored data with defaults to handle new fields added over time
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as PreferencesState | undefined;
+        if (!persisted?.preferences) {
+          return currentState;
+        }
+        
+        // Deep merge preferences with defaults
+        return {
+          ...currentState,
+          preferences: {
+            weights: {
+              ...DEFAULT_PREFERENCES.weights,
+              ...persisted.preferences.weights,
+            },
+            filters: {
+              ...DEFAULT_PREFERENCES.filters,
+              ...persisted.preferences.filters,
+            },
+            advanced: {
+              climate: {
+                ...DEFAULT_PREFERENCES.advanced.climate,
+                ...persisted.preferences.advanced?.climate,
+              },
+              costOfLiving: {
+                ...DEFAULT_PREFERENCES.advanced.costOfLiving,
+                ...persisted.preferences.advanced?.costOfLiving,
+              },
+              demographics: {
+                ...DEFAULT_PREFERENCES.advanced.demographics,
+                ...persisted.preferences.advanced?.demographics,
+              },
+              qualityOfLife: {
+                ...DEFAULT_PREFERENCES.advanced.qualityOfLife,
+                ...persisted.preferences.advanced?.qualityOfLife,
+              },
+              political: {
+                ...DEFAULT_PREFERENCES.advanced.political,
+                ...persisted.preferences.advanced?.political,
+              },
+            },
+          },
+        };
+      },
     }
   )
 );
