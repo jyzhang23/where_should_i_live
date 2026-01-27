@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { usePreferencesStore } from "@/lib/store";
 import { BasicPreferences } from "./BasicPreferences";
 import { AdvancedPreferences } from "./AdvancedPreferences";
@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ChevronRight,
   Settings2,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,13 @@ export function PreferencePanel() {
   const { exportPreferences, importPreferences, resetToDefaults } =
     usePreferencesStore();
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Wait for client-side hydration before showing preferences
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const handleExport = () => {
     const json = exportPreferences();
@@ -109,28 +116,36 @@ export function PreferencePanel() {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <BasicPreferences />
+        {!isHydrated ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <>
+            <BasicPreferences />
 
-        {/* Advanced Options Toggle */}
-        <button
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className={cn(
-            "flex items-center gap-2 text-sm w-full py-3 px-3 -mx-3 rounded-md transition-colors",
-            showAdvanced
-              ? "bg-muted text-foreground"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-          )}
-        >
-          <Settings2 className="h-4 w-4" />
-          <span className="font-medium flex-1 text-left">Advanced Options</span>
-          {showAdvanced ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </button>
+            {/* Advanced Options Toggle */}
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className={cn(
+                "flex items-center gap-2 text-sm w-full py-3 px-3 -mx-3 rounded-md transition-colors",
+                showAdvanced
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              )}
+            >
+              <Settings2 className="h-4 w-4" />
+              <span className="font-medium flex-1 text-left">Advanced Options</span>
+              {showAdvanced ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
 
-        {showAdvanced && <AdvancedPreferences />}
+            {showAdvanced && <AdvancedPreferences />}
+          </>
+        )}
       </CardContent>
     </Card>
   );

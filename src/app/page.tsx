@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useCities } from "@/hooks/useCities";
 import { usePreferencesStore } from "@/lib/store";
 import { calculateScores } from "@/lib/scoring";
@@ -12,13 +12,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function Home() {
   const { data, isLoading, error } = useCities();
   const { preferences } = usePreferencesStore();
+  
+  // Handle hydration - wait for client-side store to be ready
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Calculate scores whenever cities or preferences change
   const cities = data?.cities;
   const scoringResult = useMemo(() => {
-    if (!cities) return null;
+    if (!cities || !isHydrated) return null;
     return calculateScores(cities, preferences);
-  }, [cities, preferences]);
+  }, [cities, preferences, isHydrated]);
 
   if (error) {
     return (
