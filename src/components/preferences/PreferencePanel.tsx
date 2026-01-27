@@ -3,15 +3,23 @@
 import { useState, useRef } from "react";
 import { usePreferencesStore } from "@/lib/store";
 import { BasicPreferences } from "./BasicPreferences";
+import { AdvancedPreferences } from "./AdvancedPreferences";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Download,
   Upload,
   RotateCcw,
   ChevronDown,
   ChevronRight,
+  Settings2,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function PreferencePanel() {
   const { exportPreferences, importPreferences, resetToDefaults } =
@@ -54,30 +62,42 @@ export function PreferencePanel() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Your Preferences</CardTitle>
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleExport}
-              title="Export preferences"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              title="Import preferences"
-            >
-              <Upload className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={resetToDefaults}
-              title="Reset to defaults"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleExport}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Export preferences</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Import preferences</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetToDefaults}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Reset to defaults</TooltipContent>
+            </Tooltip>
             <input
               ref={fileInputRef}
               type="file"
@@ -94,25 +114,23 @@ export function PreferencePanel() {
         {/* Advanced Options Toggle */}
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full pt-2 border-t"
+          className={cn(
+            "flex items-center gap-2 text-sm w-full py-3 px-3 -mx-3 rounded-md transition-colors",
+            showAdvanced
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          )}
         >
+          <Settings2 className="h-4 w-4" />
+          <span className="font-medium flex-1 text-left">Advanced Options</span>
           {showAdvanced ? (
             <ChevronDown className="h-4 w-4" />
           ) : (
             <ChevronRight className="h-4 w-4" />
           )}
-          <span className="font-medium">Advanced Options</span>
         </button>
 
-        {showAdvanced && (
-          <div className="text-sm text-muted-foreground pl-6">
-            <p>Advanced preference controls coming soon...</p>
-            <p className="mt-2">
-              This will include detailed climate preferences, tax thresholds,
-              demographic targets, and more.
-            </p>
-          </div>
-        )}
+        {showAdvanced && <AdvancedPreferences />}
       </CardContent>
     </Card>
   );
