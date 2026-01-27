@@ -22,7 +22,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { GitCompare } from "lucide-react";
+import { GitCompare, HelpCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   const { data, isLoading, error } = useCities();
@@ -101,6 +102,16 @@ export default function Home() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>Compare Cities</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="/help">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <HelpCircle className="h-4 w-4" />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>How Rankings Work</TooltipContent>
           </Tooltip>
           <AdminPanel />
           <ThemeToggle />
