@@ -13,15 +13,13 @@ import * as XLSX from "xlsx";
 import * as path from "path";
 import "dotenv/config";
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL,
-});
+const prisma = new PrismaClient();
 
 // Path to the Excel file (relative to project root)
 const EXCEL_PATH = path.join(__dirname, "../../Cities.xlsx");
 
 interface GeminiRawRow {
-  "Unnamed: 0": string; // City name
+  __EMPTY: string; // City name (first column without header)
   State: string;
   "NFL Team(s)": string | null;
   "NBA Team(s)": string | null;
@@ -94,7 +92,7 @@ async function main() {
   console.log("🏙️  Creating cities...");
 
   for (const row of geminiData) {
-    const cityName = row["Unnamed: 0"];
+    const cityName = row["__EMPTY"];
     if (!cityName) continue;
 
     // Find matching ZHVI data for this city
