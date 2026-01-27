@@ -104,6 +104,10 @@ function checkFilters(
     return "No NBA team";
   }
 
+  if (filters.requiresAirport && !metrics.hasInternationalAirport) {
+    return "No international airport";
+  }
+
   if (
     filters.maxHomePrice !== null &&
     metrics.medianHomePrice !== null &&

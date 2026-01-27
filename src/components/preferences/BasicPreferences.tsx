@@ -101,6 +101,27 @@ export function BasicPreferences() {
           />
         </div>
 
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <Label htmlFor="airport" className="text-sm">
+              Must have int'l airport
+            </Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-sm">{TOOLTIPS["filters.requiresAirport"]}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <Switch
+            id="airport"
+            checked={preferences.filters.requiresAirport}
+            onCheckedChange={(v) => updateFilter("requiresAirport", v)}
+          />
+        </div>
+
         <div className="space-y-2">
           <div className="flex items-center gap-1">
             <Label htmlFor="maxPrice" className="text-sm">

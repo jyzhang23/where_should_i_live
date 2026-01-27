@@ -15,6 +15,7 @@ export interface UserPreferences {
   filters: {
     requiresNFL: boolean;
     requiresNBA: boolean;
+    requiresAirport: boolean;
     maxHomePrice: number | null;
   };
 
@@ -72,6 +73,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   filters: {
     requiresNFL: false,
     requiresNBA: false,
+    requiresAirport: false,
     maxHomePrice: null,
   },
   advanced: {
@@ -123,6 +125,8 @@ export const TOOLTIPS: Record<string, string> = {
     "Exclude cities without an NFL team. Excludes cities like Sacramento, Austin, Portland.",
   "filters.requiresNBA":
     "Exclude cities without an NBA team. Excludes cities like San Diego, Austin, Nashville.",
+  "filters.requiresAirport":
+    "Exclude cities without a major international airport. Most large cities have one.",
   "filters.maxHomePrice":
     "Filter out cities where median single-family home exceeds this price.",
 

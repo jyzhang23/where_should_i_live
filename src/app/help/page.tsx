@@ -281,6 +281,10 @@ export default function HelpPage() {
                 <td>City has no NBA team</td>
               </tr>
               <tr>
+                <td>Requires Int'l Airport</td>
+                <td>City has no major international airport</td>
+              </tr>
+              <tr>
                 <td>Max Home Price</td>
                 <td>Median home price exceeds your budget</td>
               </tr>
