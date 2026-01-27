@@ -19,29 +19,32 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RefreshCw, Shield, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { RefreshCw, Shield, CheckCircle, XCircle, Loader2, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RefreshResult {
   success: boolean;
   stats?: {
-    citiesCreated: number;
-    citiesUpdated: number;
-    metricsUpdated: number;
-    zhviPointsCreated: number;
+    citiesCreated?: number;
+    citiesUpdated?: number;
+    totalCities?: number;
+    metricsUpdated?: number;
+    zhviPointsCreated?: number;
+    msaCitiesMatched?: number;
+    cityCitiesMatched?: number;
+    dataPoints?: number;
   };
   message?: string;
   error?: string;
 }
 
-async function refreshData(password: string): Promise<RefreshResult> {
+async function reinitializeData(password: string): Promise<RefreshResult> {
   const response = await fetch("/api/admin/refresh", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ password }),
   });
 
-  // Handle empty responses
   const text = await response.text();
   if (!text) {
     throw new Error("Server returned empty response. Check server logs.");
@@ -55,40 +58,96 @@ async function refreshData(password: string): Promise<RefreshResult> {
   }
 
   if (!response.ok) {
-    throw new Error(data.error || "Refresh failed");
+    throw new Error(data.error || "Reinitialize failed");
   }
 
   return data;
 }
 
+async function pullZillowData(password: string): Promise<RefreshResult> {
+  const response = await fetch("/api/admin/zillow-pull", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+
+  const text = await response.text();
+  if (!text) {
+    throw new Error("Server returned empty response. Check server logs.");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid server response: ${text.slice(0, 100)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || "Zillow pull failed");
+  }
+
+  return data;
+}
+
+type ActionType = "reinitialize" | "zillow";
+
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [result, setResult] = useState<RefreshResult | null>(null);
+  const [activeAction, setActiveAction] = useState<ActionType | null>(null);
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: refreshData,
+  const reinitMutation = useMutation({
+    mutationFn: reinitializeData,
     onSuccess: (data) => {
       setResult(data);
-      // Invalidate cities query to refresh the data
       queryClient.invalidateQueries({ queryKey: ["cities"] });
     },
     onError: (error: Error) => {
       setResult({ success: false, error: error.message });
     },
+    onSettled: () => {
+      setActiveAction(null);
+    },
   });
 
-  const handleRefresh = () => {
+  const zillowMutation = useMutation({
+    mutationFn: pullZillowData,
+    onSuccess: (data) => {
+      setResult(data);
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+    },
+    onError: (error: Error) => {
+      setResult({ success: false, error: error.message });
+    },
+    onSettled: () => {
+      setActiveAction(null);
+    },
+  });
+
+  const isPending = reinitMutation.isPending || zillowMutation.isPending;
+
+  const handleReinitialize = () => {
     if (!password) return;
     setResult(null);
-    mutation.mutate(password);
+    setActiveAction("reinitialize");
+    reinitMutation.mutate(password);
+  };
+
+  const handleZillowPull = () => {
+    if (!password) return;
+    setResult(null);
+    setActiveAction("zillow");
+    zillowMutation.mutate(password);
   };
 
   const handleClose = () => {
     setIsOpen(false);
     setPassword("");
     setResult(null);
+    setActiveAction(null);
   };
 
   return (
@@ -101,18 +160,17 @@ export function AdminPanel() {
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>Admin: Refresh Data</TooltipContent>
+        <TooltipContent>Admin: Data Management</TooltipContent>
       </Tooltip>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Admin: Refresh Data
+            Admin: Data Management
           </DialogTitle>
           <DialogDescription>
-            Re-import data from the Excel spreadsheet. This will update all city
-            metrics and price history.
+            Manage city data and pull updates from external sources.
           </DialogDescription>
         </DialogHeader>
 
@@ -126,13 +184,57 @@ export function AdminPanel() {
               placeholder="Enter admin password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && password && !mutation.isPending) {
-                  handleRefresh();
-                }
-              }}
-              disabled={mutation.isPending}
+              disabled={isPending}
             />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <div className="p-3 rounded-lg border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">Reinitialize Data</p>
+                  <p className="text-xs text-muted-foreground">
+                    Reload all data from local JSON files
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReinitialize}
+                  disabled={!password || isPending}
+                >
+                  {activeAction === "reinitialize" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">Pull Zillow Data</p>
+                  <p className="text-xs text-muted-foreground">
+                    Download latest ZHVI prices from Zillow
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleZillowPull}
+                  disabled={!password || isPending}
+                >
+                  {activeAction === "zillow" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Result Display */}
@@ -155,20 +257,37 @@ export function AdminPanel() {
                   {result.success ? (
                     <>
                       <p className="font-medium text-green-800 dark:text-green-200">
-                        Refresh successful!
+                        {result.message || "Success!"}
                       </p>
                       {result.stats && (
                         <ul className="mt-2 space-y-1 text-green-700 dark:text-green-300">
-                          <li>Cities created: {result.stats.citiesCreated}</li>
-                          <li>Cities updated: {result.stats.citiesUpdated}</li>
-                          <li>Metrics updated: {result.stats.metricsUpdated}</li>
-                          <li>ZHVI data points: {result.stats.zhviPointsCreated}</li>
+                          {result.stats.totalCities !== undefined && (
+                            <li>Total cities: {result.stats.totalCities}</li>
+                          )}
+                          {result.stats.citiesCreated !== undefined && (
+                            <li>Cities created: {result.stats.citiesCreated}</li>
+                          )}
+                          {result.stats.citiesUpdated !== undefined && (
+                            <li>Cities updated: {result.stats.citiesUpdated}</li>
+                          )}
+                          {result.stats.msaCitiesMatched !== undefined && (
+                            <li>MSA matches: {result.stats.msaCitiesMatched}</li>
+                          )}
+                          {result.stats.cityCitiesMatched !== undefined && (
+                            <li>City matches: {result.stats.cityCitiesMatched}</li>
+                          )}
+                          {result.stats.dataPoints !== undefined && (
+                            <li>Data points: {result.stats.dataPoints.toLocaleString()}</li>
+                          )}
+                          {result.stats.zhviPointsCreated !== undefined && (
+                            <li>ZHVI points: {result.stats.zhviPointsCreated.toLocaleString()}</li>
+                          )}
                         </ul>
                       )}
                     </>
                   ) : (
                     <p className="text-red-800 dark:text-red-200">
-                      {result.error || "Refresh failed"}
+                      {result.error || "Operation failed"}
                     </p>
                   )}
                 </div>
@@ -177,36 +296,22 @@ export function AdminPanel() {
           )}
 
           {/* Loading State */}
-          {mutation.isPending && (
+          {isPending && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Refreshing data... This may take a moment.</span>
+              <span>
+                {activeAction === "zillow"
+                  ? "Downloading Zillow data... This may take a moment."
+                  : "Reinitializing data..."}
+              </span>
             </div>
           )}
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
-            {result?.success ? "Done" : "Cancel"}
+            {result?.success ? "Done" : "Close"}
           </Button>
-          {!result?.success && (
-            <Button
-              onClick={handleRefresh}
-              disabled={!password || mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Refreshing...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh Data
-                </>
-              )}
-            </Button>
-          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

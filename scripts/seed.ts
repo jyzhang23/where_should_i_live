@@ -65,6 +65,7 @@ interface MetricsData {
 
 interface ZHVIData {
   zillowRegionId: number;
+  geography?: "msa" | "city";  // New field in v2.0 schema
   history: { date: string; value: number }[];
 }
 
