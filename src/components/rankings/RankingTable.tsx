@@ -36,7 +36,7 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
             <TableHead className="text-right">Demographics</TableHead>
             <TableHead className="text-right">QoL</TableHead>
             <TableHead className="text-right">Total</TableHead>
-            <TableHead className="w-10"></TableHead>
+            <TableHead className="w-16 text-right text-xs">Details</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -73,13 +73,13 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
               <TableCell className={`text-right font-bold ${getScoreColor(city.totalScore)}`}>
                 {city.totalScore.toFixed(1)}
               </TableCell>
-              <TableCell>
+              <TableCell className="text-right">
                 <Link
                   href={`/city/${city.cityId}`}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  View <ExternalLink className="h-3 w-3" />
                 </Link>
               </TableCell>
             </TableRow>
@@ -128,13 +128,13 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
                   <TableCell className="text-right text-muted-foreground">
                     —
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <Link
                       href={`/city/${city.cityId}`}
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <ExternalLink className="h-4 w-4" />
+                      View <ExternalLink className="h-3 w-3" />
                     </Link>
                   </TableCell>
                 </TableRow>

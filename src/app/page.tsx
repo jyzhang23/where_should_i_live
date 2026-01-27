@@ -151,7 +151,7 @@ export default function Home() {
 
           {/* Rankings Table */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3">
               <CardTitle className="flex items-center justify-between">
                 <span>All Rankings</span>
                 {scoringResult && (
@@ -166,6 +166,13 @@ export default function Home() {
                   </span>
                 )}
               </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Click a row to see charts update. Click the{" "}
+                <span className="inline-flex items-center gap-1 text-primary">
+                  arrow icon <span className="text-xs">↗</span>
+                </span>{" "}
+                for full city details.
+              </p>
             </CardHeader>
             <CardContent>
               {isLoading ? (
