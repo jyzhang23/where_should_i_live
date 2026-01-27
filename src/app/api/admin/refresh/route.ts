@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import * as XLSX from "xlsx";
-import * as fs from "fs";
-import * as path from "path";
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
@@ -59,29 +59,50 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the Excel file - prioritize project's data folder
+    const cwd = process.cwd();
     const possiblePaths = [
-      path.join(process.cwd(), "data", "Cities.xlsx"),
-      path.join(process.cwd(), "Cities.xlsx"),
-      path.join(process.cwd(), "..", "Cities.xlsx"),
+      join(cwd, "data", "Cities.xlsx"),
+      join(cwd, "Cities.xlsx"),
+      join(cwd, "..", "Cities.xlsx"),
     ];
 
     let excelPath: string | null = null;
     for (const p of possiblePaths) {
-      if (fs.existsSync(p)) {
-        excelPath = p;
-        break;
+      try {
+        if (existsSync(p)) {
+          excelPath = p;
+          break;
+        }
+      } catch {
+        // Continue to next path
       }
     }
 
     if (!excelPath) {
       return NextResponse.json(
-        { error: "Excel file not found. Checked: " + possiblePaths.join(", ") },
+        { 
+          error: "Excel file not found", 
+          details: `Checked paths: ${possiblePaths.join(", ")}. CWD: ${cwd}` 
+        },
         { status: 404 }
       );
     }
 
-    // Read the Excel file
-    const workbook = XLSX.readFile(excelPath);
+    // Read the Excel file using buffer (more compatible with Next.js)
+    let workbook: XLSX.WorkBook;
+    try {
+      const buffer = readFileSync(excelPath);
+      workbook = XLSX.read(buffer, { type: "buffer" });
+    } catch (readError) {
+      return NextResponse.json(
+        { 
+          error: "Failed to read Excel file", 
+          details: readError instanceof Error ? readError.message : "Unknown read error",
+          path: excelPath 
+        },
+        { status: 500 }
+      );
+    }
 
     // Parse Gemini_raw sheet
     const geminiSheet = workbook.Sheets["Gemini_raw"];
