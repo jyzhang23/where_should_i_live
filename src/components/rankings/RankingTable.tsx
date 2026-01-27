@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import {
 import { CityScore } from "@/types/scores";
 import { getScoreColor } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
+import { ExternalLink } from "lucide-react";
 
 interface RankingTableProps {
   rankings: CityScore[];
@@ -33,6 +35,7 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
             <TableHead className="text-right">Cost</TableHead>
             <TableHead className="text-right">Demographics</TableHead>
             <TableHead className="text-right">Total</TableHead>
+            <TableHead className="w-10"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -66,6 +69,15 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
               <TableCell className={`text-right font-bold ${getScoreColor(city.totalScore)}`}>
                 {city.totalScore.toFixed(1)}
               </TableCell>
+              <TableCell>
+                <Link
+                  href={`/city/${city.cityId}`}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              </TableCell>
             </TableRow>
           ))}
 
@@ -73,7 +85,7 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
             <>
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center text-muted-foreground bg-muted/30 py-2"
                 >
                   Excluded ({excludedCities.length} cities)
@@ -108,6 +120,15 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
                     —
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/city/${city.cityId}`}
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}
