@@ -8,6 +8,7 @@ import { calculateScores } from "@/lib/scoring";
 import { PreferencePanel } from "@/components/preferences/PreferencePanel";
 import { RankingTable } from "@/components/rankings/RankingTable";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AdminPanel } from "@/components/admin/AdminPanel";
 import {
   ScoreRadarChart,
   RankingBarChart,
@@ -76,7 +77,10 @@ export default function Home() {
             </p>
           )}
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <AdminPanel />
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
