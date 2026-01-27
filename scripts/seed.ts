@@ -145,8 +145,9 @@ async function main() {
               : null,
             avgBroadbandSpeed: row["Avg. Broadband Speed (Mbps)"] || null,
             hasInternationalAirport:
-              row["International Airport"]?.toLowerCase() === "yes" ||
-              row["International Airport"]?.toLowerCase() === "true",
+              String(row["International Airport"] || row["Major International Airport"] || "")
+                .toLowerCase()
+                .startsWith("yes"),
             healthScore: row["Health Score (ACSM Rank)"] || null,
             pollutionIndex: row["Pollution Index (Numbeo)"] || null,
             waterQualityIndex: row["Water Quality Index (Numbeo)"] || null,

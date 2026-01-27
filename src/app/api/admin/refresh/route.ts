@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
         walkScore: row["Walk Score"] ?? null,
         transitScore: row["Transit Score"] ?? null,
         avgBroadbandSpeed: row["Avg Broadband Speed (Mbps)"] ?? null,
-        hasInternationalAirport: row["Major International Airport"] === "Yes",
+        hasInternationalAirport: String(row["Major International Airport"] || "").toLowerCase().startsWith("yes"),
         healthScore: row["Health Score"] ?? null,
         pollutionIndex: row["Pollution Index"] ?? null,
         waterQualityIndex: row["Water Quality Index"] ?? null,
