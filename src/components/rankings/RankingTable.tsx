@@ -10,13 +10,15 @@ import {
 } from "@/components/ui/table";
 import { CityScore } from "@/types/scores";
 import { getScoreColor } from "@/lib/scoring";
+import { cn } from "@/lib/utils";
 
 interface RankingTableProps {
   rankings: CityScore[];
   onCityClick?: (cityId: string) => void;
+  selectedCityId?: string | null;
 }
 
-export function RankingTable({ rankings, onCityClick }: RankingTableProps) {
+export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingTableProps) {
   const includedCities = rankings.filter((r) => !r.excluded);
   const excludedCities = rankings.filter((r) => r.excluded);
 
@@ -37,7 +39,10 @@ export function RankingTable({ rankings, onCityClick }: RankingTableProps) {
           {includedCities.map((city, index) => (
             <TableRow
               key={city.cityId}
-              className="cursor-pointer hover:bg-muted/50"
+              className={cn(
+                "cursor-pointer hover:bg-muted/50",
+                selectedCityId === city.cityId && "bg-primary/10 hover:bg-primary/15"
+              )}
               onClick={() => onCityClick?.(city.cityId)}
             >
               <TableCell className="font-medium">{index + 1}</TableCell>

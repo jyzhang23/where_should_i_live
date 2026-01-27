@@ -2,11 +2,17 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useCities } from "@/hooks/useCities";
+import { useCity } from "@/hooks/useCity";
 import { usePreferencesStore } from "@/lib/store";
 import { calculateScores } from "@/lib/scoring";
 import { PreferencePanel } from "@/components/preferences/PreferencePanel";
 import { RankingTable } from "@/components/rankings/RankingTable";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  ScoreRadarChart,
+  RankingBarChart,
+  PriceTrendChart,
+} from "@/components/charts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
@@ -19,12 +25,22 @@ export default function Home() {
     setIsHydrated(true);
   }, []);
 
+  // Selected city for detailed view
+  const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
+  const { data: selectedCityData } = useCity(selectedCityId);
+
   // Calculate scores whenever cities or preferences change
   const cities = data?.cities;
   const scoringResult = useMemo(() => {
     if (!cities || !isHydrated) return null;
     return calculateScores(cities, preferences);
   }, [cities, preferences, isHydrated]);
+
+  // Find the score for the selected city
+  const selectedCityScore = useMemo(() => {
+    if (!selectedCityId || !scoringResult) return null;
+    return scoringResult.rankings.find((r) => r.cityId === selectedCityId) || null;
+  }, [selectedCityId, scoringResult]);
 
   if (error) {
     return (
@@ -66,17 +82,39 @@ export default function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Preferences Panel - Left Sidebar */}
         <div className="lg:col-span-1">
-          <div className="sticky top-4">
+          <div className="sticky top-4 space-y-4">
             <PreferencePanel />
+            
+            {/* Radar Chart for Selected City */}
+            {isHydrated && (
+              <ScoreRadarChart cityScore={selectedCityScore} />
+            )}
           </div>
         </div>
 
-        {/* Rankings Table - Main Content */}
-        <div className="lg:col-span-3">
+        {/* Main Content */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Charts Section */}
+          {isHydrated && scoringResult && (
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <RankingBarChart
+                rankings={scoringResult.rankings}
+                topN={10}
+                onCitySelect={setSelectedCityId}
+                selectedCityId={selectedCityId}
+              />
+              <PriceTrendChart
+                cityName={selectedCityScore?.cityName || null}
+                zhviHistory={selectedCityData?.zhviHistory || null}
+              />
+            </div>
+          )}
+
+          {/* Rankings Table */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Rankings</span>
+                <span>All Rankings</span>
                 {scoringResult && (
                   <span className="text-sm font-normal text-muted-foreground">
                     {scoringResult.includedCount} cities
@@ -98,10 +136,8 @@ export default function Home() {
               ) : scoringResult ? (
                 <RankingTable
                   rankings={scoringResult.rankings}
-                  onCityClick={(id) => {
-                    // TODO: Open city detail modal or navigate
-                    console.log("City clicked:", id);
-                  }}
+                  onCityClick={setSelectedCityId}
+                  selectedCityId={selectedCityId}
                 />
               ) : (
                 <p className="text-center text-muted-foreground py-12">
