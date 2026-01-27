@@ -39,16 +39,13 @@ export function CitySelector({
         </label>
       )}
       <Select
-        value={selectedId || ""}
-        onValueChange={(value) => onSelect(value || null)}
+        value={selectedId || undefined}
+        onValueChange={(value) => onSelect(value)}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">
-            <span className="text-muted-foreground">{placeholder}</span>
-          </SelectItem>
           {availableCities.map((city) => (
             <SelectItem key={city.cityId} value={city.cityId}>
               <span className="flex items-center justify-between gap-4">
