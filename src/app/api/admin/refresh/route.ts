@@ -252,10 +252,9 @@ export async function POST(request: NextRequest) {
     // Log the refresh
     await prisma.dataRefreshLog.create({
       data: {
-        triggeredBy: "admin",
+        source: "manual",
         status: "success",
         recordsUpdated: citiesUpdated + citiesCreated,
-        completedAt: new Date(),
       },
     });
 
@@ -276,10 +275,9 @@ export async function POST(request: NextRequest) {
     try {
       await prisma.dataRefreshLog.create({
         data: {
-          triggeredBy: "admin",
+          source: "manual",
           status: "error",
           errorMessage: error instanceof Error ? error.message : "Unknown error",
-          completedAt: new Date(),
         },
       });
     } catch (logError) {
