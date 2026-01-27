@@ -6,6 +6,7 @@ import { usePreferencesStore } from "@/lib/store";
 import { calculateScores } from "@/lib/scoring";
 import { PreferencePanel } from "@/components/preferences/PreferencePanel";
 import { RankingTable } from "@/components/rankings/RankingTable";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
@@ -40,17 +41,20 @@ export default function Home() {
   return (
     <div className="container mx-auto py-8 px-4">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">City Rankings</h1>
-        <p className="text-muted-foreground mt-1">
-          Find your perfect city based on your preferences
-        </p>
-        {data?.lastUpdated && (
-          <p className="text-xs text-muted-foreground mt-2">
-            Data last updated:{" "}
-            {new Date(data.lastUpdated).toLocaleDateString()}
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">City Rankings</h1>
+          <p className="text-muted-foreground mt-1">
+            Find your perfect city based on your preferences
           </p>
-        )}
+          {data?.lastUpdated && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Data last updated:{" "}
+              {new Date(data.lastUpdated).toLocaleDateString()}
+            </p>
+          )}
+        </div>
+        <ThemeToggle />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

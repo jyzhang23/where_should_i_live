@@ -44,75 +44,105 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  
+  /* Score colors */
+  --color-score-high: var(--score-high);
+  --color-score-medium: var(--score-medium);
+  --color-score-low: var(--score-low);
 }
+
+/* ==================== */
+/* Modern Slate Theme   */
+/* ==================== */
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Light mode - Modern Slate */
+  --background: #f8fafc;           /* slate-50 */
+  --foreground: #0f172a;           /* slate-900 */
+  --card: #ffffff;                 /* white */
+  --card-foreground: #0f172a;      /* slate-900 */
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #2563eb;              /* blue-600 */
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;            /* slate-100 */
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;                /* slate-100 */
+  --muted-foreground: #64748b;     /* slate-500 */
+  --accent: #10b981;               /* emerald-500 */
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;          /* red-500 */
+  --border: #e2e8f0;               /* slate-200 */
+  --input: #e2e8f0;
+  --ring: #2563eb;                 /* blue-600 */
+  
+  /* Score colors - Light */
+  --score-high: #10b981;           /* emerald-500 */
+  --score-medium: #f59e0b;         /* amber-500 */
+  --score-low: #ef4444;            /* red-500 */
+  
+  /* Chart colors */
+  --chart-1: #2563eb;              /* blue-600 */
+  --chart-2: #10b981;              /* emerald-500 */
+  --chart-3: #f59e0b;              /* amber-500 */
+  --chart-4: #8b5cf6;              /* violet-500 */
+  --chart-5: #ec4899;              /* pink-500 */
+  
+  /* Sidebar */
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2563eb;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark mode - Modern Slate */
+  --background: #020617;           /* slate-950 */
+  --foreground: #f1f5f9;           /* slate-100 */
+  --card: #0f172a;                 /* slate-900 */
+  --card-foreground: #f1f5f9;      /* slate-100 */
+  --popover: #0f172a;
+  --popover-foreground: #f1f5f9;
+  --primary: #3b82f6;              /* blue-500 */
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;            /* slate-800 */
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e293b;                /* slate-800 */
+  --muted-foreground: #94a3b8;     /* slate-400 */
+  --accent: #34d399;               /* emerald-400 */
+  --accent-foreground: #0f172a;
+  --destructive: #f87171;          /* red-400 */
+  --border: #334155;               /* slate-700 */
+  --input: #334155;
+  --ring: #3b82f6;                 /* blue-500 */
+  
+  /* Score colors - Dark */
+  --score-high: #34d399;           /* emerald-400 */
+  --score-medium: #fbbf24;         /* amber-400 */
+  --score-low: #f87171;            /* red-400 */
+  
+  /* Chart colors - Dark */
+  --chart-1: #3b82f6;              /* blue-500 */
+  --chart-2: #34d399;              /* emerald-400 */
+  --chart-3: #fbbf24;              /* amber-400 */
+  --chart-4: #a78bfa;              /* violet-400 */
+  --chart-5: #f472b6;              /* pink-400 */
+  
+  /* Sidebar - Dark */
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: #334155;
+  --sidebar-ring: #3b82f6;
 }
 
 @layer base {
@@ -121,5 +151,27 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Score color utility classes */
+@layer utilities {
+  .text-score-high {
+    color: var(--score-high);
+  }
+  .text-score-medium {
+    color: var(--score-medium);
+  }
+  .text-score-low {
+    color: var(--score-low);
+  }
+  .bg-score-high {
+    background-color: var(--score-high);
+  }
+  .bg-score-medium {
+    background-color: var(--score-medium);
+  }
+  .bg-score-low {
+    background-color: var(--score-low);
   }
 }

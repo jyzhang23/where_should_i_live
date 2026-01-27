@@ -320,8 +320,16 @@ export function getGrade(score: number): string {
  * Get color class for a score
  */
 export function getScoreColor(score: number): string {
-  if (score >= 80) return "text-green-600";
-  if (score >= 60) return "text-yellow-600";
-  if (score >= 40) return "text-orange-600";
-  return "text-red-600";
+  if (score >= 75) return "text-score-high";
+  if (score >= 50) return "text-score-medium";
+  return "text-score-low";
+}
+
+/**
+ * Get background color class for a score
+ */
+export function getScoreBgColor(score: number): string {
+  if (score >= 75) return "bg-score-high";
+  if (score >= 50) return "bg-score-medium";
+  return "bg-score-low";
 }
