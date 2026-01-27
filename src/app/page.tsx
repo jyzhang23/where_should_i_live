@@ -9,12 +9,20 @@ import { PreferencePanel } from "@/components/preferences/PreferencePanel";
 import { RankingTable } from "@/components/rankings/RankingTable";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { ComparisonPanel } from "@/components/comparison";
 import {
   ScoreRadarChart,
   RankingBarChart,
   PriceTrendChart,
 } from "@/components/charts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { GitCompare } from "lucide-react";
 
 export default function Home() {
   const { data, isLoading, error } = useCities();
@@ -29,6 +37,9 @@ export default function Home() {
   // Selected city for detailed view
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
   const { data: selectedCityData } = useCity(selectedCityId);
+
+  // Comparison mode
+  const [showComparison, setShowComparison] = useState(false);
 
   // Calculate scores whenever cities or preferences change
   const cities = data?.cities;
@@ -78,6 +89,19 @@ export default function Home() {
           )}
         </div>
         <div className="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => setShowComparison(true)}
+              >
+                <GitCompare className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Compare Cities</TooltipContent>
+          </Tooltip>
           <AdminPanel />
           <ThemeToggle />
         </div>
@@ -152,6 +176,15 @@ export default function Home() {
           </Card>
         </div>
       </div>
+
+      {/* Comparison Panel */}
+      {scoringResult && (
+        <ComparisonPanel
+          rankings={scoringResult.rankings}
+          isOpen={showComparison}
+          onClose={() => setShowComparison(false)}
+        />
+      )}
     </div>
   );
 }
