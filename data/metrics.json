@@ -1,0 +1,1605 @@
+{
+  "version": "1.0",
+  "description": "Current city metrics (updateable via APIs)",
+  "lastUpdated": "2026-01-27",
+  "sources": {
+    "climate": "NOAA / Weather data",
+    "cost": "BLS / Zillow",
+    "demographics": "US Census",
+    "quality": "WalkScore, Numbeo, ACSM, etc.",
+    "political": "2024 Election Results"
+  },
+  "cities": {
+    "san-francisco": {
+      "climate": {
+        "avgTemp": 58,
+        "avgWinterTemp": 49,
+        "avgSummerTemp": 68,
+        "daysOfSunshine": 259,
+        "daysOfRain": 75
+      },
+      "cost": {
+        "medianHomePrice": 1300000,
+        "costOfLivingIndex": 169.9,
+        "stateTaxRate": 0.133,
+        "propertyTaxRate": 0.0075
+      },
+      "demographics": {
+        "population": 4730,
+        "diversityIndex": 70,
+        "eastAsianPercent": 0.28,
+        "crimeRate": 650
+      },
+      "quality": {
+        "qualityOfLifeScore": 85,
+        "walkScore": 88,
+        "transitScore": 80,
+        "hasInternationalAirport": true,
+        "airportCode": "SFO",
+        "healthScore": 15,
+        "pollutionIndex": 43.1,
+        "waterQualityIndex": 77.5,
+        "trafficIndex": 97,
+        "broadbandSpeed": 250
+      },
+      "political": {
+        "cityDemocratPercent": 0.845,
+        "stateDemocratPercent": 0.585
+      }
+    },
+    "seattle": {
+      "climate": {
+        "avgTemp": 53,
+        "avgWinterTemp": 40,
+        "avgSummerTemp": 69,
+        "daysOfSunshine": 160,
+        "daysOfRain": 150
+      },
+      "cost": {
+        "medianHomePrice": 850000,
+        "costOfLivingIndex": 144.5,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.0095
+      },
+      "demographics": {
+        "population": 4012,
+        "diversityIndex": 68,
+        "eastAsianPercent": 0.15,
+        "crimeRate": 700
+      },
+      "quality": {
+        "qualityOfLifeScore": 88,
+        "walkScore": 74,
+        "transitScore": 59,
+        "hasInternationalAirport": true,
+        "airportCode": "SEA",
+        "healthScore": 6,
+        "pollutionIndex": 45.8,
+        "waterQualityIndex": 65.5,
+        "trafficIndex": 80,
+        "broadbandSpeed": 245
+      },
+      "political": {
+        "cityDemocratPercent": 0.705,
+        "stateDemocratPercent": 0.523
+      }
+    },
+    "new-york-city": {
+      "climate": {
+        "avgTemp": 54,
+        "avgWinterTemp": 33,
+        "avgSummerTemp": 76.5,
+        "daysOfSunshine": 234,
+        "daysOfRain": 120
+      },
+      "cost": {
+        "medianHomePrice": 750000,
+        "costOfLivingIndex": 187.2,
+        "stateTaxRate": 0.109,
+        "propertyTaxRate": 0.0082
+      },
+      "demographics": {
+        "population": 19979,
+        "diversityIndex": 72.2,
+        "eastAsianPercent": 0.145,
+        "crimeRate": 400
+      },
+      "quality": {
+        "qualityOfLifeScore": 65,
+        "walkScore": 88,
+        "transitScore": 81,
+        "hasInternationalAirport": true,
+        "airportCode": null,
+        "healthScore": 13,
+        "pollutionIndex": 66.8,
+        "waterQualityIndex": 39.5,
+        "trafficIndex": 117,
+        "broadbandSpeed": 225
+      },
+      "political": {
+        "cityDemocratPercent": 0.72,
+        "stateDemocratPercent": 0.586
+      }
+    },
+    "los-angeles": {
+      "climate": {
+        "avgTemp": 66,
+        "avgWinterTemp": 59,
+        "avgSummerTemp": 75,
+        "daysOfSunshine": 284,
+        "daysOfRain": 35
+      },
+      "cost": {
+        "medianHomePrice": 950000,
+        "costOfLivingIndex": 149.6,
+        "stateTaxRate": 0.133,
+        "propertyTaxRate": 0.0081
+      },
+      "demographics": {
+        "population": 13291,
+        "diversityIndex": 71.8,
+        "eastAsianPercent": 0.12,
+        "crimeRate": 490
+      },
+      "quality": {
+        "qualityOfLifeScore": 75,
+        "walkScore": 68,
+        "transitScore": 49,
+        "hasInternationalAirport": true,
+        "airportCode": "LAX",
+        "healthScore": 55,
+        "pollutionIndex": 85.9,
+        "waterQualityIndex": 42.1,
+        "trafficIndex": 95,
+        "broadbandSpeed": 230
+      },
+      "political": {
+        "cityDemocratPercent": 0.682,
+        "stateDemocratPercent": 0.585
+      }
+    },
+    "sacramento": {
+      "climate": {
+        "avgTemp": 61,
+        "avgWinterTemp": 46,
+        "avgSummerTemp": 77,
+        "daysOfSunshine": 269,
+        "daysOfRain": 60
+      },
+      "cost": {
+        "medianHomePrice": 490000,
+        "costOfLivingIndex": 105,
+        "stateTaxRate": 0.133,
+        "propertyTaxRate": 0.009
+      },
+      "demographics": {
+        "population": 2345,
+        "diversityIndex": 69.5,
+        "eastAsianPercent": 0.115,
+        "crimeRate": 900
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 49,
+        "transitScore": 32,
+        "hasInternationalAirport": true,
+        "airportCode": "SMF",
+        "healthScore": 32,
+        "pollutionIndex": 58.5,
+        "waterQualityIndex": 45,
+        "trafficIndex": 50,
+        "broadbandSpeed": 225
+      },
+      "political": {
+        "cityDemocratPercent": 0.548,
+        "stateDemocratPercent": 0.585
+      }
+    },
+    "boston": {
+      "climate": {
+        "avgTemp": 51,
+        "avgWinterTemp": 30,
+        "avgSummerTemp": 73,
+        "daysOfSunshine": 200,
+        "daysOfRain": 125
+      },
+      "cost": {
+        "medianHomePrice": 650000,
+        "costOfLivingIndex": 148.4,
+        "stateTaxRate": 0.05,
+        "propertyTaxRate": 0.0125
+      },
+      "demographics": {
+        "population": 4890,
+        "diversityIndex": 67.5,
+        "eastAsianPercent": 0.095,
+        "crimeRate": 350
+      },
+      "quality": {
+        "qualityOfLifeScore": 80,
+        "walkScore": 80,
+        "transitScore": 74,
+        "hasInternationalAirport": true,
+        "airportCode": "BOS",
+        "healthScore": 1,
+        "pollutionIndex": 35.5,
+        "waterQualityIndex": 66.3,
+        "trafficIndex": 70,
+        "broadbandSpeed": 240
+      },
+      "political": {
+        "cityDemocratPercent": 0.8,
+        "stateDemocratPercent": 0.619
+      }
+    },
+    "portland": {
+      "climate": {
+        "avgTemp": 53,
+        "avgWinterTemp": 41,
+        "avgSummerTemp": 68,
+        "daysOfSunshine": 140,
+        "daysOfRain": 150
+      },
+      "cost": {
+        "medianHomePrice": 580000,
+        "costOfLivingIndex": 122.5,
+        "stateTaxRate": 0.099,
+        "propertyTaxRate": 0.0105
+      },
+      "demographics": {
+        "population": 2512,
+        "diversityIndex": 65.5,
+        "eastAsianPercent": 0.085,
+        "crimeRate": 950
+      },
+      "quality": {
+        "qualityOfLifeScore": 78,
+        "walkScore": 63,
+        "transitScore": 50,
+        "hasInternationalAirport": true,
+        "airportCode": "PDX",
+        "healthScore": 7,
+        "pollutionIndex": 42.5,
+        "waterQualityIndex": 68,
+        "trafficIndex": 60,
+        "broadbandSpeed": 230
+      },
+      "political": {
+        "cityDemocratPercent": 0.76,
+        "stateDemocratPercent": 0.538
+      }
+    },
+    "las-vegas": {
+      "climate": {
+        "avgTemp": 70,
+        "avgWinterTemp": 50,
+        "avgSummerTemp": 88,
+        "daysOfSunshine": 294,
+        "daysOfRain": 25
+      },
+      "cost": {
+        "medianHomePrice": 420000,
+        "costOfLivingIndex": 110,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.0085
+      },
+      "demographics": {
+        "population": 2260,
+        "diversityIndex": 68,
+        "eastAsianPercent": 0.08,
+        "crimeRate": 750
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 42,
+        "transitScore": 32,
+        "hasInternationalAirport": true,
+        "airportCode": "LAS",
+        "healthScore": 73,
+        "pollutionIndex": 54,
+        "waterQualityIndex": 55,
+        "trafficIndex": 55,
+        "broadbandSpeed": 220
+      },
+      "political": {
+        "cityDemocratPercent": 0.49,
+        "stateDemocratPercent": 0.484
+      }
+    },
+    "chicago": {
+      "climate": {
+        "avgTemp": 50,
+        "avgWinterTemp": 28,
+        "avgSummerTemp": 74.5,
+        "daysOfSunshine": 186,
+        "daysOfRain": 120
+      },
+      "cost": {
+        "medianHomePrice": 350000,
+        "costOfLivingIndex": 116.5,
+        "stateTaxRate": 0.0495,
+        "propertyTaxRate": 0.0225
+      },
+      "demographics": {
+        "population": 9499,
+        "diversityIndex": 69.1,
+        "eastAsianPercent": 0.067,
+        "crimeRate": 900
+      },
+      "quality": {
+        "qualityOfLifeScore": 68,
+        "walkScore": 77,
+        "transitScore": 65,
+        "hasInternationalAirport": true,
+        "airportCode": null,
+        "healthScore": 16,
+        "pollutionIndex": 67.2,
+        "waterQualityIndex": 47.3,
+        "trafficIndex": 104,
+        "broadbandSpeed": 220
+      },
+      "political": {
+        "cityDemocratPercent": 0.695,
+        "stateDemocratPercent": 0.55
+      }
+    },
+    "washington-dc": {
+      "climate": {
+        "avgTemp": 58,
+        "avgWinterTemp": 38,
+        "avgSummerTemp": 79,
+        "daysOfSunshine": 205,
+        "daysOfRain": 110
+      },
+      "cost": {
+        "medianHomePrice": 680000,
+        "costOfLivingIndex": 148.7,
+        "stateTaxRate": 0.0895,
+        "propertyTaxRate": 0.006
+      },
+      "demographics": {
+        "population": 6250,
+        "diversityIndex": 68.5,
+        "eastAsianPercent": 0.06,
+        "crimeRate": 600
+      },
+      "quality": {
+        "qualityOfLifeScore": 78,
+        "walkScore": 77,
+        "transitScore": 69,
+        "hasInternationalAirport": true,
+        "airportCode": null,
+        "healthScore": 4,
+        "pollutionIndex": 55.5,
+        "waterQualityIndex": 58.5,
+        "trafficIndex": 70,
+        "broadbandSpeed": 230
+      },
+      "political": {
+        "cityDemocratPercent": 0.9,
+        "stateDemocratPercent": 0.55
+      }
+    },
+    "houston": {
+      "climate": {
+        "avgTemp": 70,
+        "avgWinterTemp": 52,
+        "avgSummerTemp": 85,
+        "daysOfSunshine": 204,
+        "daysOfRain": 105
+      },
+      "cost": {
+        "medianHomePrice": 320000,
+        "costOfLivingIndex": 96,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.0175
+      },
+      "demographics": {
+        "population": 6997,
+        "diversityIndex": 72.3,
+        "eastAsianPercent": 0.055,
+        "crimeRate": 1050
+      },
+      "quality": {
+        "qualityOfLifeScore": 62,
+        "walkScore": 48,
+        "transitScore": 36,
+        "hasInternationalAirport": true,
+        "airportCode": null,
+        "healthScore": 71,
+        "pollutionIndex": 68.1,
+        "waterQualityIndex": 37.5,
+        "trafficIndex": 74,
+        "broadbandSpeed": 210
+      },
+      "political": {
+        "cityDemocratPercent": 0.525,
+        "stateDemocratPercent": 0.461
+      }
+    },
+    "atlanta": {
+      "climate": {
+        "avgTemp": 63,
+        "avgWinterTemp": 45,
+        "avgSummerTemp": 80,
+        "daysOfSunshine": 217,
+        "daysOfRain": 115
+      },
+      "cost": {
+        "medianHomePrice": 420000,
+        "costOfLivingIndex": 103.5,
+        "stateTaxRate": 0.0575,
+        "propertyTaxRate": 0.0115
+      },
+      "demographics": {
+        "population": 6144,
+        "diversityIndex": 69.5,
+        "eastAsianPercent": 0.055,
+        "crimeRate": 1200
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 48,
+        "transitScore": 43,
+        "hasInternationalAirport": true,
+        "airportCode": "ATL",
+        "healthScore": 48,
+        "pollutionIndex": 49.3,
+        "waterQualityIndex": 55.9,
+        "trafficIndex": 74,
+        "broadbandSpeed": 200
+      },
+      "political": {
+        "cityDemocratPercent": 0.68,
+        "stateDemocratPercent": 0.477
+      }
+    },
+    "minneapolis": {
+      "climate": {
+        "avgTemp": 45,
+        "avgWinterTemp": 18,
+        "avgSummerTemp": 73,
+        "daysOfSunshine": 200,
+        "daysOfRain": 115
+      },
+      "cost": {
+        "medianHomePrice": 360000,
+        "costOfLivingIndex": 104,
+        "stateTaxRate": 0.0985,
+        "propertyTaxRate": 0.012
+      },
+      "demographics": {
+        "population": 3629,
+        "diversityIndex": 63.5,
+        "eastAsianPercent": 0.048,
+        "crimeRate": 950
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 55,
+        "transitScore": 51,
+        "hasInternationalAirport": true,
+        "airportCode": "MSP",
+        "healthScore": 18,
+        "pollutionIndex": 37.9,
+        "waterQualityIndex": 62.1,
+        "trafficIndex": 55,
+        "broadbandSpeed": 205
+      },
+      "political": {
+        "cityDemocratPercent": 0.668,
+        "stateDemocratPercent": 0.512
+      }
+    },
+    "philadelphia": {
+      "climate": {
+        "avgTemp": 54,
+        "avgWinterTemp": 32,
+        "avgSummerTemp": 77,
+        "daysOfSunshine": 205,
+        "daysOfRain": 120
+      },
+      "cost": {
+        "medianHomePrice": 325000,
+        "costOfLivingIndex": 108.5,
+        "stateTaxRate": 0.0307,
+        "propertyTaxRate": 0.0135
+      },
+      "demographics": {
+        "population": 6120,
+        "diversityIndex": 69,
+        "eastAsianPercent": 0.045,
+        "crimeRate": 700
+      },
+      "quality": {
+        "qualityOfLifeScore": 66,
+        "walkScore": 75,
+        "transitScore": 68,
+        "hasInternationalAirport": true,
+        "airportCode": "PHL",
+        "healthScore": 39,
+        "pollutionIndex": 56.5,
+        "waterQualityIndex": 58,
+        "trafficIndex": 70,
+        "broadbandSpeed": 205
+      },
+      "political": {
+        "cityDemocratPercent": 0.784,
+        "stateDemocratPercent": 0.477
+      }
+    },
+    "dallas": {
+      "climate": {
+        "avgTemp": 66,
+        "avgWinterTemp": 45,
+        "avgSummerTemp": 84,
+        "daysOfSunshine": 234,
+        "daysOfRain": 80
+      },
+      "cost": {
+        "medianHomePrice": 375000,
+        "costOfLivingIndex": 102.5,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.019
+      },
+      "demographics": {
+        "population": 7540,
+        "diversityIndex": 71.6,
+        "eastAsianPercent": 0.035,
+        "crimeRate": 850
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 46,
+        "transitScore": 39,
+        "hasInternationalAirport": true,
+        "airportCode": null,
+        "healthScore": 53,
+        "pollutionIndex": 48.5,
+        "waterQualityIndex": 49.8,
+        "trafficIndex": 68,
+        "broadbandSpeed": 215
+      },
+      "political": {
+        "cityDemocratPercent": 0.611,
+        "stateDemocratPercent": 0.461
+      }
+    },
+    "tampa-bay": {
+      "climate": {
+        "avgTemp": 72,
+        "avgWinterTemp": 62,
+        "avgSummerTemp": 82.5,
+        "daysOfSunshine": 246,
+        "daysOfRain": 110
+      },
+      "cost": {
+        "medianHomePrice": 380000,
+        "costOfLivingIndex": 98,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.011
+      },
+      "demographics": {
+        "population": 3180,
+        "diversityIndex": 68.5,
+        "eastAsianPercent": 0.035,
+        "crimeRate": 750
+      },
+      "quality": {
+        "qualityOfLifeScore": 75,
+        "walkScore": 35,
+        "transitScore": 32,
+        "hasInternationalAirport": true,
+        "airportCode": "TPA",
+        "healthScore": 42,
+        "pollutionIndex": 53,
+        "waterQualityIndex": 50,
+        "trafficIndex": 48,
+        "broadbandSpeed": 230
+      },
+      "political": {
+        "cityDemocratPercent": 0.495,
+        "stateDemocratPercent": 0.467
+      }
+    },
+    "denver": {
+      "climate": {
+        "avgTemp": 50,
+        "avgWinterTemp": 32,
+        "avgSummerTemp": 73,
+        "daysOfSunshine": 245,
+        "daysOfRain": 90
+      },
+      "cost": {
+        "medianHomePrice": 600000,
+        "costOfLivingIndex": 120.3,
+        "stateTaxRate": 0.044,
+        "propertyTaxRate": 0.0045
+      },
+      "demographics": {
+        "population": 2892,
+        "diversityIndex": 64,
+        "eastAsianPercent": 0.035,
+        "crimeRate": 880
+      },
+      "quality": {
+        "qualityOfLifeScore": 82,
+        "walkScore": 61,
+        "transitScore": 47,
+        "hasInternationalAirport": true,
+        "airportCode": "DEN",
+        "healthScore": 11,
+        "pollutionIndex": 58.1,
+        "waterQualityIndex": 55.4,
+        "trafficIndex": 67,
+        "broadbandSpeed": 245
+      },
+      "political": {
+        "cityDemocratPercent": 0.751,
+        "stateDemocratPercent": 0.545
+      }
+    },
+    "charlotte": {
+      "climate": {
+        "avgTemp": 61,
+        "avgWinterTemp": 42,
+        "avgSummerTemp": 78,
+        "daysOfSunshine": 218,
+        "daysOfRain": 105
+      },
+      "cost": {
+        "medianHomePrice": 350000,
+        "costOfLivingIndex": 100,
+        "stateTaxRate": 0.0575,
+        "propertyTaxRate": 0.0085
+      },
+      "demographics": {
+        "population": 2701,
+        "diversityIndex": 67.5,
+        "eastAsianPercent": 0.035,
+        "crimeRate": 700
+      },
+      "quality": {
+        "qualityOfLifeScore": 75,
+        "walkScore": 35,
+        "transitScore": 31,
+        "hasInternationalAirport": true,
+        "airportCode": "CLT",
+        "healthScore": 26,
+        "pollutionIndex": 39.5,
+        "waterQualityIndex": 60.5,
+        "trafficIndex": 55,
+        "broadbandSpeed": 210
+      },
+      "political": {
+        "cityDemocratPercent": 0.585,
+        "stateDemocratPercent": 0.479
+      }
+    },
+    "oklahoma-city": {
+      "climate": {
+        "avgTemp": 61,
+        "avgWinterTemp": 38,
+        "avgSummerTemp": 81,
+        "daysOfSunshine": 235,
+        "daysOfRain": 90
+      },
+      "cost": {
+        "medianHomePrice": 220000,
+        "costOfLivingIndex": 90.5,
+        "stateTaxRate": 0.0475,
+        "propertyTaxRate": 0.0145
+      },
+      "demographics": {
+        "population": 1442,
+        "diversityIndex": 65.5,
+        "eastAsianPercent": 0.035,
+        "crimeRate": 900
+      },
+      "quality": {
+        "qualityOfLifeScore": 65,
+        "walkScore": 34,
+        "transitScore": 33,
+        "hasInternationalAirport": true,
+        "airportCode": "OKC",
+        "healthScore": 82,
+        "pollutionIndex": 40.5,
+        "waterQualityIndex": 58,
+        "trafficIndex": 38,
+        "broadbandSpeed": 200
+      },
+      "political": {
+        "cityDemocratPercent": 0.452,
+        "stateDemocratPercent": 0.312
+      }
+    },
+    "phoenix": {
+      "climate": {
+        "avgTemp": 73,
+        "avgWinterTemp": 57,
+        "avgSummerTemp": 93,
+        "daysOfSunshine": 299,
+        "daysOfRain": 30
+      },
+      "cost": {
+        "medianHomePrice": 450000,
+        "costOfLivingIndex": 106.9,
+        "stateTaxRate": 0.025,
+        "propertyTaxRate": 0.007
+      },
+      "demographics": {
+        "population": 4946,
+        "diversityIndex": 67.5,
+        "eastAsianPercent": 0.032,
+        "crimeRate": 800
+      },
+      "quality": {
+        "qualityOfLifeScore": 75,
+        "walkScore": 42,
+        "transitScore": 37,
+        "hasInternationalAirport": true,
+        "airportCode": "PHX",
+        "healthScore": 30,
+        "pollutionIndex": 63.5,
+        "waterQualityIndex": 45,
+        "trafficIndex": 58,
+        "broadbandSpeed": 225
+      },
+      "political": {
+        "cityDemocratPercent": 0.475,
+        "stateDemocratPercent": 0.465
+      }
+    },
+    "baltimore": {
+      "climate": {
+        "avgTemp": 55,
+        "avgWinterTemp": 35,
+        "avgSummerTemp": 78,
+        "daysOfSunshine": 200,
+        "daysOfRain": 110
+      },
+      "cost": {
+        "medianHomePrice": 300000,
+        "costOfLivingIndex": 106,
+        "stateTaxRate": 0.0575,
+        "propertyTaxRate": 0.0115
+      },
+      "demographics": {
+        "population": 2838,
+        "diversityIndex": 69,
+        "eastAsianPercent": 0.03,
+        "crimeRate": 1400
+      },
+      "quality": {
+        "qualityOfLifeScore": 60,
+        "walkScore": 69,
+        "transitScore": 57,
+        "hasInternationalAirport": true,
+        "airportCode": "BWI",
+        "healthScore": 45,
+        "pollutionIndex": 55.5,
+        "waterQualityIndex": 55,
+        "trafficIndex": 70,
+        "broadbandSpeed": 220
+      },
+      "political": {
+        "cityDemocratPercent": 0.83,
+        "stateDemocratPercent": 0.634
+      }
+    },
+    "orlando": {
+      "climate": {
+        "avgTemp": 72.5,
+        "avgWinterTemp": 61,
+        "avgSummerTemp": 82,
+        "daysOfSunshine": 233,
+        "daysOfRain": 115
+      },
+      "cost": {
+        "medianHomePrice": 360000,
+        "costOfLivingIndex": 104.5,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.011
+      },
+      "demographics": {
+        "population": 2692,
+        "diversityIndex": 69,
+        "eastAsianPercent": 0.03,
+        "crimeRate": 900
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 41,
+        "transitScore": 38,
+        "hasInternationalAirport": true,
+        "airportCode": "MCO",
+        "healthScore": 33,
+        "pollutionIndex": 46.5,
+        "waterQualityIndex": 51.5,
+        "trafficIndex": 55,
+        "broadbandSpeed": 235
+      },
+      "political": {
+        "cityDemocratPercent": 0.579,
+        "stateDemocratPercent": 0.467
+      }
+    },
+    "indianapolis": {
+      "climate": {
+        "avgTemp": 53,
+        "avgWinterTemp": 31,
+        "avgSummerTemp": 75,
+        "daysOfSunshine": 186,
+        "daysOfRain": 120
+      },
+      "cost": {
+        "medianHomePrice": 280000,
+        "costOfLivingIndex": 91.5,
+        "stateTaxRate": 0.0323,
+        "propertyTaxRate": 0.0115
+      },
+      "demographics": {
+        "population": 2127,
+        "diversityIndex": 63.5,
+        "eastAsianPercent": 0.03,
+        "crimeRate": 950
+      },
+      "quality": {
+        "qualityOfLifeScore": 65,
+        "walkScore": 38,
+        "transitScore": 34,
+        "hasInternationalAirport": true,
+        "airportCode": "IND",
+        "healthScore": 60,
+        "pollutionIndex": 42,
+        "waterQualityIndex": 59,
+        "trafficIndex": 45,
+        "broadbandSpeed": 205
+      },
+      "political": {
+        "cityDemocratPercent": 0.55,
+        "stateDemocratPercent": 0.405
+      }
+    },
+    "nashville": {
+      "climate": {
+        "avgTemp": 60,
+        "avgWinterTemp": 39,
+        "avgSummerTemp": 79,
+        "daysOfSunshine": 205,
+        "daysOfRain": 115
+      },
+      "cost": {
+        "medianHomePrice": 400000,
+        "costOfLivingIndex": 97,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.0085
+      },
+      "demographics": {
+        "population": 2012,
+        "diversityIndex": 65,
+        "eastAsianPercent": 0.03,
+        "crimeRate": 1150
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 30,
+        "transitScore": 28,
+        "hasInternationalAirport": true,
+        "airportCode": "BNA",
+        "healthScore": 65,
+        "pollutionIndex": 40.5,
+        "waterQualityIndex": 61,
+        "trafficIndex": 50,
+        "broadbandSpeed": 210
+      },
+      "political": {
+        "cityDemocratPercent": 0.604,
+        "stateDemocratPercent": 0.379
+      }
+    },
+    "milwaukee": {
+      "climate": {
+        "avgTemp": 46,
+        "avgWinterTemp": 24,
+        "avgSummerTemp": 71,
+        "daysOfSunshine": 190,
+        "daysOfRain": 125
+      },
+      "cost": {
+        "medianHomePrice": 230000,
+        "costOfLivingIndex": 94,
+        "stateTaxRate": 0.0765,
+        "propertyTaxRate": 0.0195
+      },
+      "demographics": {
+        "population": 1566,
+        "diversityIndex": 64,
+        "eastAsianPercent": 0.03,
+        "crimeRate": 1200
+      },
+      "quality": {
+        "qualityOfLifeScore": 62,
+        "walkScore": 61,
+        "transitScore": 49,
+        "hasInternationalAirport": true,
+        "airportCode": "MKE",
+        "healthScore": 28,
+        "pollutionIndex": 38.5,
+        "waterQualityIndex": 60,
+        "trafficIndex": 40,
+        "broadbandSpeed": 195
+      },
+      "political": {
+        "cityDemocratPercent": 0.655,
+        "stateDemocratPercent": 0.48
+      }
+    },
+    "salt-lake-city": {
+      "climate": {
+        "avgTemp": 50,
+        "avgWinterTemp": 29,
+        "avgSummerTemp": 74,
+        "daysOfSunshine": 222,
+        "daysOfRain": 85
+      },
+      "cost": {
+        "medianHomePrice": 520000,
+        "costOfLivingIndex": 103.5,
+        "stateTaxRate": 0.0485,
+        "propertyTaxRate": 0.0055
+      },
+      "demographics": {
+        "population": 1263,
+        "diversityIndex": 64,
+        "eastAsianPercent": 0.03,
+        "crimeRate": 800
+      },
+      "quality": {
+        "qualityOfLifeScore": 75,
+        "walkScore": 45,
+        "transitScore": 41,
+        "hasInternationalAirport": true,
+        "airportCode": "SLC",
+        "healthScore": 22,
+        "pollutionIndex": 60.5,
+        "waterQualityIndex": 58.5,
+        "trafficIndex": 50,
+        "broadbandSpeed": 235
+      },
+      "political": {
+        "cityDemocratPercent": 0.515,
+        "stateDemocratPercent": 0.34
+      }
+    },
+    "detroit": {
+      "climate": {
+        "avgTemp": 49,
+        "avgWinterTemp": 26,
+        "avgSummerTemp": 73.5,
+        "daysOfSunshine": 185,
+        "daysOfRain": 130
+      },
+      "cost": {
+        "medianHomePrice": 200000,
+        "costOfLivingIndex": 88,
+        "stateTaxRate": 0.0425,
+        "propertyTaxRate": 0.0195
+      },
+      "demographics": {
+        "population": 4365,
+        "diversityIndex": 65,
+        "eastAsianPercent": 0.025,
+        "crimeRate": 2000
+      },
+      "quality": {
+        "qualityOfLifeScore": 55,
+        "walkScore": 52,
+        "transitScore": 41,
+        "hasInternationalAirport": true,
+        "airportCode": "DTW",
+        "healthScore": 68,
+        "pollutionIndex": 50.5,
+        "waterQualityIndex": 49.9,
+        "trafficIndex": 60,
+        "broadbandSpeed": 195
+      },
+      "political": {
+        "cityDemocratPercent": 0.649,
+        "stateDemocratPercent": 0.479
+      }
+    },
+    "st-louis": {
+      "climate": {
+        "avgTemp": 57,
+        "avgWinterTemp": 35,
+        "avgSummerTemp": 78,
+        "daysOfSunshine": 201,
+        "daysOfRain": 100
+      },
+      "cost": {
+        "medianHomePrice": 250000,
+        "costOfLivingIndex": 90.5,
+        "stateTaxRate": 0.054,
+        "propertyTaxRate": 0.0155
+      },
+      "demographics": {
+        "population": 2809,
+        "diversityIndex": 66,
+        "eastAsianPercent": 0.025,
+        "crimeRate": 1100
+      },
+      "quality": {
+        "qualityOfLifeScore": 63,
+        "walkScore": 45,
+        "transitScore": 41,
+        "hasInternationalAirport": true,
+        "airportCode": "STL",
+        "healthScore": 75,
+        "pollutionIndex": 45.5,
+        "waterQualityIndex": 55.9,
+        "trafficIndex": 55,
+        "broadbandSpeed": 190
+      },
+      "political": {
+        "cityDemocratPercent": 0.754,
+        "stateDemocratPercent": 0.412
+      }
+    },
+    "san-antonio": {
+      "climate": {
+        "avgTemp": 70,
+        "avgWinterTemp": 50,
+        "avgSummerTemp": 85,
+        "daysOfSunshine": 220,
+        "daysOfRain": 80
+      },
+      "cost": {
+        "medianHomePrice": 275000,
+        "costOfLivingIndex": 90,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.02
+      },
+      "demographics": {
+        "population": 2602,
+        "diversityIndex": 66.5,
+        "eastAsianPercent": 0.025,
+        "crimeRate": 800
+      },
+      "quality": {
+        "qualityOfLifeScore": 65,
+        "walkScore": 35,
+        "transitScore": 35,
+        "hasInternationalAirport": true,
+        "airportCode": "SAT",
+        "healthScore": 90,
+        "pollutionIndex": 45,
+        "waterQualityIndex": 52,
+        "trafficIndex": 49,
+        "broadbandSpeed": 205
+      },
+      "political": {
+        "cityDemocratPercent": 0.554,
+        "stateDemocratPercent": 0.461
+      }
+    },
+    "jacksonville": {
+      "climate": {
+        "avgTemp": 69,
+        "avgWinterTemp": 56,
+        "avgSummerTemp": 82,
+        "daysOfSunshine": 220,
+        "daysOfRain": 115
+      },
+      "cost": {
+        "medianHomePrice": 340000,
+        "costOfLivingIndex": 97.5,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.0105
+      },
+      "demographics": {
+        "population": 1638,
+        "diversityIndex": 66,
+        "eastAsianPercent": 0.025,
+        "crimeRate": 800
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 30,
+        "transitScore": 28,
+        "hasInternationalAirport": true,
+        "airportCode": "JAX",
+        "healthScore": 58,
+        "pollutionIndex": 35,
+        "waterQualityIndex": 65,
+        "trafficIndex": 35,
+        "broadbandSpeed": 225
+      },
+      "political": {
+        "cityDemocratPercent": 0.465,
+        "stateDemocratPercent": 0.467
+      }
+    },
+    "new-orleans": {
+      "climate": {
+        "avgTemp": 71,
+        "avgWinterTemp": 54,
+        "avgSummerTemp": 83,
+        "daysOfSunshine": 210,
+        "daysOfRain": 100
+      },
+      "cost": {
+        "medianHomePrice": 280000,
+        "costOfLivingIndex": 95,
+        "stateTaxRate": 0.06,
+        "propertyTaxRate": 0.01
+      },
+      "demographics": {
+        "population": 1262,
+        "diversityIndex": 68,
+        "eastAsianPercent": 0.025,
+        "crimeRate": 1450
+      },
+      "quality": {
+        "qualityOfLifeScore": 60,
+        "walkScore": 57,
+        "transitScore": 40,
+        "hasInternationalAirport": true,
+        "airportCode": "MSY",
+        "healthScore": 88,
+        "pollutionIndex": 55,
+        "waterQualityIndex": 45,
+        "trafficIndex": 42,
+        "broadbandSpeed": 190
+      },
+      "political": {
+        "cityDemocratPercent": 0.785,
+        "stateDemocratPercent": 0.391
+      }
+    },
+    "kansas-city": {
+      "climate": {
+        "avgTemp": 56,
+        "avgWinterTemp": 33,
+        "avgSummerTemp": 78,
+        "daysOfSunshine": 215,
+        "daysOfRain": 100
+      },
+      "cost": {
+        "medianHomePrice": 240000,
+        "costOfLivingIndex": 92,
+        "stateTaxRate": 0.054,
+        "propertyTaxRate": 0.015
+      },
+      "demographics": {
+        "population": 2192,
+        "diversityIndex": 64.5,
+        "eastAsianPercent": 0.025,
+        "crimeRate": 1100
+      },
+      "quality": {
+        "qualityOfLifeScore": 65,
+        "walkScore": 35,
+        "transitScore": 34,
+        "hasInternationalAirport": true,
+        "airportCode": "MCI",
+        "healthScore": 62,
+        "pollutionIndex": 45,
+        "waterQualityIndex": 60,
+        "trafficIndex": 45,
+        "broadbandSpeed": 200
+      },
+      "political": {
+        "cityDemocratPercent": 0.64,
+        "stateDemocratPercent": 0.412
+      }
+    },
+    "cincinnati": {
+      "climate": {
+        "avgTemp": 54,
+        "avgWinterTemp": 32,
+        "avgSummerTemp": 76,
+        "daysOfSunshine": 175,
+        "daysOfRain": 125
+      },
+      "cost": {
+        "medianHomePrice": 260000,
+        "costOfLivingIndex": 95,
+        "stateTaxRate": 0.0399,
+        "propertyTaxRate": 0.0165
+      },
+      "demographics": {
+        "population": 1712,
+        "diversityIndex": 64,
+        "eastAsianPercent": 0.025,
+        "crimeRate": 900
+      },
+      "quality": {
+        "qualityOfLifeScore": 65,
+        "walkScore": 47,
+        "transitScore": 41,
+        "hasInternationalAirport": true,
+        "airportCode": "CVG",
+        "healthScore": 70,
+        "pollutionIndex": 48,
+        "waterQualityIndex": 55,
+        "trafficIndex": 52,
+        "broadbandSpeed": 195
+      },
+      "political": {
+        "cityDemocratPercent": 0.535,
+        "stateDemocratPercent": 0.422
+      }
+    },
+    "cleveland": {
+      "climate": {
+        "avgTemp": 50,
+        "avgWinterTemp": 28,
+        "avgSummerTemp": 73,
+        "daysOfSunshine": 166,
+        "daysOfRain": 140
+      },
+      "cost": {
+        "medianHomePrice": 190000,
+        "costOfLivingIndex": 95,
+        "stateTaxRate": 0.0399,
+        "propertyTaxRate": 0.016
+      },
+      "demographics": {
+        "population": 2076,
+        "diversityIndex": 63,
+        "eastAsianPercent": 0.02,
+        "crimeRate": 1000
+      },
+      "quality": {
+        "qualityOfLifeScore": 60,
+        "walkScore": 59,
+        "transitScore": 45,
+        "hasInternationalAirport": true,
+        "airportCode": "CLE",
+        "healthScore": 78,
+        "pollutionIndex": 45.5,
+        "waterQualityIndex": 57.5,
+        "trafficIndex": 50,
+        "broadbandSpeed": 200
+      },
+      "political": {
+        "cityDemocratPercent": 0.601,
+        "stateDemocratPercent": 0.422
+      }
+    },
+    "buffalo": {
+      "climate": {
+        "avgTemp": 45,
+        "avgWinterTemp": 25,
+        "avgSummerTemp": 70,
+        "daysOfSunshine": 155,
+        "daysOfRain": 150
+      },
+      "cost": {
+        "medianHomePrice": 210000,
+        "costOfLivingIndex": 103,
+        "stateTaxRate": 0.109,
+        "propertyTaxRate": 0.018
+      },
+      "demographics": {
+        "population": 1130,
+        "diversityIndex": 63,
+        "eastAsianPercent": 0.02,
+        "crimeRate": 750
+      },
+      "quality": {
+        "qualityOfLifeScore": 60,
+        "walkScore": 67,
+        "transitScore": 48,
+        "hasInternationalAirport": true,
+        "airportCode": "BUF",
+        "healthScore": 40,
+        "pollutionIndex": 30.5,
+        "waterQualityIndex": 65.5,
+        "trafficIndex": 40,
+        "broadbandSpeed": 215
+      },
+      "political": {
+        "cityDemocratPercent": 0.551,
+        "stateDemocratPercent": 0.586
+      }
+    },
+    "pittsburgh": {
+      "climate": {
+        "avgTemp": 51,
+        "avgWinterTemp": 30,
+        "avgSummerTemp": 74,
+        "daysOfSunshine": 160,
+        "daysOfRain": 150
+      },
+      "cost": {
+        "medianHomePrice": 250000,
+        "costOfLivingIndex": 102,
+        "stateTaxRate": 0.0307,
+        "propertyTaxRate": 0.014
+      },
+      "demographics": {
+        "population": 1700,
+        "diversityIndex": 63.5,
+        "eastAsianPercent": 0.02,
+        "crimeRate": 650
+      },
+      "quality": {
+        "qualityOfLifeScore": 68,
+        "walkScore": 63,
+        "transitScore": 55,
+        "hasInternationalAirport": true,
+        "airportCode": "PIT",
+        "healthScore": 20,
+        "pollutionIndex": 50,
+        "waterQualityIndex": 60.5,
+        "trafficIndex": 58,
+        "broadbandSpeed": 205
+      },
+      "political": {
+        "cityDemocratPercent": 0.539,
+        "stateDemocratPercent": 0.477
+      }
+    },
+    "miami": {
+      "climate": {
+        "avgTemp": 77,
+        "avgWinterTemp": 69,
+        "avgSummerTemp": 83,
+        "daysOfSunshine": 248,
+        "daysOfRain": 130
+      },
+      "cost": {
+        "medianHomePrice": 550000,
+        "costOfLivingIndex": 124.5,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.0105
+      },
+      "demographics": {
+        "population": 6199,
+        "diversityIndex": 69.8,
+        "eastAsianPercent": 0.018,
+        "crimeRate": 1000
+      },
+      "quality": {
+        "qualityOfLifeScore": 72,
+        "walkScore": 78,
+        "transitScore": 57,
+        "hasInternationalAirport": true,
+        "airportCode": "MIA",
+        "healthScore": 51,
+        "pollutionIndex": 59.5,
+        "waterQualityIndex": 55.2,
+        "trafficIndex": 105,
+        "broadbandSpeed": 235
+      },
+      "political": {
+        "cityDemocratPercent": 0.485,
+        "stateDemocratPercent": 0.467
+      }
+    },
+    "green-bay": {
+      "climate": {
+        "avgTemp": 43,
+        "avgWinterTemp": 17,
+        "avgSummerTemp": 69,
+        "daysOfSunshine": 185,
+        "daysOfRain": 105
+      },
+      "cost": {
+        "medianHomePrice": 250000,
+        "costOfLivingIndex": 90.5,
+        "stateTaxRate": 0.0765,
+        "propertyTaxRate": 0.0165
+      },
+      "demographics": {
+        "population": 327,
+        "diversityIndex": 60.5,
+        "eastAsianPercent": 0.015,
+        "crimeRate": 600
+      },
+      "quality": {
+        "qualityOfLifeScore": 68,
+        "walkScore": 31,
+        "transitScore": 28,
+        "hasInternationalAirport": true,
+        "airportCode": "GRB",
+        "healthScore": 85,
+        "pollutionIndex": 30,
+        "waterQualityIndex": 70,
+        "trafficIndex": 30,
+        "broadbandSpeed": 185
+      },
+      "political": {
+        "cityDemocratPercent": 0.405,
+        "stateDemocratPercent": 0.48
+      }
+    },
+    "memphis": {
+      "climate": {
+        "avgTemp": 63,
+        "avgWinterTemp": 42,
+        "avgSummerTemp": 81,
+        "daysOfSunshine": 210,
+        "daysOfRain": 105
+      },
+      "cost": {
+        "medianHomePrice": 180000,
+        "costOfLivingIndex": 90.5,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.0125
+      },
+      "demographics": {
+        "population": 1336,
+        "diversityIndex": 67,
+        "eastAsianPercent": 0.015,
+        "crimeRate": 2050
+      },
+      "quality": {
+        "qualityOfLifeScore": 50,
+        "walkScore": 34,
+        "transitScore": 30,
+        "hasInternationalAirport": true,
+        "airportCode": "MEM",
+        "healthScore": 95,
+        "pollutionIndex": 50,
+        "waterQualityIndex": 50.5,
+        "trafficIndex": 35,
+        "broadbandSpeed": 180
+      },
+      "political": {
+        "cityDemocratPercent": 0.602,
+        "stateDemocratPercent": 0.379
+      }
+    },
+    "san-diego": {
+      "climate": {
+        "avgTemp": 64.5,
+        "avgWinterTemp": 58,
+        "avgSummerTemp": 70,
+        "daysOfSunshine": 266,
+        "daysOfRain": 40
+      },
+      "cost": {
+        "medianHomePrice": 1000000,
+        "costOfLivingIndex": 170,
+        "stateTaxRate": 0.133,
+        "propertyTaxRate": 0.008
+      },
+      "demographics": {
+        "population": 3280,
+        "diversityIndex": 70,
+        "eastAsianPercent": 0.119,
+        "crimeRate": 410
+      },
+      "quality": {
+        "qualityOfLifeScore": 80,
+        "walkScore": 55,
+        "transitScore": 40,
+        "hasInternationalAirport": true,
+        "airportCode": "SAN",
+        "healthScore": 30,
+        "pollutionIndex": 55,
+        "waterQualityIndex": 65,
+        "trafficIndex": 43,
+        "broadbandSpeed": 230
+      },
+      "political": {
+        "cityDemocratPercent": 0.7,
+        "stateDemocratPercent": 0.585
+      }
+    },
+    "santa-barbara": {
+      "climate": {
+        "avgTemp": 62.5,
+        "avgWinterTemp": 54,
+        "avgSummerTemp": 68,
+        "daysOfSunshine": 300,
+        "daysOfRain": 44
+      },
+      "cost": {
+        "medianHomePrice": 1470000,
+        "costOfLivingIndex": 155,
+        "stateTaxRate": 0.133,
+        "propertyTaxRate": 0.008
+      },
+      "demographics": {
+        "population": 444,
+        "diversityIndex": 65,
+        "eastAsianPercent": 0.05,
+        "crimeRate": 600
+      },
+      "quality": {
+        "qualityOfLifeScore": 85,
+        "walkScore": 65,
+        "transitScore": 30,
+        "hasInternationalAirport": true,
+        "airportCode": "SBA",
+        "healthScore": 25,
+        "pollutionIndex": 60,
+        "waterQualityIndex": 70,
+        "trafficIndex": 20,
+        "broadbandSpeed": 200
+      },
+      "political": {
+        "cityDemocratPercent": 0.75,
+        "stateDemocratPercent": 0.585
+      }
+    },
+    "raleigh": {
+      "climate": {
+        "avgTemp": 61,
+        "avgWinterTemp": 42,
+        "avgSummerTemp": 81,
+        "daysOfSunshine": 218,
+        "daysOfRain": 122
+      },
+      "cost": {
+        "medianHomePrice": 378000,
+        "costOfLivingIndex": 97,
+        "stateTaxRate": 0.045,
+        "propertyTaxRate": 0.0051
+      },
+      "demographics": {
+        "population": 1510,
+        "diversityIndex": 65,
+        "eastAsianPercent": 0.07,
+        "crimeRate": 530
+      },
+      "quality": {
+        "qualityOfLifeScore": 75,
+        "walkScore": 32,
+        "transitScore": 27,
+        "hasInternationalAirport": true,
+        "airportCode": "RDU",
+        "healthScore": 45,
+        "pollutionIndex": 40,
+        "waterQualityIndex": 60,
+        "trafficIndex": 30,
+        "broadbandSpeed": 250
+      },
+      "political": {
+        "cityDemocratPercent": 0.6,
+        "stateDemocratPercent": 0.5
+      }
+    },
+    "gainesville": {
+      "climate": {
+        "avgTemp": 69,
+        "avgWinterTemp": 57,
+        "avgSummerTemp": 81,
+        "daysOfSunshine": 224,
+        "daysOfRain": 130
+      },
+      "cost": {
+        "medianHomePrice": 235000,
+        "costOfLivingIndex": 96,
+        "stateTaxRate": 0,
+        "propertyTaxRate": 0.01
+      },
+      "demographics": {
+        "population": 360,
+        "diversityIndex": 60,
+        "eastAsianPercent": 0.045,
+        "crimeRate": 740
+      },
+      "quality": {
+        "qualityOfLifeScore": 70,
+        "walkScore": 40,
+        "transitScore": 35,
+        "hasInternationalAirport": false,
+        "airportCode": "GNV",
+        "healthScore": 50,
+        "pollutionIndex": 35,
+        "waterQualityIndex": 75,
+        "trafficIndex": 25,
+        "broadbandSpeed": 200
+      },
+      "political": {
+        "cityDemocratPercent": 0.65,
+        "stateDemocratPercent": 0.45
+      }
+    }
+  }
+}

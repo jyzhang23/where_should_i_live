@@ -1,0 +1,597 @@
+{
+  "version": "1.0",
+  "description": "City definitions and static information",
+  "cities": [
+    {
+      "id": "san-francisco",
+      "name": "San Francisco",
+      "state": "CA",
+      "zillowRegionId": 395057,
+      "zillowRegionName": "San Francisco, CA",
+      "sports": {
+        "nfl": [
+          "49ers"
+        ],
+        "nba": [
+          "Warriors"
+        ]
+      }
+    },
+    {
+      "id": "seattle",
+      "name": "Seattle",
+      "state": "WA",
+      "zillowRegionId": 395078,
+      "zillowRegionName": "Seattle, WA",
+      "sports": {
+        "nfl": [
+          "Seahawks"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "new-york-city",
+      "name": "New York City",
+      "state": "NY/NJ",
+      "zillowRegionId": 394913,
+      "zillowRegionName": "New York City, NY",
+      "sports": {
+        "nfl": [
+          "Giants",
+          "Jets"
+        ],
+        "nba": [
+          "Knicks",
+          "Nets"
+        ]
+      }
+    },
+    {
+      "id": "los-angeles",
+      "name": "Los Angeles",
+      "state": "CA",
+      "zillowRegionId": 753899,
+      "zillowRegionName": "Los Angeles, CA",
+      "sports": {
+        "nfl": [
+          "Rams",
+          "Chargers"
+        ],
+        "nba": [
+          "Lakers",
+          "Clippers"
+        ]
+      }
+    },
+    {
+      "id": "sacramento",
+      "name": "Sacramento",
+      "state": "CA",
+      "zillowRegionId": 395045,
+      "zillowRegionName": "Sacramento, CA",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Kings"
+        ]
+      }
+    },
+    {
+      "id": "boston",
+      "name": "Boston",
+      "state": "MA",
+      "zillowRegionId": 394404,
+      "zillowRegionName": "Boston, MA",
+      "sports": {
+        "nfl": [
+          "Patriots"
+        ],
+        "nba": [
+          "Celtics"
+        ]
+      }
+    },
+    {
+      "id": "portland",
+      "name": "Portland",
+      "state": "OR",
+      "zillowRegionId": 394998,
+      "zillowRegionName": "Portland, OR",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Trail Blazers"
+        ]
+      }
+    },
+    {
+      "id": "las-vegas",
+      "name": "Las Vegas",
+      "state": "NV",
+      "zillowRegionId": 394775,
+      "zillowRegionName": "Las Vegas, NV",
+      "sports": {
+        "nfl": [
+          "Raiders"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "chicago",
+      "name": "Chicago",
+      "state": "IL",
+      "zillowRegionId": 394463,
+      "zillowRegionName": "Chicago, IL",
+      "sports": {
+        "nfl": [
+          "Bears"
+        ],
+        "nba": [
+          "Bulls"
+        ]
+      }
+    },
+    {
+      "id": "washington-dc",
+      "name": "Washington D.C.",
+      "state": "DC/VA/MD",
+      "zillowRegionId": null,
+      "zillowRegionName": "Washington, DC",
+      "sports": {
+        "nfl": [
+          "Commanders"
+        ],
+        "nba": [
+          "Wizards"
+        ]
+      }
+    },
+    {
+      "id": "houston",
+      "name": "Houston",
+      "state": "TX",
+      "zillowRegionId": 394692,
+      "zillowRegionName": "Houston, TX",
+      "sports": {
+        "nfl": [
+          "Texans"
+        ],
+        "nba": [
+          "Rockets"
+        ]
+      }
+    },
+    {
+      "id": "atlanta",
+      "name": "Atlanta",
+      "state": "GA",
+      "zillowRegionId": 394347,
+      "zillowRegionName": "Atlanta, GA",
+      "sports": {
+        "nfl": [
+          "Falcons"
+        ],
+        "nba": [
+          "Hawks"
+        ]
+      }
+    },
+    {
+      "id": "minneapolis",
+      "name": "Minneapolis",
+      "state": "MN",
+      "zillowRegionId": 394865,
+      "zillowRegionName": "Minneapolis, MN",
+      "sports": {
+        "nfl": [
+          "Vikings"
+        ],
+        "nba": [
+          "Timberwolves"
+        ]
+      }
+    },
+    {
+      "id": "philadelphia",
+      "name": "Philadelphia",
+      "state": "PA",
+      "zillowRegionId": 394974,
+      "zillowRegionName": "Philadelphia, PA",
+      "sports": {
+        "nfl": [
+          "Eagles"
+        ],
+        "nba": [
+          "76ers"
+        ]
+      }
+    },
+    {
+      "id": "dallas",
+      "name": "Dallas",
+      "state": "TX",
+      "zillowRegionId": 394514,
+      "zillowRegionName": "Dallas, TX",
+      "sports": {
+        "nfl": [
+          "Cowboys"
+        ],
+        "nba": [
+          "Mavericks"
+        ]
+      }
+    },
+    {
+      "id": "tampa-bay",
+      "name": "Tampa Bay",
+      "state": "FL",
+      "zillowRegionId": null,
+      "zillowRegionName": "Tampa, FL",
+      "sports": {
+        "nfl": [
+          "Buccaneers"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "denver",
+      "name": "Denver",
+      "state": "CO",
+      "zillowRegionId": 394530,
+      "zillowRegionName": "Denver, CO",
+      "sports": {
+        "nfl": [
+          "Broncos"
+        ],
+        "nba": [
+          "Nuggets"
+        ]
+      }
+    },
+    {
+      "id": "charlotte",
+      "name": "Charlotte",
+      "state": "NC",
+      "zillowRegionId": 394458,
+      "zillowRegionName": "Charlotte, NC",
+      "sports": {
+        "nfl": [
+          "Panthers"
+        ],
+        "nba": [
+          "Hornets"
+        ]
+      }
+    },
+    {
+      "id": "oklahoma-city",
+      "name": "Oklahoma City",
+      "state": "OK",
+      "zillowRegionId": 394935,
+      "zillowRegionName": "Oklahoma City, OK",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Thunder"
+        ]
+      }
+    },
+    {
+      "id": "phoenix",
+      "name": "Phoenix",
+      "state": "AZ",
+      "zillowRegionId": 394976,
+      "zillowRegionName": "Phoenix, AZ",
+      "sports": {
+        "nfl": [
+          "Cardinals"
+        ],
+        "nba": [
+          "Suns"
+        ]
+      }
+    },
+    {
+      "id": "baltimore",
+      "name": "Baltimore",
+      "state": "MD",
+      "zillowRegionId": 394358,
+      "zillowRegionName": "Baltimore, MD",
+      "sports": {
+        "nfl": [
+          "Ravens"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "orlando",
+      "name": "Orlando",
+      "state": "FL",
+      "zillowRegionId": 394943,
+      "zillowRegionName": "Orlando, FL",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Magic"
+        ]
+      }
+    },
+    {
+      "id": "indianapolis",
+      "name": "Indianapolis",
+      "state": "IN",
+      "zillowRegionId": 394705,
+      "zillowRegionName": "Indianapolis, IN",
+      "sports": {
+        "nfl": [
+          "Colts"
+        ],
+        "nba": [
+          "Pacers"
+        ]
+      }
+    },
+    {
+      "id": "nashville",
+      "name": "Nashville",
+      "state": "TN",
+      "zillowRegionId": 394902,
+      "zillowRegionName": "Nashville, TN",
+      "sports": {
+        "nfl": [
+          "Titans"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "milwaukee",
+      "name": "Milwaukee",
+      "state": "WI",
+      "zillowRegionId": 394862,
+      "zillowRegionName": "Milwaukee, WI",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Bucks"
+        ]
+      }
+    },
+    {
+      "id": "salt-lake-city",
+      "name": "Salt Lake City",
+      "state": "UT",
+      "zillowRegionId": 395053,
+      "zillowRegionName": "Salt Lake City, UT",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Jazz"
+        ]
+      }
+    },
+    {
+      "id": "detroit",
+      "name": "Detroit",
+      "state": "MI",
+      "zillowRegionId": 394532,
+      "zillowRegionName": "Detroit, MI",
+      "sports": {
+        "nfl": [
+          "Lions"
+        ],
+        "nba": [
+          "Pistons"
+        ]
+      }
+    },
+    {
+      "id": "st-louis",
+      "name": "St. Louis",
+      "state": "MO",
+      "zillowRegionId": 395121,
+      "zillowRegionName": "St. Louis, MO",
+      "sports": {
+        "nfl": [],
+        "nba": []
+      }
+    },
+    {
+      "id": "san-antonio",
+      "name": "San Antonio",
+      "state": "TX",
+      "zillowRegionId": 395055,
+      "zillowRegionName": "San Antonio, TX",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Spurs"
+        ]
+      }
+    },
+    {
+      "id": "jacksonville",
+      "name": "Jacksonville",
+      "state": "FL",
+      "zillowRegionId": 394714,
+      "zillowRegionName": "Jacksonville, FL",
+      "sports": {
+        "nfl": [
+          "Jaguars"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "new-orleans",
+      "name": "New Orleans",
+      "state": "LA",
+      "zillowRegionId": 394910,
+      "zillowRegionName": "New Orleans, LA",
+      "sports": {
+        "nfl": [
+          "Saints"
+        ],
+        "nba": [
+          "Pelicans"
+        ]
+      }
+    },
+    {
+      "id": "kansas-city",
+      "name": "Kansas City",
+      "state": "MO",
+      "zillowRegionId": 394735,
+      "zillowRegionName": "Kansas City, MO",
+      "sports": {
+        "nfl": [
+          "Chiefs"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "cincinnati",
+      "name": "Cincinnati",
+      "state": "OH",
+      "zillowRegionId": 394466,
+      "zillowRegionName": "Cincinnati, OH",
+      "sports": {
+        "nfl": [
+          "Bengals"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "cleveland",
+      "name": "Cleveland",
+      "state": "OH",
+      "zillowRegionId": 394475,
+      "zillowRegionName": "Cleveland, OH",
+      "sports": {
+        "nfl": [
+          "Browns"
+        ],
+        "nba": [
+          "Cavaliers"
+        ]
+      }
+    },
+    {
+      "id": "buffalo",
+      "name": "Buffalo",
+      "state": "NY",
+      "zillowRegionId": 394425,
+      "zillowRegionName": "Buffalo, NY",
+      "sports": {
+        "nfl": [
+          "Bills"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "pittsburgh",
+      "name": "Pittsburgh",
+      "state": "PA",
+      "zillowRegionId": 394982,
+      "zillowRegionName": "Pittsburgh, PA",
+      "sports": {
+        "nfl": [
+          "Steelers"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "miami",
+      "name": "Miami",
+      "state": "FL",
+      "zillowRegionId": 394856,
+      "zillowRegionName": "Miami, FL",
+      "sports": {
+        "nfl": [
+          "Dolphins"
+        ],
+        "nba": [
+          "Heat"
+        ]
+      }
+    },
+    {
+      "id": "green-bay",
+      "name": "Green Bay",
+      "state": "WI",
+      "zillowRegionId": 394646,
+      "zillowRegionName": "Green Bay, WI",
+      "sports": {
+        "nfl": [
+          "Packers"
+        ],
+        "nba": []
+      }
+    },
+    {
+      "id": "memphis",
+      "name": "Memphis",
+      "state": "TN",
+      "zillowRegionId": 394849,
+      "zillowRegionName": "Memphis, TN",
+      "sports": {
+        "nfl": [],
+        "nba": [
+          "Grizzlies"
+        ]
+      }
+    },
+    {
+      "id": "san-diego",
+      "name": "San Diego",
+      "state": "CA",
+      "zillowRegionId": 395056,
+      "zillowRegionName": "San Diego, CA",
+      "sports": {
+        "nfl": [],
+        "nba": []
+      }
+    },
+    {
+      "id": "santa-barbara",
+      "name": "Santa Barbara",
+      "state": "CA",
+      "zillowRegionId": null,
+      "zillowRegionName": "Santa Barbara, CA",
+      "sports": {
+        "nfl": [],
+        "nba": []
+      }
+    },
+    {
+      "id": "raleigh",
+      "name": "Raleigh",
+      "state": "NC",
+      "zillowRegionId": 395012,
+      "zillowRegionName": "Raleigh, NC",
+      "sports": {
+        "nfl": [],
+        "nba": []
+      }
+    },
+    {
+      "id": "gainesville",
+      "name": "Gainesville",
+      "state": "FL",
+      "zillowRegionId": 394622,
+      "zillowRegionName": "Gainesville, FL",
+      "sports": {
+        "nfl": [],
+        "nba": []
+      }
+    }
+  ]
+}

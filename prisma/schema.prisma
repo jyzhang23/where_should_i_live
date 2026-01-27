@@ -58,6 +58,7 @@ model CityMetrics {
   pollutionIndex          Float? // Numbeo pollution index
   waterQualityIndex       Float? // Numbeo water quality index
   trafficIndex            Float? // INRIX traffic index (hours/year lost)
+  qualityOfLifeScore      Float? // Overall quality of life score (1-100)
 
   // === Political ===
   cityDemocratPercent  Float? // % voted Democrat in city (2024)

@@ -1,291 +1,292 @@
+/**
+ * Admin API to refresh database from JSON data files
+ * 
+ * POST /api/admin/refresh
+ * Body: { password: string }
+ * 
+ * Reads from:
+ * - data/cities.json - City definitions
+ * - data/metrics.json - Current metrics
+ * - data/zhvi-history.json - Price history
+ */
+
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/db";
-import * as XLSX from "xlsx";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import prisma from "@/lib/db";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
-// Types for Excel data - column names must match actual Excel headers
-interface GeminiRawRow {
-  __EMPTY: string; // City name (first column without header)
-  State: string;
-  "Average Temp. (°F)": number;
-  "Avg. Winter Temp. (°F)": number;
-  "Avg. Summer Temp. (°F)": number;
-  "Days of Sunshine (Avg. Annual)": number;
-  "Days of Rain (Avg. Annual)": number;
-  "Diversity Index (Out of 100)": number;
-  "Total Population (Metro Area, 000s)": number;
-  "East Asian Population (Approx. %)": number;
-  "Median Single Family Home Price (Approx.)": number;
-  "State Tax Rate (Max Income Tax)": number;
-  "Property Tax Rate (Effective %)": number;
-  "Cost of Living Index (US Avg=100)": number;
-  "Crime Rate (Violent/100K)": number;
-  "Walkability (Walk Score)": number;
-  "Public Transit Quality (Transit Score)": number;
-  "Avg. Broadband Speed (Mbps)": number;
-  "International Airport": string;
-  "Health Score (ACSM Rank)": number;
-  "Pollution Index (Numbeo)": number;
-  "Water Quality Index (Numbeo)": number;
-  "Traffic Index (INRIX, Hr/Yr Lost)": number;
-  "City Democrat % (Harris 2024)": number;
-  "State Democrat % (Harris 2024)": number;
-  "NFL Team(s)": string;
-  "NBA Team(s)": string;
-  RegionID?: number;
-  Latitude?: number;
-  Longitude?: number;
+interface CityData {
+  id: string;
+  name: string;
+  state: string;
+  zillowRegionId: number | null;
+  zillowRegionName: string | null;
+  sports: {
+    nfl: string[];
+    nba: string[];
+  };
 }
 
-interface ZHVIRow {
-  RegionID: number;
-  [date: string]: number | string;
+interface MetricsData {
+  climate: {
+    avgTemp: number | null;
+    avgWinterTemp: number | null;
+    avgSummerTemp: number | null;
+    daysOfSunshine: number | null;
+    daysOfRain: number | null;
+  };
+  cost: {
+    medianHomePrice: number | null;
+    costOfLivingIndex: number | null;
+    stateTaxRate: number | null;
+    propertyTaxRate: number | null;
+  };
+  demographics: {
+    population: number | null;
+    diversityIndex: number | null;
+    eastAsianPercent: number | null;
+    crimeRate: number | null;
+  };
+  quality: {
+    qualityOfLifeScore: number | null;
+    walkScore: number | null;
+    transitScore: number | null;
+    hasInternationalAirport: boolean;
+    airportCode: string | null;
+    healthScore: number | null;
+    pollutionIndex: number | null;
+    waterQualityIndex: number | null;
+    trafficIndex: number | null;
+    broadbandSpeed: number | null;
+  };
+  political: {
+    cityDemocratPercent: number | null;
+    stateDemocratPercent: number | null;
+  };
+}
+
+interface ZHVIData {
+  zillowRegionId: number;
+  history: { date: string; value: number }[];
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify password
-    const body = await request.json();
-    const { password } = body;
+    // Parse request body
+    let body: { password?: string };
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid request body" },
+        { status: 400 }
+      );
+    }
 
-    if (password !== ADMIN_PASSWORD) {
+    // Verify password
+    if (body.password !== ADMIN_PASSWORD) {
       return NextResponse.json(
         { error: "Invalid password" },
         { status: 401 }
       );
     }
 
-    // Find the Excel file - prioritize project's data folder
-    const cwd = process.cwd();
+    // Locate data files
     const possiblePaths = [
-      join(cwd, "data", "Cities.xlsx"),
-      join(cwd, "Cities.xlsx"),
-      join(cwd, "..", "Cities.xlsx"),
+      join(process.cwd(), "data"),
+      join(process.cwd(), "../data"),
     ];
 
-    let excelPath: string | null = null;
+    let dataDir: string | null = null;
     for (const p of possiblePaths) {
-      try {
-        if (existsSync(p)) {
-          excelPath = p;
-          break;
-        }
-      } catch {
-        // Continue to next path
+      if (existsSync(join(p, "cities.json"))) {
+        dataDir = p;
+        break;
       }
     }
 
-    if (!excelPath) {
+    if (!dataDir) {
       return NextResponse.json(
-        { 
-          error: "Excel file not found", 
-          details: `Checked paths: ${possiblePaths.join(", ")}. CWD: ${cwd}` 
-        },
+        { error: "Data files not found. Run the conversion script first." },
         { status: 404 }
       );
     }
 
-    // Read the Excel file using buffer (more compatible with Next.js)
-    let workbook: XLSX.WorkBook;
+    // Read JSON files
+    let citiesFile, metricsFile, zhviFile;
     try {
-      const buffer = readFileSync(excelPath);
-      workbook = XLSX.read(buffer, { type: "buffer" });
-    } catch (readError) {
+      citiesFile = JSON.parse(readFileSync(join(dataDir, "cities.json"), "utf-8"));
+      metricsFile = JSON.parse(readFileSync(join(dataDir, "metrics.json"), "utf-8"));
+      zhviFile = JSON.parse(readFileSync(join(dataDir, "zhvi-history.json"), "utf-8"));
+    } catch (err) {
       return NextResponse.json(
-        { 
-          error: "Failed to read Excel file", 
-          details: readError instanceof Error ? readError.message : "Unknown read error",
-          path: excelPath 
-        },
+        { error: `Failed to read JSON files: ${err}` },
         { status: 500 }
       );
     }
 
-    // Parse Gemini_raw sheet
-    const geminiSheet = workbook.Sheets["Gemini_raw"];
-    if (!geminiSheet) {
-      return NextResponse.json(
-        { error: "Gemini_raw sheet not found" },
-        { status: 400 }
-      );
-    }
-    const geminiData: GeminiRawRow[] = XLSX.utils.sheet_to_json(geminiSheet);
+    const cities: CityData[] = citiesFile.cities;
+    const metrics: Record<string, MetricsData> = metricsFile.cities;
+    const zhviHistory: Record<string, ZHVIData> = zhviFile.cities;
 
-    // Parse ZHVI sheet
-    const zhviSheet = workbook.Sheets["sfr_0.33_0.67_sm_sa"];
-    let zhviData: ZHVIRow[] = [];
-    if (zhviSheet) {
-      zhviData = XLSX.utils.sheet_to_json(zhviSheet);
-    }
-
-    // Create a map of RegionID to ZHVI data
-    const zhviMap = new Map<number, ZHVIRow>();
-    for (const row of zhviData) {
-      if (row.RegionID) {
-        zhviMap.set(row.RegionID, row);
-      }
-    }
-
-    // Track stats
-    let citiesUpdated = 0;
     let citiesCreated = 0;
-    let metricsUpdated = 0;
+    let citiesUpdated = 0;
     let zhviPointsCreated = 0;
 
-    // Process each city
-    for (const row of geminiData) {
-      const cityName = row["__EMPTY"];
-      if (!cityName || typeof cityName !== "string") continue;
+    for (const city of cities) {
+      const cityMetrics = metrics[city.id];
+      if (!cityMetrics) {
+        console.warn(`No metrics found for ${city.name}, skipping...`);
+        continue;
+      }
 
-      // Check if city exists
-      let city = await prisma.city.findUnique({
-        where: { name: cityName },
-        include: { metrics: true },
-      });
+      const zhvi = zhviHistory[city.id];
 
+      // Prepare city data
       const cityData = {
-        name: cityName,
-        state: row.State || "",
-        regionId: row.RegionID || null,
-        latitude: row.Latitude || null,
-        longitude: row.Longitude || null,
+        name: city.name,
+        state: city.state,
+        regionId: city.zillowRegionId, // Prisma schema uses 'regionId'
       };
 
-      if (city) {
+      // Prepare metrics data
+      const metricsData = {
+        avgTemp: cityMetrics.climate.avgTemp,
+        avgWinterTemp: cityMetrics.climate.avgWinterTemp,
+        avgSummerTemp: cityMetrics.climate.avgSummerTemp,
+        daysOfSunshine: cityMetrics.climate.daysOfSunshine,
+        daysOfRain: cityMetrics.climate.daysOfRain,
+        diversityIndex: cityMetrics.demographics.diversityIndex,
+        population: cityMetrics.demographics.population,
+        eastAsianPercent: cityMetrics.demographics.eastAsianPercent,
+        medianHomePrice: cityMetrics.cost.medianHomePrice,
+        stateTaxRate: cityMetrics.cost.stateTaxRate,
+        propertyTaxRate: cityMetrics.cost.propertyTaxRate,
+        costOfLivingIndex: cityMetrics.cost.costOfLivingIndex,
+        crimeRate: cityMetrics.demographics.crimeRate,
+        walkScore: cityMetrics.quality.walkScore,
+        transitScore: cityMetrics.quality.transitScore,
+        avgBroadbandSpeed: cityMetrics.quality.broadbandSpeed,
+        hasInternationalAirport: cityMetrics.quality.hasInternationalAirport,
+        healthScore: cityMetrics.quality.healthScore,
+        pollutionIndex: cityMetrics.quality.pollutionIndex,
+        waterQualityIndex: cityMetrics.quality.waterQualityIndex,
+        trafficIndex: cityMetrics.quality.trafficIndex,
+        qualityOfLifeScore: cityMetrics.quality.qualityOfLifeScore,
+        cityDemocratPercent: cityMetrics.political.cityDemocratPercent,
+        stateDemocratPercent: cityMetrics.political.stateDemocratPercent,
+        nflTeams: city.sports.nfl.join(", ") || null,
+        nbaTeams: city.sports.nba.join(", ") || null,
+        dataAsOf: new Date(),
+      };
+
+      // Check if city exists
+      const existingCity = await prisma.city.findUnique({
+        where: { name: city.name },
+      });
+
+      let dbCity;
+      if (existingCity) {
         // Update existing city
-        city = await prisma.city.update({
-          where: { id: city.id },
-          data: cityData,
-          include: { metrics: true },
+        dbCity = await prisma.city.update({
+          where: { id: existingCity.id },
+          data: {
+            ...cityData,
+            metrics: {
+              upsert: {
+                create: metricsData,
+                update: metricsData,
+              },
+            },
+          },
         });
         citiesUpdated++;
       } else {
         // Create new city
-        city = await prisma.city.create({
-          data: cityData,
-          include: { metrics: true },
+        dbCity = await prisma.city.create({
+          data: {
+            ...cityData,
+            metrics: {
+              create: metricsData,
+            },
+          },
         });
         citiesCreated++;
       }
 
-      // Prepare metrics data - column names must match actual Excel headers
-      const metricsData = {
-        avgTemp: row["Average Temp. (°F)"] ?? null,
-        avgWinterTemp: row["Avg. Winter Temp. (°F)"] ?? null,
-        avgSummerTemp: row["Avg. Summer Temp. (°F)"] ?? null,
-        daysOfSunshine: row["Days of Sunshine (Avg. Annual)"] ?? null,
-        daysOfRain: row["Days of Rain (Avg. Annual)"] ?? null,
-        diversityIndex: row["Diversity Index (Out of 100)"] ?? null,
-        population: row["Total Population (Metro Area, 000s)"] ?? null,
-        eastAsianPercent: row["East Asian Population (Approx. %)"] ?? null,
-        medianHomePrice: row["Median Single Family Home Price (Approx.)"] ?? null,
-        stateTaxRate: row["State Tax Rate (Max Income Tax)"] ?? null,
-        propertyTaxRate: row["Property Tax Rate (Effective %)"] ?? null,
-        costOfLivingIndex: row["Cost of Living Index (US Avg=100)"] ?? null,
-        crimeRate: row["Crime Rate (Violent/100K)"] ?? null,
-        walkScore: row["Walkability (Walk Score)"] ?? null,
-        transitScore: row["Public Transit Quality (Transit Score)"] ?? null,
-        avgBroadbandSpeed: row["Avg. Broadband Speed (Mbps)"] ?? null,
-        hasInternationalAirport: String(row["International Airport"] || "").toLowerCase().startsWith("yes"),
-        healthScore: row["Health Score (ACSM Rank)"] ?? null,
-        pollutionIndex: row["Pollution Index (Numbeo)"] ?? null,
-        waterQualityIndex: row["Water Quality Index (Numbeo)"] ?? null,
-        trafficIndex: row["Traffic Index (INRIX, Hr/Yr Lost)"] ?? null,
-        cityDemocratPercent: row["City Democrat % (Harris 2024)"] ?? null,
-        stateDemocratPercent: row["State Democrat % (Harris 2024)"] ?? null,
-        nflTeams: row["NFL Team(s)"] || null,
-        nbaTeams: row["NBA Team(s)"] || null,
-        dataAsOf: new Date(),
-      };
-
-      // Upsert metrics
-      if (city.metrics) {
-        await prisma.cityMetrics.update({
-          where: { id: city.metrics.id },
-          data: metricsData,
-        });
-      } else {
-        await prisma.cityMetrics.create({
-          data: {
-            ...metricsData,
-            cityId: city.id,
-          },
-        });
-      }
-      metricsUpdated++;
-
-      // Process ZHVI data if available
-      if (row.RegionID && zhviMap.has(row.RegionID)) {
-        const zhviRow = zhviMap.get(row.RegionID)!;
-
-        // Delete existing ZHVI data for this city
+      // Handle ZHVI history
+      if (zhvi && zhvi.history.length > 0) {
+        // Delete existing history
         await prisma.zHVIDataPoint.deleteMany({
-          where: { cityId: city.id },
+          where: { cityId: dbCity.id },
         });
 
-        // Insert new ZHVI data
-        const zhviPoints: { cityId: string; date: Date; value: number }[] = [];
+        // Insert new history (batch for performance)
+        const historyData = zhvi.history.map((point) => ({
+          cityId: dbCity.id,
+          date: new Date(point.date),
+          value: point.value,
+        }));
 
-        for (const [key, value] of Object.entries(zhviRow)) {
-          // Check if key is a date (YYYY-MM-DD format)
-          if (/^\d{4}-\d{2}-\d{2}$/.test(key) && typeof value === "number") {
-            zhviPoints.push({
-              cityId: city.id,
-              date: new Date(key),
-              value: value,
-            });
-          }
-        }
-
-        if (zhviPoints.length > 0) {
+        // Insert in batches of 100
+        for (let i = 0; i < historyData.length; i += 100) {
+          const batch = historyData.slice(i, i + 100);
           await prisma.zHVIDataPoint.createMany({
-            data: zhviPoints,
+            data: batch,
           });
-          zhviPointsCreated += zhviPoints.length;
+          zhviPointsCreated += batch.length;
         }
       }
     }
 
     // Log the refresh
-    await prisma.dataRefreshLog.create({
-      data: {
-        source: "manual",
-        status: "success",
-        recordsUpdated: citiesUpdated + citiesCreated,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      stats: {
-        citiesCreated,
-        citiesUpdated,
-        metricsUpdated,
-        zhviPointsCreated,
-      },
-      message: `Refresh complete. Created ${citiesCreated} cities, updated ${citiesUpdated} cities, ${metricsUpdated} metrics records, ${zhviPointsCreated} ZHVI data points.`,
-    });
-  } catch (error) {
-    console.error("Refresh error:", error);
-
-    // Try to log the failure, but don't let logging failure break the response
     try {
       await prisma.dataRefreshLog.create({
         data: {
-          source: "manual",
-          status: "error",
-          errorMessage: error instanceof Error ? error.message : "Unknown error",
+          source: "admin-manual",
+          status: "success",
+          recordsUpdated: citiesCreated + citiesUpdated,
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh error:", logError);
+      console.error("Failed to log refresh:", logError);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Data refresh complete",
+      stats: {
+        citiesCreated,
+        citiesUpdated,
+        totalCities: citiesCreated + citiesUpdated,
+        zhviPointsCreated,
+        dataSource: "JSON files",
+      },
+    });
+
+  } catch (error) {
+    console.error("Refresh error:", error);
+
+    // Log the failure
+    try {
+      await prisma.dataRefreshLog.create({
+        data: {
+          source: "admin-manual",
+          status: "error",
+          errorMessage: error instanceof Error ? error.message : String(error),
+        },
+      });
+    } catch {
+      // Ignore logging errors
     }
 
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Refresh failed" },
+      { 
+        error: "Refresh failed", 
+        details: error instanceof Error ? error.message : String(error) 
+      },
       { status: 500 }
     );
   }

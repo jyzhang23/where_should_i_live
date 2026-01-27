@@ -1,223 +1,223 @@
 /**
- * Seed script to import city data from the Excel spreadsheet
- *
- * Usage:
- *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/seed.ts
- *
- * Or after adding to package.json scripts:
- *   npm run seed
+ * Seed the database from JSON data files
+ * 
+ * Reads from:
+ * - data/cities.json - City definitions
+ * - data/metrics.json - Current metrics
+ * - data/zhvi-history.json - Price history
  */
 
 import { PrismaClient } from "@prisma/client";
-import * as XLSX from "xlsx";
-import * as path from "path";
-import "dotenv/config";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 const prisma = new PrismaClient();
 
-// Path to the Excel file (relative to project root)
-const EXCEL_PATH = path.join(__dirname, "../../Cities.xlsx");
-
-interface GeminiRawRow {
-  __EMPTY: string; // City name (first column without header)
-  State: string;
-  "NFL Team(s)": string | null;
-  "NBA Team(s)": string | null;
-  "Average Temp. (°F)": number | null;
-  "Days of Sunshine (Avg. Annual)": number | null;
-  "Avg. Winter Temp. (°F)": number | null;
-  "Avg. Summer Temp. (°F)": number | null;
-  "Days of Rain (Avg. Annual)": number | null;
-  "Diversity Index (Out of 100)": number | null;
-  "Total Population (Metro Area, 000s)": number | null;
-  "East Asian Population (Approx. %)": number | null;
-  "Cost of Living Index (US Avg=100)": number | null;
-  "State Tax Rate (Max Income Tax)": number | null;
-  "Property Tax Rate (Effective %)": number | null;
-  "Median Single Family Home Price (Approx.)": number | null;
-  "Purchasing Power (Relative to NYC)": number | null;
-  "Crime Rate (Violent/100K)": number | null;
-  "Quality of Life Score (Approx. 1-100)": number | null;
-  "Walkability (Walk Score)": number | null;
-  "Public Transit Quality (Transit Score)": number | null;
-  "Avg. Broadband Speed (Mbps)": number | null;
-  "International Airport": string | null;
-  "Health Score (ACSM Rank)": number | null;
-  "Pollution Index (Numbeo)": number | null;
-  "Water Quality Index (Numbeo)": number | null;
-  "Traffic Index (INRIX, Hr/Yr Lost)": number | null;
-  "City Democrat % (Harris 2024)": number | null;
-  "State Democrat % (Harris 2024)": number | null;
+interface CityData {
+  id: string;
+  name: string;
+  state: string;
+  zillowRegionId: number | null;
+  zillowRegionName: string | null;
+  sports: {
+    nfl: string[];
+    nba: string[];
+  };
 }
 
-interface ZHVIRow {
-  RegionID: number;
-  SizeRank: number;
-  RegionName: string;
-  RegionType: string;
-  StateName: string;
-  [date: string]: string | number; // Date columns
+interface MetricsData {
+  climate: {
+    avgTemp: number | null;
+    avgWinterTemp: number | null;
+    avgSummerTemp: number | null;
+    daysOfSunshine: number | null;
+    daysOfRain: number | null;
+  };
+  cost: {
+    medianHomePrice: number | null;
+    costOfLivingIndex: number | null;
+    stateTaxRate: number | null;
+    propertyTaxRate: number | null;
+  };
+  demographics: {
+    population: number | null;
+    diversityIndex: number | null;
+    eastAsianPercent: number | null;
+    crimeRate: number | null;
+  };
+  quality: {
+    qualityOfLifeScore: number | null;
+    walkScore: number | null;
+    transitScore: number | null;
+    hasInternationalAirport: boolean;
+    airportCode: string | null;
+    healthScore: number | null;
+    pollutionIndex: number | null;
+    waterQualityIndex: number | null;
+    trafficIndex: number | null;
+    broadbandSpeed: number | null;
+  };
+  political: {
+    cityDemocratPercent: number | null;
+    stateDemocratPercent: number | null;
+  };
+}
+
+interface ZHVIData {
+  zillowRegionId: number;
+  history: { date: string; value: number }[];
 }
 
 async function main() {
-  console.log("🌱 Starting seed process...");
-  console.log(`📁 Reading Excel file from: ${EXCEL_PATH}`);
+  console.log("Starting database seed from JSON files...");
 
-  // Read the Excel file
-  const workbook = XLSX.readFile(EXCEL_PATH);
+  const dataDir = join(__dirname, "../data");
 
-  // Get sheet names
-  console.log("📋 Available sheets:", workbook.SheetNames);
+  // Read JSON files
+  const citiesFile = JSON.parse(readFileSync(join(dataDir, "cities.json"), "utf-8"));
+  const metricsFile = JSON.parse(readFileSync(join(dataDir, "metrics.json"), "utf-8"));
+  const zhviFile = JSON.parse(readFileSync(join(dataDir, "zhvi-history.json"), "utf-8"));
 
-  // Parse Gemini_raw sheet (main city data)
-  const geminiSheet = workbook.Sheets["Gemini_raw"];
-  const geminiData: GeminiRawRow[] = XLSX.utils.sheet_to_json(geminiSheet);
+  const cities: CityData[] = citiesFile.cities;
+  const metrics: Record<string, MetricsData> = metricsFile.cities;
+  const zhviHistory: Record<string, ZHVIData> = zhviFile.cities;
 
-  console.log(`📊 Found ${geminiData.length} cities in Gemini_raw sheet`);
+  console.log(`Found ${cities.length} cities to import`);
 
-  // Parse ZHVI sheet (home price history)
-  const zhviSheet = workbook.Sheets["sfr_0.33_0.67_sm_sa"];
-  const zhviData: ZHVIRow[] = XLSX.utils.sheet_to_json(zhviSheet);
+  let citiesCreated = 0;
+  let citiesUpdated = 0;
 
-  console.log(`📈 Found ${zhviData.length} regions in ZHVI sheet`);
+  for (const city of cities) {
+    const cityMetrics = metrics[city.id];
+    if (!cityMetrics) {
+      console.warn(`No metrics found for ${city.name}, skipping...`);
+      continue;
+    }
 
-  // Clear existing data
-  console.log("🗑️  Clearing existing data...");
-  await prisma.zHVIDataPoint.deleteMany();
-  await prisma.cityMetrics.deleteMany();
-  await prisma.city.deleteMany();
-  await prisma.dataRefreshLog.deleteMany();
+    const zhvi = zhviHistory[city.id];
 
-  // Create cities and metrics
-  console.log("🏙️  Creating cities...");
-
-  for (const row of geminiData) {
-    const cityName = row["__EMPTY"];
-    if (!cityName) continue;
-
-    // Find matching ZHVI data for this city
-    const zhviMatch = zhviData.find((z) => {
-      const regionName = z.RegionName?.toLowerCase() || "";
-      const city = cityName.toLowerCase();
-      // Match "New York City" with "New York City, NY" etc.
-      return regionName.includes(city) || city.includes(regionName.split(",")[0]);
+    // Check if city exists
+    const existingCity = await prisma.city.findUnique({
+      where: { name: city.name },
     });
 
-    const city = await prisma.city.create({
-      data: {
-        name: cityName,
-        state: row.State || "Unknown",
-        regionId: zhviMatch?.RegionID || null,
-        metrics: {
-          create: {
-            // Climate
-            avgTemp: row["Average Temp. (°F)"] || null,
-            avgWinterTemp: row["Avg. Winter Temp. (°F)"] || null,
-            avgSummerTemp: row["Avg. Summer Temp. (°F)"] || null,
-            daysOfSunshine: row["Days of Sunshine (Avg. Annual)"]
-              ? Math.round(row["Days of Sunshine (Avg. Annual)"])
-              : null,
-            daysOfRain: row["Days of Rain (Avg. Annual)"]
-              ? Math.round(row["Days of Rain (Avg. Annual)"])
-              : null,
+    // Prepare city data
+    const cityData = {
+      name: city.name,
+      state: city.state,
+      regionId: city.zillowRegionId, // Prisma schema uses 'regionId'
+      latitude: null as number | null,
+      longitude: null as number | null,
+    };
 
-            // Demographics
-            diversityIndex: row["Diversity Index (Out of 100)"] || null,
-            population: row["Total Population (Metro Area, 000s)"]
-              ? Math.round(row["Total Population (Metro Area, 000s)"])
-              : null,
-            eastAsianPercent: row["East Asian Population (Approx. %)"] || null,
+    // Prepare metrics data
+    const metricsData = {
+      avgTemp: cityMetrics.climate.avgTemp,
+      avgWinterTemp: cityMetrics.climate.avgWinterTemp,
+      avgSummerTemp: cityMetrics.climate.avgSummerTemp,
+      daysOfSunshine: cityMetrics.climate.daysOfSunshine,
+      daysOfRain: cityMetrics.climate.daysOfRain,
+      diversityIndex: cityMetrics.demographics.diversityIndex,
+      population: cityMetrics.demographics.population,
+      eastAsianPercent: cityMetrics.demographics.eastAsianPercent,
+      medianHomePrice: cityMetrics.cost.medianHomePrice,
+      stateTaxRate: cityMetrics.cost.stateTaxRate,
+      propertyTaxRate: cityMetrics.cost.propertyTaxRate,
+      costOfLivingIndex: cityMetrics.cost.costOfLivingIndex,
+      crimeRate: cityMetrics.demographics.crimeRate,
+      walkScore: cityMetrics.quality.walkScore,
+      transitScore: cityMetrics.quality.transitScore,
+      avgBroadbandSpeed: cityMetrics.quality.broadbandSpeed,
+      hasInternationalAirport: cityMetrics.quality.hasInternationalAirport,
+      healthScore: cityMetrics.quality.healthScore,
+      pollutionIndex: cityMetrics.quality.pollutionIndex,
+      waterQualityIndex: cityMetrics.quality.waterQualityIndex,
+      trafficIndex: cityMetrics.quality.trafficIndex,
+      qualityOfLifeScore: cityMetrics.quality.qualityOfLifeScore,
+      cityDemocratPercent: cityMetrics.political.cityDemocratPercent,
+      stateDemocratPercent: cityMetrics.political.stateDemocratPercent,
+      nflTeams: city.sports.nfl.join(", ") || null,
+      nbaTeams: city.sports.nba.join(", ") || null,
+      dataAsOf: new Date(),
+    };
 
-            // Cost of Living
-            medianHomePrice:
-              row["Median Single Family Home Price (Approx.)"] || null,
-            stateTaxRate: row["State Tax Rate (Max Income Tax)"] || null,
-            propertyTaxRate: row["Property Tax Rate (Effective %)"] || null,
-            costOfLivingIndex: row["Cost of Living Index (US Avg=100)"] || null,
-
-            // Quality of Life
-            crimeRate: row["Crime Rate (Violent/100K)"] || null,
-            walkScore: row["Walkability (Walk Score)"]
-              ? Math.round(row["Walkability (Walk Score)"])
-              : null,
-            transitScore: row["Public Transit Quality (Transit Score)"]
-              ? Math.round(row["Public Transit Quality (Transit Score)"])
-              : null,
-            avgBroadbandSpeed: row["Avg. Broadband Speed (Mbps)"] || null,
-            hasInternationalAirport:
-              String(row["International Airport"] || row["Major International Airport"] || "")
-                .toLowerCase()
-                .startsWith("yes"),
-            healthScore: row["Health Score (ACSM Rank)"] || null,
-            pollutionIndex: row["Pollution Index (Numbeo)"] || null,
-            waterQualityIndex: row["Water Quality Index (Numbeo)"] || null,
-            trafficIndex: row["Traffic Index (INRIX, Hr/Yr Lost)"] || null,
-
-            // Political
-            cityDemocratPercent: row["City Democrat % (Harris 2024)"] || null,
-            stateDemocratPercent: row["State Democrat % (Harris 2024)"] || null,
-
-            // Sports
-            nflTeams: row["NFL Team(s)"] || null,
-            nbaTeams: row["NBA Team(s)"] || null,
+    if (existingCity) {
+      // Update existing city
+      await prisma.city.update({
+        where: { id: existingCity.id },
+        data: {
+          ...cityData,
+          metrics: {
+            upsert: {
+              create: metricsData,
+              update: metricsData,
+            },
           },
         },
-      },
-    });
+      });
+      citiesUpdated++;
+    } else {
+      // Create new city
+      await prisma.city.create({
+        data: {
+          ...cityData,
+          metrics: {
+            create: metricsData,
+          },
+        },
+      });
+      citiesCreated++;
+    }
 
-    console.log(`  ✓ Created: ${city.name}, ${city.state}`);
+    // Handle ZHVI history
+    if (zhvi && zhvi.history.length > 0) {
+      const dbCity = await prisma.city.findUnique({
+        where: { name: city.name },
+      });
 
-    // If we have matching ZHVI data, import the price history
-    if (zhviMatch) {
-      const zhviPoints: { cityId: string; date: Date; value: number }[] = [];
+      if (dbCity) {
+        // Delete existing history
+        await prisma.zHVIDataPoint.deleteMany({
+          where: { cityId: dbCity.id },
+        });
 
-      // Get all date columns (they look like "2000-01-31 00:00:00" or similar)
-      for (const [key, value] of Object.entries(zhviMatch)) {
-        // Check if this is a date column (starts with a year)
-        if (/^\d{4}-\d{2}-\d{2}/.test(key) && typeof value === "number") {
-          const date = new Date(key.split(" ")[0]);
-          if (!isNaN(date.getTime()) && value > 0) {
-            zhviPoints.push({
-              cityId: city.id,
-              date,
-              value,
-            });
-          }
+        // Insert new history (batch for performance)
+        const historyData = zhvi.history.map((point) => ({
+          cityId: dbCity.id,
+          date: new Date(point.date),
+          value: point.value,
+        }));
+
+        // Insert in batches of 100
+        for (let i = 0; i < historyData.length; i += 100) {
+          const batch = historyData.slice(i, i + 100);
+          await prisma.zHVIDataPoint.createMany({
+            data: batch,
+          });
         }
       }
-
-      if (zhviPoints.length > 0) {
-        await prisma.zHVIDataPoint.createMany({
-          data: zhviPoints,
-        });
-        console.log(`    📈 Added ${zhviPoints.length} ZHVI data points`);
-      }
     }
+
+    console.log(`  ✓ ${city.name}`);
   }
 
   // Log the refresh
   await prisma.dataRefreshLog.create({
     data: {
-      source: "excel_import",
+      source: "seed",
       status: "success",
-      recordsUpdated: geminiData.length,
+      recordsUpdated: citiesCreated + citiesUpdated,
     },
   });
 
-  // Get final counts
-  const cityCount = await prisma.city.count();
-  const metricsCount = await prisma.cityMetrics.count();
-  const zhviCount = await prisma.zHVIDataPoint.count();
-
-  console.log("\n✅ Seed completed successfully!");
-  console.log(`   Cities: ${cityCount}`);
-  console.log(`   Metrics records: ${metricsCount}`);
-  console.log(`   ZHVI data points: ${zhviCount}`);
+  console.log(`\nSeed complete!`);
+  console.log(`  Created: ${citiesCreated} cities`);
+  console.log(`  Updated: ${citiesUpdated} cities`);
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Seed failed:", e);
+    console.error("Seed failed:", e);
     process.exit(1);
   })
   .finally(async () => {
