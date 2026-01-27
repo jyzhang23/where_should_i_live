@@ -6,33 +6,33 @@ import { join } from "path";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
-// Types for Excel data
+// Types for Excel data - column names must match actual Excel headers
 interface GeminiRawRow {
-  __EMPTY: string; // City name
+  __EMPTY: string; // City name (first column without header)
   State: string;
-  "Avg Temp (F)": number;
-  "Avg Winter Temp (F)": number;
-  "Avg Summer Temp (F)": number;
-  "Days of Sunshine": number;
-  "Days of Rain": number;
-  "Diversity Index": number;
-  "Population (Thousands)": number;
-  "East Asian Population %": number;
-  "Median Single-Family Home Price": number;
-  "State Income Tax Rate (Top Marginal)": number;
-  "Property Tax Rate": number;
-  "Cost of Living Index": number;
-  "Violent Crime per 100,000": number;
-  "Walk Score": number;
-  "Transit Score": number;
-  "Avg Broadband Speed (Mbps)": number;
-  "Major International Airport": string;
-  "Health Score": number;
-  "Pollution Index": number;
-  "Water Quality Index": number;
-  "Traffic Index": number;
-  "City Democrat Vote %": number;
-  "State Democrat Vote %": number;
+  "Average Temp. (°F)": number;
+  "Avg. Winter Temp. (°F)": number;
+  "Avg. Summer Temp. (°F)": number;
+  "Days of Sunshine (Avg. Annual)": number;
+  "Days of Rain (Avg. Annual)": number;
+  "Diversity Index (Out of 100)": number;
+  "Total Population (Metro Area, 000s)": number;
+  "East Asian Population (Approx. %)": number;
+  "Median Single Family Home Price (Approx.)": number;
+  "State Tax Rate (Max Income Tax)": number;
+  "Property Tax Rate (Effective %)": number;
+  "Cost of Living Index (US Avg=100)": number;
+  "Crime Rate (Violent/100K)": number;
+  "Walkability (Walk Score)": number;
+  "Public Transit Quality (Transit Score)": number;
+  "Avg. Broadband Speed (Mbps)": number;
+  "International Airport": string;
+  "Health Score (ACSM Rank)": number;
+  "Pollution Index (Numbeo)": number;
+  "Water Quality Index (Numbeo)": number;
+  "Traffic Index (INRIX, Hr/Yr Lost)": number;
+  "City Democrat % (Harris 2024)": number;
+  "State Democrat % (Harris 2024)": number;
   "NFL Team(s)": string;
   "NBA Team(s)": string;
   RegionID?: number;
@@ -171,31 +171,31 @@ export async function POST(request: NextRequest) {
         citiesCreated++;
       }
 
-      // Prepare metrics data
+      // Prepare metrics data - column names must match actual Excel headers
       const metricsData = {
-        avgTemp: row["Avg Temp (F)"] ?? null,
-        avgWinterTemp: row["Avg Winter Temp (F)"] ?? null,
-        avgSummerTemp: row["Avg Summer Temp (F)"] ?? null,
-        daysOfSunshine: row["Days of Sunshine"] ?? null,
-        daysOfRain: row["Days of Rain"] ?? null,
-        diversityIndex: row["Diversity Index"] ?? null,
-        population: row["Population (Thousands)"] ?? null,
-        eastAsianPercent: row["East Asian Population %"] ?? null,
-        medianHomePrice: row["Median Single-Family Home Price"] ?? null,
-        stateTaxRate: row["State Income Tax Rate (Top Marginal)"] ?? null,
-        propertyTaxRate: row["Property Tax Rate"] ?? null,
-        costOfLivingIndex: row["Cost of Living Index"] ?? null,
-        crimeRate: row["Violent Crime per 100,000"] ?? null,
-        walkScore: row["Walk Score"] ?? null,
-        transitScore: row["Transit Score"] ?? null,
-        avgBroadbandSpeed: row["Avg Broadband Speed (Mbps)"] ?? null,
-        hasInternationalAirport: String(row["Major International Airport"] || "").toLowerCase().startsWith("yes"),
-        healthScore: row["Health Score"] ?? null,
-        pollutionIndex: row["Pollution Index"] ?? null,
-        waterQualityIndex: row["Water Quality Index"] ?? null,
-        trafficIndex: row["Traffic Index"] ?? null,
-        cityDemocratPercent: row["City Democrat Vote %"] ?? null,
-        stateDemocratPercent: row["State Democrat Vote %"] ?? null,
+        avgTemp: row["Average Temp. (°F)"] ?? null,
+        avgWinterTemp: row["Avg. Winter Temp. (°F)"] ?? null,
+        avgSummerTemp: row["Avg. Summer Temp. (°F)"] ?? null,
+        daysOfSunshine: row["Days of Sunshine (Avg. Annual)"] ?? null,
+        daysOfRain: row["Days of Rain (Avg. Annual)"] ?? null,
+        diversityIndex: row["Diversity Index (Out of 100)"] ?? null,
+        population: row["Total Population (Metro Area, 000s)"] ?? null,
+        eastAsianPercent: row["East Asian Population (Approx. %)"] ?? null,
+        medianHomePrice: row["Median Single Family Home Price (Approx.)"] ?? null,
+        stateTaxRate: row["State Tax Rate (Max Income Tax)"] ?? null,
+        propertyTaxRate: row["Property Tax Rate (Effective %)"] ?? null,
+        costOfLivingIndex: row["Cost of Living Index (US Avg=100)"] ?? null,
+        crimeRate: row["Crime Rate (Violent/100K)"] ?? null,
+        walkScore: row["Walkability (Walk Score)"] ?? null,
+        transitScore: row["Public Transit Quality (Transit Score)"] ?? null,
+        avgBroadbandSpeed: row["Avg. Broadband Speed (Mbps)"] ?? null,
+        hasInternationalAirport: String(row["International Airport"] || "").toLowerCase().startsWith("yes"),
+        healthScore: row["Health Score (ACSM Rank)"] ?? null,
+        pollutionIndex: row["Pollution Index (Numbeo)"] ?? null,
+        waterQualityIndex: row["Water Quality Index (Numbeo)"] ?? null,
+        trafficIndex: row["Traffic Index (INRIX, Hr/Yr Lost)"] ?? null,
+        cityDemocratPercent: row["City Democrat % (Harris 2024)"] ?? null,
+        stateDemocratPercent: row["State Democrat % (Harris 2024)"] ?? null,
         nflTeams: row["NFL Team(s)"] || null,
         nbaTeams: row["NBA Team(s)"] || null,
         dataAsOf: new Date(),
