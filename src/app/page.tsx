@@ -1,65 +1,107 @@
-import Image from "next/image";
+"use client";
+
+import { useMemo } from "react";
+import { useCities } from "@/hooks/useCities";
+import { usePreferencesStore } from "@/lib/store";
+import { calculateScores } from "@/lib/scoring";
+import { PreferencePanel } from "@/components/preferences/PreferencePanel";
+import { RankingTable } from "@/components/rankings/RankingTable";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
+  const { data, isLoading, error } = useCities();
+  const { preferences } = usePreferencesStore();
+
+  // Calculate scores whenever cities or preferences change
+  const cities = data?.cities;
+  const scoringResult = useMemo(() => {
+    if (!cities) return null;
+    return calculateScores(cities, preferences);
+  }, [cities, preferences]);
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <p className="text-red-800">
+              Error loading cities. Make sure the database is set up and seeded.
+            </p>
+            <p className="text-sm text-red-600 mt-2">
+              Run: <code className="bg-red-100 px-1 rounded">npm run db:push</code> then{" "}
+              <code className="bg-red-100 px-1 rounded">npm run db:seed</code>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="container mx-auto py-8 px-4">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">City Rankings</h1>
+        <p className="text-muted-foreground mt-1">
+          Find your perfect city based on your preferences
+        </p>
+        {data?.lastUpdated && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Data last updated:{" "}
+            {new Date(data.lastUpdated).toLocaleDateString()}
           </p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Preferences Panel - Left Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-4">
+            <PreferencePanel />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Rankings Table - Main Content */}
+        <div className="lg:col-span-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Rankings</span>
+                {scoringResult && (
+                  <span className="text-sm font-normal text-muted-foreground">
+                    {scoringResult.includedCount} cities
+                    {scoringResult.excludedCount > 0 && (
+                      <span className="text-orange-600">
+                        {" "}
+                        ({scoringResult.excludedCount} excluded)
+                      </span>
+                    )}
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : scoringResult ? (
+                <RankingTable
+                  rankings={scoringResult.rankings}
+                  onCityClick={(id) => {
+                    // TODO: Open city detail modal or navigate
+                    console.log("City clicked:", id);
+                  }}
+                />
+              ) : (
+                <p className="text-center text-muted-foreground py-12">
+                  No cities to display
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

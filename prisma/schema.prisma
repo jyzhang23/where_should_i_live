@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model City {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  state     String
+  regionId  Int?     // Zillow region ID for joining ZHVI data
+  latitude  Float?
+  longitude Float?
+
+  metrics     CityMetrics?
+  zhviHistory ZHVIDataPoint[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CityMetrics {
+  id     String @id @default(cuid())
+  cityId String @unique
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  // === Climate ===
+  avgTemp        Float? // Average annual temperature (°F)
+  avgWinterTemp  Float? // Average winter temperature (°F)
+  avgSummerTemp  Float? // Average summer temperature (°F)
+  daysOfSunshine Int? // Days of sunshine per year
+  daysOfRain     Int? // Days of rain per year
+
+  // === Demographics ===
+  diversityIndex   Float? // Diversity index (0-100)
+  population       Int? // Metro area population (thousands)
+  eastAsianPercent Float? // East Asian population percentage
+
+  // === Cost of Living ===
+  medianHomePrice   Float? // Median single-family home price
+  stateTaxRate      Float? // Max state income tax rate (decimal)
+  propertyTaxRate   Float? // Effective property tax rate (decimal)
+  costOfLivingIndex Float? // Cost of living index (US avg = 100)
+
+  // === Quality of Life ===
+  crimeRate               Float? // Violent crime per 100K
+  walkScore               Int? // Walk Score (0-100)
+  transitScore            Int? // Transit Score (0-100)
+  avgBroadbandSpeed       Float? // Average broadband speed (Mbps)
+  hasInternationalAirport Boolean? // Has international airport
+  healthScore             Float? // ACSM health ranking
+  pollutionIndex          Float? // Numbeo pollution index
+  waterQualityIndex       Float? // Numbeo water quality index
+  trafficIndex            Float? // INRIX traffic index (hours/year lost)
+
+  // === Political ===
+  cityDemocratPercent  Float? // % voted Democrat in city (2024)
+  stateDemocratPercent Float? // % voted Democrat in state (2024)
+
+  // === Sports/Amenities ===
+  nflTeams String? // NFL team names (comma-separated)
+  nbaTeams String? // NBA team names (comma-separated)
+
+  // === Metadata ===
+  dataAsOf  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ZHVIDataPoint {
+  id     String   @id @default(cuid())
+  cityId String
+  city   City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  date   DateTime // Monthly date
+  value  Float // Home value in dollars
+
+  @@unique([cityId, date])
+  @@index([cityId])
+  @@index([date])
+}
+
+model DataRefreshLog {
+  id             String   @id @default(cuid())
+  refreshedAt    DateTime @default(now())
+  source         String // "zillow", "census", "manual", etc.
+  status         String // "success", "failed"
+  recordsUpdated Int?
+  errorMessage   String?
+}

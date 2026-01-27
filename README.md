@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# City Rankings
+
+A web application to compare US cities based on weather, cost of living, demographics, and more. Customize your preferences to find the best city for you.
+
+## Features
+
+- **Interactive preference controls** - Sliders and toggles to weight what matters to you
+- **Real-time scoring** - Rankings update instantly as you change preferences
+- **Hierarchical preferences** - Basic options always visible, advanced options collapsible
+- **Tooltips** - Helpful descriptions for every preference
+- **Export/Import** - Save your preferences as JSON and share them
+- **No account required** - Preferences stored locally in your browser
+
+## Tech Stack
+
+- **Frontend:** Next.js 14+ (App Router), React, TypeScript
+- **Styling:** Tailwind CSS + shadcn/ui
+- **State:** Zustand (preferences), TanStack Query (server data)
+- **Database:** PostgreSQL (Neon free tier)
+- **ORM:** Prisma
+- **Charts:** Recharts
+- **Deployment:** Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm
+- PostgreSQL database (or [Neon](https://neon.tech) free tier)
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repo-url>
+cd cities-app
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Set up environment variables
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your database URL:
+
+```env
+# For Neon PostgreSQL (recommended):
+DATABASE_URL="postgresql://user:password@host:5432/database?sslmode=require"
+
+# Admin password for data refresh
+ADMIN_PASSWORD="change-this-in-production"
+```
+
+**Getting a Neon database URL:**
+1. Go to [neon.tech](https://neon.tech) and create a free account
+2. Create a new project
+3. Copy the connection string from the dashboard
+
+### 4. Set up the database
+
+Push the Prisma schema to create tables:
+
+```bash
+npm run db:push
+```
+
+Seed the database with city data from the Excel file:
+
+```bash
+npm run db:seed
+```
+
+### 5. Start the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run db:generate` | Generate Prisma client |
+| `npm run db:push` | Push schema to database |
+| `npm run db:migrate` | Run database migrations |
+| `npm run db:seed` | Seed database from Excel |
+| `npm run db:studio` | Open Prisma Studio |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+cities-app/
+├── prisma/
+│   └── schema.prisma          # Database schema
+├── scripts/
+│   └── seed.ts                # Excel import script
+├── src/
+│   ├── app/
+│   │   ├── api/               # API routes
+│   │   ├── layout.tsx         # Root layout
+│   │   └── page.tsx           # Main dashboard
+│   ├── components/
+│   │   ├── preferences/       # Preference controls
+│   │   ├── rankings/          # Rankings display
+│   │   └── ui/                # shadcn/ui components
+│   ├── hooks/                 # React hooks
+│   ├── lib/
+│   │   ├── db.ts              # Prisma client
+│   │   ├── scoring.ts         # Scoring algorithms
+│   │   └── store.ts           # Zustand store
+│   └── types/                 # TypeScript types
+└── package.json
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Data Sources
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app uses data from:
+- [Zillow Research](https://zillow.com/research/data/) - Home value index (ZHVI)
+- US Census Bureau - Demographics
+- FBI Crime Data Explorer - Crime statistics
+- Various sources for weather, walkability, etc.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Vercel (Recommended)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push your code to GitHub
+2. Import the project in [Vercel](https://vercel.com)
+3. Add environment variables in Vercel dashboard
+4. Deploy
+
+### Environment Variables for Production
+
+Make sure to set these in your deployment platform:
+- `DATABASE_URL` - Your PostgreSQL connection string
+- `ADMIN_PASSWORD` - A secure password for admin functions
+
+## License
+
+MIT

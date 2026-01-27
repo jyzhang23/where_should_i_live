@@ -1,0 +1,115 @@
+"use client";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { CityScore } from "@/types/scores";
+import { getScoreColor } from "@/lib/scoring";
+
+interface RankingTableProps {
+  rankings: CityScore[];
+  onCityClick?: (cityId: string) => void;
+}
+
+export function RankingTable({ rankings, onCityClick }: RankingTableProps) {
+  const includedCities = rankings.filter((r) => !r.excluded);
+  const excludedCities = rankings.filter((r) => r.excluded);
+
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-12">Rank</TableHead>
+            <TableHead>City</TableHead>
+            <TableHead className="text-right">Climate</TableHead>
+            <TableHead className="text-right">Cost</TableHead>
+            <TableHead className="text-right">Demographics</TableHead>
+            <TableHead className="text-right">Total</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {includedCities.map((city, index) => (
+            <TableRow
+              key={city.cityId}
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => onCityClick?.(city.cityId)}
+            >
+              <TableCell className="font-medium">{index + 1}</TableCell>
+              <TableCell>
+                <div>
+                  <span className="font-medium">{city.cityName}</span>
+                  <span className="text-muted-foreground ml-1">
+                    {city.state}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell className={`text-right ${getScoreColor(city.climateScore)}`}>
+                {city.climateScore.toFixed(1)}
+              </TableCell>
+              <TableCell className={`text-right ${getScoreColor(city.costScore)}`}>
+                {city.costScore.toFixed(1)}
+              </TableCell>
+              <TableCell className={`text-right ${getScoreColor(city.demographicsScore)}`}>
+                {city.demographicsScore.toFixed(1)}
+              </TableCell>
+              <TableCell className={`text-right font-bold ${getScoreColor(city.totalScore)}`}>
+                {city.totalScore.toFixed(1)}
+              </TableCell>
+            </TableRow>
+          ))}
+
+          {excludedCities.length > 0 && (
+            <>
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground bg-muted/30 py-2"
+                >
+                  Excluded ({excludedCities.length} cities)
+                </TableCell>
+              </TableRow>
+              {excludedCities.map((city) => (
+                <TableRow
+                  key={city.cityId}
+                  className="opacity-50 cursor-pointer hover:bg-muted/50"
+                  onClick={() => onCityClick?.(city.cityId)}
+                >
+                  <TableCell className="text-muted-foreground">—</TableCell>
+                  <TableCell>
+                    <div>
+                      <span className="font-medium">{city.cityName}</span>
+                      <span className="text-muted-foreground ml-1">
+                        {city.state}
+                      </span>
+                    </div>
+                    <span className="text-xs text-red-500">
+                      {city.exclusionReason}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    —
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    —
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    —
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    —
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
