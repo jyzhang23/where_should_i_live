@@ -53,6 +53,30 @@ const QOL_RANGES = {
   physiciansPer100k: { min: 30, max: 180 },
 };
 
+// Recreation metric ranges for range-based normalization
+const RECREATION_RANGES = {
+  // Trail miles within 10mi radius: higher is better
+  trailMiles: { min: 0, max: 150 },           // 0 (flat cities) to 150+ (Denver, Seattle)
+  // Park acres per 1K residents: higher is better
+  parkAcres: { min: 5, max: 100 },            // ~5 (dense urban) to 100+ (nature-oriented)
+  // Protected land %: higher is better
+  protectedLandPercent: { min: 0, max: 30 },  // 0% to 30%+ (near national forests)
+  // Max elevation delta (ft) in 30mi: higher is better for mountains
+  elevationDelta: { min: 0, max: 4000 },      // 0 (flat) to 4000+ (Salt Lake, Denver)
+};
+
+// Urban lifestyle ranges for logarithmic/percentile normalization
+const URBAN_LIFESTYLE_RANGES = {
+  // Bars/clubs per 10K: uses logarithmic curve (critical mass at ~30)
+  barsAndClubsPer10K: { min: 2, plateau: 30, max: 80 },   // 2 (small city) to 80+ (NYC)
+  // Museums: uses logarithmic curve (critical mass at ~20)
+  museums: { min: 0, plateau: 20, max: 100 },              // 0 to 100+ (DC, NYC)
+  // Restaurants per 10K: uses logarithmic curve
+  restaurantsPer10K: { min: 10, plateau: 50, max: 150 },   // 10 (rural) to 150+ (big cities)
+  // Cuisine diversity (number of distinct types)
+  cuisineDiversity: { min: 5, max: 50 },                   // 5 (limited) to 50+ (diverse metros)
+};
+
 // ============================================================================
 // NORMALIZATION UTILITIES
 // ============================================================================
@@ -110,6 +134,34 @@ function minorityPresenceScore(actualPct: number, targetPct: number): number {
   }
 }
 
+/**
+ * Logarithmic "Critical Mass" curve for urban amenities
+ * Implements diminishing returns: once you have "enough" bars/museums, more is marginal
+ * @param value - The actual density or count
+ * @param min - Minimum value (maps to ~30 score)
+ * @param plateau - Critical mass point (maps to ~75 score)
+ * @param max - Maximum value for full credit (maps to 100 score)
+ */
+function urbanAmenityScore(value: number, min: number, plateau: number, max: number): number {
+  if (value <= min) {
+    // Below minimum: low score
+    return 30;
+  } else if (value >= max) {
+    // At or above max: full score
+    return 100;
+  } else if (value >= plateau) {
+    // Between plateau and max: diminishing returns (log curve)
+    // At plateau we want ~75, at max we want 100
+    const progress = (value - plateau) / (max - plateau);
+    return 75 + 25 * Math.log10(1 + progress * 9) / Math.log10(10);
+  } else {
+    // Between min and plateau: steeper linear climb
+    // At min we want 30, at plateau we want 75
+    const progress = (value - min) / (plateau - min);
+    return 30 + 45 * progress;
+  }
+}
+
 // ============================================================================
 // QoL PERCENTILE CACHE
 // Pre-computed during scoring to avoid repeated calculations
@@ -124,6 +176,10 @@ interface QoLPercentiles {
   fiberPcts: number[];
   studentTeacherRatios: number[];
   physicianRates: number[];
+  // Recreation metrics
+  trailMiles: number[];
+  parkAcres: number[];
+  elevationDeltas: number[];
 }
 
 function computeQoLPercentiles(cities: CityWithMetrics[]): QoLPercentiles {
@@ -136,6 +192,9 @@ function computeQoLPercentiles(cities: CityWithMetrics[]): QoLPercentiles {
     fiberPcts: [],
     studentTeacherRatios: [],
     physicianRates: [],
+    trailMiles: [],
+    parkAcres: [],
+    elevationDeltas: [],
   };
 
   for (const city of cities) {
@@ -165,6 +224,18 @@ function computeQoLPercentiles(cities: CityWithMetrics[]): QoLPercentiles {
     }
     if (qol.health?.primaryCarePhysiciansPer100k !== null && qol.health?.primaryCarePhysiciansPer100k !== undefined) {
       percentiles.physicianRates.push(qol.health.primaryCarePhysiciansPer100k);
+    }
+    
+    // Recreation metrics
+    const rec = qol.recreation;
+    if (rec?.nature?.trailMilesWithin10Mi !== null && rec?.nature?.trailMilesWithin10Mi !== undefined) {
+      percentiles.trailMiles.push(rec.nature.trailMilesWithin10Mi);
+    }
+    if (rec?.nature?.parkAcresPer1K !== null && rec?.nature?.parkAcresPer1K !== undefined) {
+      percentiles.parkAcres.push(rec.nature.parkAcresPer1K);
+    }
+    if (rec?.geography?.maxElevationDelta !== null && rec?.geography?.maxElevationDelta !== undefined) {
+      percentiles.elevationDeltas.push(rec.geography.maxElevationDelta);
     }
   }
 
@@ -267,22 +338,14 @@ export function calculateScores(
 
 /**
  * Check if a city should be excluded based on hard filters
+ * Note: NFL/NBA filters were removed - sports are now a soft preference in Urban Lifestyle scoring
  */
 function checkFilters(
   city: CityWithMetrics,
   preferences: UserPreferences
 ): string | null {
-  const { filters } = preferences;
-  const metrics = city.metrics!;
-
-  if (filters.requiresNFL && !metrics.nflTeams) {
-    return "No NFL team";
-  }
-
-  if (filters.requiresNBA && !metrics.nbaTeams) {
-    return "No NBA team";
-  }
-
+  // No hard filters currently defined
+  // Reserved for future use (e.g., minimum population, maximum crime rate)
   return null;
 }
 
@@ -1000,6 +1063,110 @@ function calculateQualityOfLifeScore(
       totalWeight += weights.healthcare;
     }
 
+    // Recreation & Outdoor Access (NEW) - Mixed percentile and range-based
+    if (weights.recreation > 0 && qol.recreation) {
+      let recreationScore = 50;
+      const rec = qol.recreation;
+      const natureWeight = prefs.natureImportance;
+      const beachWeight = prefs.beachImportance;
+      const mountainWeight = prefs.mountainImportance;
+      const subTotal = natureWeight + beachWeight + mountainWeight;
+      
+      if (subTotal > 0) {
+        let natureScore = 50;
+        let beachScore = 50;
+        let mountainScore = 50;
+        
+        // Nature scoring (parks + trails + protected land) - Percentile-based
+        if (rec.nature && natureWeight > 0) {
+          let natureSubScores = 0;
+          let natureSubCount = 0;
+          
+          // Trail miles - percentile if we have data, else range-based
+          if (rec.nature.trailMilesWithin10Mi !== null) {
+            if (percentiles?.trailMiles.length) {
+              natureSubScores += toPercentileScore(rec.nature.trailMilesWithin10Mi, percentiles.trailMiles, true);
+            } else {
+              natureSubScores += normalizeToRange(rec.nature.trailMilesWithin10Mi, 
+                RECREATION_RANGES.trailMiles.min, RECREATION_RANGES.trailMiles.max, false);
+            }
+            natureSubCount++;
+          }
+          
+          // Park acres - percentile if we have data, else range-based
+          if (rec.nature.parkAcresPer1K !== null) {
+            if (percentiles?.parkAcres.length) {
+              natureSubScores += toPercentileScore(rec.nature.parkAcresPer1K, percentiles.parkAcres, true);
+            } else {
+              natureSubScores += normalizeToRange(rec.nature.parkAcresPer1K,
+                RECREATION_RANGES.parkAcres.min, RECREATION_RANGES.parkAcres.max, false);
+            }
+            natureSubCount++;
+          }
+          
+          // Protected land percentage - range-based
+          if (rec.nature.protectedLandPercent !== null) {
+            natureSubScores += normalizeToRange(rec.nature.protectedLandPercent,
+              RECREATION_RANGES.protectedLandPercent.min, RECREATION_RANGES.protectedLandPercent.max, false);
+            natureSubCount++;
+          }
+          
+          if (natureSubCount > 0) {
+            natureScore = natureSubScores / natureSubCount;
+          }
+        }
+        
+        // Beach scoring - Binary bonus + distance decay
+        if (rec.geography && beachWeight > 0) {
+          if (rec.geography.coastlineWithin15Mi) {
+            // Full score if within 15 miles
+            beachScore = 100;
+            // Small bonus for water quality
+            if (rec.geography.waterQualityIndex !== null && rec.geography.waterQualityIndex >= 70) {
+              beachScore = Math.min(100, beachScore + 5);
+            }
+          } else if (rec.geography.coastlineDistanceMi !== null && rec.geography.coastlineDistanceMi <= 100) {
+            // Distance decay: 15mi = 100, 50mi = 50, 100mi = 0
+            beachScore = Math.max(0, 100 - (rec.geography.coastlineDistanceMi - 15) * 1.2);
+          } else {
+            // No ocean access
+            beachScore = 0;
+          }
+        }
+        
+        // Mountain scoring - Range-based on elevation delta
+        if (rec.geography && mountainWeight > 0) {
+          if (rec.geography.maxElevationDelta !== null) {
+            // Use percentile if available, else range-based
+            if (percentiles?.elevationDeltas.length) {
+              mountainScore = toPercentileScore(rec.geography.maxElevationDelta, percentiles.elevationDeltas, true);
+            } else {
+              mountainScore = normalizeToRange(rec.geography.maxElevationDelta,
+                RECREATION_RANGES.elevationDelta.min, RECREATION_RANGES.elevationDelta.max, false);
+            }
+            
+            // Bonus for nearby ski resorts
+            if (rec.geography.nearestSkiResortMi !== null && rec.geography.nearestSkiResortMi <= 60) {
+              mountainScore = Math.min(100, mountainScore + 10);
+            }
+          } else {
+            // No elevation data - flat city
+            mountainScore = 0;
+          }
+        }
+        
+        // Weighted average of sub-scores
+        recreationScore = (
+          natureScore * natureWeight +
+          beachScore * beachWeight +
+          mountainScore * mountainWeight
+        ) / subTotal;
+      }
+      
+      totalScore += Math.max(0, Math.min(100, recreationScore)) * weights.recreation;
+      totalWeight += weights.recreation;
+    }
+
     if (totalWeight > 0) {
       return Math.max(0, Math.min(100, totalScore / totalWeight));
     }
@@ -1254,6 +1421,183 @@ export function calculateCulturalScore(
       const diversityScore = religious.diversityIndex;
       totalScore += diversityScore * prefs.diversityWeight;
       totalWeight += prefs.diversityWeight;
+    }
+  }
+
+  // === URBAN LIFESTYLE SCORING (includes Sports) ===
+  const urbanLifestyle = cultural.urbanLifestyle;
+  
+  if (prefs.urbanLifestyleWeight > 0) {
+    const nightlifeWeight = prefs.nightlifeImportance;
+    const artsWeight = prefs.artsImportance;
+    const diningWeight = prefs.diningImportance;
+    const sportsWeight = prefs.sportsImportance;
+    const subTotal = nightlifeWeight + artsWeight + diningWeight + sportsWeight;
+    
+    if (subTotal > 0) {
+      let nightlifeScore = 50;
+      let artsScore = 50;
+      let diningScore = 50;
+      let sportsScore = 50;
+      
+      // Nightlife scoring - Logarithmic curve (critical mass at ~30 bars/clubs per 10K)
+      if (nightlifeWeight > 0 && urbanLifestyle?.nightlife) {
+        const nl = urbanLifestyle.nightlife;
+        
+        if (nl.barsAndClubsPer10K !== null) {
+          nightlifeScore = urbanAmenityScore(
+            nl.barsAndClubsPer10K,
+            URBAN_LIFESTYLE_RANGES.barsAndClubsPer10K.min,
+            URBAN_LIFESTYLE_RANGES.barsAndClubsPer10K.plateau,
+            URBAN_LIFESTYLE_RANGES.barsAndClubsPer10K.max
+          );
+          
+          // Bonus for late-night options
+          if (nl.lateNightVenues !== null && nl.lateNightVenues >= 10) {
+            nightlifeScore = Math.min(100, nightlifeScore + 5);
+          }
+        }
+      }
+      
+      // Arts scoring - Logarithmic curve (critical mass at ~20 museums)
+      if (artsWeight > 0 && urbanLifestyle?.arts) {
+        const arts = urbanLifestyle.arts;
+        let artsSubScores = 0;
+        let artsSubCount = 0;
+        
+        if (arts.museums !== null) {
+          artsSubScores += urbanAmenityScore(
+            arts.museums,
+            URBAN_LIFESTYLE_RANGES.museums.min,
+            URBAN_LIFESTYLE_RANGES.museums.plateau,
+            URBAN_LIFESTYLE_RANGES.museums.max
+          );
+          artsSubCount++;
+        }
+        
+        // Theaters and galleries as secondary factors
+        if (arts.theaters !== null && arts.theaters > 0) {
+          artsSubScores += Math.min(100, 50 + arts.theaters * 3);
+          artsSubCount++;
+        }
+        
+        if (arts.artGalleries !== null && arts.artGalleries > 0) {
+          artsSubScores += Math.min(100, 40 + arts.artGalleries * 2);
+          artsSubCount++;
+        }
+        
+        if (arts.musicVenues !== null && arts.musicVenues > 0) {
+          artsSubScores += Math.min(100, 50 + arts.musicVenues * 2);
+          artsSubCount++;
+        }
+        
+        if (artsSubCount > 0) {
+          artsScore = artsSubScores / artsSubCount;
+        }
+      }
+      
+      // Dining scoring - Logarithmic curve + diversity bonus
+      if (diningWeight > 0 && urbanLifestyle?.dining) {
+        const dining = urbanLifestyle.dining;
+        let diningSubScores = 0;
+        let diningSubCount = 0;
+        
+        // Restaurant density
+        if (dining.restaurantsPer10K !== null) {
+          diningSubScores += urbanAmenityScore(
+            dining.restaurantsPer10K,
+            URBAN_LIFESTYLE_RANGES.restaurantsPer10K.min,
+            URBAN_LIFESTYLE_RANGES.restaurantsPer10K.plateau,
+            URBAN_LIFESTYLE_RANGES.restaurantsPer10K.max
+          );
+          diningSubCount++;
+        }
+        
+        // Fine dining presence
+        if (dining.fineDiningCount !== null && dining.fineDiningCount > 0) {
+          diningSubScores += Math.min(100, 40 + dining.fineDiningCount * 3);
+          diningSubCount++;
+        }
+        
+        // Cuisine diversity (linear scale)
+        if (dining.cuisineDiversity !== null) {
+          const diversityScore = normalizeToRange(
+            dining.cuisineDiversity,
+            URBAN_LIFESTYLE_RANGES.cuisineDiversity.min,
+            URBAN_LIFESTYLE_RANGES.cuisineDiversity.max,
+            false
+          );
+          diningSubScores += diversityScore;
+          diningSubCount++;
+        }
+        
+        // Craft breweries as bonus (cap at +10)
+        if (dining.breweries !== null && dining.breweries > 0) {
+          diningSubScores += Math.min(80, 50 + dining.breweries * 3);
+          diningSubCount++;
+        }
+        
+        if (diningSubCount > 0) {
+          diningScore = diningSubScores / diningSubCount;
+        }
+      }
+      
+      // Sports scoring - based on major pro sports team presence
+      // Counts NFL, NBA, MLB, NHL, and MLS teams (comma-separated strings)
+      if (sportsWeight > 0) {
+        // Count teams from each league
+        const countTeams = (teams: string | null) => 
+          teams ? teams.split(",").filter(t => t.trim()).length : 0;
+        
+        const nflCount = countTeams(metrics.nflTeams);
+        const nbaCount = countTeams(metrics.nbaTeams);
+        const mlbCount = countTeams(metrics.mlbTeams);
+        const nhlCount = countTeams(metrics.nhlTeams);
+        const mlsCount = countTeams(metrics.mlsTeams);
+        const totalTeams = nflCount + nbaCount + mlbCount + nhlCount + mlsCount;
+        
+        // Count how many different leagues are represented
+        const leaguesPresent = [nflCount, nbaCount, mlbCount, nhlCount, mlsCount]
+          .filter(count => count > 0).length;
+        
+        // Sports scoring thresholds (5 major leagues = potential for 10+ teams):
+        // 0 teams = 30 (city still livable, but no major sports)
+        // 1-2 teams = 55-70 (small sports market)
+        // 3-4 teams = 75-85 (solid sports city)
+        // 5-6 teams = 88-93 (major sports market)
+        // 7+ teams = 95-100 (elite sports city like NYC, LA, Chicago)
+        if (totalTeams === 0) {
+          sportsScore = 30;
+        } else if (totalTeams <= 2) {
+          sportsScore = 50 + totalTeams * 10; // 60-70
+        } else if (totalTeams <= 4) {
+          sportsScore = 65 + (totalTeams - 2) * 7; // 72-79
+        } else if (totalTeams <= 6) {
+          sportsScore = 80 + (totalTeams - 4) * 5; // 85-90
+        } else if (totalTeams <= 8) {
+          sportsScore = 92 + (totalTeams - 6) * 2; // 94-96
+        } else {
+          sportsScore = Math.min(100, 97 + (totalTeams - 8)); // 98-100
+        }
+        
+        // Bonus for league diversity (having teams in 3+ different leagues)
+        if (leaguesPresent >= 4) {
+          sportsScore = Math.min(100, sportsScore + 5);
+        } else if (leaguesPresent >= 3) {
+          sportsScore = Math.min(100, sportsScore + 3);
+        }
+      }
+      
+      // Weighted average of sub-scores (now including sports)
+      const urbanLifestyleScore = (
+        nightlifeScore * nightlifeWeight +
+        artsScore * artsWeight +
+        diningScore * diningWeight +
+        sportsScore * sportsWeight
+      ) / subTotal;
+      
+      totalScore += Math.max(0, Math.min(100, urbanLifestyleScore)) * prefs.urbanLifestyleWeight;
+      totalWeight += prefs.urbanLifestyleWeight;
     }
   }
 

@@ -39,6 +39,11 @@ import {
   Users,
   Activity,
   Scale,
+  TreePine,
+  Mountain,
+  Wine,
+  Palette,
+  Music,
 } from "lucide-react";
 
 type HousingSituation = "renter" | "homeowner" | "prospective-buyer";
@@ -46,6 +51,7 @@ type WorkSituation = "standard" | "local-earner" | "retiree";
 type ClimatePref = "warm" | "mild" | "four-seasons" | "any";
 type Priority = "cost" | "climate" | "quality" | "balanced";
 type Lifestyle = "young-professional" | "family" | "retiree" | "community" | "car-free" | "balanced";
+type ActivityPref = "urbanite" | "nature-lover" | "outdoor-athlete" | "culture-lover" | "homebody" | "any";
 
 interface QuickStartProps {
   onComplete?: () => void;
@@ -60,6 +66,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
   const [work, setWork] = useState<WorkSituation>("local-earner");
   const [climate, setClimate] = useState<ClimatePref>("any");
   const [lifestyle, setLifestyle] = useState<Lifestyle>("balanced");
+  const [activity, setActivity] = useState<ActivityPref>("any");
   const [priority, setPriority] = useState<Priority>("balanced");
 
   const handleApply = () => {
@@ -146,6 +153,52 @@ export function QuickStart({ onComplete }: QuickStartProps) {
       updateAdvanced("demographics", "minPopulation", 500000);
     }
     // "balanced" = leave defaults
+
+    // Apply activity/recreation preferences
+    if (activity === "urbanite") {
+      // Prioritize nightlife, dining, sports - urban lifestyle metrics
+      updateAdvanced("cultural", "urbanLifestyleWeight", 80);
+      updateAdvanced("cultural", "nightlifeImportance", 90);
+      updateAdvanced("cultural", "diningImportance", 80);
+      updateAdvanced("cultural", "artsImportance", 50);
+      updateAdvanced("cultural", "sportsImportance", 70); // Sports fans tend to be urbanites
+      // Enable cultural category if not already
+      updateWeight("cultural", Math.max(50, 50)); // Ensure cultural has weight
+    } else if (activity === "culture-lover") {
+      // Prioritize museums, theaters, galleries
+      updateAdvanced("cultural", "urbanLifestyleWeight", 80);
+      updateAdvanced("cultural", "artsImportance", 100);
+      updateAdvanced("cultural", "nightlifeImportance", 30);
+      updateAdvanced("cultural", "diningImportance", 50);
+      updateAdvanced("cultural", "sportsImportance", 40); // Moderate sports interest
+      // Enable cultural category
+      updateWeight("cultural", Math.max(50, 50));
+    } else if (activity === "nature-lover") {
+      // Prioritize parks, trails, protected lands
+      updateQoLWeight("recreation", 80);
+      updateAdvanced("qualityOfLife", "recreationWeight", 80);
+      updateAdvanced("qualityOfLife", "natureImportance", 100);
+      updateAdvanced("qualityOfLife", "beachImportance", 30);
+      updateAdvanced("qualityOfLife", "mountainImportance", 40);
+      updateAdvanced("cultural", "sportsImportance", 20); // Lower sports priority
+    } else if (activity === "outdoor-athlete") {
+      // Prioritize mountains, beaches, ski resorts
+      updateQoLWeight("recreation", 90);
+      updateAdvanced("qualityOfLife", "recreationWeight", 90);
+      updateAdvanced("qualityOfLife", "mountainImportance", 100);
+      updateAdvanced("qualityOfLife", "beachImportance", 80);
+      updateAdvanced("qualityOfLife", "natureImportance", 60);
+      updateAdvanced("cultural", "sportsImportance", 50); // Balanced sports interest
+    } else if (activity === "homebody") {
+      // De-prioritize recreation and urban lifestyle
+      updateQoLWeight("recreation", 0);
+      updateAdvanced("qualityOfLife", "recreationWeight", 0);
+      updateAdvanced("cultural", "urbanLifestyleWeight", 0);
+      updateAdvanced("cultural", "sportsImportance", 30); // Might watch sports on TV
+      // Bump up safety instead
+      updateQoLWeight("safety", 80);
+    }
+    // "any" = leave defaults (sportsImportance = 50)
 
     // Apply priority weights
     if (priority === "cost") {
@@ -395,6 +448,61 @@ export function QuickStart({ onComplete }: QuickStartProps) {
                 title="Balanced"
                 description="A bit of everything"
                 tooltip="No specific lifestyle adjustments. Uses default balanced settings for QoL and demographics."
+              />
+            </div>
+          </div>
+
+          {/* Activities & Recreation */}
+          <div>
+            <h4 className="text-sm font-medium mb-3">Your ideal weekend</h4>
+            <div className="grid grid-cols-3 gap-2">
+              <OptionCard
+                selected={activity === "urbanite"}
+                onClick={() => setActivity("urbanite")}
+                icon={<Wine className="h-5 w-5" />}
+                title="Urbanite"
+                description="Nightlife & dining"
+                tooltip="Prioritizes bars, clubs, restaurants, and urban entertainment. Great for those who love the city buzz. Example: NYC, Chicago, Miami."
+              />
+              <OptionCard
+                selected={activity === "culture-lover"}
+                onClick={() => setActivity("culture-lover")}
+                icon={<Palette className="h-5 w-5" />}
+                title="Culture Lover"
+                description="Museums & arts"
+                tooltip="Prioritizes museums, theaters, galleries, and arts venues. Perfect for art enthusiasts. Example: DC, Boston, San Francisco."
+              />
+              <OptionCard
+                selected={activity === "nature-lover"}
+                onClick={() => setActivity("nature-lover")}
+                icon={<TreePine className="h-5 w-5" />}
+                title="Nature Lover"
+                description="Parks & trails"
+                tooltip="Prioritizes hiking trails, parks, and protected lands. Best for those who love outdoor exploration. Example: Denver, Portland, Seattle."
+              />
+              <OptionCard
+                selected={activity === "outdoor-athlete"}
+                onClick={() => setActivity("outdoor-athlete")}
+                icon={<Mountain className="h-5 w-5" />}
+                title="Outdoor Athlete"
+                description="Mountains & beaches"
+                tooltip="Prioritizes mountain access, beaches, and ski resorts. Great for skiing, surfing, and adventure sports. Example: Salt Lake City, San Diego, LA."
+              />
+              <OptionCard
+                selected={activity === "homebody"}
+                onClick={() => setActivity("homebody")}
+                icon={<Home className="h-5 w-5" />}
+                title="Homebody"
+                description="Quiet & cozy"
+                tooltip="De-prioritizes urban nightlife and outdoor recreation. Focuses on residential comfort and safety. Example: suburbs, smaller cities."
+              />
+              <OptionCard
+                selected={activity === "any"}
+                onClick={() => setActivity("any")}
+                icon={<Scale className="h-5 w-5" />}
+                title="Balanced"
+                description="Mix of everything"
+                tooltip="No specific recreation adjustments. Uses default balanced settings—fine-tune in Advanced Options."
               />
             </div>
           </div>

@@ -12,11 +12,8 @@ export interface UserPreferences {
     cultural: number;
   };
 
-  // Quick filters (toggles)
-  filters: {
-    requiresNFL: boolean;
-    requiresNBA: boolean;
-  };
+  // Quick filters (toggles) - reserved for future hard filters
+  filters: Record<string, never>;
 
   // === ADVANCED OPTIONS (collapsible) ===
 
@@ -162,6 +159,12 @@ export interface UserPreferences {
       // Healthcare
       minPhysiciansPer100k: number;   // default 50
       
+      // Recreation & Outdoor Access (NEW)
+      recreationWeight: number;       // 0-100, overall recreation importance
+      natureImportance: number;       // Parks, trails, protected land (0-100)
+      beachImportance: number;        // Coastal access (0-100)
+      mountainImportance: number;     // Mountain/elevation access (0-100)
+      
       // Legacy (kept for backward compatibility)
       maxCrimeRate: number;
       
@@ -173,10 +176,11 @@ export interface UserPreferences {
         internet: number;     // default 10
         schools: number;      // default 15
         healthcare: number;   // default 15
+        recreation: number;   // default 0 (NEW)
       };
     };
 
-    // Cultural preferences (political + religious)
+    // Cultural preferences (political + religious + urban lifestyle)
     cultural: {
       // Political
       partisanPreference: "strong-dem" | "lean-dem" | "swing" | "lean-rep" | "strong-rep" | "neutral";
@@ -189,6 +193,13 @@ export interface UserPreferences {
       traditionsWeight: number;         // 0-100
       preferReligiousDiversity: boolean; // High diversity = higher score
       diversityWeight: number;          // 0-100
+      
+      // Urban Lifestyle (NEW)
+      urbanLifestyleWeight: number;     // 0-100, overall urban vibe importance
+      nightlifeImportance: number;      // Bars, clubs, late night (0-100)
+      artsImportance: number;           // Museums, theaters, galleries (0-100)
+      diningImportance: number;         // Fine dining, cuisine diversity (0-100)
+      sportsImportance: number;         // Professional sports teams (0-100)
     };
 
     // Legacy political preferences (kept for migration)
@@ -209,10 +220,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     qualityOfLife: 50,
     cultural: 0,  // Off by default (sensitive topic)
   },
-  filters: {
-    requiresNFL: false,
-    requiresNBA: false,
-  },
+  filters: {},
   advanced: {
     climate: {
       // NOAA ACIS + Open-Meteo based preferences
@@ -281,6 +289,11 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       minProviders: 2,
       maxStudentTeacherRatio: 20,
       minPhysiciansPer100k: 50,
+      // Recreation preferences (NEW)
+      recreationWeight: 0,        // Off by default
+      natureImportance: 50,       // Balanced when enabled
+      beachImportance: 50,
+      mountainImportance: 50,
       maxCrimeRate: 1000, // Legacy
       weights: {
         walkability: 20,
@@ -289,6 +302,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
         internet: 10,
         schools: 15,
         healthcare: 15,
+        recreation: 0,            // Off by default (NEW)
       },
     },
     cultural: {
@@ -300,6 +314,12 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       traditionsWeight: 0,
       preferReligiousDiversity: false,
       diversityWeight: 0,
+      // Urban Lifestyle preferences (NEW)
+      urbanLifestyleWeight: 0,    // Off by default
+      nightlifeImportance: 50,    // Balanced when enabled
+      artsImportance: 50,
+      diningImportance: 50,
+      sportsImportance: 50,       // Balanced when enabled
     },
   },
 };
@@ -317,12 +337,6 @@ export const TOOLTIPS: Record<string, string> = {
     "How heavily to weight quality of life factors (walkability, transit, crime, pollution). Higher = QoL matters more.",
   "weights.cultural":
     "How heavily to weight cultural factors (political lean, religious communities). Set to 0 to ignore. Configure specific preferences in Advanced > Cultural Preferences.",
-
-  // Filters
-  "filters.requiresNFL":
-    "Exclude cities without an NFL team. Excludes cities like Sacramento, Austin, Portland.",
-  "filters.requiresNBA":
-    "Exclude cities without an NBA team. Excludes cities like San Diego, Austin, Nashville.",
 
   // Climate advanced (NOAA-based)
   "advanced.climate.weightComfortDays":
@@ -479,6 +493,30 @@ export const TOOLTIPS: Record<string, string> = {
     "Prefer cities with diverse religious landscape vs. dominated by one tradition.",
   "advanced.cultural.diversityWeight":
     "How important is religious diversity (0 = ignore, 100 = very important).",
+
+  // Cultural advanced - Urban Lifestyle (NEW)
+  "advanced.cultural.urbanLifestyleWeight":
+    "How important is urban entertainment and nightlife (0 = ignore, 100 = very important).",
+  "advanced.cultural.nightlifeImportance":
+    "How important are bars, clubs, and late-night venues? NYC has ~1,500+ bars, smaller cities have 50-100.",
+  "advanced.cultural.artsImportance":
+    "How important are museums, theaters, and galleries? DC has 70+ museums, most cities have 10-20.",
+  "advanced.cultural.diningImportance":
+    "How important is the dining scene? Fine dining, cuisine diversity, craft breweries.",
+  "advanced.cultural.sportsImportance":
+    "How important are professional sports teams (NFL, NBA)? NYC/LA have 4+ teams, many cities have 1-2, some have none.",
+
+  // Quality of Life - Recreation (NEW)
+  "advanced.qualityOfLife.recreationWeight":
+    "How important is outdoor recreation access (0 = ignore, 100 = very important).",
+  "advanced.qualityOfLife.natureImportance":
+    "How important are parks, hiking trails, and protected lands? Denver has 300+ miles of trails nearby.",
+  "advanced.qualityOfLife.beachImportance":
+    "How important is beach/coastal access? Only ~30% of US cities are within 15 miles of coastline.",
+  "advanced.qualityOfLife.mountainImportance":
+    "How important is mountain access? Salt Lake has 4,000ft elevation gain within 30 miles; Dallas has <200ft.",
+  "advanced.qualityOfLife.weights.recreation":
+    "Weight for recreation/outdoor access in QoL calculation.",
 
   // Privacy note for cultural preferences
   "advanced.cultural.privacyNote":

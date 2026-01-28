@@ -19,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Shield, CheckCircle, XCircle, Loader2, Download, CloudSun, Users, ShieldAlert, Wind, Wifi, GraduationCap, Stethoscope, Footprints } from "lucide-react";
+import { Shield, CheckCircle, XCircle, Loader2, Download, CloudSun, Users, ShieldAlert, Wind, Wifi, GraduationCap, Stethoscope, Footprints, Wine, TreePine } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RefreshResult {
@@ -252,7 +252,35 @@ async function pullCulturalData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-type ActionType = "zillow" | "bea" | "climate" | "census" | "fbi-crime" | "epa-air" | "fcc-broadband" | "nces-education" | "hrsa-health" | "walkscore" | "cultural";
+async function pullUrbanLifeData(password: string): Promise<RefreshResult> {
+  const response = await fetch("/api/admin/urbanlife-pull", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  const text = await response.text();
+  if (!text) throw new Error("Server returned empty response.");
+  let data;
+  try { data = JSON.parse(text); } catch { throw new Error(`Invalid response: ${text.slice(0, 100)}`); }
+  if (!response.ok) throw new Error(data.error || "Urban lifestyle data pull failed");
+  return data;
+}
+
+async function pullRecreationData(password: string): Promise<RefreshResult> {
+  const response = await fetch("/api/admin/recreation-pull", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  const text = await response.text();
+  if (!text) throw new Error("Server returned empty response.");
+  let data;
+  try { data = JSON.parse(text); } catch { throw new Error(`Invalid response: ${text.slice(0, 100)}`); }
+  if (!response.ok) throw new Error(data.error || "Recreation data pull failed");
+  return data;
+}
+
+type ActionType = "zillow" | "bea" | "climate" | "census" | "fbi-crime" | "epa-air" | "fcc-broadband" | "nces-education" | "hrsa-health" | "walkscore" | "cultural" | "urbanlife" | "recreation";
 
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -367,10 +395,25 @@ export function AdminPanel() {
     onSettled: () => { setActiveAction(null); },
   });
 
+  const urbanLifeMutation = useMutation({
+    mutationFn: pullUrbanLifeData,
+    onSuccess: (data) => { setResult(data); queryClient.invalidateQueries({ queryKey: ["cities"] }); },
+    onError: (error: Error) => { setResult({ success: false, error: error.message }); },
+    onSettled: () => { setActiveAction(null); },
+  });
+
+  const recreationMutation = useMutation({
+    mutationFn: pullRecreationData,
+    onSuccess: (data) => { setResult(data); queryClient.invalidateQueries({ queryKey: ["cities"] }); },
+    onError: (error: Error) => { setResult({ success: false, error: error.message }); },
+    onSettled: () => { setActiveAction(null); },
+  });
+
   const isPending = zillowMutation.isPending || beaMutation.isPending || 
     climateMutation.isPending || censusMutation.isPending || fbiCrimeMutation.isPending || 
     epaAirMutation.isPending || fccBroadbandMutation.isPending || ncesEducationMutation.isPending || 
-    hrsaHealthMutation.isPending || walkScoreMutation.isPending || culturalMutation.isPending;
+    hrsaHealthMutation.isPending || walkScoreMutation.isPending || culturalMutation.isPending ||
+    urbanLifeMutation.isPending || recreationMutation.isPending;
 
   const handleZillowPull = () => {
     if (!password) return;
@@ -448,6 +491,20 @@ export function AdminPanel() {
     setResult(null);
     setActiveAction("cultural");
     culturalMutation.mutate(password);
+  };
+
+  const handleUrbanLifePull = () => {
+    if (!password) return;
+    setResult(null);
+    setActiveAction("urbanlife");
+    urbanLifeMutation.mutate(password);
+  };
+
+  const handleRecreationPull = () => {
+    if (!password) return;
+    setResult(null);
+    setActiveAction("recreation");
+    recreationMutation.mutate(password);
   };
 
   const handleClose = () => {
@@ -750,6 +807,57 @@ export function AdminPanel() {
                 </div>
               </div>
             </div>
+
+            {/* Lifestyle & Recreation Section */}
+            <div className="pt-3 mt-3 border-t">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Lifestyle & Recreation</p>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <div className="p-2 rounded-lg border bg-muted/30">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-xs truncate">Urban Life</p>
+                      <p className="text-[10px] text-muted-foreground truncate">Nightlife, Dining, Arts</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={handleUrbanLifePull}
+                      disabled={!password || isPending}
+                    >
+                      {activeAction === "urbanlife" ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Wine className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="p-2 rounded-lg border bg-muted/30">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-xs truncate">Recreation</p>
+                      <p className="text-[10px] text-muted-foreground truncate">Parks, Trails, Mountains</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={handleRecreationPull}
+                      disabled={!password || isPending}
+                    >
+                      {activeAction === "recreation" ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <TreePine className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Result Display */}
@@ -868,6 +976,10 @@ export function AdminPanel() {
                   ? "Fetching HRSA health data..."
                   : activeAction === "walkscore"
                   ? "Fetching Walk Score data..."
+                  : activeAction === "urbanlife"
+                  ? "Loading urban lifestyle data (nightlife, dining, arts)..."
+                  : activeAction === "recreation"
+                  ? "Loading recreation data (parks, trails, mountains)..."
                   : "Reinitializing data..."}
               </span>
             </div>

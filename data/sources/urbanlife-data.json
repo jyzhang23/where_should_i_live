@@ -1,0 +1,963 @@
+{
+  "version": "1.0",
+  "description": "Urban lifestyle and entertainment metrics",
+  "sources": {
+    "nightlife": "OpenStreetMap Overpass API",
+    "arts": "OpenStreetMap Overpass API",
+    "dining": "OpenStreetMap Overpass API"
+  },
+  "nationalAverages": {
+    "barsAndClubsPer10K": 15,
+    "museums": 10,
+    "restaurantsPer10K": 40,
+    "cuisineDiversity": 25
+  },
+  "cities": {
+    "san-francisco": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.3,
+        "totalVenues": 22,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 11,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.7,
+        "cuisineDiversity": null,
+        "breweries": 1,
+        "coffeeshops": 65
+      },
+      "population": 851036,
+      "dataYear": 2026
+    },
+    "seattle": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.3,
+        "totalVenues": 23,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 14,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 4.9,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 74
+      },
+      "population": 734603,
+      "dataYear": 2026
+    },
+    "new-york-city": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 51,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 29,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.9,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 37
+      },
+      "population": 8622467,
+      "dataYear": 2026
+    },
+    "los-angeles": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 51,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 67,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 2.1,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 154
+      },
+      "population": 3881041,
+      "dataYear": 2026
+    },
+    "sacramento": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0,
+        "totalVenues": 1,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 6,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.9,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 6
+      },
+      "population": 523600,
+      "dataYear": 2026
+    },
+    "boston": {
+      "nightlife": {
+        "barsAndClubsPer10K": 2.6,
+        "totalVenues": 172,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 73,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 21.2,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 261
+      },
+      "population": 665945,
+      "dataYear": 2026
+    },
+    "portland": {
+      "nightlife": {
+        "barsAndClubsPer10K": 1.5,
+        "totalVenues": 97,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 31,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 10,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 138
+      },
+      "population": 646101,
+      "dataYear": 2026
+    },
+    "las-vegas": {
+      "nightlife": {
+        "barsAndClubsPer10K": 1.7,
+        "totalVenues": 107,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 20,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 11.8,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 93
+      },
+      "population": 644835,
+      "dataYear": 2026
+    },
+    "chicago": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 31,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 14,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.9,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 28
+      },
+      "population": 2721914,
+      "dataYear": 2026
+    },
+    "washington-dc": {
+      "nightlife": {
+        "barsAndClubsPer10K": 4.6,
+        "totalVenues": 308,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 50,
+        "artGalleries": 1,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 32.9,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 394
+      },
+      "population": 670587,
+      "dataYear": 2026
+    },
+    "houston": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 16,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 1,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.7,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 18
+      },
+      "population": 2296253,
+      "dataYear": 2026
+    },
+    "atlanta": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.2,
+        "totalVenues": 11,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 15,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.9,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 14
+      },
+      "population": 494838,
+      "dataYear": 2026
+    },
+    "minneapolis": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.9,
+        "totalVenues": 39,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 48,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 10.4,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 83
+      },
+      "population": 426877,
+      "dataYear": 2026
+    },
+    "philadelphia": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.2,
+        "totalVenues": 30,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 42,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.8,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 6
+      },
+      "population": 1593208,
+      "dataYear": 2026
+    },
+    "dallas": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 11,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 9,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 2.5,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 32
+      },
+      "population": 1300642,
+      "dataYear": 2026
+    },
+    "tampa-bay": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.6,
+        "totalVenues": 23,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 12,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 7.8,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 46
+      },
+      "population": 388768,
+      "dataYear": 2026
+    },
+    "denver": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.2,
+        "totalVenues": 11,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 0,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 1.3,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 21
+      },
+      "population": 710800,
+      "dataYear": 2026
+    },
+    "charlotte": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.4,
+        "totalVenues": 37,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 12,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 2.4,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 32
+      },
+      "population": 875045,
+      "dataYear": 2026
+    },
+    "oklahoma-city": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0,
+        "totalVenues": 3,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 6,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.7,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 6
+      },
+      "population": 681088,
+      "dataYear": 2026
+    },
+    "phoenix": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.6,
+        "totalVenues": 92,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 18,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.3,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 86
+      },
+      "population": 1609456,
+      "dataYear": 2026
+    },
+    "baltimore": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.2,
+        "totalVenues": 10,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 10,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 4.3,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 21
+      },
+      "population": 584548,
+      "dataYear": 2026
+    },
+    "orlando": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.4,
+        "totalVenues": 12,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 5,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 5.1,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 20
+      },
+      "population": 307738,
+      "dataYear": 2026
+    },
+    "indianapolis": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 10,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 16,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 1.2,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 9
+      },
+      "population": 882006,
+      "dataYear": 2026
+    },
+    "nashville": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.2,
+        "totalVenues": 16,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 9,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 1.6,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 12
+      },
+      "population": 684103,
+      "dataYear": 2026
+    },
+    "milwaukee": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.9,
+        "totalVenues": 54,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 35,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 22
+      },
+      "population": 573299,
+      "dataYear": 2026
+    },
+    "salt-lake-city": {
+      "nightlife": {
+        "barsAndClubsPer10K": 2.6,
+        "totalVenues": 52,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 19,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 15.2,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 43
+      },
+      "population": 201269,
+      "dataYear": 2026
+    },
+    "detroit": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.2,
+        "totalVenues": 10,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 0,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 1.8,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 16
+      },
+      "population": 636787,
+      "dataYear": 2026
+    },
+    "st-louis": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.4,
+        "totalVenues": 13,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 13,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.2,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 13
+      },
+      "population": 298018,
+      "dataYear": 2026
+    },
+    "san-antonio": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 16,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 20,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 1.3,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 17
+      },
+      "population": 1445662,
+      "dataYear": 2026
+    },
+    "jacksonville": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0,
+        "totalVenues": 1,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 0,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.4,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 3
+      },
+      "population": 950203,
+      "dataYear": 2026
+    },
+    "new-orleans": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.7,
+        "totalVenues": 26,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 3,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 4.7,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 26
+      },
+      "population": 380408,
+      "dataYear": 2026
+    },
+    "kansas-city": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 7,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 1,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 1.1,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 7
+      },
+      "population": 505958,
+      "dataYear": 2026
+    },
+    "cincinnati": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.2,
+        "totalVenues": 6,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 15,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.2,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 11
+      },
+      "population": 308870,
+      "dataYear": 2026
+    },
+    "cleveland": {
+      "nightlife": {
+        "barsAndClubsPer10K": 1.5,
+        "totalVenues": 55,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 13,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 6.2,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 22
+      },
+      "population": 370365,
+      "dataYear": 2026
+    },
+    "buffalo": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.3,
+        "totalVenues": 8,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 19,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 7.8,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 24
+      },
+      "population": 276688,
+      "dataYear": 2026
+    },
+    "pittsburgh": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.4,
+        "totalVenues": 13,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 1,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.4,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 11
+      },
+      "population": 303843,
+      "dataYear": 2026
+    },
+    "miami": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.6,
+        "totalVenues": 28,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 27,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 8.4,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 38
+      },
+      "population": 443665,
+      "dataYear": 2026
+    },
+    "green-bay": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.8,
+        "totalVenues": 9,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 6,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 12.1,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 15
+      },
+      "population": 106846,
+      "dataYear": 2026
+    },
+    "memphis": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0,
+        "totalVenues": 1,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 4,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 0.3,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 3
+      },
+      "population": 630027,
+      "dataYear": 2026
+    },
+    "san-diego": {
+      "nightlife": {
+        "barsAndClubsPer10K": 1.5,
+        "totalVenues": 214,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 25,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 6.7,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 176
+      },
+      "population": 1383987,
+      "dataYear": 2026
+    },
+    "santa-barbara": {
+      "nightlife": {
+        "barsAndClubsPer10K": 1,
+        "totalVenues": 9,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 9,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 18.3,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 34
+      },
+      "population": 88640,
+      "dataYear": 2026
+    },
+    "raleigh": {
+      "nightlife": {
+        "barsAndClubsPer10K": 0.1,
+        "totalVenues": 3,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 7,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.8,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 17
+      },
+      "population": 465517,
+      "dataYear": 2026
+    },
+    "gainesville": {
+      "nightlife": {
+        "barsAndClubsPer10K": 1.1,
+        "totalVenues": 15,
+        "lateNightVenues": null
+      },
+      "arts": {
+        "museums": 0,
+        "theaters": 6,
+        "artGalleries": 0,
+        "musicVenues": null
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 3.9,
+        "cuisineDiversity": null,
+        "breweries": 0,
+        "coffeeshops": 11
+      },
+      "population": 142414,
+      "dataYear": 2026
+    }
+  }
+}

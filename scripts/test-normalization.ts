@@ -53,6 +53,7 @@ const createMockCity = (
   id,
   name,
   state,
+  regionId: null,
   latitude: 0,
   longitude: 0,
   createdAt: new Date(),

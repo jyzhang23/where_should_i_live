@@ -594,11 +594,27 @@ export default function HelpPage() {
                 </div>
                 <p className="text-xs text-muted-foreground">HPSA 0 = no shortage, 25+ = severe shortage. National avg: ~75 physicians/100K.</p>
 
+                <h4>Recreation & Outdoor Access (NEW)</h4>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Measures access to outdoor recreation amenities. Off by default - enable in Advanced Options.
+                </p>
+                <ul className="text-xs space-y-1">
+                  <li><strong>Nature Score:</strong> Parks, trails, protected lands (percentile ranking)</li>
+                  <li><strong>Beach Score:</strong> 100 if coast within 15mi, distance decay for further</li>
+                  <li><strong>Mountain Score:</strong> Elevation prominence within 30mi (0-4000ft range)</li>
+                </ul>
+                <div className="bg-muted p-3 rounded font-mono text-xs mt-2">
+                  Recreation = (nature × w1 + beach × w2 + mountain × w3) / (w1 + w2 + w3)
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Denver: high nature + mountains | San Diego: beaches | Dallas: flat, no coast
+                </p>
+
                 <h4>Final Calculation</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
                   QoL_Score = (walkability × w1 + safety × w2 + air × w3 +{"\n"}
-                              internet × w4 + schools × w5 + health × w6){"\n"}
-                              / (w1 + w2 + w3 + w4 + w5 + w6)
+                              internet × w4 + schools × w5 + health × w6 + recreation × w7){"\n"}
+                              / (w1 + w2 + w3 + w4 + w5 + w6 + w7)
                 </div>
 
                 <h4 className="mt-4">Data Sources Note</h4>
@@ -725,14 +741,35 @@ export default function HelpPage() {
                   or a pluralistic mix.
                 </p>
 
+                <h4>Urban Lifestyle (NEW)</h4>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Measures urban entertainment and lifestyle amenities. Off by default.
+                </p>
+                <ul className="text-xs space-y-1">
+                  <li><strong>Nightlife Score:</strong> Bars/clubs per 10K (logarithmic curve, plateaus at ~30)</li>
+                  <li><strong>Arts Score:</strong> Museums, theaters, galleries (logarithmic, plateaus at ~20)</li>
+                  <li><strong>Dining Score:</strong> Restaurant density, cuisine diversity, breweries</li>
+                </ul>
+                <div className="bg-muted p-3 rounded font-mono text-xs mt-2">
+                  UrbanLifestyle = (nightlife × w1 + arts × w2 + dining × w3) / (w1 + w2 + w3)
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  NYC: 1,500+ bars | DC: 70+ museums | Smaller cities: 50-100 bars, 10-20 museums
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  <em>Diminishing returns:</em> Once a city has &quot;enough&quot; bars/museums (critical mass), 
+                  the score plateaus. Having 100 vs 80 museums matters less than 10 vs 20.
+                </p>
+
                 <h4>Final Calculation</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
                   Cultural_Score = (Political_Score × Political_Weight +{"\n"}
-                                   Religious_Score × Religious_Weight){"\n"}
-                                   / (Political_Weight + Religious_Weight)
+                                   Religious_Score × Religious_Weight +{"\n"}
+                                   UrbanLifestyle_Score × Lifestyle_Weight){"\n"}
+                                   / (Political_Weight + Religious_Weight + Lifestyle_Weight)
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  If all cultural preferences are set to neutral/off, the score defaults to 70.
+                  If all cultural preferences are set to neutral/off, the score defaults to 50 (national average).
                 </p>
               </AccordionContent>
             </AccordionItem>

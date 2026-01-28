@@ -344,3 +344,133 @@ Tests verified via `npx tsx scripts/test-normalization.ts`:
 - [x] `getScoreRelative(75)` = "+25" (green) ✅
 - [x] `getScoreRelative(25)` = "-25" (red) ✅
 - [x] `getScoreRelative(50)` = "avg" ✅
+
+---
+
+## Lifestyle & Recreation Feature (Added 2026-01-28)
+
+### Overview
+Incorporates lifestyle and cultural factors (nightlife, nature, recreation) into scoring, following established category structures and normalization patterns.
+
+### Distribution of New Factors
+
+#### Quality of Life → Recreation
+Recreation data measuring physical environment and accessibility:
+- **Nature & Hiking**: Trail miles, park acres per 1K residents, protected land %
+- **Beach Access**: Coastline within 15 miles, water quality
+- **Mountain Access**: Elevation delta within 30 miles, ski resort proximity
+
+#### Cultural → Urban Lifestyle  
+Social and "vibe" factors representing the social fabric:
+- **Nightlife & Dining**: Bars/clubs per 10K, restaurants per 10K, late-night venues
+- **Arts & Culture**: Museums, theaters, galleries, music venues
+- **Dining Scene**: Fine dining count, cuisine diversity, craft breweries
+
+### Data Sources
+- **OpenStreetMap (Overpass API)**: POIs for bars, clubs, restaurants, museums, trails, parks
+- **USGS National Map API**: Elevation data for mountain access scoring
+- **NOAA Coastline Data**: Proximity to oceans for beach access
+
+### Type Definitions (`src/types/city.ts`)
+
+```typescript
+// Added to QoLMetrics
+export interface RecreationMetrics {
+  nature: {
+    parkAcresPer1K: number | null;
+    trailMilesWithin10Mi: number | null;
+    protectedLandPercent: number | null;
+    stateParksWithin50Mi: number | null;
+  } | null;
+  geography: {
+    coastlineWithin15Mi: boolean;
+    coastlineDistanceMi: number | null;
+    maxElevationDelta: number | null;
+    nearestSkiResortMi: number | null;
+  } | null;
+  dataYear: number | null;
+}
+
+// Added to CulturalMetrics
+export interface UrbanLifestyleMetrics {
+  nightlife: {
+    barsAndClubsPer10K: number | null;
+    totalVenues: number | null;
+    lateNightVenues: number | null;
+  } | null;
+  arts: {
+    museums: number | null;
+    theaters: number | null;
+    artGalleries: number | null;
+  } | null;
+  dining: {
+    restaurantsPer10K: number | null;
+    cuisineDiversity: number | null;
+    breweries: number | null;
+  } | null;
+  dataYear: number | null;
+}
+```
+
+### Scoring Strategy
+
+#### Recreation Scoring (in `calculateQualityOfLifeScore`)
+Mixed percentile and range-based normalization:
+
+- **Nature Score**: Percentile ranking for trail miles and park acres
+- **Beach Score**: Binary bonus for coastline within 15mi, distance decay for further
+- **Mountain Score**: Range-based (0-4000ft elevation delta)
+
+```typescript
+// Range-based constants
+const RECREATION_RANGES = {
+  trailMiles: { min: 0, max: 150 },
+  parkAcres: { min: 5, max: 100 },
+  elevationDelta: { min: 0, max: 4000 },
+};
+```
+
+#### Urban Lifestyle Scoring (in `calculateCulturalScore`)
+Logarithmic "critical mass" curve (diminishing returns):
+
+```typescript
+// Once you have "enough" bars/museums, more is marginal
+function urbanAmenityScore(value, min, plateau, max) {
+  if (value <= min) return 30;
+  if (value >= max) return 100;
+  if (value >= plateau) {
+    // Logarithmic diminishing returns
+    return 75 + 25 * log10(1 + progress * 9);
+  }
+  return 30 + 45 * linearProgress;
+}
+```
+
+### Preference Integration
+
+#### QuickStart Personas
+New "Your ideal weekend" step with personas:
+- **Urbanite**: High nightlife + dining weights
+- **Culture Lover**: High arts + museums weights  
+- **Nature Lover**: High parks + trails weights
+- **Outdoor Athlete**: High mountains + beaches weights
+- **Homebody**: De-prioritizes recreation and nightlife
+- **Balanced**: Default settings
+
+#### Advanced Preferences
+- **QoL → Recreation**: Weight slider + sub-weights for nature/beach/mountain
+- **Cultural → Urban Lifestyle**: Weight slider + sub-weights for nightlife/arts/dining
+
+### Admin Routes
+- `POST /api/admin/recreation-pull`: Imports from `data/sources/recreation-data.json`
+- `POST /api/admin/urbanlife-pull`: Imports from `data/sources/urbanlife-data.json`
+
+### Data Collection Script
+`scripts/collect-lifestyle-data.ts`:
+- Queries Overpass API for POI counts
+- Calculates trail miles and elevation deltas
+- Generates source JSON files for admin import
+
+### UI Display
+- **CityMetricsGrid**: Recreation card in QoL section, Urban Lifestyle section in Cultural profile
+- Icons: TreePine, Mountain, Waves, Wine, Palette, Utensils

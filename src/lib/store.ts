@@ -97,11 +97,12 @@ export const usePreferencesStore = create<PreferencesState>()(
         try {
           const parsed = JSON.parse(json);
           // Basic validation - check required top-level keys
-          if (parsed.weights && parsed.filters && parsed.advanced) {
+          if (parsed.weights && parsed.advanced) {
             // Merge with defaults to ensure all fields exist
+            // Note: filters is now empty - we strip out any old filter fields
             const merged: UserPreferences = {
               weights: { ...DEFAULT_PREFERENCES.weights, ...parsed.weights },
-              filters: { ...DEFAULT_PREFERENCES.filters, ...parsed.filters },
+              filters: {}, // Empty - old filters (requiresNFL, requiresNBA) are now obsolete
               advanced: {
                 climate: {
                   ...DEFAULT_PREFERENCES.advanced.climate,
@@ -118,6 +119,10 @@ export const usePreferencesStore = create<PreferencesState>()(
                 qualityOfLife: {
                   ...DEFAULT_PREFERENCES.advanced.qualityOfLife,
                   ...parsed.advanced?.qualityOfLife,
+                  weights: {
+                    ...DEFAULT_PREFERENCES.advanced.qualityOfLife.weights,
+                    ...parsed.advanced?.qualityOfLife?.weights,
+                  },
                 },
                 cultural: {
                   ...DEFAULT_PREFERENCES.advanced.cultural,
@@ -144,6 +149,7 @@ export const usePreferencesStore = create<PreferencesState>()(
         }
         
         // Deep merge preferences with defaults
+        // Note: filters is now empty - we strip out old filter fields (requiresNFL, requiresNBA)
         return {
           ...currentState,
           preferences: {
@@ -151,10 +157,7 @@ export const usePreferencesStore = create<PreferencesState>()(
               ...DEFAULT_PREFERENCES.weights,
               ...persisted.preferences.weights,
             },
-            filters: {
-              ...DEFAULT_PREFERENCES.filters,
-              ...persisted.preferences.filters,
-            },
+            filters: {}, // Empty - old filters migrated to sportsImportance preference
             advanced: {
               climate: {
                 ...DEFAULT_PREFERENCES.advanced.climate,
@@ -171,6 +174,11 @@ export const usePreferencesStore = create<PreferencesState>()(
               qualityOfLife: {
                 ...DEFAULT_PREFERENCES.advanced.qualityOfLife,
                 ...persisted.preferences.advanced?.qualityOfLife,
+                // Ensure nested weights object is properly merged with new fields
+                weights: {
+                  ...DEFAULT_PREFERENCES.advanced.qualityOfLife.weights,
+                  ...persisted.preferences.advanced?.qualityOfLife?.weights,
+                },
               },
               cultural: {
                 ...DEFAULT_PREFERENCES.advanced.cultural,

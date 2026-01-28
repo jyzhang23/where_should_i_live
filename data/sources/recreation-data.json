@@ -1,0 +1,748 @@
+{
+  "version": "1.0",
+  "description": "Recreation and outdoor access metrics",
+  "sources": {
+    "nature": "OpenStreetMap Overpass API",
+    "geography": "USGS National Map API, NOAA Coastline"
+  },
+  "nationalAverages": {
+    "parkAcresPer1K": 25,
+    "trailMilesWithin10Mi": 50,
+    "protectedLandPercent": 12,
+    "coastlineAccessPercent": 30,
+    "avgElevationDelta": 800
+  },
+  "cities": {
+    "san-francisco": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 987,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 11,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 1568,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "seattle": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1608,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 11,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 3721,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "new-york-city": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 5547,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 13,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 608,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "los-angeles": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 3234,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 12,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 4645,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "sacramento": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 540,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 78,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 1548,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "boston": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 2847,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 3,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 270,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "portland": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 912,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 6,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 3695,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "las-vegas": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 2668,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 224,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 3420,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "chicago": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 2936,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 16,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 157,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "washington-dc": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 3293,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 4,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 478,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "houston": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 284,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 16,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 209,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "atlanta": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 874,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 267,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 329,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "minneapolis": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 4019,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 349,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 324,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "philadelphia": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1214,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 7,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 427,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "dallas": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 754,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 16,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 355,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "tampa-bay": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 740,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 5,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 117,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "denver": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 613,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": null,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 1131,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "charlotte": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 2035,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 178,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 308,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "oklahoma-city": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 448,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 187,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 312,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "phoenix": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 4659,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 302,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 1671,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "baltimore": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1338,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 8,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 452,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "orlando": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1075,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 77,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 81,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "indianapolis": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1132,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 165,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 177,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "nashville": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1756,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 382,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 707,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "milwaukee": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 3155,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 75,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 388,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "salt-lake-city": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 2997,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": null,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 4690,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "detroit": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 3370,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 18,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 372,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "st-louis": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1020,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 260,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 170,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "san-antonio": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1475,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 187,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 691,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "jacksonville": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 738,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 11,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 117,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "new-orleans": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 143,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 12,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 42,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "kansas-city": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 466,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 412,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 246,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "cincinnati": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 462,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 231,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 397,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "cleveland": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 3833,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 10,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 479,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "buffalo": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 1432,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 8,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 1292,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "pittsburgh": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 285,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 103,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 454,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "miami": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 2561,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 7,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 9,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "green-bay": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 428,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 182,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 235,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "memphis": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 445,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 323,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 111,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "san-diego": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 980,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": true,
+        "coastlineDistanceMi": 2,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 3367,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "santa-barbara": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 315,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 95,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 4768,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "raleigh": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 2222,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 224,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 305,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    },
+    "gainesville": {
+      "nature": {
+        "parkAcresPer1K": 0,
+        "trailMilesWithin10Mi": 540,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 0
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 58,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 116,
+        "nearestMountainDistMi": null,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
+    }
+  }
+}

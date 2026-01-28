@@ -22,6 +22,9 @@ interface CityData {
   sports: {
     nfl: string[];
     nba: string[];
+    mlb: string[];
+    nhl: string[];
+    mls: string[];
   };
 }
 
@@ -154,9 +157,12 @@ async function main() {
       // Political
       cityDemocratPercent: cityMetrics.political?.cityDemocratPercent ?? null,
       stateDemocratPercent: cityMetrics.political?.stateDemocratPercent ?? null,
-      // Sports
+      // Sports (5 Major Leagues)
       nflTeams: city.sports?.nfl?.join(", ") || null,
       nbaTeams: city.sports?.nba?.join(", ") || null,
+      mlbTeams: city.sports?.mlb?.join(", ") || null,
+      nhlTeams: city.sports?.nhl?.join(", ") || null,
+      mlsTeams: city.sports?.mls?.join(", ") || null,
       dataAsOf: new Date(),
     };
 

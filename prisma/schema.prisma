@@ -65,9 +65,12 @@ model CityMetrics {
   cityDemocratPercent  Float? // % voted Democrat in city (2024)
   stateDemocratPercent Float? // % voted Democrat in state (2024)
 
-  // === Sports/Amenities ===
+  // === Sports/Amenities (Major Professional Leagues) ===
   nflTeams String? // NFL team names (comma-separated)
   nbaTeams String? // NBA team names (comma-separated)
+  mlbTeams String? // MLB team names (comma-separated)
+  nhlTeams String? // NHL team names (comma-separated)
+  mlsTeams String? // MLS team names (comma-separated)
 
   // === Metadata ===
   dataAsOf  DateTime @default(now())

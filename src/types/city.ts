@@ -70,7 +70,41 @@ export interface CensusDemographics {
   asianLanguageAtHomePercent: number | null;
 }
 
-// Cultural Data (Political + Religious)
+// Urban Lifestyle Metrics (Nightlife, Arts, Dining, Sports)
+export interface UrbanLifestyleMetrics {
+  nightlife: {
+    barsAndClubsPer10K: number | null;  // Density per 10K residents
+    totalVenues: number | null;          // Total bars + clubs
+    lateNightVenues: number | null;      // Venues open past midnight
+  } | null;
+  
+  arts: {
+    museums: number | null;              // Total museums
+    theaters: number | null;             // Performing arts venues
+    artGalleries: number | null;         // Art galleries
+    musicVenues: number | null;          // Concert halls, live music venues
+  } | null;
+  
+  dining: {
+    fineDiningCount: number | null;      // Upscale restaurants
+    restaurantsPer10K: number | null;    // Total restaurant density
+    cuisineDiversity: number | null;     // Number of distinct cuisine types
+    breweries: number | null;            // Craft breweries
+    coffeeshops: number | null;          // Coffee shops/cafes
+  } | null;
+  
+  sports: {
+    nflTeams: number;                    // Count of NFL teams (0, 1, or 2)
+    nbaTeams: number;                    // Count of NBA teams (0, 1, or 2)
+    totalProTeams: number;               // Combined count
+    teamNames: string[];                 // Names of teams for display
+  } | null;
+  
+  dataYear: number | null;
+  lastUpdated: string | null;
+}
+
+// Cultural Data (Political + Religious + Urban Lifestyle)
 export interface CulturalMetrics {
   political: {
     partisanIndex: number | null;      // -1 (Strong R) to +1 (Strong D)
@@ -94,6 +128,31 @@ export interface CulturalMetrics {
     dominantTradition: string | null;  // Which tradition has highest share
     dataYear: number | null;
   } | null;
+  
+  // Urban Lifestyle (NEW)
+  urbanLifestyle?: UrbanLifestyleMetrics;
+}
+
+// Recreation Metrics (Nature Access + Geographic Features)
+export interface RecreationMetrics {
+  nature: {
+    parkAcresPer1K: number | null;        // Park acres per 1K residents
+    trailMilesWithin10Mi: number | null;  // Hiking trail miles in 10mi radius
+    protectedLandPercent: number | null;  // % protected/green space nearby
+    stateParksWithin50Mi: number | null;  // Number of state/national parks
+  } | null;
+  
+  geography: {
+    coastlineWithin15Mi: boolean;         // Beach access (binary)
+    coastlineDistanceMi: number | null;   // Distance to nearest coast (null if >100mi)
+    waterQualityIndex: number | null;     // Beach water quality (if coastal)
+    maxElevationDelta: number | null;     // Topographic prominence (ft) in 30mi radius
+    nearestMountainDistMi: number | null; // Distance to significant elevation (>2000ft above city)
+    nearestSkiResortMi: number | null;    // Distance to nearest ski resort
+  } | null;
+  
+  dataYear: number | null;
+  lastUpdated: string | null;
 }
 
 // Quality of Life API Data
@@ -144,6 +203,9 @@ export interface QoLMetrics {
     hospitalBeds100k: number | null;
     hpsaScore: number | null;  // Health Professional Shortage Area
   } | null;
+  
+  // Recreation & Outdoor Access (NEW)
+  recreation?: RecreationMetrics;
 }
 
 // Climate data from NOAA ACIS + Open-Meteo
@@ -247,9 +309,12 @@ export interface CityMetrics {
   /** @deprecated Use cultural.political instead */
   stateDemocratPercent: number | null;
 
-  // Sports/Amenities
-  nflTeams: string | null;
-  nbaTeams: string | null;
+  // Sports/Amenities (Major Professional Leagues)
+  nflTeams: string | null;   // NFL (Football)
+  nbaTeams: string | null;   // NBA (Basketball)
+  mlbTeams: string | null;   // MLB (Baseball)
+  nhlTeams: string | null;   // NHL (Hockey)
+  mlsTeams: string | null;   // MLS (Soccer)
 
   // BEA data (merged from metrics.json, not in database)
   bea?: BEAMetrics;
