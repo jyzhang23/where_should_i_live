@@ -3,14 +3,16 @@
 import { use, useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useCity } from "@/hooks/useCity";
+import { useCities } from "@/hooks/useCities";
 import { usePreferencesStore } from "@/lib/store";
 import { calculateScores } from "@/lib/scoring";
 import { ScoreRadarChart, PriceTrendChart } from "@/components/charts";
 import { CityMetricsGrid } from "@/components/city/CityMetricsGrid";
+import { ComparisonPanel } from "@/components/comparison";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { ArrowLeft, MapPin, TrendingUp, Award } from "lucide-react";
+import { ArrowLeft, MapPin, TrendingUp, Award, GitCompare } from "lucide-react";
 import { getScoreColor, getGrade } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +23,7 @@ interface CityPageProps {
 export default function CityPage({ params }: CityPageProps) {
   const { id } = use(params);
   const { data: city, isLoading, error } = useCity(id);
+  const { data: allCitiesData } = useCities();
   const { preferences } = usePreferencesStore();
 
   // Handle hydration
@@ -29,12 +32,21 @@ export default function CityPage({ params }: CityPageProps) {
     setIsHydrated(true);
   }, []);
 
+  // Comparison mode
+  const [showComparison, setShowComparison] = useState(false);
+
   // Calculate score for this city
   const cityScore = useMemo(() => {
     if (!city || !city.metrics || !isHydrated) return null;
     const result = calculateScores([city], preferences);
     return result.rankings[0] || null;
   }, [city, preferences, isHydrated]);
+
+  // Calculate all rankings for comparison panel
+  const allRankings = useMemo(() => {
+    if (!allCitiesData?.cities || !isHydrated) return null;
+    return calculateScores(allCitiesData.cities, preferences);
+  }, [allCitiesData, preferences, isHydrated]);
 
   if (isLoading) {
     return (
@@ -88,7 +100,18 @@ export default function CityPage({ params }: CityPageProps) {
             </p>
           )}
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowComparison(true)}
+            className="flex items-center gap-2"
+          >
+            <GitCompare className="h-4 w-4" />
+            Compare
+          </Button>
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Score Overview */}
@@ -149,6 +172,16 @@ export default function CityPage({ params }: CityPageProps) {
         <p className="text-xs text-muted-foreground text-center">
           Data as of: {new Date(city.metrics.dataAsOf).toLocaleDateString()}
         </p>
+      )}
+
+      {/* Comparison Panel */}
+      {allRankings && (
+        <ComparisonPanel
+          rankings={allRankings.rankings}
+          isOpen={showComparison}
+          onClose={() => setShowComparison(false)}
+          initialCityId={id}
+        />
       )}
     </div>
   );

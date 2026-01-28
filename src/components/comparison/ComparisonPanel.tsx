@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { CitySelector } from "./CitySelector";
 import { MetricsComparison } from "./MetricsComparison";
 import { ScoreRadarChart } from "@/components/charts/ScoreRadarChart";
@@ -15,11 +15,19 @@ interface ComparisonPanelProps {
   rankings: CityScore[];
   isOpen: boolean;
   onClose: () => void;
+  initialCityId?: string; // Pre-select a city when opening from city detail page
 }
 
-export function ComparisonPanel({ rankings, isOpen, onClose }: ComparisonPanelProps) {
-  const [city1Id, setCity1Id] = useState<string | null>(null);
+export function ComparisonPanel({ rankings, isOpen, onClose, initialCityId }: ComparisonPanelProps) {
+  const [city1Id, setCity1Id] = useState<string | null>(initialCityId || null);
   const [city2Id, setCity2Id] = useState<string | null>(null);
+
+  // Update city1Id when initialCityId changes (e.g., when opening panel)
+  useEffect(() => {
+    if (initialCityId && isOpen) {
+      setCity1Id(initialCityId);
+    }
+  }, [initialCityId, isOpen]);
 
   // Fetch full city data for both selected cities
   const { data: city1Data } = useCity(city1Id);
