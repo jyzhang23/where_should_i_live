@@ -21,6 +21,7 @@ import {
   Users,
   Activity,
   HelpCircle,
+  Church,
 } from "lucide-react";
 
 export default function HelpPage() {
@@ -215,16 +216,19 @@ export default function HelpPage() {
               </AccordionTrigger>
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
                 <p>
-                  Uses <strong>True Purchasing Power</strong> from the Bureau of Economic Analysis (BEA), 
-                  adjusted based on your housing situation. The core formula is:
+                  Uses <strong>True Purchasing Power</strong> with dual persona adjustments: your 
+                  <strong> housing situation</strong> affects the cost index (denominator), while your 
+                  <strong> work situation</strong> affects the income used (numerator).
                 </p>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  True Purchasing Power = Disposable Income ÷ (Adjusted RPP ÷ 100)
+                  True Purchasing Power = Selected Income ÷ (Adjusted RPP ÷ 100)
                 </div>
                 <p className="text-xs mt-2">
-                  Where <strong>Disposable Income</strong> = Gross Income − All Taxes (federal + state + local),
-                  and <strong>Adjusted RPP</strong> varies by your housing situation.
+                  Where <strong>Selected Income</strong> varies by your work situation (Standard, High-Earner, Retiree),
+                  and <strong>Adjusted RPP</strong> varies by your housing situation (Renter, Homeowner, Buyer).
                 </p>
+                
+                <h4>Housing Situation (Cost Denominator)</h4>
 
                 <h4>1. Renter</h4>
                 <p className="text-xs">
@@ -293,6 +297,54 @@ export default function HelpPage() {
                   </tbody>
                 </table>
 
+                <h4>Work Situation (Income Source)</h4>
+                <p className="text-xs">
+                  Choose how income is factored into purchasing power:
+                </p>
+                <table className="text-xs w-full">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Persona</th>
+                      <th className="text-left">Income Source</th>
+                      <th className="text-left">Best For</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Local Earner (default)</td>
+                      <td>Local Per Capita Income (BEA)</td>
+                      <td>&quot;How do local workers fare?&quot;</td>
+                    </tr>
+                    <tr>
+                      <td>Standard / Moving</td>
+                      <td>Fixed national median (~$75K)</td>
+                      <td>&quot;Where can I afford to move?&quot;</td>
+                    </tr>
+                    <tr>
+                      <td>Retiree / Fixed Income</td>
+                      <td>Your specified amount</td>
+                      <td>&quot;Where can I retire affordably?&quot;</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p className="text-xs text-muted-foreground">
+                  💡 <strong>Local Earner</strong> (default) uses local income levels, so expensive cities 
+                  with high salaries score better. <strong>Standard</strong> is pure affordability — 
+                  uses the same income for all cities, so SF and NYC score poorly.
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  Formula by Persona:{"\n"}
+                  {"\n"}
+                  Local Earner: Local Disposable Income ÷ (local RPP ÷ 100){"\n"}
+                  {"  "}→ How well local workers fare (default){"\n"}
+                  {"\n"}
+                  Standard: $58K (fixed) ÷ (local RPP ÷ 100){"\n"}
+                  {"  "}→ Pure cost comparison, same income everywhere{"\n"}
+                  {"\n"}
+                  Retiree: Your Fixed Income × 0.85 ÷ (local RPP ÷ 100){"\n"}
+                  {"  "}→ How far your retirement income goes
+                </div>
+
                 <h4>Final Scoring</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
                   Purchasing Power Index = (True PP ÷ $56,014) × 100{"\n"}
@@ -318,31 +370,95 @@ export default function HelpPage() {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
-                <p>Starts at 100 points with adjustments based on your preferences:</p>
-
-                <h4>Population Check</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if population &lt; min_population: penalty = -30
-                </div>
-                <p>Cities below your minimum population threshold lose 30 points.</p>
-
-                <h4>Diversity Index</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if diversity ≥ min_diversity:{"\n"}
-                  {"  "}bonus = min(10, (diversity - min_diversity) / 5){"\n"}
-                  else:{"\n"}
-                  {"  "}penalty = (min_diversity - diversity) × 2
-                </div>
-                <p>Bonus for exceeding your diversity threshold, penalty for falling short.</p>
-
-                <h4>East Asian Population (Optional)</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if target_east_asian &gt; 0:{"\n"}
-                  {"  "}penalty = |actual_percent - target_percent| × 2
-                </div>
-                <p className="text-muted-foreground">
-                  Only applies if you set a target East Asian population percentage.
+                <p>
+                  Demographics scoring uses <strong>U.S. Census Bureau American Community Survey (ACS)</strong> data 
+                  to provide accurate population, diversity, education, income, and ethnic composition metrics.
                 </p>
+
+                <h4>Data Source</h4>
+                <p>
+                  Data is pulled from the ACS 5-Year Estimates, which provides reliable statistics for all cities 
+                  regardless of population size. The data includes detailed breakdowns for race/ethnicity (including 
+                  Hispanic and Asian subgroups), educational attainment, income, poverty rates, and household composition.
+                </p>
+
+                <h4>Weighted Scoring System</h4>
+                <p>
+                  Each demographic factor has its own importance weight (0-100%). The final score is calculated 
+                  as a weighted average of all enabled factors:
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  Final Score = Σ(Factor Score × Factor Weight) / Σ(Weights)
+                </div>
+
+                <h4>Factor Scores</h4>
+                <ul className="space-y-2">
+                  <li>
+                    <strong>Population:</strong> Hard filter. Cities below your minimum are scored at 30 (significant penalty).
+                  </li>
+                  <li>
+                    <strong>Diversity Index:</strong> Simpson&apos;s Diversity Index (0-100). Score scales with diversity level; 
+                    70+ diversity ≈ 100 points. NYC: 77, Salt Lake: 35.
+                  </li>
+                  <li>
+                    <strong>Age Demographics:</strong> Matches city median age to your preference. 
+                    Young (&lt;35) = college towns, Mixed (35-45) = family hubs, Mature (&gt;45) = retirement areas.
+                  </li>
+                  <li>
+                    <strong>Education:</strong> % with Bachelor&apos;s degree or higher (25+ population). 
+                    Score scales: 20% ≈ 40 pts, 40% ≈ 80 pts, 60%+ ≈ 100 pts.
+                  </li>
+                  <li>
+                    <strong>Foreign-Born:</strong> % born outside US. Proxy for international food, culture, 
+                    and immigrant communities. Miami: 40%, Memphis: 5%.
+                  </li>
+                  <li>
+                    <strong>Economic Health:</strong> Combined score of median household income and poverty rate. 
+                    Higher income and lower poverty = higher score.
+                  </li>
+                </ul>
+
+                <h4>Minority Community</h4>
+                <p>
+                  If you select a minority group (Hispanic, Black, Asian, Pacific Islander, or Native American), 
+                  you can specify a <strong>minimum presence</strong> threshold. This helps find cities with enough 
+                  community presence for cultural infrastructure (grocery stores, restaurants, religious institutions).
+                </p>
+                <p>
+                  <strong>Subgroups</strong> are currently available for Hispanic and Asian communities only:
+                </p>
+                <ul className="text-xs">
+                  <li><strong>Hispanic:</strong> Mexican, Puerto Rican, Cuban, Salvadoran, Guatemalan, Colombian</li>
+                  <li><strong>Asian:</strong> Chinese, Indian, Filipino, Vietnamese, Korean, Japanese</li>
+                </ul>
+                <p className="text-xs text-muted-foreground">
+                  Black, Pacific Islander, and Native American use aggregate group percentages (no subgroups).
+                </p>
+                
+                <h4>Minority Community Scoring</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
+                  if (cityPercent &gt;= minPresence):{"\n"}
+                  {"  "}score = 70 + (cityPercent - minPresence) × 2{"\n"}
+                  {"  "}(capped at 100){"\n"}
+                  else:{"\n"}
+                  {"  "}score = 70 - (minPresence - cityPercent) × 5{"\n"}
+                  {"  "}(min 0)
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Example: Min presence 5%, city has 12% → 70 + (12-5)×2 = 84 points<br/>
+                  Example: Min presence 10%, city has 3% → 70 - (10-3)×5 = 35 points
+                </p>
+
+                <h4>Example Calculation</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
+                  Diversity: score=85, weight=25{"\n"}
+                  Education: score=70, weight=25{"\n"}
+                  Economic: score=60, weight=25{"\n"}
+                  Minority (Asian, min 5%): score=84, weight=50{"\n"}
+                  {"\n"}
+                  Final = (85×25 + 70×25 + 60×25 + 84×50) / (25+25+25+50){"\n"}
+                  Final = 9575 / 125 = 76.6
+                </div>
               </AccordionContent>
             </AccordionItem>
 
@@ -355,36 +471,205 @@ export default function HelpPage() {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
-                <p>Starts at 70 points (baseline) with various adjustments:</p>
+                <p>QoL uses data from 6 APIs with user-configurable weights (default sum to 100%):</p>
 
-                <h4>Walk Score</h4>
+                <h4>Data Sources</h4>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Category</th>
+                      <th className="text-left">Source</th>
+                      <th className="text-left">Default Weight</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Walkability</td><td>EPA National Walkability Index</td><td>20%</td></tr>
+                    <tr><td>Safety</td><td>FBI Crime Data Explorer</td><td>25%</td></tr>
+                    <tr><td>Air Quality</td><td>EPA AQS</td><td>15%</td></tr>
+                    <tr><td>Internet</td><td>FCC Broadband Map</td><td>10%</td></tr>
+                    <tr><td>Schools</td><td>NCES Education</td><td>15%</td></tr>
+                    <tr><td>Healthcare</td><td>HRSA</td><td>15%</td></tr>
+                  </tbody>
+                </table>
+
+                <h4>Walkability (EPA National Walkability Index)</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if walk_score ≥ min_walk: bonus = (walk_score - min_walk) / 10{"\n"}
-                  else: penalty = (min_walk - walk_score) / 5
+                  EPA Index (1-20) converted to 0-100 scale{"\n"}
+                  Based on: intersection density, transit access, employment mix{"\n"}
+                  Penalties if below min thresholds
+                </div>
+                <p className="text-xs text-muted-foreground">EPA Walkability Index measures neighborhood design factors. Higher = more walkable.</p>
+
+                <h4>Safety (FBI Crime Data)</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  base_score = 100 - ((violent_crime - 100) / 7){"\n"}
+                  Bonus +10 if 3-year trend is &quot;falling&quot;{"\n"}
+                  Penalty if exceeds max threshold
+                </div>
+                <p className="text-xs text-muted-foreground">National avg violent crime rate: ~380 per 100K. Lower is better.</p>
+
+                <h4>Air Quality (EPA AQS)</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  score = healthy_days_percent{"\n"}
+                  Penalty for hazardous days exceeding max
+                </div>
+                <p className="text-xs text-muted-foreground">AQI &lt; 50 = good, &gt; 100 = unhealthy. Important for respiratory health.</p>
+
+                <h4>Internet (FCC Broadband)</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  score = fiber_coverage_percent{"\n"}
+                  Bonus for provider competition (multiple ISPs){"\n"}
+                  Penalty if fiber required but unavailable
+                </div>
+                <p className="text-xs text-muted-foreground">More providers = better prices and service quality.</p>
+
+                <h4>Schools (NCES Education)</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  ratio_score = 100 - ((student_teacher_ratio - 10) / 15) × 100{"\n"}
+                  final_score = (ratio_score + graduation_rate) / 2
+                </div>
+                <p className="text-xs text-muted-foreground">Lower student-teacher ratio = more individual attention. National avg: ~16:1.</p>
+
+                <h4>Healthcare (HRSA)</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  score = (physicians_per_100k / 150) × 100{"\n"}
+                  Penalty for HPSA (shortage area) score
+                </div>
+                <p className="text-xs text-muted-foreground">HPSA 0 = no shortage, 25+ = severe shortage. National avg: ~75 physicians/100K.</p>
+
+                <h4>Final Calculation</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
+                  QoL_Score = (walkability × w1 + safety × w2 + air × w3 +{"\n"}
+                              internet × w4 + schools × w5 + health × w6){"\n"}
+                              / (w1 + w2 + w3 + w4 + w5 + w6)
                 </div>
 
-                <h4>Transit Score</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if transit_score ≥ min_transit: bonus = (transit_score - min_transit) / 10{"\n"}
-                  else: penalty = (min_transit - transit_score) / 5
+                <h4 className="mt-4">Data Sources Note</h4>
+                <p className="text-xs text-muted-foreground">
+                  QoL data is pulled from official government APIs when available. For cities where
+                  API queries fail or return incomplete data, verified fallback data from the following
+                  sources is used:
+                </p>
+                <ul className="text-xs text-muted-foreground list-disc pl-4 mt-2 space-y-1">
+                  <li><strong>Walkability:</strong> EPA National Walkability Index (ArcGIS)</li>
+                  <li><strong>Crime:</strong> FBI Uniform Crime Reports (UCR) 2022 state-level data</li>
+                  <li><strong>Air Quality:</strong> EPA Air Quality System (AQS) annual summaries</li>
+                  <li><strong>Broadband:</strong> FCC National Broadband Map / BroadbandMap.com 2024 - verified city-level fiber coverage and provider counts</li>
+                  <li><strong>Education:</strong> NCES Common Core of Data estimates</li>
+                  <li><strong>Healthcare:</strong> HRSA Area Health Resources Files, America&apos;s Health Rankings state data, and regional hospital infrastructure analysis</li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-2">
+                  <em>Note:</em> For some smaller metros where city-specific data is unavailable, healthcare and broadband
+                  metrics are estimated from state-level averages adjusted for local factors (presence of major
+                  medical centers, known shortage area designations, regional ISP coverage reports).
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Cultural Preferences */}
+            <AccordionItem value="cultural">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Church className="h-4 w-4 text-purple-500" />
+                  Cultural Preferences
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
+                <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 p-3 rounded mb-4">
+                  <p className="text-xs text-amber-800 dark:text-amber-200 m-0">
+                    <strong>Privacy Note:</strong> Political and religious preferences are stored locally 
+                    in your browser only and are never sent to our servers.
+                  </p>
                 </div>
 
-                <h4>Crime Rate</h4>
+                <p>
+                  Cultural preferences let you find cities that match your political and religious community 
+                  needs. This data is provided at the <strong>county/metro level</strong> — individual 
+                  neighborhoods may vary significantly.
+                </p>
+
+                <h4>Data Sources</h4>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Category</th>
+                      <th className="text-left">Source</th>
+                      <th className="text-left">Year</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Political Lean</td><td>MIT Election Lab County Returns</td><td>2024</td></tr>
+                    <tr><td>Voter Turnout</td><td>US Elections Project</td><td>2024</td></tr>
+                    <tr><td>Religious Adherence</td><td>ARDA U.S. Religion Census</td><td>2020</td></tr>
+                  </tbody>
+                </table>
+
+                <h4>Political Scoring</h4>
+                <p>
+                  The <strong>Partisan Index (PI)</strong> measures the political lean of a city:
+                </p>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if crime_rate ≤ max_crime: bonus = +10{"\n"}
-                  else: penalty = ((crime_rate - max_crime) / max_crime) × 20
+                  PI = (Dem% - Rep%) / 100{"\n"}
+                  Range: -1.0 (100% Republican) to +1.0 (100% Democrat){"\n"}
+                  {"\n"}
+                  |PI| &gt; 0.20: &quot;Solid&quot; lean{"\n"}
+                  |PI| &lt; 0.05: &quot;Swing/Purple&quot;
+                </div>
+                
+                <p>Your preference options:</p>
+                <ul className="text-xs">
+                  <li><strong>Strong D/R:</strong> Matches cities with PI near ±0.6</li>
+                  <li><strong>Lean D/R:</strong> Matches cities with PI near ±0.2</li>
+                  <li><strong>Swing:</strong> Matches cities with |PI| &lt; 0.10 (competitive)</li>
+                  <li><strong>Neutral:</strong> Political lean not factored into score</li>
+                </ul>
+
+                <p>
+                  The <strong>High Voter Turnout</strong> toggle gives bonus points to cities with 
+                  turnout above 65%, which often correlates with civic engagement and community activism.
+                </p>
+
+                <h4>Religious Scoring</h4>
+                <p>
+                  Religious adherence is measured in <strong>adherents per 1,000 residents</strong>.
+                  National averages:
+                </p>
+                <ul className="text-xs">
+                  <li>Catholic: 205</li>
+                  <li>Evangelical Protestant: 256</li>
+                  <li>Mainline Protestant: 103</li>
+                  <li>Jewish: 22</li>
+                  <li>Muslim: 11</li>
+                  <li>Unaffiliated/Secular: 290</li>
+                </ul>
+
+                <p>
+                  The <strong>Concentration Score</strong> compares local presence to national average:
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  Concentration = Local Adherence / National Average{"\n"}
+                  {"\n"}
+                  &gt; 2.0: Strong presence (bonus +20){"\n"}
+                  &gt; 1.5: Above average (bonus +15){"\n"}
+                  &gt; 1.0: Average (bonus +10){"\n"}
+                  &lt; 1.0: Below average (smaller bonus)
                 </div>
 
-                <h4>International Airport</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if requires_airport AND no_airport: penalty = -15
-                </div>
+                <p>
+                  The <strong>Religious Diversity Index</strong> uses Simpson&apos;s Diversity formula 
+                  (same as racial diversity) to measure whether a city has one dominant tradition 
+                  or a pluralistic mix.
+                </p>
 
-                <h4>Environmental Factors</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  pollution_adjustment = (pollution_index - 40) / 4{"\n"}
-                  water_adjustment = (water_quality - 70) / 4
+                <h4>Final Calculation</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
+                  Cultural_Score = (Political_Score × Political_Weight +{"\n"}
+                                   Religious_Score × Religious_Weight){"\n"}
+                                   / (Political_Weight + Religious_Weight)
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  If all cultural preferences are set to neutral/off, the score defaults to 70.
+                </p>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -420,14 +705,6 @@ export default function HelpPage() {
                 <td>Requires NBA Team</td>
                 <td>City has no NBA team</td>
               </tr>
-              <tr>
-                <td>Requires Int'l Airport</td>
-                <td>City has no major international airport</td>
-              </tr>
-              <tr>
-                <td>Max Home Price</td>
-                <td>Median home price exceeds your budget</td>
-              </tr>
             </tbody>
           </table>
           <p className="text-muted-foreground text-sm mt-4">
@@ -456,13 +733,13 @@ export default function HelpPage() {
               demographics at all, set its weight to 0.
             </li>
             <li>
-              <strong>Use filters sparingly:</strong> Hard filters (max price, requires NFL/NBA) 
+              <strong>Use filters sparingly:</strong> Hard filters (requires NFL/NBA) 
               completely exclude cities. Use the scoring system for softer preferences.
             </li>
             <li>
-              <strong>Cost of Living uses official BEA data:</strong> The cost score automatically 
-              accounts for taxes, housing, and regional prices using government data. No manual 
-              configuration needed.
+              <strong>Cost of Living has two persona selectors:</strong> Choose your housing situation 
+              (renter, homeowner, buyer) AND your work situation (standard, high-earner, retiree) 
+              for accurate purchasing power calculations.
             </li>
             <li>
               <strong>Advanced options fine-tune scores:</strong> The advanced settings let you 

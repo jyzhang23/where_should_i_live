@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { CityMetrics, NOAAClimateData, CensusDemographics } from "@/types/city";
+import { CityMetrics, NOAAClimateData, CensusDemographics, CulturalMetrics } from "@/types/city";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Tooltip,
@@ -32,6 +32,10 @@ import {
   Leaf,
   Cloud,
   Shirt,
+  Wifi,
+  GraduationCap,
+  Stethoscope,
+  Church,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -40,6 +44,7 @@ import {
   getRatingColor,
   BEAMetrics,
 } from "@/lib/cost-of-living";
+import { PriceTrendChart } from "@/components/charts/PriceTrendChart";
 
 // ============================================
 // Climate Scorecard Helper Functions
@@ -401,19 +406,28 @@ function LifestyleImpact({
 
 interface CityMetricsGridProps {
   metrics: CityMetrics;
+  cityName?: string;
+  zhviHistory?: { id: string; cityId: string; date: Date; value: number }[] | null;
+  // Cost of living preferences for persona-based calculations
+  costPreferences?: {
+    housingSituation?: "renter" | "homeowner" | "prospective-buyer";
+    includeUtilities?: boolean;
+    workSituation?: "standard" | "local-earner" | "retiree";
+    retireeFixedIncome?: number;
+  };
 }
 
 interface MetricItemProps {
   icon: React.ReactNode;
   label: string;
-  value: string | number | null;
+  value: string | number | null | undefined;
   unit?: string;
   tooltip?: string;
   colorClass?: string;
 }
 
 function MetricItem({ icon, label, value, unit, tooltip, colorClass }: MetricItemProps) {
-  const displayValue = value === null ? "—" : `${value}${unit || ""}`;
+  const displayValue = value === null || value === undefined ? "—" : `${value}${unit || ""}`;
   
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
@@ -438,7 +452,7 @@ function MetricItem({ icon, label, value, unit, tooltip, colorClass }: MetricIte
   );
 }
 
-export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
+export function CityMetricsGrid({ metrics, cityName, zhviHistory, costPreferences }: CityMetricsGridProps) {
   // BEA data is now included in metrics (merged from metrics.json)
   const bea = metrics.bea;
   // NOAA climate data (30-year normals)
@@ -472,8 +486,15 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
     return "text-score-low";
   };
 
-  // Calculate True Cost of Living from BEA data
-  const trueCostOfLiving = calculateTrueCostOfLiving(bea);
+  // Calculate True Cost of Living from BEA data with persona preferences
+  const trueCostOfLiving = calculateTrueCostOfLiving(bea, {
+    housingSituation: costPreferences?.housingSituation ?? "renter",
+    includeUtilities: costPreferences?.includeUtilities ?? true,
+    workSituation: costPreferences?.workSituation ?? "local-earner",
+    medianHomePrice: metrics.medianHomePrice,
+    medianHouseholdIncome: metrics.census?.medianHouseholdIncome ?? null,
+    retireeFixedIncome: costPreferences?.retireeFixedIncome ?? 50000,
+  });
 
   // Climate scorecard data
   const persona = useMemo(() => getClimatePersona(noaa, metrics), [noaa, metrics]);
@@ -721,8 +742,8 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
         </CardContent>
       </Card>
 
-      {/* Cost of Living Section - Now powered by BEA data */}
-      <Card>
+      {/* Cost of Living Section - Full Width with Price Chart */}
+      <Card className="md:col-span-2">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-emerald-500" />
@@ -735,96 +756,111 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* True Purchasing Power - Key metric */}
-          {trueCostOfLiving.truePurchasingPower !== null && (
-            <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs text-muted-foreground flex items-center gap-1">
-                    True Purchasing Power
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p className="text-sm">
-                          What your after-tax income can actually buy, adjusted for local prices.
-                          Formula: Disposable Income ÷ (Regional Price Parity ÷ 100)
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <div className="text-xl font-bold text-emerald-700 dark:text-emerald-400">
-                    {formatCurrency(trueCostOfLiving.truePurchasingPower)}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Metrics */}
+            <div className="space-y-4">
+              {/* True Purchasing Power - Key metric */}
+              {trueCostOfLiving.truePurchasingPower !== null && (
+                <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        True Purchasing Power
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-3 w-3 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-sm">
+                              What your after-tax income can actually buy, adjusted for local prices.
+                              Formula: Disposable Income ÷ (Regional Price Parity ÷ 100)
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div className="text-xl font-bold text-emerald-700 dark:text-emerald-400">
+                        {formatCurrency(trueCostOfLiving.truePurchasingPower)}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-muted-foreground">vs. Average</div>
+                      <div className={cn(
+                        "text-lg font-semibold",
+                        getRatingColor(trueCostOfLiving.overallValueRating, "value")
+                      )}>
+                        {trueCostOfLiving.truePurchasingPowerIndex?.toFixed(1)}
+                        <span className="text-xs font-normal text-muted-foreground ml-1">
+                          ({trueCostOfLiving.overallValueRating})
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground">vs. Average</div>
-                  <div className={cn(
-                    "text-lg font-semibold",
-                    getRatingColor(trueCostOfLiving.overallValueRating, "value")
-                  )}>
-                    {trueCostOfLiving.truePurchasingPowerIndex?.toFixed(1)}
-                    <span className="text-xs font-normal text-muted-foreground ml-1">
-                      ({trueCostOfLiving.overallValueRating})
-                    </span>
-                  </div>
-                </div>
+              )}
+
+              {/* Detailed breakdown */}
+              <div className="grid grid-cols-2 gap-2">
+                <MetricItem
+                  icon={<TrendingUp className="h-4 w-4" />}
+                  label="RPP (Cost Index)"
+                  value={trueCostOfLiving.costOfLivingIndex?.toFixed(1) ?? metrics.costOfLivingIndex}
+                  tooltip="Regional Price Parity: 100 = national average. Higher = more expensive."
+                  colorClass={getRatingColor(trueCostOfLiving.costOfLivingRating, "col")}
+                />
+                <MetricItem
+                  icon={<Home className="h-4 w-4" />}
+                  label="Housing Index"
+                  value={trueCostOfLiving.housingCostIndex?.toFixed(1)}
+                  tooltip="Regional housing/rent prices: 100 = national average"
+                  colorClass={trueCostOfLiving.housingCostIndex 
+                    ? trueCostOfLiving.housingCostIndex > 150 
+                      ? "text-red-600 dark:text-red-400" 
+                      : trueCostOfLiving.housingCostIndex < 90 
+                        ? "text-green-600 dark:text-green-400" 
+                        : ""
+                    : ""}
+                />
+                <MetricItem
+                  icon={<Percent className="h-4 w-4" />}
+                  label="Effective Tax Rate"
+                  value={trueCostOfLiving.effectiveTaxRate !== null 
+                    ? `${trueCostOfLiving.effectiveTaxRate.toFixed(1)}%` 
+                    : formatPercent(metrics.stateTaxRate)}
+                  tooltip="Total taxes as % of income (federal + state + local)"
+                  colorClass={getRatingColor(trueCostOfLiving.taxBurdenRating, "tax")}
+                />
+                <MetricItem
+                  icon={<DollarSign className="h-4 w-4" />}
+                  label="After-Tax Income"
+                  value={trueCostOfLiving.selectedAfterTaxIncome !== null 
+                    ? formatCurrency(trueCostOfLiving.selectedAfterTaxIncome) 
+                    : (trueCostOfLiving.afterTaxIncome !== null 
+                      ? formatCurrency(trueCostOfLiving.afterTaxIncome) 
+                      : null)}
+                  tooltip={`Income after taxes based on your work situation (${trueCostOfLiving.workSituation})`}
+                />
+                <MetricItem
+                  icon={<Home className="h-4 w-4" />}
+                  label="Median Home Price"
+                  value={formatPrice(metrics.medianHomePrice)}
+                  tooltip="Median single-family home price (Zillow ZHVI)"
+                />
+                <MetricItem
+                  icon={<Percent className="h-4 w-4" />}
+                  label="State Tax Rate"
+                  value={formatPercent(metrics.stateTaxRate)}
+                  tooltip="Top marginal state income tax rate"
+                />
               </div>
             </div>
-          )}
 
-          {/* Detailed breakdown */}
-          <div className="grid grid-cols-2 gap-2">
-            <MetricItem
-              icon={<TrendingUp className="h-4 w-4" />}
-              label="RPP (Cost Index)"
-              value={trueCostOfLiving.costOfLivingIndex?.toFixed(1) ?? metrics.costOfLivingIndex}
-              tooltip="Regional Price Parity: 100 = national average. Higher = more expensive."
-              colorClass={getRatingColor(trueCostOfLiving.costOfLivingRating, "col")}
-            />
-            <MetricItem
-              icon={<Home className="h-4 w-4" />}
-              label="Housing Index"
-              value={trueCostOfLiving.housingCostIndex?.toFixed(1)}
-              tooltip="Regional housing/rent prices: 100 = national average"
-              colorClass={trueCostOfLiving.housingCostIndex 
-                ? trueCostOfLiving.housingCostIndex > 150 
-                  ? "text-red-600 dark:text-red-400" 
-                  : trueCostOfLiving.housingCostIndex < 90 
-                    ? "text-green-600 dark:text-green-400" 
-                    : ""
-                : ""}
-            />
-            <MetricItem
-              icon={<Percent className="h-4 w-4" />}
-              label="Effective Tax Rate"
-              value={trueCostOfLiving.effectiveTaxRate !== null 
-                ? `${trueCostOfLiving.effectiveTaxRate.toFixed(1)}%` 
-                : formatPercent(metrics.stateTaxRate)}
-              tooltip="Total taxes as % of income (federal + state + local)"
-              colorClass={getRatingColor(trueCostOfLiving.taxBurdenRating, "tax")}
-            />
-            <MetricItem
-              icon={<DollarSign className="h-4 w-4" />}
-              label="Disposable Income"
-              value={trueCostOfLiving.afterTaxIncome !== null 
-                ? formatCurrency(trueCostOfLiving.afterTaxIncome) 
-                : null}
-              tooltip="Per capita income after all taxes"
-            />
-            <MetricItem
-              icon={<Home className="h-4 w-4" />}
-              label="Median Home Price"
-              value={formatPrice(metrics.medianHomePrice)}
-              tooltip="Median single-family home price (Zillow ZHVI)"
-            />
-            <MetricItem
-              icon={<Percent className="h-4 w-4" />}
-              label="State Tax Rate"
-              value={formatPercent(metrics.stateTaxRate)}
-              tooltip="Top marginal state income tax rate"
-            />
+            {/* Right Column - Price History Chart */}
+            <div className="min-h-[300px]">
+              <PriceTrendChart
+                cityName={cityName || null}
+                zhviHistory={zhviHistory || null}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -936,6 +972,57 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
                   />
                 </div>
               </div>
+
+              {/* Hispanic Subgroups (if significant) */}
+              {census.hispanicPercent && census.hispanicPercent > 5 && (
+                <div className="pt-2 border-t">
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2">Hispanic Subgroups (% of city)</h4>
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Mexican"
+                      value={census.mexicanPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Mexican population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Puerto Rican"
+                      value={census.puertoRicanPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Puerto Rican population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Cuban"
+                      value={census.cubanPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Cuban population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Salvadoran"
+                      value={census.salvadoranPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Salvadoran population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Guatemalan"
+                      value={census.guatemalanPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Guatemalan population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Colombian"
+                      value={census.colombianPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Colombian population"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Asian Subgroups (if significant) */}
               {census.asianPercent && census.asianPercent > 3 && (
@@ -1084,113 +1171,550 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
         </CardContent>
       </Card>
 
-      {/* Quality of Life Section */}
-      <Card>
+      {/* Quality of Life Section - Full Width */}
+      <Card className="md:col-span-2">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Activity className="h-4 w-4 text-rose-500" />
             Quality of Life
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2">
-          <MetricItem
-            icon={<Footprints className="h-4 w-4" />}
-            label="Walk Score"
-            value={metrics.walkScore}
-            tooltip="Walkability score (0-100)"
-            colorClass={getScoreColor(metrics.walkScore)}
-          />
-          <MetricItem
-            icon={<Train className="h-4 w-4" />}
-            label="Transit Score"
-            value={metrics.transitScore}
-            tooltip="Public transit accessibility (0-100)"
-            colorClass={getScoreColor(metrics.transitScore)}
-          />
-          <MetricItem
-            icon={<Shield className="h-4 w-4" />}
-            label="Crime Rate"
-            value={metrics.crimeRate?.toFixed(0)}
-            tooltip="Violent crimes per 100,000 residents"
-            colorClass={getScoreColor(metrics.crimeRate, true)}
-          />
-          <MetricItem
-            icon={<Plane className="h-4 w-4" />}
-            label="Int'l Airport"
-            value={metrics.hasInternationalAirport ? "Yes" : "No"}
-            tooltip="Has major international airport"
-            colorClass={metrics.hasInternationalAirport ? "text-score-high" : "text-muted-foreground"}
-          />
-          <MetricItem
-            icon={<Wind className="h-4 w-4" />}
-            label="Pollution Index"
-            value={metrics.pollutionIndex?.toFixed(0)}
-            tooltip="Air pollution index (lower is better)"
-            colorClass={getScoreColor(metrics.pollutionIndex, true)}
-          />
-          <MetricItem
-            icon={<Droplets className="h-4 w-4" />}
-            label="Water Quality"
-            value={metrics.waterQualityIndex?.toFixed(0)}
-            tooltip="Water quality index (higher is better)"
-            colorClass={getScoreColor(metrics.waterQualityIndex)}
-          />
-          <MetricItem
-            icon={<Car className="h-4 w-4" />}
-            label="Traffic Index"
-            value={metrics.trafficIndex?.toFixed(0)}
-            tooltip="Traffic congestion index (lower is better)"
-            colorClass={getScoreColor(metrics.trafficIndex, true)}
-          />
-          <MetricItem
-            icon={<Activity className="h-4 w-4" />}
-            label="Health Score"
-            value={metrics.healthScore?.toFixed(0)}
-            tooltip="Healthcare access and quality score"
-            colorClass={getScoreColor(metrics.healthScore)}
-          />
+        <CardContent>
+          {metrics.qol ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {/* Walkability Card */}
+              <div className="p-3 rounded-lg border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Footprints className="h-4 w-4 text-blue-500" />
+                  <span className="font-medium text-sm">Walkability</span>
+                </div>
+                {metrics.qol.walkability ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Walk Score</span>
+                      <span className={getScoreColor(metrics.qol.walkability.walkScore)}>
+                        {metrics.qol.walkability.walkScore ?? "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Transit Score</span>
+                      <span className={getScoreColor(metrics.qol.walkability.transitScore)}>
+                        {metrics.qol.walkability.transitScore ?? "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Bike Score</span>
+                      <span className={getScoreColor(metrics.qol.walkability.bikeScore)}>
+                        {metrics.qol.walkability.bikeScore ?? "N/A"}
+                      </span>
+                    </div>
+                    {metrics.qol.walkability.description && (
+                      <p className="text-xs text-muted-foreground mt-1">{metrics.qol.walkability.description}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Pull Walk Score data</p>
+                )}
+              </div>
+
+              {/* Safety Card */}
+              <div className="p-3 rounded-lg border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="h-4 w-4 text-green-500" />
+                  <span className="font-medium text-sm">Safety</span>
+                </div>
+                {metrics.qol.crime ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Violent Crime</span>
+                      <span className={getScoreColor(metrics.qol.crime.violentCrimeRate, true)}>
+                        {metrics.qol.crime.violentCrimeRate?.toFixed(0) ?? "N/A"}/100K
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Property Crime</span>
+                      <span>{metrics.qol.crime.propertyCrimeRate?.toFixed(0) ?? "N/A"}/100K</span>
+                    </div>
+                    {metrics.qol.crime.trend3Year && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">3-Year Trend</span>
+                        <span className={
+                          metrics.qol.crime.trend3Year === "falling" ? "text-score-high" :
+                          metrics.qol.crime.trend3Year === "rising" ? "text-score-low" : ""
+                        }>
+                          {metrics.qol.crime.trend3Year === "falling" ? "↓ Falling" :
+                           metrics.qol.crime.trend3Year === "rising" ? "↑ Rising" : "→ Stable"}
+                        </span>
+                      </div>
+                    )}
+                    {metrics.qol.crime.dataYear && (
+                      <p className="text-[10px] text-muted-foreground mt-1">Data: {metrics.qol.crime.dataYear}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Pull FBI Crime data</p>
+                )}
+              </div>
+
+              {/* Air Quality Card */}
+              <div className="p-3 rounded-lg border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Wind className="h-4 w-4 text-cyan-500" />
+                  <span className="font-medium text-sm">Air Quality</span>
+                </div>
+                {metrics.qol.airQuality ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Annual AQI</span>
+                      <span className={getScoreColor(metrics.qol.airQuality.annualAQI, true)}>
+                        {metrics.qol.airQuality.annualAQI ?? "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Healthy Days</span>
+                      <span className={getScoreColor(metrics.qol.airQuality.healthyDaysPercent)}>
+                        {metrics.qol.airQuality.healthyDaysPercent ?? "N/A"}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Hazardous Days</span>
+                      <span className={getScoreColor(metrics.qol.airQuality.hazardousDays, true)}>
+                        {metrics.qol.airQuality.hazardousDays ?? "N/A"}/yr
+                      </span>
+                    </div>
+                    {metrics.qol.airQuality.primaryPollutant && (
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        Primary: {metrics.qol.airQuality.primaryPollutant}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Pull EPA Air Quality data</p>
+                )}
+              </div>
+
+              {/* Broadband Card */}
+              <div className="p-3 rounded-lg border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Wifi className="h-4 w-4 text-purple-500" />
+                  <span className="font-medium text-sm">Internet</span>
+                </div>
+                {metrics.qol.broadband ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Fiber Coverage</span>
+                      <span className={getScoreColor(metrics.qol.broadband.fiberCoveragePercent)}>
+                        {metrics.qol.broadband.fiberCoveragePercent ?? "N/A"}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Providers</span>
+                      <span>{metrics.qol.broadband.providerCount ?? "N/A"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Max Speed</span>
+                      <span>{metrics.qol.broadband.maxDownloadSpeed ? `${metrics.qol.broadband.maxDownloadSpeed} Mbps` : "N/A"}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Pull FCC Broadband data</p>
+                )}
+              </div>
+
+              {/* Education Card */}
+              <div className="p-3 rounded-lg border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <GraduationCap className="h-4 w-4 text-amber-500" />
+                  <span className="font-medium text-sm">Schools</span>
+                </div>
+                {metrics.qol.education ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Student/Teacher</span>
+                      <span className={getScoreColor(metrics.qol.education.studentTeacherRatio, true)}>
+                        {metrics.qol.education.studentTeacherRatio ?? "N/A"}:1
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Graduation Rate</span>
+                      <span className={getScoreColor(metrics.qol.education.graduationRate)}>
+                        {metrics.qol.education.graduationRate ?? "N/A"}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Schools</span>
+                      <span>{metrics.qol.education.schoolCount ?? "N/A"}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Pull NCES Education data</p>
+                )}
+              </div>
+
+              {/* Healthcare Card */}
+              <div className="p-3 rounded-lg border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Stethoscope className="h-4 w-4 text-red-500" />
+                  <span className="font-medium text-sm">Healthcare</span>
+                </div>
+                {metrics.qol.health ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Physicians</span>
+                      <span className={getScoreColor(metrics.qol.health.primaryCarePhysiciansPer100k)}>
+                        {metrics.qol.health.primaryCarePhysiciansPer100k ?? "N/A"}/100K
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Hospital Beds</span>
+                      <span>{metrics.qol.health.hospitalBeds100k ?? "N/A"}/100K</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">HPSA Score</span>
+                      <span className={getScoreColor(metrics.qol.health.hpsaScore, true)}>
+                        {metrics.qol.health.hpsaScore ?? "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Pull HRSA Health data</p>
+                )}
+              </div>
+            </div>
+          ) : (
+            // Legacy display for cities without QoL API data
+            <div className="grid grid-cols-2 gap-2">
+              <MetricItem
+                icon={<Footprints className="h-4 w-4" />}
+                label="Walk Score"
+                value={metrics.walkScore}
+                tooltip="Walkability score (0-100)"
+                colorClass={getScoreColor(metrics.walkScore)}
+              />
+              <MetricItem
+                icon={<Train className="h-4 w-4" />}
+                label="Transit Score"
+                value={metrics.transitScore}
+                tooltip="Public transit accessibility (0-100)"
+                colorClass={getScoreColor(metrics.transitScore)}
+              />
+              <MetricItem
+                icon={<Shield className="h-4 w-4" />}
+                label="Crime Rate"
+                value={metrics.crimeRate?.toFixed(0)}
+                tooltip="Violent crimes per 100,000 residents"
+                colorClass={getScoreColor(metrics.crimeRate, true)}
+              />
+              <MetricItem
+                icon={<Activity className="h-4 w-4" />}
+                label="Health Score"
+                value={metrics.healthScore?.toFixed(0)}
+                tooltip="Healthcare access and quality score"
+                colorClass={getScoreColor(metrics.healthScore)}
+              />
+              <div className="col-span-2 text-center py-4 text-muted-foreground text-sm">
+                <p>Pull QoL data from the Admin panel for detailed metrics.</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Political Section */}
-      <Card>
+      {/* Cultural Profile Section - Enhanced */}
+      <Card className="md:col-span-2">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Vote className="h-4 w-4 text-blue-500" />
-            Political Lean
+            <Church className="h-4 w-4 text-purple-500" />
+            Cultural Profile
+            {metrics.cultural?.political?.dataYear && (
+              <span className="text-xs font-normal text-muted-foreground ml-auto">
+                Political: {metrics.cultural.political.dataYear} • Religious: {metrics.cultural?.religious?.dataYear || "N/A"}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2">
-          <MetricItem
-            icon={<Vote className="h-4 w-4 text-blue-600" />}
-            label="City Dem %"
-            value={formatPercent(metrics.cityDemocratPercent)}
-            tooltip="City-level Democratic vote share"
-          />
-          <MetricItem
-            icon={<Vote className="h-4 w-4 text-blue-600" />}
-            label="State Dem %"
-            value={formatPercent(metrics.stateDemocratPercent)}
-            tooltip="State-level Democratic vote share"
-          />
+        <CardContent>
+          {metrics.cultural?.political || metrics.cultural?.religious ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Political */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
+                  <Vote className="h-4 w-4" />
+                  POLITICAL LANDSCAPE
+                </h4>
+                
+                {metrics.cultural?.political ? (
+                  <>
+                    {/* Political Lean Badge */}
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "px-4 py-2 rounded-lg font-semibold text-white",
+                        (metrics.cultural.political.partisanIndex ?? 0) > 0.2 ? "bg-blue-600" :
+                        (metrics.cultural.political.partisanIndex ?? 0) < -0.2 ? "bg-red-600" :
+                        "bg-purple-600"
+                      )}>
+                        {(metrics.cultural.political.partisanIndex ?? 0) > 0.2 ? "Leans Democrat" :
+                         (metrics.cultural.political.partisanIndex ?? 0) < -0.2 ? "Leans Republican" :
+                         "Swing / Competitive"}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Partisan Index: <span className="font-medium">{((metrics.cultural.political.partisanIndex ?? 0) * 100).toFixed(0)}</span>
+                      </div>
+                    </div>
+
+                    {/* Partisan Index Visual */}
+                    <div className="space-y-1">
+                      <div className="relative h-8 bg-gradient-to-r from-red-600 via-purple-500 to-blue-600 rounded-lg overflow-hidden">
+                        <div 
+                          className="absolute top-1 bottom-1 w-1.5 bg-white border-2 border-gray-800 rounded shadow-lg"
+                          style={{ 
+                            left: `${((metrics.cultural.political.partisanIndex ?? 0) + 1) / 2 * 100}%`,
+                            transform: 'translateX(-50%)'
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground px-1">
+                        <span>Strong R (-100)</span>
+                        <span>Swing (0)</span>
+                        <span>Strong D (+100)</span>
+                      </div>
+                    </div>
+                    
+                    {/* Vote Share Grid */}
+                    <div className="grid grid-cols-4 gap-2">
+                      <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {metrics.cultural.political.democratPercent?.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">Democrat</div>
+                      </div>
+                      <div className="text-center p-3 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-800">
+                        <div className="text-2xl font-bold text-red-600">
+                          {metrics.cultural.political.republicanPercent?.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">Republican</div>
+                      </div>
+                      <div className="text-center p-3 bg-purple-50 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-800">
+                        <div className="text-2xl font-bold text-purple-600">
+                          {metrics.cultural.political.marginOfVictory?.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">Margin</div>
+                      </div>
+                      <div className="text-center p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                        <div className="text-2xl font-bold text-emerald-600">
+                          {metrics.cultural.political.voterTurnout?.toFixed(0)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">Turnout</div>
+                      </div>
+                    </div>
+
+                    {/* Competitiveness & Engagement */}
+                    <div className="p-3 bg-muted/30 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Election Competitiveness</span>
+                        <span className={cn(
+                          "text-sm font-medium px-2 py-0.5 rounded",
+                          (metrics.cultural.political.marginOfVictory ?? 0) < 5 
+                            ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" 
+                            : (metrics.cultural.political.marginOfVictory ?? 0) < 15
+                            ? "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                            : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                        )}>
+                          {(metrics.cultural.political.marginOfVictory ?? 0) < 5 ? "Highly Competitive" :
+                           (metrics.cultural.political.marginOfVictory ?? 0) < 15 ? "Moderately Competitive" :
+                           "Safe District"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Civic Engagement</span>
+                        <span className={cn(
+                          "text-sm font-medium px-2 py-0.5 rounded",
+                          (metrics.cultural.political.voterTurnout ?? 0) >= 70
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
+                            : (metrics.cultural.political.voterTurnout ?? 0) >= 60
+                            ? "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                            : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                        )}>
+                          {(metrics.cultural.political.voterTurnout ?? 0) >= 70 ? "High" :
+                           (metrics.cultural.political.voterTurnout ?? 0) >= 60 ? "Moderate" :
+                           "Low"}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground">
+                      Source: MIT Election Lab, {metrics.cultural.political.dataYear} Presidential Election
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <MetricItem
+                      icon={<Vote className="h-4 w-4 text-blue-600" />}
+                      label="City Dem %"
+                      value={formatPercent(metrics.cityDemocratPercent)}
+                      tooltip="City-level Democratic vote share (legacy data)"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column - Religious */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
+                  <Church className="h-4 w-4" />
+                  RELIGIOUS LANDSCAPE
+                </h4>
+                
+                {metrics.cultural?.religious ? (
+                  <>
+                    {/* Dominant Tradition Badge */}
+                    <div className="flex items-center gap-3">
+                      <div className="px-4 py-2 rounded-lg font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                        {metrics.cultural.religious.dominantTradition}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Diversity: <span className="font-medium">{metrics.cultural.religious.diversityIndex}/100</span>
+                      </div>
+                    </div>
+
+                    {/* Religious Composition Bars */}
+                    <div className="space-y-2">
+                      {[
+                        { label: "Catholic", value: metrics.cultural.religious.catholic, color: "bg-amber-500", natAvg: 205 },
+                        { label: "Evangelical Protestant", value: metrics.cultural.religious.evangelicalProtestant, color: "bg-red-500", natAvg: 256 },
+                        { label: "Mainline Protestant", value: metrics.cultural.religious.mainlineProtestant, color: "bg-blue-500", natAvg: 103 },
+                        { label: "Jewish", value: metrics.cultural.religious.jewish, color: "bg-sky-500", natAvg: 22 },
+                        { label: "Muslim", value: metrics.cultural.religious.muslim, color: "bg-emerald-500", natAvg: 11 },
+                        { label: "Secular/None", value: metrics.cultural.religious.unaffiliated, color: "bg-gray-400", natAvg: 290 },
+                        ...(metrics.cultural.religious.lds && metrics.cultural.religious.lds > 50 
+                          ? [{ label: "LDS/Mormon", value: metrics.cultural.religious.lds, color: "bg-purple-500", natAvg: 65 }] 
+                          : []),
+                      ].filter(t => t.value && t.value > 5).sort((a, b) => (b.value ?? 0) - (a.value ?? 0)).map((tradition) => {
+                        const concentration = tradition.value && tradition.natAvg ? tradition.value / tradition.natAvg : 0;
+                        return (
+                          <div key={tradition.label} className="space-y-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-muted-foreground">{tradition.label}</span>
+                              <span className="font-medium">
+                                {tradition.value}
+                                <span className="text-muted-foreground ml-1">
+                                  ({concentration > 1.5 ? "↑" : concentration < 0.7 ? "↓" : "~"} {(concentration * 100).toFixed(0)}% of avg)
+                                </span>
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden relative">
+                                {/* National average marker */}
+                                <div 
+                                  className="absolute top-0 bottom-0 w-0.5 bg-gray-400 z-10"
+                                  style={{ left: `${Math.min(100, (tradition.natAvg / 5))}%` }}
+                                />
+                                <div 
+                                  className={cn("h-full rounded-full transition-all", tradition.color)}
+                                  style={{ width: `${Math.min(100, (tradition.value ?? 0) / 5)}%` }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground">
+                      Gray line = National average. Values are adherents per 1,000 residents.
+                    </div>
+
+                    {/* Diversity Assessment */}
+                    <div className="p-3 bg-muted/30 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Religious Diversity</span>
+                        <span className={cn(
+                          "text-sm font-medium px-2 py-0.5 rounded",
+                          (metrics.cultural.religious.diversityIndex ?? 0) >= 70
+                            ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+                            : (metrics.cultural.religious.diversityIndex ?? 0) >= 50
+                            ? "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                            : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                        )}>
+                          {(metrics.cultural.religious.diversityIndex ?? 0) >= 70 ? "Highly Diverse" :
+                           (metrics.cultural.religious.diversityIndex ?? 0) >= 50 ? "Moderately Diverse" :
+                           "Homogeneous"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Secular Population</span>
+                        <span className={cn(
+                          "text-sm font-medium px-2 py-0.5 rounded",
+                          (metrics.cultural.religious.unaffiliated ?? 0) >= 400
+                            ? "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                            : (metrics.cultural.religious.unaffiliated ?? 0) >= 250
+                            ? "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                            : "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+                        )}>
+                          {(metrics.cultural.religious.unaffiliated ?? 0) >= 400 ? "Very High" :
+                           (metrics.cultural.religious.unaffiliated ?? 0) >= 250 ? "Average" :
+                           "Below Average"}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground">
+                      Source: ARDA U.S. Religion Census {metrics.cultural.religious.dataYear}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Religious data not available
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="mb-2">Cultural data not yet loaded.</p>
+              <p className="text-xs">Pull Cultural data from the Admin panel to see political and religious demographics.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Sports Teams Section */}
-      <Card>
+      {/* City Amenities Section - Full Width */}
+      <Card className="md:col-span-2">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            🏈 Sports Teams
+            🏙️ City Amenities
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <span className="text-xs text-muted-foreground">NFL</span>
-            <p className="font-medium">{metrics.nflTeams || "None"}</p>
-          </div>
-          <div>
-            <span className="text-xs text-muted-foreground">NBA</span>
-            <p className="font-medium">{metrics.nbaTeams || "None"}</p>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* International Airport */}
+            <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
+              <span className="text-2xl">✈️</span>
+              <div>
+                <span className="text-xs text-muted-foreground">International Airport</span>
+                <p className={`font-semibold ${metrics.hasInternationalAirport ? "text-score-high" : "text-muted-foreground"}`}>
+                  {metrics.hasInternationalAirport ? "Yes" : "No"}
+                </p>
+              </div>
+            </div>
+            
+            {/* NFL Teams */}
+            <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
+              <span className="text-2xl">🏈</span>
+              <div>
+                <span className="text-xs text-muted-foreground">NFL Team</span>
+                <p className="font-semibold">{metrics.nflTeams || "None"}</p>
+              </div>
+            </div>
+            
+            {/* NBA Teams */}
+            <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
+              <span className="text-2xl">🏀</span>
+              <div>
+                <span className="text-xs text-muted-foreground">NBA Team</span>
+                <p className="font-semibold">{metrics.nbaTeams || "None"}</p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

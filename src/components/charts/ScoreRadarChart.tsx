@@ -8,6 +8,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
   Tooltip,
+  Legend,
 } from "recharts";
 import { CityScore } from "@/types/scores";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,21 +59,35 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
       comparison: comparisonScore?.qualityOfLifeScore,
       fullMark: 100,
     },
+    {
+      category: "Cultural",
+      score: cityScore.culturalScore,
+      comparison: comparisonScore?.culturalScore,
+      fullMark: 100,
+    },
   ];
 
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">
-          {cityScore.cityName}, {cityScore.state}
-          {comparisonScore && (
-            <span className="text-muted-foreground font-normal">
-              {" "}vs {comparisonScore.cityName}
-            </span>
-          )}
-        </CardTitle>
+        <CardTitle className="text-base">Category Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Legend above chart */}
+        {comparisonScore && (
+          <div className="flex items-center justify-center gap-6 mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-3 rounded-sm bg-blue-500" />
+              <span className="text-sm font-medium">{cityScore.cityName}</span>
+              <span className="text-lg font-bold text-blue-500">{cityScore.totalScore.toFixed(1)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-3 rounded-sm bg-orange-500" />
+              <span className="text-sm font-medium">{comparisonScore.cityName}</span>
+              <span className="text-lg font-bold text-orange-500">{comparisonScore.totalScore.toFixed(1)}</span>
+            </div>
+          </div>
+        )}
         <div className="h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
@@ -90,8 +105,8 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
               <Radar
                 name={cityScore.cityName}
                 dataKey="score"
-                stroke="var(--primary)"
-                fill="var(--primary)"
+                stroke="#3b82f6"
+                fill="#3b82f6"
                 fillOpacity={0.3}
                 strokeWidth={2}
               />
@@ -99,11 +114,10 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
                 <Radar
                   name={comparisonScore.cityName}
                   dataKey="comparison"
-                  stroke="var(--muted-foreground)"
-                  fill="var(--muted-foreground)"
-                  fillOpacity={0.15}
+                  stroke="#f97316"
+                  fill="#f97316"
+                  fillOpacity={0.2}
                   strokeWidth={2}
-                  strokeDasharray="4 4"
                 />
               )}
               <Tooltip
@@ -113,17 +127,24 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
                   borderRadius: "8px",
                   color: "var(--foreground)",
                 }}
-                formatter={(value: number) => [value.toFixed(1), ""]}
+                formatter={(value: number | undefined, name: string | undefined) => [
+                  (value ?? 0).toFixed(1),
+                  name === "score" ? cityScore.cityName : comparisonScore?.cityName || ""
+                ]}
               />
             </RadarChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-2 text-center">
-          <span className="text-2xl font-bold text-primary">
-            {cityScore.totalScore.toFixed(1)}
-          </span>
-          <span className="text-muted-foreground ml-1">overall score</span>
-        </div>
+        {/* Single city - show score below */}
+        {!comparisonScore && (
+          <div className="mt-2 text-center">
+            <span className="text-sm text-muted-foreground">{cityScore.cityName}: </span>
+            <span className="text-2xl font-bold text-blue-500">
+              {cityScore.totalScore.toFixed(1)}
+            </span>
+            <span className="text-muted-foreground ml-1">overall</span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

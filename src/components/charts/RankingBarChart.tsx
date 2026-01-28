@@ -92,13 +92,13 @@ export function RankingBarChart({
                   borderRadius: "8px",
                   color: "var(--foreground)",
                 }}
-                formatter={(value: number) => [value.toFixed(1), "Score"]}
+                formatter={(value: number | undefined) => [(value ?? 0).toFixed(1), "Score"]}
                 labelFormatter={(label) => label}
               />
               <Bar
                 dataKey="totalScore"
                 radius={[0, 4, 4, 0]}
-                onClick={(data) => onCitySelect?.(data.cityId)}
+                onClick={(data) => onCitySelect?.((data as unknown as { cityId: string }).cityId)}
                 cursor={onCitySelect ? "pointer" : "default"}
               >
                 {topCities.map((entry) => (

@@ -7,11 +7,20 @@ import { cn } from "@/lib/utils";
 import {
   ArrowUp,
   ArrowDown,
-  Minus,
   Sun,
   Home,
   Users,
   Activity,
+  DollarSign,
+  Thermometer,
+  CloudRain,
+  Droplets,
+  GraduationCap,
+  Stethoscope,
+  Shield,
+  Wind,
+  Vote,
+  Church,
 } from "lucide-react";
 
 interface MetricsComparisonProps {
@@ -130,12 +139,18 @@ export function MetricsComparison({
 
   const formatTemp = (v: number | string | null) => 
     v !== null && typeof v === "number" ? `${v.toFixed(0)}°F` : "—";
-  const formatPercent = (v: number | string | null) => 
+  const formatPercentDecimal = (v: number | string | null) => 
     v !== null && typeof v === "number" ? `${(v * 100).toFixed(1)}%` : "—";
+  const formatPercent = (v: number | string | null) => 
+    v !== null && typeof v === "number" ? `${v.toFixed(1)}%` : "—";
   const formatPrice = (v: number | string | null) => {
     if (v === null || typeof v !== "number") return "—";
     if (v >= 1000000) return `$${(v / 1000000).toFixed(2)}M`;
     return `$${(v / 1000).toFixed(0)}K`;
+  };
+  const formatCurrency = (v: number | string | null) => {
+    if (v === null || typeof v !== "number") return "—";
+    return `$${v.toLocaleString()}`;
   };
   const formatNumber = (v: number | string | null, decimals = 1) =>
     v !== null && typeof v === "number" ? v.toFixed(decimals) : "—";
@@ -143,8 +158,9 @@ export function MetricsComparison({
     v !== null && typeof v === "number" ? v.toFixed(0) : "—";
   const formatPop = (v: number | string | null) => {
     if (v === null || typeof v !== "number") return "—";
-    if (v >= 1000) return `${(v / 1000).toFixed(1)}M`;
-    return `${v}K`;
+    if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
+    if (v >= 1000) return `${(v / 1000).toFixed(0)}K`;
+    return String(v);
   };
 
   return (
@@ -168,19 +184,19 @@ export function MetricsComparison({
             format={(v) => formatNumber(v, 1)}
           />
           <ComparisonRow
-            label="Climate Score"
+            label="Climate"
             value1={score1.climateScore}
             value2={score2.climateScore}
             format={(v) => formatNumber(v, 1)}
           />
           <ComparisonRow
-            label="Cost Score"
+            label="Cost"
             value1={score1.costScore}
             value2={score2.costScore}
             format={(v) => formatNumber(v, 1)}
           />
           <ComparisonRow
-            label="Demographics Score"
+            label="Demographics"
             value1={score1.demographicsScore}
             value2={score2.demographicsScore}
             format={(v) => formatNumber(v, 1)}
@@ -191,9 +207,15 @@ export function MetricsComparison({
             value2={score2.qualityOfLifeScore}
             format={(v) => formatNumber(v, 1)}
           />
+          <ComparisonRow
+            label="Cultural"
+            value1={score1.culturalScore}
+            value2={score2.culturalScore}
+            format={(v) => formatNumber(v, 1)}
+          />
         </div>
 
-        {/* Climate Section */}
+        {/* Climate Section - Enhanced with NOAA data */}
         <div>
           <SectionHeader
             icon={<Sun className="h-4 w-4 text-amber-500" />}
@@ -202,44 +224,66 @@ export function MetricsComparison({
             city2Name={city2.name}
           />
           <ComparisonRow
+            label="Comfort Days (65-80°F)"
+            value1={m1?.noaa?.comfortDays ?? null}
+            value2={m2?.noaa?.comfortDays ?? null}
+            format={formatInt}
+          />
+          <ComparisonRow
+            label="Extreme Heat Days (>95°F)"
+            value1={m1?.noaa?.extremeHeatDays ?? null}
+            value2={m2?.noaa?.extremeHeatDays ?? null}
+            format={formatInt}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Freeze Days (<32°F)"
+            value1={m1?.noaa?.freezeDays ?? null}
+            value2={m2?.noaa?.freezeDays ?? null}
+            format={formatInt}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Rainy Days"
+            value1={m1?.noaa?.rainDays ?? m1?.daysOfRain ?? null}
+            value2={m2?.noaa?.rainDays ?? m2?.daysOfRain ?? null}
+            format={formatInt}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Annual Snowfall"
+            value1={m1?.noaa?.annualSnowfall ?? null}
+            value2={m2?.noaa?.annualSnowfall ?? null}
+            format={(v) => v !== null && typeof v === "number" ? `${v.toFixed(1)}"` : "—"}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Cloudy Days"
+            value1={m1?.noaa?.cloudyDays ?? null}
+            value2={m2?.noaa?.cloudyDays ?? null}
+            format={formatInt}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="July Dewpoint (Humidity)"
+            value1={m1?.noaa?.julyDewpoint ?? null}
+            value2={m2?.noaa?.julyDewpoint ?? null}
+            format={(v) => v !== null && typeof v === "number" ? `${v.toFixed(0)}°F` : "—"}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
             label="Avg Temperature"
             value1={m1?.avgTemp ?? null}
             value2={m2?.avgTemp ?? null}
             format={formatTemp}
             showDiff={false}
           />
-          <ComparisonRow
-            label="Summer Temp"
-            value1={m1?.avgSummerTemp ?? null}
-            value2={m2?.avgSummerTemp ?? null}
-            format={formatTemp}
-            higherIsBetter={false}
-          />
-          <ComparisonRow
-            label="Winter Temp"
-            value1={m1?.avgWinterTemp ?? null}
-            value2={m2?.avgWinterTemp ?? null}
-            format={formatTemp}
-          />
-          <ComparisonRow
-            label="Sunny Days"
-            value1={m1?.daysOfSunshine ?? null}
-            value2={m2?.daysOfSunshine ?? null}
-            format={formatInt}
-          />
-          <ComparisonRow
-            label="Rainy Days"
-            value1={m1?.daysOfRain ?? null}
-            value2={m2?.daysOfRain ?? null}
-            format={formatInt}
-            higherIsBetter={false}
-          />
         </div>
 
-        {/* Cost Section */}
+        {/* Cost Section - Enhanced with BEA data */}
         <div>
           <SectionHeader
-            icon={<Home className="h-4 w-4 text-emerald-500" />}
+            icon={<DollarSign className="h-4 w-4 text-emerald-500" />}
             title="Cost of Living"
             city1Name={city1.name}
             city2Name={city2.name}
@@ -252,29 +296,41 @@ export function MetricsComparison({
             higherIsBetter={false}
           />
           <ComparisonRow
-            label="State Tax Rate"
-            value1={m1?.stateTaxRate ?? null}
-            value2={m2?.stateTaxRate ?? null}
+            label="RPP (Cost Index)"
+            value1={m1?.bea?.regionalPriceParity?.allItems ?? null}
+            value2={m2?.bea?.regionalPriceParity?.allItems ?? null}
+            format={(v) => formatNumber(v, 1)}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Housing Index"
+            value1={m1?.bea?.regionalPriceParity?.housing ?? null}
+            value2={m2?.bea?.regionalPriceParity?.housing ?? null}
+            format={(v) => formatNumber(v, 1)}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Disposable Income"
+            value1={m1?.bea?.taxes?.perCapitaDisposable ?? null}
+            value2={m2?.bea?.taxes?.perCapitaDisposable ?? null}
+            format={formatCurrency}
+          />
+          <ComparisonRow
+            label="Effective Tax Rate"
+            value1={m1?.bea?.taxes?.effectiveTaxRate ?? null}
+            value2={m2?.bea?.taxes?.effectiveTaxRate ?? null}
             format={formatPercent}
             higherIsBetter={false}
           />
           <ComparisonRow
-            label="Property Tax"
-            value1={m1?.propertyTaxRate ?? null}
-            value2={m2?.propertyTaxRate ?? null}
-            format={formatPercent}
-            higherIsBetter={false}
-          />
-          <ComparisonRow
-            label="Cost of Living Index"
-            value1={m1?.costOfLivingIndex ?? null}
-            value2={m2?.costOfLivingIndex ?? null}
-            format={formatInt}
-            higherIsBetter={false}
+            label="Median Household Income"
+            value1={m1?.census?.medianHouseholdIncome ?? null}
+            value2={m2?.census?.medianHouseholdIncome ?? null}
+            format={formatCurrency}
           />
         </div>
 
-        {/* Demographics Section */}
+        {/* Demographics Section - Enhanced with Census data */}
         <div>
           <SectionHeader
             icon={<Users className="h-4 w-4 text-violet-500" />}
@@ -283,28 +339,48 @@ export function MetricsComparison({
             city2Name={city2.name}
           />
           <ComparisonRow
-            label="Metro Population"
-            value1={m1?.population ?? null}
-            value2={m2?.population ?? null}
+            label="City Population"
+            value1={m1?.census?.totalPopulation ?? null}
+            value2={m2?.census?.totalPopulation ?? null}
             format={formatPop}
             showDiff={false}
           />
           <ComparisonRow
-            label="Diversity Index"
-            value1={m1?.diversityIndex ?? null}
-            value2={m2?.diversityIndex ?? null}
+            label="Median Age"
+            value1={m1?.census?.medianAge ?? null}
+            value2={m2?.census?.medianAge ?? null}
             format={(v) => formatNumber(v, 1)}
+            showDiff={false}
           />
           <ComparisonRow
-            label="East Asian %"
-            value1={m1?.eastAsianPercent ?? null}
-            value2={m2?.eastAsianPercent ?? null}
+            label="Young Adults (18-34)"
+            value1={m1?.census?.age18to34Percent ?? null}
+            value2={m2?.census?.age18to34Percent ?? null}
+            format={formatPercent}
+            showDiff={false}
+          />
+          <ComparisonRow
+            label="Diversity Index"
+            value1={m1?.census?.diversityIndex ?? m1?.diversityIndex ?? null}
+            value2={m2?.census?.diversityIndex ?? m2?.diversityIndex ?? null}
+            format={(v) => formatNumber(v, 0)}
+          />
+          <ComparisonRow
+            label="Bachelor's Degree+"
+            value1={m1?.census?.bachelorsOrHigherPercent ?? null}
+            value2={m2?.census?.bachelorsOrHigherPercent ?? null}
+            format={formatPercent}
+          />
+          <ComparisonRow
+            label="Foreign-Born"
+            value1={m1?.census?.foreignBornPercent ?? null}
+            value2={m2?.census?.foreignBornPercent ?? null}
             format={formatPercent}
             showDiff={false}
           />
         </div>
 
-        {/* Quality of Life Section */}
+        {/* Quality of Life Section - Enhanced with QoL API data */}
         <div>
           <SectionHeader
             icon={<Activity className="h-4 w-4 text-rose-500" />}
@@ -314,8 +390,8 @@ export function MetricsComparison({
           />
           <ComparisonRow
             label="Walk Score"
-            value1={m1?.walkScore ?? null}
-            value2={m2?.walkScore ?? null}
+            value1={m1?.qol?.walkability?.walkScore ?? m1?.walkScore ?? null}
+            value2={m2?.qol?.walkability?.walkScore ?? m2?.walkScore ?? null}
             format={formatInt}
           />
           <ComparisonRow
@@ -325,23 +401,96 @@ export function MetricsComparison({
             format={formatInt}
           />
           <ComparisonRow
-            label="Crime Rate"
-            value1={m1?.crimeRate ?? null}
-            value2={m2?.crimeRate ?? null}
+            label="Violent Crime Rate"
+            value1={m1?.qol?.crime?.violentCrimeRate ?? null}
+            value2={m2?.qol?.crime?.violentCrimeRate ?? null}
             format={formatInt}
             higherIsBetter={false}
           />
           <ComparisonRow
-            label="Pollution Index"
-            value1={m1?.pollutionIndex ?? null}
-            value2={m2?.pollutionIndex ?? null}
+            label="Property Crime Rate"
+            value1={m1?.qol?.crime?.propertyCrimeRate ?? null}
+            value2={m2?.qol?.crime?.propertyCrimeRate ?? null}
             format={formatInt}
             higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Air Quality (AQI)"
+            value1={m1?.qol?.airQuality?.annualAQI ?? null}
+            value2={m2?.qol?.airQuality?.annualAQI ?? null}
+            format={formatInt}
+            higherIsBetter={false}
+          />
+          <ComparisonRow
+            label="Healthy Air Days"
+            value1={m1?.qol?.airQuality?.healthyDaysPercent ?? null}
+            value2={m2?.qol?.airQuality?.healthyDaysPercent ?? null}
+            format={formatPercent}
+          />
+          <ComparisonRow
+            label="Broadband Speed (Mbps)"
+            value1={m1?.qol?.broadband?.maxDownloadSpeed ?? null}
+            value2={m2?.qol?.broadband?.maxDownloadSpeed ?? null}
+            format={formatInt}
+          />
+          <ComparisonRow
+            label="Graduation Rate"
+            value1={m1?.qol?.education?.graduationRate ?? null}
+            value2={m2?.qol?.education?.graduationRate ?? null}
+            format={formatPercent}
+          />
+          <ComparisonRow
+            label="Primary Care Physicians"
+            value1={m1?.qol?.health?.primaryCarePhysiciansPer100k ?? null}
+            value2={m2?.qol?.health?.primaryCarePhysiciansPer100k ?? null}
+            format={(v) => v !== null && typeof v === "number" ? `${v}/100K` : "—"}
           />
           <ComparisonRow
             label="Int'l Airport"
             value1={m1?.hasInternationalAirport ? "Yes" : "No"}
             value2={m2?.hasInternationalAirport ? "Yes" : "No"}
+            showDiff={false}
+          />
+        </div>
+
+        {/* Cultural Section */}
+        <div>
+          <SectionHeader
+            icon={<Vote className="h-4 w-4 text-purple-500" />}
+            title="Cultural Profile"
+            city1Name={city1.name}
+            city2Name={city2.name}
+          />
+          <ComparisonRow
+            label="Partisan Index"
+            value1={m1?.cultural?.political?.partisanIndex != null ? (m1.cultural!.political!.partisanIndex * 100) : null}
+            value2={m2?.cultural?.political?.partisanIndex != null ? (m2.cultural!.political!.partisanIndex * 100) : null}
+            format={(v) => v !== null && typeof v === "number" ? (v > 0 ? `D+${v.toFixed(0)}` : v < 0 ? `R+${Math.abs(v).toFixed(0)}` : "Even") : "—"}
+            showDiff={false}
+          />
+          <ComparisonRow
+            label="Voter Turnout"
+            value1={m1?.cultural?.political?.voterTurnout ?? null}
+            value2={m2?.cultural?.political?.voterTurnout ?? null}
+            format={formatPercent}
+          />
+          <ComparisonRow
+            label="Religious Diversity"
+            value1={m1?.cultural?.religious?.diversityIndex ?? null}
+            value2={m2?.cultural?.religious?.diversityIndex ?? null}
+            format={formatInt}
+          />
+          <ComparisonRow
+            label="Dominant Tradition"
+            value1={m1?.cultural?.religious?.dominantTradition ?? null}
+            value2={m2?.cultural?.religious?.dominantTradition ?? null}
+            showDiff={false}
+          />
+          <ComparisonRow
+            label="Secular/Unaffiliated"
+            value1={m1?.cultural?.religious?.unaffiliated ?? null}
+            value2={m2?.cultural?.religious?.unaffiliated ?? null}
+            format={(v) => v !== null && typeof v === "number" ? `${v}/1K` : "—"}
             showDiff={false}
           />
         </div>

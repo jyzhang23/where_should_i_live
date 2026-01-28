@@ -59,10 +59,10 @@ The `Cities.xlsx` file contains:
 - Days of sunshine per year
 - Days of rain per year
 
-**Demographics:**
-- Metro population
-- Diversity index
-- East Asian population percentage
+**Demographics (Legacy - replaced by Census ACS):**
+- Metro population (fallback only)
+- Diversity index (now from Census)
+- East Asian population percentage (now from Census with full Asian subgroup breakdown)
 
 **Cost of Living:**
 - Median single-family home price
@@ -125,36 +125,47 @@ The `Cities.xlsx` file contains:
 
 ---
 
-### Priority 2: Demographics
+### Priority 2: Demographics ✅ IMPLEMENTED
 
 #### US Census Bureau API
 
 **URL:** https://api.census.gov/data.html
 
-**Available Data:**
-- American Community Survey (ACS) - 5-year estimates
-- Population demographics
-- Income statistics
-- Education levels
-- Commute times
-- Housing characteristics
+**Status:** Fully integrated via `/api/admin/census-pull`
 
-**Key Endpoints:**
+**Data Source:** American Community Survey (ACS) 5-Year Estimates
+
+**Integrated Metrics:**
+- **Population:** Total city population
+- **Age Demographics:** Median age, age bracket percentages (under 18, 18-34, 35-54, 55+)
+- **Race/Ethnicity:** White, Black, Hispanic, Asian, Pacific Islander, Native American, Two+ races
+- **Asian Subgroups:** Chinese, Indian, Filipino, Vietnamese, Korean, Japanese (% of total population)
+- **Diversity Index:** Simpson's Diversity Index (calculated from race/ethnicity data)
+- **Education:** High school or higher %, Bachelor's or higher %, Graduate degree %
+- **Income:** Median household income, Per capita income, Poverty rate
+- **Foreign-Born:** % born outside US (proxy for international culture)
+- **Household Composition:** Family households %, Married couples %, Single-person households %
+- **Language:** English only %, Spanish at home %, Asian language at home %
+
+**API Endpoints Used:**
 ```
-# Population by race/ethnicity
-https://api.census.gov/data/2022/acs/acs5?get=B02001_001E,B02001_002E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:*
+# Data Profile variables (DP02, DP03, DP05)
+https://api.census.gov/data/2022/acs/acs5/profile?get=NAME,DP05_0001E,...&for=place:{placeFips}&in=state:{stateFips}
 
-# Median household income
-https://api.census.gov/data/2022/acs/acs5?get=B19013_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:*
+# Detailed tables for Asian subgroups
+https://api.census.gov/data/2022/acs/acs5?get=NAME,B02015_002E,...&for=place:{placeFips}&in=state:{stateFips}
 ```
 
-**Integration Approach:**
-- Request API key (free)
-- Query by MSA (Metropolitan Statistical Area)
-- Map MSA codes to city names
-- Update annually
+**Geographic Targeting:**
+- Uses FIPS codes for "Places" (cities) instead of MSAs for more accurate city-level data
+- Each city in `cities.json` has a `censusFips: { state: "XX", place: "XXXXX" }` field
+- Example: San Francisco = state: "06", place: "67000"
 
-**Cost:** Free (requires API key)
+**Data Storage:**
+- Stored in `metrics.json` under each city's `census` field
+- Includes metadata: `source: "Census ACS 5-Year"`, `year: 2022`, `lastUpdated: ISO date`
+
+**Cost:** Free (API key optional but recommended for higher rate limits)
 
 ---
 

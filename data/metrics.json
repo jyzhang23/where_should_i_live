@@ -4,11 +4,56 @@
   "lastUpdated": "2026-01-28",
   "sources": {
     "climate": "NOAA ACIS (30-year normals) + Open-Meteo (2014-2023 averages)",
-    "cost": "BLS / Zillow",
-    "demographics": "US Census",
     "quality": "WalkScore, Numbeo, ACSM, etc.",
     "political": "2024 Election Results",
-    "bea": "Bureau of Economic Analysis (Regional Price Parities)"
+    "bea": "Bureau of Economic Analysis (Regional Price Parities)",
+    "demographics": "US Census Bureau ACS 5-Year Estimates (2022)",
+    "fbiCrime": {
+      "name": "FBI Crime Data Explorer",
+      "url": "https://crime-data-explorer.fr.cloud.gov/",
+      "description": "Violent and property crime rates from FBI Uniform Crime Reports",
+      "dataYear": 2022,
+      "lastUpdated": "2026-01-28T03:40:49.497Z"
+    },
+    "fccBroadband": {
+      "name": "FCC National Broadband Map",
+      "url": "https://broadbandmap.fcc.gov/",
+      "description": "Broadband availability and provider counts from FCC data",
+      "dataYear": 2024,
+      "lastUpdated": "2026-01-28T03:41:04.794Z"
+    },
+    "hrsaHealth": {
+      "name": "HRSA (Health Resources and Services Administration)",
+      "url": "https://data.hrsa.gov/",
+      "description": "Healthcare provider density and shortage area designations",
+      "dataYear": 2023,
+      "lastUpdated": "2026-01-28T03:42:37.263Z"
+    },
+    "epaAirQuality": {
+      "name": "EPA Air Quality System",
+      "url": "https://aqs.epa.gov/",
+      "description": "Annual AQI statistics from EPA monitoring stations",
+      "dataYear": 2023,
+      "lastUpdated": "2026-01-28T03:49:09.761Z"
+    },
+    "ncesEducation": {
+      "name": "NCES (National Center for Education Statistics)",
+      "url": "https://nces.ed.gov/",
+      "description": "School district characteristics including student-teacher ratios and graduation rates",
+      "dataYear": "2022-23",
+      "lastUpdated": "2026-01-28T03:46:40.130Z"
+    },
+    "walkability": {
+      "name": "EPA National Walkability Index",
+      "url": "https://www.epa.gov/smartgrowth/smart-location-mapping#walkability",
+      "description": "Walkability scores based on intersection density, transit access, and employment mix",
+      "dataSource": "EPA ArcGIS API",
+      "lastUpdated": "2026-01-28T03:47:02.487Z"
+    },
+    "cultural": {
+      "political": "MIT Election Lab County Presidential Election Returns 2024, Voter turnout from US Elections Project",
+      "religious": "ARDA U.S. Religion Census 2020 (Religious Congregations & Membership Study)"
+    }
   },
   "cities": {
     "san-francisco": {
@@ -42,18 +87,6 @@
           "julyDewpoint": 53.5,
           "summerHumidityIndex": 80
         }
-      },
-      "cost": {
-        "medianHomePrice": 1300000,
-        "costOfLivingIndex": 169.9,
-        "stateTaxRate": 0.133,
-        "propertyTaxRate": 0.0075
-      },
-      "demographics": {
-        "population": 4730,
-        "diversityIndex": 70,
-        "eastAsianPercent": 0.28,
-        "crimeRate": 650
       },
       "quality": {
         "qualityOfLifeScore": 85,
@@ -95,6 +128,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 851036,
+        "medianAge": 39.3,
+        "under18Percent": 13.6,
+        "age18to34Percent": 170.7,
+        "age35to54Percent": 36.8,
+        "age55PlusPercent": 735685.6,
+        "whitePercent": 6.8,
+        "blackPercent": 84.5,
+        "hispanicPercent": 12,
+        "asianPercent": 4.9,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 38.3,
+        "otherRacePercent": 34.5,
+        "twoOrMoreRacesPercent": 0.4,
+        "chinesePercent": 20.95,
+        "indianPercent": 0.08,
+        "filipinoPercent": 0.04,
+        "vietnamesePercent": 0,
+        "koreanPercent": 0.05,
+        "japanesePercent": 1.39,
+        "mexicanPercent": 7.68,
+        "puertoRicanPercent": 0.71,
+        "cubanPercent": 0.25,
+        "salvadoranPercent": 4.04,
+        "guatemalanPercent": 0.7,
+        "colombianPercent": 0.02,
+        "diversityIndex": 0,
+        "highSchoolOrHigherPercent": 88.8,
+        "bachelorsOrHigherPercent": 59.8,
+        "graduateDegreePercent": 35.1,
+        "medianHouseholdIncome": 136689,
+        "perCapitaIncome": 86186,
+        "povertyRate": 10.5,
+        "foreignBornPercent": 33.9,
+        "familyHouseholdsPercent": 35.8,
+        "marriedCouplePercent": 12.8,
+        "singlePersonPercent": 18.1,
+        "englishOnlyPercent": 57.1,
+        "spanishAtHomePercent": 42.9,
+        "asianLanguageAtHomePercent": 6.2
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 40,
+          "bikeScore": 34,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:44.903Z"
+        },
+        "crime": {
+          "violentCrimeRate": 499,
+          "propertyCrimeRate": 2694,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 44,
+          "healthyDaysPercent": 68,
+          "hazardousDays": 22,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 92,
+          "providerCount": 8,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 21,
+          "graduationRate": 87,
+          "schoolCount": 135
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 145,
+          "hospitalBeds100k": 320,
+          "hpsaScore": 0
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.717,
+          "democratPercent": 84.5,
+          "republicanPercent": 12.8,
+          "voterTurnout": 75.2,
+          "marginOfVictory": 71.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 220,
+          "evangelicalProtestant": 45,
+          "mainlineProtestant": 35,
+          "jewish": 45,
+          "muslim": 15,
+          "unaffiliated": 480,
+          "lds": null,
+          "diversityIndex": 60,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "seattle": {
@@ -128,18 +265,6 @@
           "julyDewpoint": 54.5,
           "summerHumidityIndex": 68
         }
-      },
-      "cost": {
-        "medianHomePrice": 850000,
-        "costOfLivingIndex": 144.5,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.0095
-      },
-      "demographics": {
-        "population": 4012,
-        "diversityIndex": 68,
-        "eastAsianPercent": 0.15,
-        "crimeRate": 700
       },
       "quality": {
         "qualityOfLifeScore": 88,
@@ -181,6 +306,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 734603,
+        "medianAge": 35.4,
+        "under18Percent": 14,
+        "age18to34Percent": 168.2,
+        "age35to54Percent": 28.3,
+        "age55PlusPercent": 631723.2,
+        "whitePercent": 2.6,
+        "blackPercent": 92.5,
+        "hispanicPercent": 5.4,
+        "asianPercent": 6.6,
+        "pacificIslanderPercent": 0.4,
+        "nativeAmericanPercent": 61.2,
+        "otherRacePercent": 16.7,
+        "twoOrMoreRacesPercent": 0.2,
+        "chinesePercent": 5.64,
+        "indianPercent": 0.01,
+        "filipinoPercent": 0.04,
+        "vietnamesePercent": 0,
+        "koreanPercent": 0.07,
+        "japanesePercent": 1.33,
+        "mexicanPercent": 4.33,
+        "puertoRicanPercent": 0.38,
+        "cubanPercent": 0.19,
+        "salvadoranPercent": 0.74,
+        "guatemalanPercent": 0.2,
+        "colombianPercent": 0.01,
+        "diversityIndex": -27,
+        "highSchoolOrHigherPercent": 95.6,
+        "bachelorsOrHigherPercent": 66.7,
+        "graduateDegreePercent": 37.3,
+        "medianHouseholdIncome": 116068,
+        "perCapitaIncome": 77616,
+        "povertyRate": 10.1,
+        "foreignBornPercent": 19.8,
+        "familyHouseholdsPercent": 34.8,
+        "marriedCouplePercent": 13.1,
+        "singlePersonPercent": 19.5,
+        "englishOnlyPercent": 77.1,
+        "spanishAtHomePercent": 22.9,
+        "asianLanguageAtHomePercent": 5.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 64,
+          "bikeScore": 54,
+          "transitScore": 0,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:45.293Z"
+        },
+        "crime": {
+          "violentCrimeRate": 394,
+          "propertyCrimeRate": 3349,
+          "trend3Year": "rising",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 42,
+          "healthyDaysPercent": 72,
+          "hazardousDays": 18,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 88,
+          "providerCount": 6,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 18,
+          "graduationRate": 83,
+          "schoolCount": 110
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 120,
+          "hospitalBeds100k": 250,
+          "hpsaScore": 2
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.444,
+          "democratPercent": 70.5,
+          "republicanPercent": 26.1,
+          "voterTurnout": 78.5,
+          "marginOfVictory": 44.4,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 145,
+          "evangelicalProtestant": 85,
+          "mainlineProtestant": 65,
+          "jewish": 28,
+          "muslim": 12,
+          "unaffiliated": 520,
+          "lds": null,
+          "diversityIndex": 58,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "new-york-city": {
@@ -214,18 +443,6 @@
           "julyDewpoint": 67.4,
           "summerHumidityIndex": 76
         }
-      },
-      "cost": {
-        "medianHomePrice": 750000,
-        "costOfLivingIndex": 187.2,
-        "stateTaxRate": 0.109,
-        "propertyTaxRate": 0.0082
-      },
-      "demographics": {
-        "population": 19979,
-        "diversityIndex": 72.2,
-        "eastAsianPercent": 0.145,
-        "crimeRate": 400
       },
       "quality": {
         "qualityOfLifeScore": 65,
@@ -267,6 +484,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 8622467,
+        "medianAge": 37.5,
+        "under18Percent": 20.6,
+        "age18to34Percent": 155.6,
+        "age35to54Percent": 34.3,
+        "age55PlusPercent": 6849954.3,
+        "whitePercent": 17.1,
+        "blackPercent": 71,
+        "hispanicPercent": 21.5,
+        "asianPercent": 21,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 31.2,
+        "otherRacePercent": 14.4,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 6.82,
+        "indianPercent": 0.06,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.93,
+        "mexicanPercent": 3.92,
+        "puertoRicanPercent": 7.48,
+        "cubanPercent": 0.48,
+        "salvadoranPercent": 2.15,
+        "guatemalanPercent": 0.51,
+        "colombianPercent": 0.01,
+        "diversityIndex": 26,
+        "highSchoolOrHigherPercent": 83.3,
+        "bachelorsOrHigherPercent": 40.2,
+        "graduateDegreePercent": 23.2,
+        "medianHouseholdIncome": 76607,
+        "perCapitaIncome": 48066,
+        "povertyRate": 17.2,
+        "foreignBornPercent": 36.3,
+        "familyHouseholdsPercent": 36.2,
+        "marriedCouplePercent": 14.9,
+        "singlePersonPercent": 18.8,
+        "englishOnlyPercent": 52.2,
+        "spanishAtHomePercent": 47.8,
+        "asianLanguageAtHomePercent": 12.9
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 57,
+          "bikeScore": 48,
+          "transitScore": 0,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:45.697Z"
+        },
+        "crime": {
+          "violentCrimeRate": 364,
+          "propertyCrimeRate": 1392,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 46,
+          "healthyDaysPercent": 66,
+          "hazardousDays": 24,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 85,
+          "providerCount": 10,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 13,
+          "graduationRate": 82,
+          "schoolCount": 1800
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 180,
+          "hospitalBeds100k": 340,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.38,
+          "democratPercent": 68.2,
+          "republicanPercent": 30.2,
+          "voterTurnout": 62.1,
+          "marginOfVictory": 38,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 365,
+          "evangelicalProtestant": 42,
+          "mainlineProtestant": 38,
+          "jewish": 120,
+          "muslim": 32,
+          "unaffiliated": 280,
+          "lds": null,
+          "diversityIndex": 70,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "los-angeles": {
@@ -300,18 +621,6 @@
           "julyDewpoint": 61.4,
           "summerHumidityIndex": 79
         }
-      },
-      "cost": {
-        "medianHomePrice": 950000,
-        "costOfLivingIndex": 149.6,
-        "stateTaxRate": 0.133,
-        "propertyTaxRate": 0.0081
-      },
-      "demographics": {
-        "population": 13291,
-        "diversityIndex": 71.8,
-        "eastAsianPercent": 0.12,
-        "crimeRate": 490
       },
       "quality": {
         "qualityOfLifeScore": 75,
@@ -353,6 +662,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 3881041,
+        "medianAge": 36.5,
+        "under18Percent": 19.7,
+        "age18to34Percent": 156.6,
+        "age35to54Percent": 29.9,
+        "age55PlusPercent": 3115642.6,
+        "whitePercent": 16.4,
+        "blackPercent": 51.9,
+        "hispanicPercent": 34.1,
+        "asianPercent": 8.2,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 28.1,
+        "otherRacePercent": 11.6,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 1.96,
+        "indianPercent": 0.02,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": 0,
+        "koreanPercent": 0.05,
+        "japanesePercent": 2.67,
+        "mexicanPercent": 30.82,
+        "puertoRicanPercent": 0.49,
+        "cubanPercent": 0.37,
+        "salvadoranPercent": 12.85,
+        "guatemalanPercent": 4.58,
+        "colombianPercent": 0.11,
+        "diversityIndex": 49,
+        "highSchoolOrHigherPercent": 78.7,
+        "bachelorsOrHigherPercent": 36.7,
+        "graduateDegreePercent": 23.9,
+        "medianHouseholdIncome": 76244,
+        "perCapitaIncome": 43527,
+        "povertyRate": 16.6,
+        "foreignBornPercent": 36,
+        "familyHouseholdsPercent": 37.9,
+        "marriedCouplePercent": 15.3,
+        "singlePersonPercent": 16.2,
+        "englishOnlyPercent": 42.6,
+        "spanishAtHomePercent": 57.4,
+        "asianLanguageAtHomePercent": 7.1
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 55,
+          "bikeScore": 47,
+          "transitScore": 0,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:46.098Z"
+        },
+        "crime": {
+          "violentCrimeRate": 499,
+          "propertyCrimeRate": 2694,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 59,
+          "healthyDaysPercent": 45,
+          "hazardousDays": 55,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 78,
+          "providerCount": 7,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 22,
+          "graduationRate": 82,
+          "schoolCount": 900
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 95,
+          "hospitalBeds100k": 220,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.466,
+          "democratPercent": 72,
+          "republicanPercent": 25.4,
+          "voterTurnout": 64.8,
+          "marginOfVictory": 46.6,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 340,
+          "evangelicalProtestant": 68,
+          "mainlineProtestant": 28,
+          "jewish": 62,
+          "muslim": 18,
+          "unaffiliated": 380,
+          "lds": null,
+          "diversityIndex": 66,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "sacramento": {
@@ -386,18 +799,6 @@
           "julyDewpoint": 50.3,
           "summerHumidityIndex": 45
         }
-      },
-      "cost": {
-        "medianHomePrice": 490000,
-        "costOfLivingIndex": 105,
-        "stateTaxRate": 0.133,
-        "propertyTaxRate": 0.009
-      },
-      "demographics": {
-        "population": 2345,
-        "diversityIndex": 69.5,
-        "eastAsianPercent": 0.115,
-        "crimeRate": 900
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -439,6 +840,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 523600,
+        "medianAge": 35.2,
+        "under18Percent": 22,
+        "age18to34Percent": 152.2,
+        "age35to54Percent": 30.7,
+        "age55PlusPercent": 408667.8,
+        "whitePercent": 4.1,
+        "blackPercent": 70.6,
+        "hispanicPercent": 19.2,
+        "asianPercent": 11.9,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 30.8,
+        "otherRacePercent": 19.2,
+        "twoOrMoreRacesPercent": 1.8,
+        "chinesePercent": 4.17,
+        "indianPercent": 0.03,
+        "filipinoPercent": 3.34,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.3,
+        "mexicanPercent": 24.28,
+        "puertoRicanPercent": 0.87,
+        "cubanPercent": 0.14,
+        "salvadoranPercent": 1.78,
+        "guatemalanPercent": 0.43,
+        "colombianPercent": null,
+        "diversityIndex": 32,
+        "highSchoolOrHigherPercent": 86.4,
+        "bachelorsOrHigherPercent": 35.8,
+        "graduateDegreePercent": 22.7,
+        "medianHouseholdIncome": 78954,
+        "perCapitaIncome": 39336,
+        "povertyRate": 14.8,
+        "foreignBornPercent": 21.3,
+        "familyHouseholdsPercent": 38.6,
+        "marriedCouplePercent": 16.7,
+        "singlePersonPercent": 17.5,
+        "englishOnlyPercent": 64,
+        "spanishAtHomePercent": 36,
+        "asianLanguageAtHomePercent": 6.7
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 18,
+          "bikeScore": 15,
+          "transitScore": -100,
+          "description": "Almost All Errands Require a Car",
+          "updatedAt": "2026-01-28T03:46:46.493Z"
+        },
+        "crime": {
+          "violentCrimeRate": 499,
+          "propertyCrimeRate": 2694,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 54,
+          "healthyDaysPercent": 52,
+          "hazardousDays": 42,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 75,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 23,
+          "graduationRate": 86,
+          "schoolCount": 80
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 110,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.122,
+          "democratPercent": 54.8,
+          "republicanPercent": 42.6,
+          "voterTurnout": 68.2,
+          "marginOfVictory": 12.2,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 195,
+          "evangelicalProtestant": 95,
+          "mainlineProtestant": 45,
+          "jewish": 18,
+          "muslim": 12,
+          "unaffiliated": 420,
+          "lds": null,
+          "diversityIndex": 63,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "boston": {
@@ -472,18 +977,6 @@
           "julyDewpoint": 64.5,
           "summerHumidityIndex": 76
         }
-      },
-      "cost": {
-        "medianHomePrice": 650000,
-        "costOfLivingIndex": 148.4,
-        "stateTaxRate": 0.05,
-        "propertyTaxRate": 0.0125
-      },
-      "demographics": {
-        "population": 4890,
-        "diversityIndex": 67.5,
-        "eastAsianPercent": 0.095,
-        "crimeRate": 350
       },
       "quality": {
         "qualityOfLifeScore": 80,
@@ -525,6 +1018,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 665945,
+        "medianAge": 32.9,
+        "under18Percent": 15.7,
+        "age18to34Percent": 161.8,
+        "age35to54Percent": 27.5,
+        "age55PlusPercent": 561718.5,
+        "whitePercent": 13.3,
+        "blackPercent": 80.4,
+        "hispanicPercent": 15,
+        "asianPercent": 21,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 44.2,
+        "otherRacePercent": 9.6,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 4.53,
+        "indianPercent": 0.04,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.57,
+        "mexicanPercent": 1.11,
+        "puertoRicanPercent": 4.73,
+        "cubanPercent": 0.39,
+        "salvadoranPercent": 3.65,
+        "guatemalanPercent": 0.73,
+        "colombianPercent": 0.16,
+        "diversityIndex": 6,
+        "highSchoolOrHigherPercent": 88.4,
+        "bachelorsOrHigherPercent": 53.4,
+        "graduateDegreePercent": 28.3,
+        "medianHouseholdIncome": 89212,
+        "perCapitaIncome": 55949,
+        "povertyRate": 17.5,
+        "foreignBornPercent": 28.1,
+        "familyHouseholdsPercent": 28.3,
+        "marriedCouplePercent": 10.1,
+        "singlePersonPercent": 20.6,
+        "englishOnlyPercent": 64,
+        "spanishAtHomePercent": 36,
+        "asianLanguageAtHomePercent": 10.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 58,
+          "bikeScore": 49,
+          "transitScore": 0,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:46.889Z"
+        },
+        "crime": {
+          "violentCrimeRate": 327,
+          "propertyCrimeRate": 1095,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 42,
+          "healthyDaysPercent": 72,
+          "hazardousDays": 18,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 82,
+          "providerCount": 6,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 12,
+          "graduationRate": 78,
+          "schoolCount": 135
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 210,
+          "hospitalBeds100k": 420,
+          "hpsaScore": 0
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.625,
+          "democratPercent": 80,
+          "republicanPercent": 17.5,
+          "voterTurnout": 72.8,
+          "marginOfVictory": 62.5,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 420,
+          "evangelicalProtestant": 28,
+          "mainlineProtestant": 55,
+          "jewish": 65,
+          "muslim": 15,
+          "unaffiliated": 320,
+          "lds": null,
+          "diversityIndex": 65,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "portland": {
@@ -558,18 +1155,6 @@
           "julyDewpoint": 53.7,
           "summerHumidityIndex": 60
         }
-      },
-      "cost": {
-        "medianHomePrice": 580000,
-        "costOfLivingIndex": 122.5,
-        "stateTaxRate": 0.099,
-        "propertyTaxRate": 0.0105
-      },
-      "demographics": {
-        "population": 2512,
-        "diversityIndex": 65.5,
-        "eastAsianPercent": 0.085,
-        "crimeRate": 950
       },
       "quality": {
         "qualityOfLifeScore": 78,
@@ -611,6 +1196,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 646101,
+        "medianAge": 38.3,
+        "under18Percent": 16.8,
+        "age18to34Percent": 163.3,
+        "age35to54Percent": 31.2,
+        "age55PlusPercent": 537775.5,
+        "whitePercent": 2.5,
+        "blackPercent": 89.7,
+        "hispanicPercent": 6.6,
+        "asianPercent": 5.7,
+        "pacificIslanderPercent": 0.6,
+        "nativeAmericanPercent": 68.3,
+        "otherRacePercent": 8.3,
+        "twoOrMoreRacesPercent": 0.5,
+        "chinesePercent": 2.14,
+        "indianPercent": 0.14,
+        "filipinoPercent": 0.15,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.37,
+        "mexicanPercent": 6.9,
+        "puertoRicanPercent": 0.49,
+        "cubanPercent": 0.39,
+        "salvadoranPercent": 0.84,
+        "guatemalanPercent": 0.31,
+        "colombianPercent": 0.04,
+        "diversityIndex": -29,
+        "highSchoolOrHigherPercent": 93.4,
+        "bachelorsOrHigherPercent": 52.5,
+        "graduateDegreePercent": 31.3,
+        "medianHouseholdIncome": 85876,
+        "perCapitaIncome": 52577,
+        "povertyRate": 12.2,
+        "foreignBornPercent": 12.6,
+        "familyHouseholdsPercent": 37.1,
+        "marriedCouplePercent": 14.8,
+        "singlePersonPercent": 19.1,
+        "englishOnlyPercent": 82.1,
+        "spanishAtHomePercent": 17.9,
+        "asianLanguageAtHomePercent": 4.1
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 33,
+          "bikeScore": 28,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:47.291Z"
+        },
+        "crime": {
+          "violentCrimeRate": 292,
+          "propertyCrimeRate": 2839,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 44,
+          "healthyDaysPercent": 68,
+          "hazardousDays": 22,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 80,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 20,
+          "graduationRate": 81,
+          "schoolCount": 95
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 105,
+          "hospitalBeds100k": 200,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.552,
+          "democratPercent": 76,
+          "republicanPercent": 20.8,
+          "voterTurnout": 74.5,
+          "marginOfVictory": 55.2,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 110,
+          "evangelicalProtestant": 75,
+          "mainlineProtestant": 55,
+          "jewish": 18,
+          "muslim": 8,
+          "unaffiliated": 580,
+          "lds": null,
+          "diversityIndex": 50,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "las-vegas": {
@@ -644,18 +1333,6 @@
           "julyDewpoint": 43.5,
           "summerHumidityIndex": 26
         }
-      },
-      "cost": {
-        "medianHomePrice": 420000,
-        "costOfLivingIndex": 110,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.0085
-      },
-      "demographics": {
-        "population": 2260,
-        "diversityIndex": 68,
-        "eastAsianPercent": 0.08,
-        "crimeRate": 750
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -697,6 +1374,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 644835,
+        "medianAge": 38.1,
+        "under18Percent": 22.9,
+        "age18to34Percent": 150.5,
+        "age35to54Percent": 34,
+        "age55PlusPercent": 497105,
+        "whitePercent": 6.4,
+        "blackPercent": 65.7,
+        "hispanicPercent": 22.6,
+        "asianPercent": 11.4,
+        "pacificIslanderPercent": 0.3,
+        "nativeAmericanPercent": 41.1,
+        "otherRacePercent": 6.7,
+        "twoOrMoreRacesPercent": 0.7,
+        "chinesePercent": 0.92,
+        "indianPercent": 0,
+        "filipinoPercent": 0,
+        "vietnamesePercent": 0,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.37,
+        "mexicanPercent": 25.19,
+        "puertoRicanPercent": 1.19,
+        "cubanPercent": 1.58,
+        "salvadoranPercent": 3.42,
+        "guatemalanPercent": 0.83,
+        "colombianPercent": 0.11,
+        "diversityIndex": 33,
+        "highSchoolOrHigherPercent": 85.6,
+        "bachelorsOrHigherPercent": 26.3,
+        "graduateDegreePercent": 16.9,
+        "medianHouseholdIncome": 66356,
+        "perCapitaIncome": 36275,
+        "povertyRate": 14.7,
+        "foreignBornPercent": 20.8,
+        "familyHouseholdsPercent": 41.4,
+        "marriedCouplePercent": 16.5,
+        "singlePersonPercent": 15,
+        "englishOnlyPercent": 66.9,
+        "spanishAtHomePercent": 33.1,
+        "asianLanguageAtHomePercent": 2.5
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 61,
+          "bikeScore": 52,
+          "transitScore": 1,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:47.678Z"
+        },
+        "crime": {
+          "violentCrimeRate": 460,
+          "propertyCrimeRate": 2174,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 50,
+          "healthyDaysPercent": 60,
+          "hazardousDays": 30,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 72,
+          "providerCount": 4,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 21,
+          "graduationRate": 84,
+          "schoolCount": 360
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 55,
+          "hospitalBeds100k": 180,
+          "hpsaScore": 18
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.006,
+          "democratPercent": 49,
+          "republicanPercent": 48.4,
+          "voterTurnout": 61.2,
+          "marginOfVictory": 0.6,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 280,
+          "evangelicalProtestant": 85,
+          "mainlineProtestant": 32,
+          "jewish": 35,
+          "muslim": 12,
+          "unaffiliated": 450,
+          "lds": null,
+          "diversityIndex": 64,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "chicago": {
@@ -730,18 +1511,6 @@
           "julyDewpoint": 63,
           "summerHumidityIndex": 75
         }
-      },
-      "cost": {
-        "medianHomePrice": 350000,
-        "costOfLivingIndex": 116.5,
-        "stateTaxRate": 0.0495,
-        "propertyTaxRate": 0.0225
-      },
-      "demographics": {
-        "population": 9499,
-        "diversityIndex": 69.1,
-        "eastAsianPercent": 0.067,
-        "crimeRate": 900
       },
       "quality": {
         "qualityOfLifeScore": 68,
@@ -783,6 +1552,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 2721914,
+        "medianAge": 35.3,
+        "under18Percent": 20,
+        "age18to34Percent": 156.5,
+        "age35to54Percent": 29.7,
+        "age55PlusPercent": 2178551.4,
+        "whitePercent": 3.8,
+        "blackPercent": 71,
+        "hispanicPercent": 18.6,
+        "asianPercent": 28.4,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 32.7,
+        "otherRacePercent": 6.9,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 2.2,
+        "indianPercent": 0.07,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.03,
+        "japanesePercent": 0.48,
+        "mexicanPercent": 21.38,
+        "puertoRicanPercent": 3.45,
+        "cubanPercent": 0.34,
+        "salvadoranPercent": 1.21,
+        "guatemalanPercent": 0.68,
+        "colombianPercent": 0.01,
+        "diversityIndex": 27,
+        "highSchoolOrHigherPercent": 86.6,
+        "bachelorsOrHigherPercent": 42.4,
+        "graduateDegreePercent": 24.4,
+        "medianHouseholdIncome": 71673,
+        "perCapitaIncome": 45840,
+        "povertyRate": 16.9,
+        "foreignBornPercent": 20.2,
+        "familyHouseholdsPercent": 31.6,
+        "marriedCouplePercent": 12.7,
+        "singlePersonPercent": 20.8,
+        "englishOnlyPercent": 64.8,
+        "spanishAtHomePercent": 35.2,
+        "asianLanguageAtHomePercent": 6
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 43,
+          "bikeScore": 37,
+          "transitScore": 1,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:48.370Z"
+        },
+        "crime": {
+          "violentCrimeRate": 416,
+          "propertyCrimeRate": 1700,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 47,
+          "healthyDaysPercent": 65,
+          "hazardousDays": 25,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 80,
+          "providerCount": 7,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 82,
+          "schoolCount": 650
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 110,
+          "hospitalBeds100k": 300,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.523,
+          "democratPercent": 75.1,
+          "republicanPercent": 22.8,
+          "voterTurnout": 65.4,
+          "marginOfVictory": 52.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 345,
+          "evangelicalProtestant": 78,
+          "mainlineProtestant": 48,
+          "jewish": 42,
+          "muslim": 28,
+          "unaffiliated": 340,
+          "lds": null,
+          "diversityIndex": 68,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "washington-dc": {
@@ -816,18 +1689,6 @@
           "julyDewpoint": 67.7,
           "summerHumidityIndex": 73
         }
-      },
-      "cost": {
-        "medianHomePrice": 680000,
-        "costOfLivingIndex": 148.7,
-        "stateTaxRate": 0.0895,
-        "propertyTaxRate": 0.006
-      },
-      "demographics": {
-        "population": 6250,
-        "diversityIndex": 68.5,
-        "eastAsianPercent": 0.06,
-        "crimeRate": 600
       },
       "quality": {
         "qualityOfLifeScore": 78,
@@ -869,6 +1730,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 670587,
+        "medianAge": 34.8,
+        "under18Percent": 18.5,
+        "age18to34Percent": 159.4,
+        "age35to54Percent": 28.1,
+        "age55PlusPercent": 546578.2,
+        "whitePercent": 8.2,
+        "blackPercent": 88.5,
+        "hispanicPercent": 8.1,
+        "asianPercent": 43.5,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 36.3,
+        "otherRacePercent": 4,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.96,
+        "indianPercent": 0.03,
+        "filipinoPercent": null,
+        "vietnamesePercent": 0.01,
+        "koreanPercent": 0,
+        "japanesePercent": 0.51,
+        "mexicanPercent": 1.97,
+        "puertoRicanPercent": 0.9,
+        "cubanPercent": 0.48,
+        "salvadoranPercent": 4.09,
+        "guatemalanPercent": 0.51,
+        "colombianPercent": 0.04,
+        "diversityIndex": -12,
+        "highSchoolOrHigherPercent": 92.7,
+        "bachelorsOrHigherPercent": 62.6,
+        "graduateDegreePercent": 25.8,
+        "medianHouseholdIncome": 101722,
+        "perCapitaIncome": 71297,
+        "povertyRate": 15.1,
+        "foreignBornPercent": 13.4,
+        "familyHouseholdsPercent": 25.3,
+        "marriedCouplePercent": 9.8,
+        "singlePersonPercent": 26.1,
+        "englishOnlyPercent": 82.5,
+        "spanishAtHomePercent": 17.5,
+        "asianLanguageAtHomePercent": 4.1
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 63,
+          "bikeScore": 54,
+          "transitScore": -30,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:48.765Z"
+        },
+        "crime": {
+          "violentCrimeRate": 812,
+          "propertyCrimeRate": 3684,
+          "trend3Year": "rising",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 46,
+          "healthyDaysPercent": 66,
+          "hazardousDays": 24,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 88,
+          "providerCount": 7,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 12,
+          "graduationRate": 70,
+          "schoolCount": 230
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 175,
+          "hospitalBeds100k": 400,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.818,
+          "democratPercent": 90,
+          "republicanPercent": 8.2,
+          "voterTurnout": 68.5,
+          "marginOfVictory": 81.8,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 185,
+          "evangelicalProtestant": 125,
+          "mainlineProtestant": 85,
+          "jewish": 48,
+          "muslim": 22,
+          "unaffiliated": 380,
+          "lds": null,
+          "diversityIndex": 71,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "houston": {
@@ -902,18 +1867,6 @@
           "julyDewpoint": 74.5,
           "summerHumidityIndex": 76
         }
-      },
-      "cost": {
-        "medianHomePrice": 320000,
-        "costOfLivingIndex": 96,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.0175
-      },
-      "demographics": {
-        "population": 6997,
-        "diversityIndex": 72.3,
-        "eastAsianPercent": 0.055,
-        "crimeRate": 1050
       },
       "quality": {
         "qualityOfLifeScore": 62,
@@ -955,6 +1908,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 2296253,
+        "medianAge": 33.9,
+        "under18Percent": 23.9,
+        "age18to34Percent": 148.2,
+        "age35to54Percent": 26.1,
+        "age55PlusPercent": 1746514.7,
+        "whitePercent": 13.5,
+        "blackPercent": 55.2,
+        "hispanicPercent": 26.9,
+        "asianPercent": 22,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 23.6,
+        "otherRacePercent": 6.8,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 1.46,
+        "indianPercent": 0.06,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.32,
+        "mexicanPercent": 29.89,
+        "puertoRicanPercent": 0.77,
+        "cubanPercent": 0.72,
+        "salvadoranPercent": 9.37,
+        "guatemalanPercent": 1.68,
+        "colombianPercent": 0.02,
+        "diversityIndex": 50,
+        "highSchoolOrHigherPercent": 79.6,
+        "bachelorsOrHigherPercent": 35.2,
+        "graduateDegreePercent": 20.9,
+        "medianHouseholdIncome": 60440,
+        "perCapitaIncome": 38834,
+        "povertyRate": 19.6,
+        "foreignBornPercent": 28.9,
+        "familyHouseholdsPercent": 36.6,
+        "marriedCouplePercent": 16,
+        "singlePersonPercent": 16.9,
+        "englishOnlyPercent": 51.9,
+        "spanishAtHomePercent": 48.1,
+        "asianLanguageAtHomePercent": 3.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 23,
+          "bikeScore": 20,
+          "transitScore": -100,
+          "description": "Almost All Errands Require a Car",
+          "updatedAt": "2026-01-28T03:46:49.159Z"
+        },
+        "crime": {
+          "violentCrimeRate": 446,
+          "propertyCrimeRate": 2459,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 53,
+          "healthyDaysPercent": 55,
+          "hazardousDays": 38,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 80,
+          "providerCount": 6,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 85,
+          "schoolCount": 290
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 95,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.063,
+          "democratPercent": 52.5,
+          "republicanPercent": 46.2,
+          "voterTurnout": 58.6,
+          "marginOfVictory": 6.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 225,
+          "evangelicalProtestant": 285,
+          "mainlineProtestant": 68,
+          "jewish": 22,
+          "muslim": 25,
+          "unaffiliated": 280,
+          "lds": null,
+          "diversityIndex": 74,
+          "dominantTradition": "Evangelical Protestant",
+          "dataYear": 2020
+        }
       }
     },
     "atlanta": {
@@ -988,18 +2045,6 @@
           "julyDewpoint": 70.3,
           "summerHumidityIndex": 79
         }
-      },
-      "cost": {
-        "medianHomePrice": 420000,
-        "costOfLivingIndex": 103.5,
-        "stateTaxRate": 0.0575,
-        "propertyTaxRate": 0.0115
-      },
-      "demographics": {
-        "population": 6144,
-        "diversityIndex": 69.5,
-        "eastAsianPercent": 0.055,
-        "crimeRate": 1200
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -1041,6 +2086,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 494838,
+        "medianAge": 33.6,
+        "under18Percent": 17.2,
+        "age18to34Percent": 159.9,
+        "age35to54Percent": 27,
+        "age55PlusPercent": 409828.5,
+        "whitePercent": 2.2,
+        "blackPercent": 94.6,
+        "hispanicPercent": 3.6,
+        "asianPercent": 47.1,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 38.9,
+        "otherRacePercent": 4.9,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 1.24,
+        "indianPercent": null,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.58,
+        "mexicanPercent": 2,
+        "puertoRicanPercent": 0.87,
+        "cubanPercent": 0.32,
+        "salvadoranPercent": 0.53,
+        "guatemalanPercent": 0.09,
+        "colombianPercent": null,
+        "diversityIndex": -27,
+        "highSchoolOrHigherPercent": 92.9,
+        "bachelorsOrHigherPercent": 57.3,
+        "graduateDegreePercent": 32.2,
+        "medianHouseholdIncome": 77655,
+        "perCapitaIncome": 60778,
+        "povertyRate": 17.7,
+        "foreignBornPercent": 8.2,
+        "familyHouseholdsPercent": 24.6,
+        "marriedCouplePercent": 8.7,
+        "singlePersonPercent": 24.5,
+        "englishOnlyPercent": 89,
+        "spanishAtHomePercent": 11,
+        "asianLanguageAtHomePercent": 3.2
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 23,
+          "bikeScore": 20,
+          "transitScore": -100,
+          "description": "Almost All Errands Require a Car",
+          "updatedAt": "2026-01-28T03:46:49.552Z"
+        },
+        "crime": {
+          "violentCrimeRate": 400,
+          "propertyCrimeRate": 2266,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 49,
+          "healthyDaysPercent": 62,
+          "hazardousDays": 28,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 85,
+          "providerCount": 6,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 74,
+          "schoolCount": 105
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 100,
+          "hospitalBeds100k": 290,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.375,
+          "democratPercent": 68,
+          "republicanPercent": 30.5,
+          "voterTurnout": 67.8,
+          "marginOfVictory": 37.5,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 85,
+          "evangelicalProtestant": 385,
+          "mainlineProtestant": 95,
+          "jewish": 28,
+          "muslim": 18,
+          "unaffiliated": 285,
+          "lds": null,
+          "diversityIndex": 69,
+          "dominantTradition": "Evangelical Protestant",
+          "dataYear": 2020
+        }
       }
     },
     "minneapolis": {
@@ -1074,18 +2223,6 @@
           "julyDewpoint": 60.6,
           "summerHumidityIndex": 69
         }
-      },
-      "cost": {
-        "medianHomePrice": 360000,
-        "costOfLivingIndex": 104,
-        "stateTaxRate": 0.0985,
-        "propertyTaxRate": 0.012
-      },
-      "demographics": {
-        "population": 3629,
-        "diversityIndex": 63.5,
-        "eastAsianPercent": 0.048,
-        "crimeRate": 950
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -1127,6 +2264,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 426877,
+        "medianAge": 32.8,
+        "under18Percent": 19.1,
+        "age18to34Percent": 156.2,
+        "age35to54Percent": 24.4,
+        "age55PlusPercent": 345252.4,
+        "whitePercent": 3.8,
+        "blackPercent": 90.1,
+        "hispanicPercent": 7.3,
+        "asianPercent": 18.4,
+        "pacificIslanderPercent": 0.9,
+        "nativeAmericanPercent": 60,
+        "otherRacePercent": 5.2,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.98,
+        "indianPercent": 0,
+        "filipinoPercent": 1.68,
+        "vietnamesePercent": 0,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.44,
+        "mexicanPercent": 5.33,
+        "puertoRicanPercent": 0.45,
+        "cubanPercent": 0.24,
+        "salvadoranPercent": 0.7,
+        "guatemalanPercent": 0.25,
+        "colombianPercent": 0,
+        "diversityIndex": -22,
+        "highSchoolOrHigherPercent": 90.8,
+        "bachelorsOrHigherPercent": 53.5,
+        "graduateDegreePercent": 32.1,
+        "medianHouseholdIncome": 76332,
+        "perCapitaIncome": 48373,
+        "povertyRate": 16.8,
+        "foreignBornPercent": 14.5,
+        "familyHouseholdsPercent": 30.4,
+        "marriedCouplePercent": 13,
+        "singlePersonPercent": 19.8,
+        "englishOnlyPercent": 79,
+        "spanishAtHomePercent": 21,
+        "asianLanguageAtHomePercent": 2.6
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 49,
+          "bikeScore": 42,
+          "transitScore": -13,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:50.019Z"
+        },
+        "crime": {
+          "violentCrimeRate": 281,
+          "propertyCrimeRate": 2205,
+          "trend3Year": "rising",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 40,
+          "healthyDaysPercent": 74,
+          "hazardousDays": 15,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 78,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 16,
+          "graduationRate": 72,
+          "schoolCount": 100
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 130,
+          "hospitalBeds100k": 320,
+          "hpsaScore": 3
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.411,
+          "democratPercent": 69.5,
+          "republicanPercent": 28.4,
+          "voterTurnout": 79.2,
+          "marginOfVictory": 41.1,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 245,
+          "evangelicalProtestant": 145,
+          "mainlineProtestant": 185,
+          "jewish": 28,
+          "muslim": 18,
+          "unaffiliated": 320,
+          "lds": null,
+          "diversityIndex": 75,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "philadelphia": {
@@ -1160,18 +2401,6 @@
           "julyDewpoint": 66.9,
           "summerHumidityIndex": 70
         }
-      },
-      "cost": {
-        "medianHomePrice": 325000,
-        "costOfLivingIndex": 108.5,
-        "stateTaxRate": 0.0307,
-        "propertyTaxRate": 0.0135
-      },
-      "demographics": {
-        "population": 6120,
-        "diversityIndex": 69,
-        "eastAsianPercent": 0.045,
-        "crimeRate": 700
       },
       "quality": {
         "qualityOfLifeScore": 66,
@@ -1213,6 +2442,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 1593208,
+        "medianAge": 34.8,
+        "under18Percent": 21.5,
+        "age18to34Percent": 152.5,
+        "age35to54Percent": 31.5,
+        "age55PlusPercent": 1250669.6,
+        "whitePercent": 5.4,
+        "blackPercent": 84.3,
+        "hispanicPercent": 11.6,
+        "asianPercent": 39,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 33.5,
+        "otherRacePercent": 7.5,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 2.54,
+        "indianPercent": 0.04,
+        "filipinoPercent": 0.04,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.4,
+        "mexicanPercent": 1.4,
+        "puertoRicanPercent": 8.58,
+        "cubanPercent": 0.26,
+        "salvadoranPercent": 1.09,
+        "guatemalanPercent": 0.32,
+        "colombianPercent": null,
+        "diversityIndex": 0,
+        "highSchoolOrHigherPercent": 86.9,
+        "bachelorsOrHigherPercent": 33.6,
+        "graduateDegreePercent": 18.8,
+        "medianHouseholdIncome": 57537,
+        "perCapitaIncome": 35553,
+        "povertyRate": 22.7,
+        "foreignBornPercent": 14.6,
+        "familyHouseholdsPercent": 27.6,
+        "marriedCouplePercent": 10.4,
+        "singlePersonPercent": 21.3,
+        "englishOnlyPercent": 76,
+        "spanishAtHomePercent": 24,
+        "asianLanguageAtHomePercent": 5.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 49,
+          "bikeScore": 42,
+          "transitScore": 0,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:50.415Z"
+        },
+        "crime": {
+          "violentCrimeRate": 310,
+          "propertyCrimeRate": 1283,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 47,
+          "healthyDaysPercent": 65,
+          "hazardousDays": 25,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 75,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 73,
+          "schoolCount": 340
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 140,
+          "hospitalBeds100k": 380,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.582,
+          "democratPercent": 78.4,
+          "republicanPercent": 20.2,
+          "voterTurnout": 64.2,
+          "marginOfVictory": 58.2,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 355,
+          "evangelicalProtestant": 65,
+          "mainlineProtestant": 75,
+          "jewish": 58,
+          "muslim": 22,
+          "unaffiliated": 320,
+          "lds": null,
+          "diversityIndex": 70,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "dallas": {
@@ -1246,18 +2579,6 @@
           "julyDewpoint": 68,
           "summerHumidityIndex": 56
         }
-      },
-      "cost": {
-        "medianHomePrice": 375000,
-        "costOfLivingIndex": 102.5,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.019
-      },
-      "demographics": {
-        "population": 7540,
-        "diversityIndex": 71.6,
-        "eastAsianPercent": 0.035,
-        "crimeRate": 850
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -1299,6 +2620,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 1300642,
+        "medianAge": 33.1,
+        "under18Percent": 24.4,
+        "age18to34Percent": 147.6,
+        "age35to54Percent": 25,
+        "age55PlusPercent": 983634.6,
+        "whitePercent": 6.9,
+        "blackPercent": 57.6,
+        "hispanicPercent": 21.9,
+        "asianPercent": 23.3,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 28.3,
+        "otherRacePercent": 3.6,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.6,
+        "indianPercent": 0.21,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": 0,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.25,
+        "mexicanPercent": 34.54,
+        "puertoRicanPercent": 0.57,
+        "cubanPercent": 0.39,
+        "salvadoranPercent": 4.09,
+        "guatemalanPercent": 0.7,
+        "colombianPercent": 0.01,
+        "diversityIndex": 48,
+        "highSchoolOrHigherPercent": 80.2,
+        "bachelorsOrHigherPercent": 36.5,
+        "graduateDegreePercent": 22.5,
+        "medianHouseholdIncome": 63985,
+        "perCapitaIncome": 41761,
+        "povertyRate": 17.5,
+        "foreignBornPercent": 23.8,
+        "familyHouseholdsPercent": 35.4,
+        "marriedCouplePercent": 15.4,
+        "singlePersonPercent": 19,
+        "englishOnlyPercent": 57.6,
+        "spanishAtHomePercent": 42.4,
+        "asianLanguageAtHomePercent": 2.1
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 21,
+          "bikeScore": 18,
+          "transitScore": -100,
+          "description": "Almost All Errands Require a Car",
+          "updatedAt": "2026-01-28T03:46:50.809Z"
+        },
+        "crime": {
+          "violentCrimeRate": 446,
+          "propertyCrimeRate": 2459,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 51,
+          "healthyDaysPercent": 58,
+          "hazardousDays": 32,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 82,
+          "providerCount": 6,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 87,
+          "schoolCount": 230
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 85,
+          "hospitalBeds100k": 240,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.007,
+          "democratPercent": 49.5,
+          "republicanPercent": 48.8,
+          "voterTurnout": 60.5,
+          "marginOfVictory": 0.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 185,
+          "evangelicalProtestant": 345,
+          "mainlineProtestant": 85,
+          "jewish": 18,
+          "muslim": 22,
+          "unaffiliated": 265,
+          "lds": null,
+          "diversityIndex": 73,
+          "dominantTradition": "Evangelical Protestant",
+          "dataYear": 2020
+        }
       }
     },
     "tampa-bay": {
@@ -1332,18 +2757,6 @@
           "julyDewpoint": 74.4,
           "summerHumidityIndex": 79
         }
-      },
-      "cost": {
-        "medianHomePrice": 380000,
-        "costOfLivingIndex": 98,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.011
-      },
-      "demographics": {
-        "population": 3180,
-        "diversityIndex": 68.5,
-        "eastAsianPercent": 0.035,
-        "crimeRate": 750
       },
       "quality": {
         "qualityOfLifeScore": 75,
@@ -1385,6 +2798,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 388768,
+        "medianAge": 35.5,
+        "under18Percent": 20.8,
+        "age18to34Percent": 153,
+        "age35to54Percent": 29.2,
+        "age55PlusPercent": 308021.5,
+        "whitePercent": 9.2,
+        "blackPercent": 73.3,
+        "hispanicPercent": 14.4,
+        "asianPercent": 20.6,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 44.1,
+        "otherRacePercent": 4.4,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.68,
+        "indianPercent": 0.01,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.14,
+        "mexicanPercent": 3.05,
+        "puertoRicanPercent": 6.62,
+        "cubanPercent": 7.76,
+        "salvadoranPercent": 2.34,
+        "guatemalanPercent": 0.42,
+        "colombianPercent": null,
+        "diversityIndex": 19,
+        "highSchoolOrHigherPercent": 89,
+        "bachelorsOrHigherPercent": 43.3,
+        "graduateDegreePercent": 25.7,
+        "medianHouseholdIncome": 66802,
+        "perCapitaIncome": 45586,
+        "povertyRate": 16.8,
+        "foreignBornPercent": 18.4,
+        "familyHouseholdsPercent": 35.3,
+        "marriedCouplePercent": 14.3,
+        "singlePersonPercent": 17.6,
+        "englishOnlyPercent": 71.8,
+        "spanishAtHomePercent": 28.2,
+        "asianLanguageAtHomePercent": 4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 78,
+          "bikeScore": 66,
+          "transitScore": 1,
+          "description": "Very Walkable",
+          "updatedAt": "2026-01-28T03:46:51.275Z"
+        },
+        "crime": {
+          "violentCrimeRate": 384,
+          "propertyCrimeRate": 1878,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 42,
+          "healthyDaysPercent": 72,
+          "hazardousDays": 18,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 80,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 87,
+          "schoolCount": 275
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 90,
+          "hospitalBeds100k": 270,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": -0.097,
+          "democratPercent": 44.5,
+          "republicanPercent": 54.2,
+          "voterTurnout": 68.8,
+          "marginOfVictory": 9.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 165,
+          "evangelicalProtestant": 185,
+          "mainlineProtestant": 65,
+          "jewish": 42,
+          "muslim": 8,
+          "unaffiliated": 420,
+          "lds": null,
+          "diversityIndex": 69,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "denver": {
@@ -1418,18 +2935,6 @@
           "julyDewpoint": 50.2,
           "summerHumidityIndex": 45
         }
-      },
-      "cost": {
-        "medianHomePrice": 600000,
-        "costOfLivingIndex": 120.3,
-        "stateTaxRate": 0.044,
-        "propertyTaxRate": 0.0045
-      },
-      "demographics": {
-        "population": 2892,
-        "diversityIndex": 64,
-        "eastAsianPercent": 0.035,
-        "crimeRate": 880
       },
       "quality": {
         "qualityOfLifeScore": 82,
@@ -1471,6 +2976,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 710800,
+        "medianAge": 34.9,
+        "under18Percent": 18.7,
+        "age18to34Percent": 159.6,
+        "age35to54Percent": 26.8,
+        "age55PlusPercent": 577867.5,
+        "whitePercent": 6.4,
+        "blackPercent": 70.8,
+        "hispanicPercent": 17,
+        "asianPercent": 8.5,
+        "pacificIslanderPercent": 0.3,
+        "nativeAmericanPercent": 53.9,
+        "otherRacePercent": 3.5,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.73,
+        "indianPercent": 0.06,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.04,
+        "japanesePercent": 0.29,
+        "mexicanPercent": 21.78,
+        "puertoRicanPercent": 0.72,
+        "cubanPercent": 0.29,
+        "salvadoranPercent": 1.16,
+        "guatemalanPercent": 0.32,
+        "colombianPercent": null,
+        "diversityIndex": 17,
+        "highSchoolOrHigherPercent": 90.5,
+        "bachelorsOrHigherPercent": 54.2,
+        "graduateDegreePercent": 33.2,
+        "medianHouseholdIncome": 85853,
+        "perCapitaIncome": 56381,
+        "povertyRate": 11.7,
+        "foreignBornPercent": 13.9,
+        "familyHouseholdsPercent": 33.9,
+        "marriedCouplePercent": 14.3,
+        "singlePersonPercent": 19.5,
+        "englishOnlyPercent": 75.6,
+        "spanishAtHomePercent": 24.4,
+        "asianLanguageAtHomePercent": 2.8
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 41,
+          "bikeScore": 35,
+          "transitScore": 1,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:51.669Z"
+        },
+        "crime": {
+          "violentCrimeRate": 492,
+          "propertyCrimeRate": 3330,
+          "trend3Year": "rising",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 49,
+          "healthyDaysPercent": 62,
+          "hazardousDays": 28,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 85,
+          "providerCount": 6,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 16,
+          "graduationRate": 73,
+          "schoolCount": 220
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 115,
+          "hospitalBeds100k": 260,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.417,
+          "democratPercent": 69.5,
+          "republicanPercent": 27.8,
+          "voterTurnout": 76.8,
+          "marginOfVictory": 41.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 195,
+          "evangelicalProtestant": 125,
+          "mainlineProtestant": 65,
+          "jewish": 32,
+          "muslim": 12,
+          "unaffiliated": 450,
+          "lds": null,
+          "diversityIndex": 66,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "charlotte": {
@@ -1504,18 +3113,6 @@
           "julyDewpoint": 68.8,
           "summerHumidityIndex": 73
         }
-      },
-      "cost": {
-        "medianHomePrice": 350000,
-        "costOfLivingIndex": 100,
-        "stateTaxRate": 0.0575,
-        "propertyTaxRate": 0.0085
-      },
-      "demographics": {
-        "population": 2701,
-        "diversityIndex": 67.5,
-        "eastAsianPercent": 0.035,
-        "crimeRate": 700
       },
       "quality": {
         "qualityOfLifeScore": 75,
@@ -1557,6 +3154,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 875045,
+        "medianAge": 34.5,
+        "under18Percent": 22.9,
+        "age18to34Percent": 150.4,
+        "age35to54Percent": 24.3,
+        "age55PlusPercent": 674874.6,
+        "whitePercent": 8.3,
+        "blackPercent": 84.7,
+        "hispanicPercent": 11.9,
+        "asianPercent": 34.7,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 39.7,
+        "otherRacePercent": 6.5,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.85,
+        "indianPercent": 0.16,
+        "filipinoPercent": 0.15,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.26,
+        "mexicanPercent": 5.4,
+        "puertoRicanPercent": 1.14,
+        "cubanPercent": 0.5,
+        "salvadoranPercent": 5,
+        "guatemalanPercent": 0.75,
+        "colombianPercent": 0.01,
+        "diversityIndex": -2,
+        "highSchoolOrHigherPercent": 89.7,
+        "bachelorsOrHigherPercent": 46.6,
+        "graduateDegreePercent": 30,
+        "medianHouseholdIncome": 74070,
+        "perCapitaIncome": 47476,
+        "povertyRate": 11.7,
+        "foreignBornPercent": 17.4,
+        "familyHouseholdsPercent": 38.2,
+        "marriedCouplePercent": 16.7,
+        "singlePersonPercent": 19.2,
+        "englishOnlyPercent": 77.7,
+        "spanishAtHomePercent": 22.3,
+        "asianLanguageAtHomePercent": 4.1
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 18,
+          "bikeScore": 15,
+          "transitScore": -100,
+          "description": "Almost All Errands Require a Car",
+          "updatedAt": "2026-01-28T03:46:52.057Z"
+        },
+        "crime": {
+          "violentCrimeRate": 419,
+          "propertyCrimeRate": 2270,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 45,
+          "healthyDaysPercent": 68,
+          "hazardousDays": 22,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 85,
+          "providerCount": 5,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 88,
+          "schoolCount": 185
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 95,
+          "hospitalBeds100k": 260,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.057,
+          "democratPercent": 52.2,
+          "republicanPercent": 46.5,
+          "voterTurnout": 70.2,
+          "marginOfVictory": 5.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 65,
+          "evangelicalProtestant": 385,
+          "mainlineProtestant": 135,
+          "jewish": 12,
+          "muslim": 15,
+          "unaffiliated": 285,
+          "lds": null,
+          "diversityIndex": 69,
+          "dominantTradition": "Evangelical Protestant",
+          "dataYear": 2020
+        }
       }
     },
     "oklahoma-city": {
@@ -1590,18 +3291,6 @@
           "julyDewpoint": 65.9,
           "summerHumidityIndex": 58
         }
-      },
-      "cost": {
-        "medianHomePrice": 220000,
-        "costOfLivingIndex": 90.5,
-        "stateTaxRate": 0.0475,
-        "propertyTaxRate": 0.0145
-      },
-      "demographics": {
-        "population": 1442,
-        "diversityIndex": 65.5,
-        "eastAsianPercent": 0.035,
-        "crimeRate": 900
       },
       "quality": {
         "qualityOfLifeScore": 65,
@@ -1643,6 +3332,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 681088,
+        "medianAge": 34.9,
+        "under18Percent": 25,
+        "age18to34Percent": 146.2,
+        "age35to54Percent": 29.5,
+        "age55PlusPercent": 510810.9,
+        "whitePercent": 3.4,
+        "blackPercent": 79.9,
+        "hispanicPercent": 10.3,
+        "asianPercent": 13.4,
+        "pacificIslanderPercent": 2.5,
+        "nativeAmericanPercent": 52.5,
+        "otherRacePercent": 4.5,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.39,
+        "indianPercent": 0.1,
+        "filipinoPercent": 0.07,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.25,
+        "mexicanPercent": 16.12,
+        "puertoRicanPercent": 0.44,
+        "cubanPercent": 0.1,
+        "salvadoranPercent": 2.11,
+        "guatemalanPercent": 1.34,
+        "colombianPercent": 0.01,
+        "diversityIndex": 5,
+        "highSchoolOrHigherPercent": 87.7,
+        "bachelorsOrHigherPercent": 33.2,
+        "graduateDegreePercent": 21.1,
+        "medianHouseholdIncome": 64251,
+        "perCapitaIncome": 35954,
+        "povertyRate": 15,
+        "foreignBornPercent": 11.9,
+        "familyHouseholdsPercent": 42.8,
+        "marriedCouplePercent": 18.4,
+        "singlePersonPercent": 16.9,
+        "englishOnlyPercent": 79.8,
+        "spanishAtHomePercent": 20.2,
+        "asianLanguageAtHomePercent": 1.3
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 27,
+          "bikeScore": 23,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:52.452Z"
+        },
+        "crime": {
+          "violentCrimeRate": 458,
+          "propertyCrimeRate": 2725,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 46,
+          "healthyDaysPercent": 66,
+          "hazardousDays": 24,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 72,
+          "providerCount": 4,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 16,
+          "graduationRate": 81,
+          "schoolCount": 115
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 80,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 12
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": -0.173,
+          "democratPercent": 40.5,
+          "republicanPercent": 57.8,
+          "voterTurnout": 58.2,
+          "marginOfVictory": 17.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 85,
+          "evangelicalProtestant": 455,
+          "mainlineProtestant": 115,
+          "jewish": 8,
+          "muslim": 12,
+          "unaffiliated": 245,
+          "lds": null,
+          "diversityIndex": 66,
+          "dominantTradition": "Evangelical Protestant",
+          "dataYear": 2020
+        }
       }
     },
     "phoenix": {
@@ -1676,18 +3469,6 @@
           "julyDewpoint": 56.8,
           "summerHumidityIndex": 38
         }
-      },
-      "cost": {
-        "medianHomePrice": 450000,
-        "costOfLivingIndex": 106.9,
-        "stateTaxRate": 0.025,
-        "propertyTaxRate": 0.007
-      },
-      "demographics": {
-        "population": 4946,
-        "diversityIndex": 67.5,
-        "eastAsianPercent": 0.032,
-        "crimeRate": 800
       },
       "quality": {
         "qualityOfLifeScore": 75,
@@ -1729,6 +3510,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 1609456,
+        "medianAge": 34.4,
+        "under18Percent": 24.5,
+        "age18to34Percent": 146.8,
+        "age35to54Percent": 26,
+        "age55PlusPercent": 1215301,
+        "whitePercent": 4.1,
+        "blackPercent": 57.1,
+        "hispanicPercent": 23.8,
+        "asianPercent": 7,
+        "pacificIslanderPercent": 1.5,
+        "nativeAmericanPercent": 41.2,
+        "otherRacePercent": 3.6,
+        "twoOrMoreRacesPercent": 0.2,
+        "chinesePercent": 0.51,
+        "indianPercent": 0.14,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.2,
+        "mexicanPercent": 37.74,
+        "puertoRicanPercent": 0.78,
+        "cubanPercent": 0.37,
+        "salvadoranPercent": 1.47,
+        "guatemalanPercent": 0.77,
+        "colombianPercent": 0.01,
+        "diversityIndex": 44,
+        "highSchoolOrHigherPercent": 83.9,
+        "bachelorsOrHigherPercent": 31.2,
+        "graduateDegreePercent": 19.3,
+        "medianHouseholdIncome": 72092,
+        "perCapitaIncome": 37499,
+        "povertyRate": 14.6,
+        "foreignBornPercent": 19.3,
+        "familyHouseholdsPercent": 41.1,
+        "marriedCouplePercent": 18.3,
+        "singlePersonPercent": 14,
+        "englishOnlyPercent": 63.1,
+        "spanishAtHomePercent": 36.9,
+        "asianLanguageAtHomePercent": 2.7
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 75,
+          "bikeScore": 64,
+          "transitScore": 0,
+          "description": "Very Walkable",
+          "updatedAt": "2026-01-28T03:46:52.842Z"
+        },
+        "crime": {
+          "violentCrimeRate": 485,
+          "propertyCrimeRate": 2654,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 56,
+          "healthyDaysPercent": 48,
+          "hazardousDays": 48,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 70,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 19,
+          "graduationRate": 81,
+          "schoolCount": 240
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 65,
+          "hospitalBeds100k": 190,
+          "hpsaScore": 15
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.013,
+          "democratPercent": 49.8,
+          "republicanPercent": 48.5,
+          "voterTurnout": 66.5,
+          "marginOfVictory": 1.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 245,
+          "evangelicalProtestant": 145,
+          "mainlineProtestant": 55,
+          "jewish": 28,
+          "muslim": 12,
+          "unaffiliated": 395,
+          "lds": null,
+          "diversityIndex": 69,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "baltimore": {
@@ -1762,18 +3647,6 @@
           "julyDewpoint": 67.8,
           "summerHumidityIndex": 73
         }
-      },
-      "cost": {
-        "medianHomePrice": 300000,
-        "costOfLivingIndex": 106,
-        "stateTaxRate": 0.0575,
-        "propertyTaxRate": 0.0115
-      },
-      "demographics": {
-        "population": 2838,
-        "diversityIndex": 69,
-        "eastAsianPercent": 0.03,
-        "crimeRate": 1400
       },
       "quality": {
         "qualityOfLifeScore": 60,
@@ -1815,6 +3688,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 584548,
+        "medianAge": 36,
+        "under18Percent": 20.4,
+        "age18to34Percent": 155,
+        "age35to54Percent": 33.4,
+        "age55PlusPercent": 465151.7,
+        "whitePercent": 3.5,
+        "blackPercent": 94.1,
+        "hispanicPercent": 4.5,
+        "asianPercent": 60.7,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 27,
+        "otherRacePercent": 2.5,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.65,
+        "indianPercent": 0.01,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.31,
+        "mexicanPercent": 1.29,
+        "puertoRicanPercent": 0.8,
+        "cubanPercent": 0.32,
+        "salvadoranPercent": 1.71,
+        "guatemalanPercent": 0.36,
+        "colombianPercent": 0,
+        "diversityIndex": -33,
+        "highSchoolOrHigherPercent": 87.1,
+        "bachelorsOrHigherPercent": 34.9,
+        "graduateDegreePercent": 17.7,
+        "medianHouseholdIncome": 58349,
+        "perCapitaIncome": 37845,
+        "povertyRate": 19.6,
+        "foreignBornPercent": 8.1,
+        "familyHouseholdsPercent": 23.9,
+        "marriedCouplePercent": 8.4,
+        "singlePersonPercent": 23.3,
+        "englishOnlyPercent": 89.7,
+        "spanishAtHomePercent": 10.3,
+        "asianLanguageAtHomePercent": 2.6
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 40,
+          "bikeScore": 34,
+          "transitScore": 1,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:53.237Z"
+        },
+        "crime": {
+          "violentCrimeRate": 454,
+          "propertyCrimeRate": 1959,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 48,
+          "healthyDaysPercent": 64,
+          "hazardousDays": 26,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 75,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 72,
+          "schoolCount": 195
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 145,
+          "hospitalBeds100k": 400,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.587,
+          "democratPercent": 78.5,
+          "republicanPercent": 19.8,
+          "voterTurnout": 65.8,
+          "marginOfVictory": 58.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 185,
+          "evangelicalProtestant": 125,
+          "mainlineProtestant": 95,
+          "jewish": 65,
+          "muslim": 18,
+          "unaffiliated": 380,
+          "lds": null,
+          "diversityIndex": 72,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "orlando": {
@@ -1848,18 +3825,6 @@
           "julyDewpoint": 74.5,
           "summerHumidityIndex": 84
         }
-      },
-      "cost": {
-        "medianHomePrice": 360000,
-        "costOfLivingIndex": 104.5,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.011
-      },
-      "demographics": {
-        "population": 2692,
-        "diversityIndex": 69,
-        "eastAsianPercent": 0.03,
-        "crimeRate": 900
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -1901,6 +3866,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 307738,
+        "medianAge": 34.7,
+        "under18Percent": 20.8,
+        "age18to34Percent": 155.7,
+        "age35to54Percent": 24.3,
+        "age55PlusPercent": 243674.2,
+        "whitePercent": 14.7,
+        "blackPercent": 65.2,
+        "hispanicPercent": 21.1,
+        "asianPercent": 22.3,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 34.2,
+        "otherRacePercent": 3.9,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.98,
+        "indianPercent": 0.04,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.19,
+        "mexicanPercent": 1.83,
+        "puertoRicanPercent": 15.5,
+        "cubanPercent": 2.82,
+        "salvadoranPercent": 1.89,
+        "guatemalanPercent": 0.46,
+        "colombianPercent": 0.01,
+        "diversityIndex": 34,
+        "highSchoolOrHigherPercent": 91.4,
+        "bachelorsOrHigherPercent": 41.7,
+        "graduateDegreePercent": 25.8,
+        "medianHouseholdIncome": 66292,
+        "perCapitaIncome": 40253,
+        "povertyRate": 15.2,
+        "foreignBornPercent": 22.5,
+        "familyHouseholdsPercent": 34.9,
+        "marriedCouplePercent": 15.1,
+        "singlePersonPercent": 17.7,
+        "englishOnlyPercent": 59.4,
+        "spanishAtHomePercent": 40.6,
+        "asianLanguageAtHomePercent": 8.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 37,
+          "bikeScore": 31,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:53.629Z"
+        },
+        "crime": {
+          "violentCrimeRate": 384,
+          "propertyCrimeRate": 1878,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 40,
+          "healthyDaysPercent": 74,
+          "hazardousDays": 15,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 82,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 89,
+          "schoolCount": 205
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 85,
+          "hospitalBeds100k": 250,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": -0.057,
+          "democratPercent": 46.5,
+          "republicanPercent": 52.2,
+          "voterTurnout": 67.5,
+          "marginOfVictory": 5.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 185,
+          "evangelicalProtestant": 195,
+          "mainlineProtestant": 55,
+          "jewish": 35,
+          "muslim": 12,
+          "unaffiliated": 405,
+          "lds": null,
+          "diversityIndex": 69,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "indianapolis": {
@@ -1934,18 +4003,6 @@
           "julyDewpoint": 65.3,
           "summerHumidityIndex": 74
         }
-      },
-      "cost": {
-        "medianHomePrice": 280000,
-        "costOfLivingIndex": 91.5,
-        "stateTaxRate": 0.0323,
-        "propertyTaxRate": 0.0115
-      },
-      "demographics": {
-        "population": 2127,
-        "diversityIndex": 63.5,
-        "eastAsianPercent": 0.03,
-        "crimeRate": 950
       },
       "quality": {
         "qualityOfLifeScore": 65,
@@ -1987,6 +4044,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 882006,
+        "medianAge": 34.3,
+        "under18Percent": 24.5,
+        "age18to34Percent": 147,
+        "age35to54Percent": 28.7,
+        "age55PlusPercent": 666076.7,
+        "whitePercent": 2.7,
+        "blackPercent": 89.1,
+        "hispanicPercent": 7.2,
+        "asianPercent": 28.5,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 51.9,
+        "otherRacePercent": 4.1,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.39,
+        "indianPercent": 1.61,
+        "filipinoPercent": 0.02,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.13,
+        "mexicanPercent": 7.4,
+        "puertoRicanPercent": 0.63,
+        "cubanPercent": 0.22,
+        "salvadoranPercent": 1.48,
+        "guatemalanPercent": 0.39,
+        "colombianPercent": null,
+        "diversityIndex": -15,
+        "highSchoolOrHigherPercent": 87.2,
+        "bachelorsOrHigherPercent": 33.4,
+        "graduateDegreePercent": 21.4,
+        "medianHouseholdIncome": 59110,
+        "perCapitaIncome": 34592,
+        "povertyRate": 15.9,
+        "foreignBornPercent": 10.3,
+        "familyHouseholdsPercent": 35.6,
+        "marriedCouplePercent": 13.5,
+        "singlePersonPercent": 20.3,
+        "englishOnlyPercent": 85.2,
+        "spanishAtHomePercent": 14.8,
+        "asianLanguageAtHomePercent": 2.3
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 32,
+          "bikeScore": 27,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:54.023Z"
+        },
+        "crime": {
+          "violentCrimeRate": 382,
+          "propertyCrimeRate": 1913,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 47,
+          "healthyDaysPercent": 65,
+          "hazardousDays": 25,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 70,
+          "providerCount": 4,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 78,
+          "schoolCount": 160
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 95,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": -0.013,
+          "democratPercent": 48.5,
+          "republicanPercent": 49.8,
+          "voterTurnout": 62.5,
+          "marginOfVictory": 1.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 145,
+          "evangelicalProtestant": 285,
+          "mainlineProtestant": 125,
+          "jewish": 15,
+          "muslim": 12,
+          "unaffiliated": 325,
+          "lds": null,
+          "diversityIndex": 73,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "nashville": {
@@ -2020,18 +4181,6 @@
           "julyDewpoint": 70.1,
           "summerHumidityIndex": 78
         }
-      },
-      "cost": {
-        "medianHomePrice": 400000,
-        "costOfLivingIndex": 97,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.0085
-      },
-      "demographics": {
-        "population": 2012,
-        "diversityIndex": 65,
-        "eastAsianPercent": 0.03,
-        "crimeRate": 1150
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -2073,6 +4222,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 684103,
+        "medianAge": 34.6,
+        "under18Percent": 20.3,
+        "age18to34Percent": 155.5,
+        "age35to54Percent": 28.3,
+        "age55PlusPercent": 545330.9,
+        "whitePercent": 3.9,
+        "blackPercent": 89.2,
+        "hispanicPercent": 7.3,
+        "asianPercent": 26.5,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 54.9,
+        "otherRacePercent": 3.6,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.55,
+        "indianPercent": 0.32,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.36,
+        "mexicanPercent": 5.87,
+        "puertoRicanPercent": 0.51,
+        "cubanPercent": 0.44,
+        "salvadoranPercent": 2.88,
+        "guatemalanPercent": 0.78,
+        "colombianPercent": 0.01,
+        "diversityIndex": -18,
+        "highSchoolOrHigherPercent": 90.2,
+        "bachelorsOrHigherPercent": 45.5,
+        "graduateDegreePercent": 28.1,
+        "medianHouseholdIncome": 71328,
+        "perCapitaIncome": 44433,
+        "povertyRate": 14.5,
+        "foreignBornPercent": 13.7,
+        "familyHouseholdsPercent": 35.7,
+        "marriedCouplePercent": 14,
+        "singlePersonPercent": 20.3,
+        "englishOnlyPercent": 82.5,
+        "spanishAtHomePercent": 17.5,
+        "asianLanguageAtHomePercent": 2.8
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 39,
+          "bikeScore": 33,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:54.412Z"
+        },
+        "crime": {
+          "violentCrimeRate": 672,
+          "propertyCrimeRate": 2660,
+          "trend3Year": "rising",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 46,
+          "healthyDaysPercent": 66,
+          "hazardousDays": 24,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 82,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 82,
+          "schoolCount": 170
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 125,
+          "hospitalBeds100k": 350,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.127,
+          "democratPercent": 55.5,
+          "republicanPercent": 42.8,
+          "voterTurnout": 65.2,
+          "marginOfVictory": 12.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 55,
+          "evangelicalProtestant": 425,
+          "mainlineProtestant": 125,
+          "jewish": 12,
+          "muslim": 15,
+          "unaffiliated": 275,
+          "lds": null,
+          "diversityIndex": 67,
+          "dominantTradition": "Evangelical Protestant",
+          "dataYear": 2020
+        }
       }
     },
     "milwaukee": {
@@ -2106,18 +4359,6 @@
           "julyDewpoint": 62.1,
           "summerHumidityIndex": 76
         }
-      },
-      "cost": {
-        "medianHomePrice": 230000,
-        "costOfLivingIndex": 94,
-        "stateTaxRate": 0.0765,
-        "propertyTaxRate": 0.0195
-      },
-      "demographics": {
-        "population": 1566,
-        "diversityIndex": 64,
-        "eastAsianPercent": 0.03,
-        "crimeRate": 1200
       },
       "quality": {
         "qualityOfLifeScore": 62,
@@ -2159,6 +4400,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 573299,
+        "medianAge": 31.8,
+        "under18Percent": 25.7,
+        "age18to34Percent": 143.1,
+        "age35to54Percent": 25.5,
+        "age55PlusPercent": 426193.7,
+        "whitePercent": 1.6,
+        "blackPercent": 79.8,
+        "hispanicPercent": 13.8,
+        "asianPercent": 38.1,
+        "pacificIslanderPercent": 0.4,
+        "nativeAmericanPercent": 33,
+        "otherRacePercent": 4.7,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.29,
+        "indianPercent": 0.85,
+        "filipinoPercent": 1.95,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.11,
+        "mexicanPercent": 13.36,
+        "puertoRicanPercent": 5.08,
+        "cubanPercent": 0.17,
+        "salvadoranPercent": 0.68,
+        "guatemalanPercent": 0.13,
+        "colombianPercent": null,
+        "diversityIndex": 9,
+        "highSchoolOrHigherPercent": 85.4,
+        "bachelorsOrHigherPercent": 26.1,
+        "graduateDegreePercent": 16.7,
+        "medianHouseholdIncome": 49733,
+        "perCapitaIncome": 28079,
+        "povertyRate": 23.9,
+        "foreignBornPercent": 10.3,
+        "familyHouseholdsPercent": 25.5,
+        "marriedCouplePercent": 10.4,
+        "singlePersonPercent": 19.7,
+        "englishOnlyPercent": 78.4,
+        "spanishAtHomePercent": 21.6,
+        "asianLanguageAtHomePercent": 1.8
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 51,
+          "bikeScore": 43,
+          "transitScore": 1,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:54.806Z"
+        },
+        "crime": {
+          "violentCrimeRate": 324,
+          "propertyCrimeRate": 1496,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 43,
+          "healthyDaysPercent": 70,
+          "hazardousDays": 20,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 70,
+          "providerCount": 4,
+          "maxDownloadSpeed": 1000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 65,
+          "schoolCount": 180
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 100,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.187,
+          "democratPercent": 58.5,
+          "republicanPercent": 39.8,
+          "voterTurnout": 72.8,
+          "marginOfVictory": 18.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 295,
+          "evangelicalProtestant": 145,
+          "mainlineProtestant": 175,
+          "jewish": 18,
+          "muslim": 12,
+          "unaffiliated": 285,
+          "lds": null,
+          "diversityIndex": 75,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "salt-lake-city": {
@@ -2192,18 +4537,6 @@
           "julyDewpoint": 41.6,
           "summerHumidityIndex": 32
         }
-      },
-      "cost": {
-        "medianHomePrice": 520000,
-        "costOfLivingIndex": 103.5,
-        "stateTaxRate": 0.0485,
-        "propertyTaxRate": 0.0055
-      },
-      "demographics": {
-        "population": 1263,
-        "diversityIndex": 64,
-        "eastAsianPercent": 0.03,
-        "crimeRate": 800
       },
       "quality": {
         "qualityOfLifeScore": 75,
@@ -2245,6 +4578,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 201269,
+        "medianAge": 32.5,
+        "under18Percent": 18,
+        "age18to34Percent": 158.4,
+        "age35to54Percent": 26.1,
+        "age55PlusPercent": 165169.7,
+        "whitePercent": 4.7,
+        "blackPercent": 80.1,
+        "hispanicPercent": 13.5,
+        "asianPercent": 2.6,
+        "pacificIslanderPercent": 0.6,
+        "nativeAmericanPercent": 65.2,
+        "otherRacePercent": 5.3,
+        "twoOrMoreRacesPercent": 1.7,
+        "chinesePercent": 1.01,
+        "indianPercent": 0.75,
+        "filipinoPercent": 0.04,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.28,
+        "mexicanPercent": 14.41,
+        "puertoRicanPercent": 0.47,
+        "cubanPercent": 0.32,
+        "salvadoranPercent": 1.26,
+        "guatemalanPercent": 0.49,
+        "colombianPercent": 0.07,
+        "diversityIndex": -9,
+        "highSchoolOrHigherPercent": 91.2,
+        "bachelorsOrHigherPercent": 50.2,
+        "graduateDegreePercent": 28.9,
+        "medianHouseholdIncome": 72357,
+        "perCapitaIncome": 46972,
+        "povertyRate": 14.1,
+        "foreignBornPercent": 15.4,
+        "familyHouseholdsPercent": 35,
+        "marriedCouplePercent": 13.2,
+        "singlePersonPercent": 18.2,
+        "englishOnlyPercent": 75.8,
+        "spanishAtHomePercent": 24.2,
+        "asianLanguageAtHomePercent": 3.8
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 31,
+          "bikeScore": 26,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:55.195Z"
+        },
+        "crime": {
+          "violentCrimeRate": 260,
+          "propertyCrimeRate": 2495,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 54,
+          "healthyDaysPercent": 52,
+          "hazardousDays": 40,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 90,
+          "providerCount": 6,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 22,
+          "graduationRate": 90,
+          "schoolCount": 65
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 95,
+          "hospitalBeds100k": 220,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": -0.093,
+          "democratPercent": 42.5,
+          "republicanPercent": 51.8,
+          "voterTurnout": 71.5,
+          "marginOfVictory": 9.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 68,
+          "evangelicalProtestant": 45,
+          "mainlineProtestant": 35,
+          "jewish": 8,
+          "muslim": 5,
+          "unaffiliated": 285,
+          "lds": 485,
+          "diversityIndex": 63,
+          "dominantTradition": "LDS/Mormon",
+          "dataYear": 2020
+        }
       }
     },
     "detroit": {
@@ -2278,18 +4715,6 @@
           "julyDewpoint": 61.9,
           "summerHumidityIndex": 71
         }
-      },
-      "cost": {
-        "medianHomePrice": 200000,
-        "costOfLivingIndex": 88,
-        "stateTaxRate": 0.0425,
-        "propertyTaxRate": 0.0195
-      },
-      "demographics": {
-        "population": 4365,
-        "diversityIndex": 65,
-        "eastAsianPercent": 0.025,
-        "crimeRate": 2000
       },
       "quality": {
         "qualityOfLifeScore": 55,
@@ -2331,6 +4756,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 636787,
+        "medianAge": 35,
+        "under18Percent": 24.6,
+        "age18to34Percent": 146.5,
+        "age35to54Percent": 32.4,
+        "age55PlusPercent": 480079.6,
+        "whitePercent": 1.2,
+        "blackPercent": 92.5,
+        "hispanicPercent": 5.6,
+        "asianPercent": 77.4,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 10.1,
+        "otherRacePercent": 1.6,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.11,
+        "indianPercent": 0.01,
+        "filipinoPercent": 0.04,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.06,
+        "mexicanPercent": 5.21,
+        "puertoRicanPercent": 0.95,
+        "cubanPercent": 0.14,
+        "salvadoranPercent": 0.51,
+        "guatemalanPercent": 0.18,
+        "colombianPercent": null,
+        "diversityIndex": -47,
+        "highSchoolOrHigherPercent": 82.8,
+        "bachelorsOrHigherPercent": 16.9,
+        "graduateDegreePercent": 10,
+        "medianHouseholdIncome": 37761,
+        "perCapitaIncome": 22861,
+        "povertyRate": 31.5,
+        "foreignBornPercent": 5.6,
+        "familyHouseholdsPercent": 18.9,
+        "marriedCouplePercent": 7.2,
+        "singlePersonPercent": 21.4,
+        "englishOnlyPercent": 89.2,
+        "spanishAtHomePercent": 10.8,
+        "asianLanguageAtHomePercent": 1.7
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 25,
+          "bikeScore": 21,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:55.590Z"
+        },
+        "crime": {
+          "violentCrimeRate": 478,
+          "propertyCrimeRate": 1538,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 48,
+          "healthyDaysPercent": 64,
+          "hazardousDays": 26,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 65,
+          "providerCount": 4,
+          "maxDownloadSpeed": 1000
+        },
+        "education": {
+          "studentTeacherRatio": 16,
+          "graduationRate": 80,
+          "schoolCount": 140
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 85,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 15
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.387,
+          "democratPercent": 68.5,
+          "republicanPercent": 29.8,
+          "voterTurnout": 64.2,
+          "marginOfVictory": 38.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 285,
+          "evangelicalProtestant": 145,
+          "mainlineProtestant": 95,
+          "jewish": 42,
+          "muslim": 48,
+          "unaffiliated": 305,
+          "lds": null,
+          "diversityIndex": 75,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "st-louis": {
@@ -2364,18 +4893,6 @@
           "julyDewpoint": 68,
           "summerHumidityIndex": 74
         }
-      },
-      "cost": {
-        "medianHomePrice": 250000,
-        "costOfLivingIndex": 90.5,
-        "stateTaxRate": 0.054,
-        "propertyTaxRate": 0.0155
-      },
-      "demographics": {
-        "population": 2809,
-        "diversityIndex": 66,
-        "eastAsianPercent": 0.025,
-        "crimeRate": 1100
       },
       "quality": {
         "qualityOfLifeScore": 63,
@@ -2417,6 +4934,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 298018,
+        "medianAge": 36.5,
+        "under18Percent": 18.5,
+        "age18to34Percent": 159.3,
+        "age35to54Percent": 33.2,
+        "age55PlusPercent": 242876.1,
+        "whitePercent": 1.1,
+        "blackPercent": 95.7,
+        "hispanicPercent": 3,
+        "asianPercent": 43.7,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 44.6,
+        "otherRacePercent": 3.5,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.71,
+        "indianPercent": 0.13,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.27,
+        "mexicanPercent": 2.78,
+        "puertoRicanPercent": 0.24,
+        "cubanPercent": 0.16,
+        "salvadoranPercent": 0.21,
+        "guatemalanPercent": 0.05,
+        "colombianPercent": 0.01,
+        "diversityIndex": -31,
+        "highSchoolOrHigherPercent": 90,
+        "bachelorsOrHigherPercent": 38.6,
+        "graduateDegreePercent": 21.5,
+        "medianHouseholdIncome": 52941,
+        "perCapitaIncome": 36722,
+        "povertyRate": 20.2,
+        "foreignBornPercent": 6.3,
+        "familyHouseholdsPercent": 24.3,
+        "marriedCouplePercent": 7.9,
+        "singlePersonPercent": 24.4,
+        "englishOnlyPercent": 90.8,
+        "spanishAtHomePercent": 9.2,
+        "asianLanguageAtHomePercent": 2.6
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 48,
+          "bikeScore": 41,
+          "transitScore": -56,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:55.982Z"
+        },
+        "crime": {
+          "violentCrimeRate": 543,
+          "propertyCrimeRate": 2602,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 48,
+          "healthyDaysPercent": 64,
+          "hazardousDays": 26,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 72,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 70,
+          "schoolCount": 85
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 120,
+          "hospitalBeds100k": 360,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.13,
+          "democratPercent": 55.5,
+          "republicanPercent": 42.5,
+          "voterTurnout": 66.8,
+          "marginOfVictory": 13,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 265,
+          "evangelicalProtestant": 185,
+          "mainlineProtestant": 125,
+          "jewish": 28,
+          "muslim": 15,
+          "unaffiliated": 295,
+          "lds": null,
+          "diversityIndex": 75,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "san-antonio": {
@@ -2450,18 +5071,6 @@
           "julyDewpoint": 69.4,
           "summerHumidityIndex": 65
         }
-      },
-      "cost": {
-        "medianHomePrice": 275000,
-        "costOfLivingIndex": 90,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.02
-      },
-      "demographics": {
-        "population": 2602,
-        "diversityIndex": 66.5,
-        "eastAsianPercent": 0.025,
-        "crimeRate": 800
       },
       "quality": {
         "qualityOfLifeScore": 65,
@@ -2503,6 +5112,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 1445662,
+        "medianAge": 34.1,
+        "under18Percent": 24.1,
+        "age18to34Percent": 147.2,
+        "age35to54Percent": 28.5,
+        "age55PlusPercent": 1097375.2,
+        "whitePercent": 8.1,
+        "blackPercent": 34.2,
+        "hispanicPercent": 30.2,
+        "asianPercent": 6.1,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 22.6,
+        "otherRacePercent": 2.9,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.44,
+        "indianPercent": 0.05,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.16,
+        "mexicanPercent": 55.95,
+        "puertoRicanPercent": 1.42,
+        "cubanPercent": 0.36,
+        "salvadoranPercent": 1.38,
+        "guatemalanPercent": 0.22,
+        "colombianPercent": 0.01,
+        "diversityIndex": 73,
+        "highSchoolOrHigherPercent": 83.8,
+        "bachelorsOrHigherPercent": 27.7,
+        "graduateDegreePercent": 17.1,
+        "medianHouseholdIncome": 59593,
+        "perCapitaIncome": 31148,
+        "povertyRate": 17.7,
+        "foreignBornPercent": 14.3,
+        "familyHouseholdsPercent": 38.9,
+        "marriedCouplePercent": 16.2,
+        "singlePersonPercent": 16.3,
+        "englishOnlyPercent": 58.6,
+        "spanishAtHomePercent": 41.4,
+        "asianLanguageAtHomePercent": 1.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 61,
+          "bikeScore": 52,
+          "transitScore": 0,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:56.382Z"
+        },
+        "crime": {
+          "violentCrimeRate": 446,
+          "propertyCrimeRate": 2459,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 48,
+          "healthyDaysPercent": 64,
+          "hazardousDays": 25,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 75,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 88,
+          "schoolCount": 270
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 75,
+          "hospitalBeds100k": 230,
+          "hpsaScore": 12
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.047,
+          "democratPercent": 51.5,
+          "republicanPercent": 46.8,
+          "voterTurnout": 56.5,
+          "marginOfVictory": 4.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 385,
+          "evangelicalProtestant": 185,
+          "mainlineProtestant": 55,
+          "jewish": 12,
+          "muslim": 15,
+          "unaffiliated": 265,
+          "lds": null,
+          "diversityIndex": 70,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "jacksonville": {
@@ -2536,18 +5249,6 @@
           "julyDewpoint": 74.3,
           "summerHumidityIndex": 83
         }
-      },
-      "cost": {
-        "medianHomePrice": 340000,
-        "costOfLivingIndex": 97.5,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.0105
-      },
-      "demographics": {
-        "population": 1638,
-        "diversityIndex": 66,
-        "eastAsianPercent": 0.025,
-        "crimeRate": 800
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -2589,6 +5290,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 950203,
+        "medianAge": 36.3,
+        "under18Percent": 22.6,
+        "age18to34Percent": 150.9,
+        "age35to54Percent": 32.3,
+        "age55PlusPercent": 735269.9,
+        "whitePercent": 4.1,
+        "blackPercent": 88.7,
+        "hispanicPercent": 7.5,
+        "asianPercent": 30.1,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 48.5,
+        "otherRacePercent": 4.8,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.39,
+        "indianPercent": 0.21,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.13,
+        "mexicanPercent": 2.02,
+        "puertoRicanPercent": 3.58,
+        "cubanPercent": 1.55,
+        "salvadoranPercent": 1.42,
+        "guatemalanPercent": 0.34,
+        "colombianPercent": null,
+        "diversityIndex": -12,
+        "highSchoolOrHigherPercent": 90.5,
+        "bachelorsOrHigherPercent": 31,
+        "graduateDegreePercent": 20.8,
+        "medianHouseholdIncome": 64138,
+        "perCapitaIncome": 35870,
+        "povertyRate": 14.8,
+        "foreignBornPercent": 12,
+        "familyHouseholdsPercent": 40,
+        "marriedCouplePercent": 15.2,
+        "singlePersonPercent": 17.2,
+        "englishOnlyPercent": 83.9,
+        "spanishAtHomePercent": 16.1,
+        "asianLanguageAtHomePercent": 4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 27,
+          "bikeScore": 23,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:56.769Z"
+        },
+        "crime": {
+          "violentCrimeRate": 384,
+          "propertyCrimeRate": 1878,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 40,
+          "healthyDaysPercent": 74,
+          "hazardousDays": 15,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 84,
+          "providerCount": 5,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 88,
+          "schoolCount": 200
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 85,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 12
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": -0.127,
+          "democratPercent": 42.8,
+          "republicanPercent": 55.5,
+          "voterTurnout": 68.5,
+          "marginOfVictory": 12.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 85,
+          "evangelicalProtestant": 325,
+          "mainlineProtestant": 85,
+          "jewish": 18,
+          "muslim": 12,
+          "unaffiliated": 365,
+          "lds": null,
+          "diversityIndex": 68,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "new-orleans": {
@@ -2622,18 +5427,6 @@
           "julyDewpoint": 75.5,
           "summerHumidityIndex": 82
         }
-      },
-      "cost": {
-        "medianHomePrice": 280000,
-        "costOfLivingIndex": 95,
-        "stateTaxRate": 0.06,
-        "propertyTaxRate": 0.01
-      },
-      "demographics": {
-        "population": 1262,
-        "diversityIndex": 68,
-        "eastAsianPercent": 0.025,
-        "crimeRate": 1450
       },
       "quality": {
         "qualityOfLifeScore": 60,
@@ -2675,6 +5468,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 380408,
+        "medianAge": 37.9,
+        "under18Percent": 19.6,
+        "age18to34Percent": 156,
+        "age35to54Percent": 35.8,
+        "age55PlusPercent": 305726.4,
+        "whitePercent": 3.6,
+        "blackPercent": 94.3,
+        "hispanicPercent": 4.8,
+        "asianPercent": 56.7,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 30.8,
+        "otherRacePercent": 2.8,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.47,
+        "indianPercent": 0.02,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.1,
+        "mexicanPercent": 1.18,
+        "puertoRicanPercent": 0.3,
+        "cubanPercent": 0.55,
+        "salvadoranPercent": 2.11,
+        "guatemalanPercent": 0.26,
+        "colombianPercent": 0.08,
+        "diversityIndex": -31,
+        "highSchoolOrHigherPercent": 88.7,
+        "bachelorsOrHigherPercent": 40.7,
+        "graduateDegreePercent": 22.4,
+        "medianHouseholdIncome": 51116,
+        "perCapitaIncome": 37013,
+        "povertyRate": 22.9,
+        "foreignBornPercent": 5.6,
+        "familyHouseholdsPercent": 27,
+        "marriedCouplePercent": 8.8,
+        "singlePersonPercent": 25.4,
+        "englishOnlyPercent": 91.6,
+        "spanishAtHomePercent": 8.4,
+        "asianLanguageAtHomePercent": 2.1
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 64,
+          "bikeScore": 54,
+          "transitScore": -16,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:57.161Z"
+        },
+        "crime": {
+          "violentCrimeRate": 639,
+          "propertyCrimeRate": 2849,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 45,
+          "healthyDaysPercent": 68,
+          "hazardousDays": 22,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 78,
+          "providerCount": 5,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 78,
+          "schoolCount": 130
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 110,
+          "hospitalBeds100k": 320,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.224,
+          "democratPercent": 60.2,
+          "republicanPercent": 37.8,
+          "voterTurnout": 58.8,
+          "marginOfVictory": 22.4,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 385,
+          "evangelicalProtestant": 185,
+          "mainlineProtestant": 65,
+          "jewish": 15,
+          "muslim": 8,
+          "unaffiliated": 265,
+          "lds": null,
+          "diversityIndex": 70,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "kansas-city": {
@@ -2708,18 +5605,6 @@
           "julyDewpoint": 67.4,
           "summerHumidityIndex": 72
         }
-      },
-      "cost": {
-        "medianHomePrice": 240000,
-        "costOfLivingIndex": 92,
-        "stateTaxRate": 0.054,
-        "propertyTaxRate": 0.015
-      },
-      "demographics": {
-        "population": 2192,
-        "diversityIndex": 64.5,
-        "eastAsianPercent": 0.025,
-        "crimeRate": 1100
       },
       "quality": {
         "qualityOfLifeScore": 65,
@@ -2761,6 +5646,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 505958,
+        "medianAge": 35.4,
+        "under18Percent": 22.4,
+        "age18to34Percent": 151.5,
+        "age35to54Percent": 31.2,
+        "age55PlusPercent": 392442.8,
+        "whitePercent": 2.5,
+        "blackPercent": 88.9,
+        "hispanicPercent": 7.3,
+        "asianPercent": 26,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 55.2,
+        "otherRacePercent": 2.7,
+        "twoOrMoreRacesPercent": 0.2,
+        "chinesePercent": 0.36,
+        "indianPercent": 0.08,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.13,
+        "mexicanPercent": 7.63,
+        "puertoRicanPercent": 0.57,
+        "cubanPercent": 0.42,
+        "salvadoranPercent": 1.18,
+        "guatemalanPercent": 0.34,
+        "colombianPercent": 0.01,
+        "diversityIndex": -17,
+        "highSchoolOrHigherPercent": 91.5,
+        "bachelorsOrHigherPercent": 37.1,
+        "graduateDegreePercent": 23.4,
+        "medianHouseholdIncome": 65256,
+        "perCapitaIncome": 38146,
+        "povertyRate": 14.9,
+        "foreignBornPercent": 8.2,
+        "familyHouseholdsPercent": 35.7,
+        "marriedCouplePercent": 14.8,
+        "singlePersonPercent": 20.1,
+        "englishOnlyPercent": 87.9,
+        "spanishAtHomePercent": 12.1,
+        "asianLanguageAtHomePercent": 1.7
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 31,
+          "bikeScore": 26,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:57.550Z"
+        },
+        "crime": {
+          "violentCrimeRate": 543,
+          "propertyCrimeRate": 2602,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 45,
+          "healthyDaysPercent": 68,
+          "hazardousDays": 22,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 88,
+          "providerCount": 5,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 74,
+          "schoolCount": 90
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 100,
+          "hospitalBeds100k": 290,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.076,
+          "democratPercent": 52.8,
+          "republicanPercent": 45.2,
+          "voterTurnout": 67.5,
+          "marginOfVictory": 7.6,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 185,
+          "evangelicalProtestant": 245,
+          "mainlineProtestant": 145,
+          "jewish": 22,
+          "muslim": 12,
+          "unaffiliated": 305,
+          "lds": null,
+          "diversityIndex": 75,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "cincinnati": {
@@ -2794,18 +5783,6 @@
           "julyDewpoint": 65.8,
           "summerHumidityIndex": 73
         }
-      },
-      "cost": {
-        "medianHomePrice": 260000,
-        "costOfLivingIndex": 95,
-        "stateTaxRate": 0.0399,
-        "propertyTaxRate": 0.0165
-      },
-      "demographics": {
-        "population": 1712,
-        "diversityIndex": 64,
-        "eastAsianPercent": 0.025,
-        "crimeRate": 900
       },
       "quality": {
         "qualityOfLifeScore": 65,
@@ -2847,6 +5824,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 308870,
+        "medianAge": 32.9,
+        "under18Percent": 21,
+        "age18to34Percent": 151.7,
+        "age35to54Percent": 29.2,
+        "age55PlusPercent": 244203.7,
+        "whitePercent": 2.4,
+        "blackPercent": 95.4,
+        "hispanicPercent": 3.4,
+        "asianPercent": 39.3,
+        "pacificIslanderPercent": null,
+        "nativeAmericanPercent": 48.7,
+        "otherRacePercent": 2.6,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.61,
+        "indianPercent": 0,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.2,
+        "mexicanPercent": 1.26,
+        "puertoRicanPercent": 0.72,
+        "cubanPercent": 0.18,
+        "salvadoranPercent": 1.38,
+        "guatemalanPercent": 0.93,
+        "colombianPercent": 0,
+        "diversityIndex": -30,
+        "highSchoolOrHigherPercent": 89.1,
+        "bachelorsOrHigherPercent": 40.5,
+        "graduateDegreePercent": 23.3,
+        "medianHouseholdIncome": 49191,
+        "perCapitaIncome": 37280,
+        "povertyRate": 24.8,
+        "foreignBornPercent": 6.8,
+        "familyHouseholdsPercent": 24.3,
+        "marriedCouplePercent": 8.8,
+        "singlePersonPercent": 23.7,
+        "englishOnlyPercent": 91.2,
+        "spanishAtHomePercent": 8.8,
+        "asianLanguageAtHomePercent": 2.6
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 42,
+          "bikeScore": 36,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:58.248Z"
+        },
+        "crime": {
+          "violentCrimeRate": 308,
+          "propertyCrimeRate": 1844,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 46,
+          "healthyDaysPercent": 66,
+          "hazardousDays": 24,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 78,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 77,
+          "schoolCount": 85
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 115,
+          "hospitalBeds100k": 340,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.067,
+          "democratPercent": 52.5,
+          "republicanPercent": 45.8,
+          "voterTurnout": 68.2,
+          "marginOfVictory": 6.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 245,
+          "evangelicalProtestant": 215,
+          "mainlineProtestant": 125,
+          "jewish": 22,
+          "muslim": 12,
+          "unaffiliated": 295,
+          "lds": null,
+          "diversityIndex": 75,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "cleveland": {
@@ -2880,18 +5961,6 @@
           "julyDewpoint": 62.7,
           "summerHumidityIndex": 74
         }
-      },
-      "cost": {
-        "medianHomePrice": 190000,
-        "costOfLivingIndex": 95,
-        "stateTaxRate": 0.0399,
-        "propertyTaxRate": 0.016
-      },
-      "demographics": {
-        "population": 2076,
-        "diversityIndex": 63,
-        "eastAsianPercent": 0.02,
-        "crimeRate": 1000
       },
       "quality": {
         "qualityOfLifeScore": 60,
@@ -2933,6 +6002,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 370365,
+        "medianAge": 36.3,
+        "under18Percent": 21.2,
+        "age18to34Percent": 153.3,
+        "age35to54Percent": 33.1,
+        "age55PlusPercent": 291871.3,
+        "whitePercent": 1.8,
+        "blackPercent": 87.5,
+        "hispanicPercent": 7.9,
+        "asianPercent": 45.8,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 34.4,
+        "otherRacePercent": 2.4,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.75,
+        "indianPercent": 0,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.15,
+        "mexicanPercent": 1.54,
+        "puertoRicanPercent": 8.91,
+        "cubanPercent": 0.21,
+        "salvadoranPercent": 0.75,
+        "guatemalanPercent": 0.24,
+        "colombianPercent": 0,
+        "diversityIndex": -10,
+        "highSchoolOrHigherPercent": 82.9,
+        "bachelorsOrHigherPercent": 20.3,
+        "graduateDegreePercent": 12.1,
+        "medianHouseholdIncome": 37271,
+        "perCapitaIncome": 26040,
+        "povertyRate": 31.2,
+        "foreignBornPercent": 6,
+        "familyHouseholdsPercent": 19,
+        "marriedCouplePercent": 6,
+        "singlePersonPercent": 23,
+        "englishOnlyPercent": 85.3,
+        "spanishAtHomePercent": 14.7,
+        "asianLanguageAtHomePercent": 2.6
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 41,
+          "bikeScore": 35,
+          "transitScore": -62,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:58.640Z"
+        },
+        "crime": {
+          "violentCrimeRate": 308,
+          "propertyCrimeRate": 1844,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 47,
+          "healthyDaysPercent": 65,
+          "hazardousDays": 25,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 68,
+          "providerCount": 4,
+          "maxDownloadSpeed": 1000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 71,
+          "schoolCount": 115
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 125,
+          "hospitalBeds100k": 380,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.327,
+          "democratPercent": 65.5,
+          "republicanPercent": 32.8,
+          "voterTurnout": 64.5,
+          "marginOfVictory": 32.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 285,
+          "evangelicalProtestant": 145,
+          "mainlineProtestant": 95,
+          "jewish": 48,
+          "muslim": 15,
+          "unaffiliated": 315,
+          "lds": null,
+          "diversityIndex": 74,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "buffalo": {
@@ -2966,18 +6139,6 @@
           "julyDewpoint": 62,
           "summerHumidityIndex": 77
         }
-      },
-      "cost": {
-        "medianHomePrice": 210000,
-        "costOfLivingIndex": 103,
-        "stateTaxRate": 0.109,
-        "propertyTaxRate": 0.018
-      },
-      "demographics": {
-        "population": 1130,
-        "diversityIndex": 63,
-        "eastAsianPercent": 0.02,
-        "crimeRate": 750
       },
       "quality": {
         "qualityOfLifeScore": 60,
@@ -3019,6 +6180,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 276688,
+        "medianAge": 33.9,
+        "under18Percent": 22.3,
+        "age18to34Percent": 150.6,
+        "age35to54Percent": 30.6,
+        "age55PlusPercent": 214900.5,
+        "whitePercent": 2.1,
+        "blackPercent": 87.7,
+        "hispanicPercent": 8.5,
+        "asianPercent": 32.3,
+        "pacificIslanderPercent": 0.3,
+        "nativeAmericanPercent": 43.6,
+        "otherRacePercent": 7.6,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.56,
+        "indianPercent": 1.39,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": 0,
+        "japanesePercent": 0.17,
+        "mexicanPercent": 0.95,
+        "puertoRicanPercent": 8.98,
+        "cubanPercent": 0.29,
+        "salvadoranPercent": 0.26,
+        "guatemalanPercent": 0.1,
+        "colombianPercent": 0.01,
+        "diversityIndex": -8,
+        "highSchoolOrHigherPercent": 86.2,
+        "bachelorsOrHigherPercent": 30,
+        "graduateDegreePercent": 16.9,
+        "medianHouseholdIncome": 46184,
+        "perCapitaIncome": 29558,
+        "povertyRate": 27.2,
+        "foreignBornPercent": 10.8,
+        "familyHouseholdsPercent": 24.6,
+        "marriedCouplePercent": 10.4,
+        "singlePersonPercent": 21.2,
+        "englishOnlyPercent": 80.9,
+        "spanishAtHomePercent": 19.1,
+        "asianLanguageAtHomePercent": 5.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 56,
+          "bikeScore": 48,
+          "transitScore": -30,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:59.037Z"
+        },
+        "crime": {
+          "violentCrimeRate": 364,
+          "propertyCrimeRate": 1392,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 40,
+          "healthyDaysPercent": 74,
+          "hazardousDays": 15,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 34,
+          "providerCount": 6,
+          "maxDownloadSpeed": 8000
+        },
+        "education": {
+          "studentTeacherRatio": 13,
+          "graduationRate": 75,
+          "schoolCount": 80
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 120,
+          "hospitalBeds100k": 350,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.187,
+          "democratPercent": 58.2,
+          "republicanPercent": 39.5,
+          "voterTurnout": 64.8,
+          "marginOfVictory": 18.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 385,
+          "evangelicalProtestant": 65,
+          "mainlineProtestant": 85,
+          "jewish": 28,
+          "muslim": 12,
+          "unaffiliated": 325,
+          "lds": null,
+          "diversityIndex": 67,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "pittsburgh": {
@@ -3052,18 +6317,6 @@
           "julyDewpoint": 63.1,
           "summerHumidityIndex": 75
         }
-      },
-      "cost": {
-        "medianHomePrice": 250000,
-        "costOfLivingIndex": 102,
-        "stateTaxRate": 0.0307,
-        "propertyTaxRate": 0.014
-      },
-      "demographics": {
-        "population": 1700,
-        "diversityIndex": 63.5,
-        "eastAsianPercent": 0.02,
-        "crimeRate": 650
       },
       "quality": {
         "qualityOfLifeScore": 68,
@@ -3105,6 +6358,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 303843,
+        "medianAge": 33.5,
+        "under18Percent": 14.6,
+        "age18to34Percent": 162.6,
+        "age35to54Percent": 33.5,
+        "age55PlusPercent": 259576.4,
+        "whitePercent": 1.7,
+        "blackPercent": 96.4,
+        "hispanicPercent": 2.8,
+        "asianPercent": 23.1,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 63.1,
+        "otherRacePercent": 5.6,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 1.88,
+        "indianPercent": 0.06,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.01,
+        "japanesePercent": 0.4,
+        "mexicanPercent": 1.18,
+        "puertoRicanPercent": 0.7,
+        "cubanPercent": 0.09,
+        "salvadoranPercent": 0.34,
+        "guatemalanPercent": 0.15,
+        "colombianPercent": 0.01,
+        "diversityIndex": -39,
+        "highSchoolOrHigherPercent": 93.9,
+        "bachelorsOrHigherPercent": 46.7,
+        "graduateDegreePercent": 24.1,
+        "medianHouseholdIncome": 60187,
+        "perCapitaIncome": 41146,
+        "povertyRate": 19.4,
+        "foreignBornPercent": 9,
+        "familyHouseholdsPercent": 27,
+        "marriedCouplePercent": 8.4,
+        "singlePersonPercent": 23.6,
+        "englishOnlyPercent": 88.8,
+        "spanishAtHomePercent": 11.2,
+        "asianLanguageAtHomePercent": 4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 32,
+          "bikeScore": 27,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:46:59.427Z"
+        },
+        "crime": {
+          "violentCrimeRate": 310,
+          "propertyCrimeRate": 1283,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 50,
+          "healthyDaysPercent": 60,
+          "hazardousDays": 32,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 72,
+          "providerCount": 4,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 13,
+          "graduationRate": 83,
+          "schoolCount": 80
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 135,
+          "hospitalBeds100k": 400,
+          "hpsaScore": 3
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.196,
+          "democratPercent": 58.8,
+          "republicanPercent": 39.2,
+          "voterTurnout": 68.5,
+          "marginOfVictory": 19.6,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 345,
+          "evangelicalProtestant": 85,
+          "mainlineProtestant": 125,
+          "jewish": 32,
+          "muslim": 12,
+          "unaffiliated": 305,
+          "lds": null,
+          "diversityIndex": 71,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "miami": {
@@ -3138,18 +6495,6 @@
           "julyDewpoint": 74.8,
           "summerHumidityIndex": 81
         }
-      },
-      "cost": {
-        "medianHomePrice": 550000,
-        "costOfLivingIndex": 124.5,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.0105
-      },
-      "demographics": {
-        "population": 6199,
-        "diversityIndex": 69.8,
-        "eastAsianPercent": 0.018,
-        "crimeRate": 1000
       },
       "quality": {
         "qualityOfLifeScore": 72,
@@ -3191,6 +6536,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 443665,
+        "medianAge": 39.7,
+        "under18Percent": 16.5,
+        "age18to34Percent": 164.3,
+        "age35to54Percent": 35.9,
+        "age55PlusPercent": 370335.5,
+        "whitePercent": 34.7,
+        "blackPercent": 27.7,
+        "hispanicPercent": 37.5,
+        "asianPercent": 12.8,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 11.9,
+        "otherRacePercent": 1.3,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.36,
+        "indianPercent": 0.04,
+        "filipinoPercent": 0,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.12,
+        "mexicanPercent": 2.09,
+        "puertoRicanPercent": 3.47,
+        "cubanPercent": 32.04,
+        "salvadoranPercent": 16.43,
+        "guatemalanPercent": 1.3,
+        "colombianPercent": 0.01,
+        "diversityIndex": 63,
+        "highSchoolOrHigherPercent": 78.8,
+        "bachelorsOrHigherPercent": 34.2,
+        "graduateDegreePercent": 20.6,
+        "medianHouseholdIncome": 54858,
+        "perCapitaIncome": 39055,
+        "povertyRate": 20,
+        "foreignBornPercent": 57.9,
+        "familyHouseholdsPercent": 30.8,
+        "marriedCouplePercent": 10.6,
+        "singlePersonPercent": 17.9,
+        "englishOnlyPercent": 22.2,
+        "spanishAtHomePercent": 77.8,
+        "asianLanguageAtHomePercent": 6.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 68,
+          "bikeScore": 58,
+          "transitScore": 1,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:46:59.821Z"
+        },
+        "crime": {
+          "violentCrimeRate": 384,
+          "propertyCrimeRate": 1878,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 38,
+          "healthyDaysPercent": 78,
+          "hazardousDays": 12,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 78,
+          "providerCount": 6,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 16,
+          "graduationRate": 85,
+          "schoolCount": 470
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 130,
+          "hospitalBeds100k": 350,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.07,
+          "democratPercent": 52.8,
+          "republicanPercent": 45.8,
+          "voterTurnout": 62.5,
+          "marginOfVictory": 7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 365,
+          "evangelicalProtestant": 125,
+          "mainlineProtestant": 35,
+          "jewish": 85,
+          "muslim": 12,
+          "unaffiliated": 295,
+          "lds": null,
+          "diversityIndex": 71,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "green-bay": {
@@ -3224,18 +6673,6 @@
           "julyDewpoint": 58.5,
           "summerHumidityIndex": 68
         }
-      },
-      "cost": {
-        "medianHomePrice": 250000,
-        "costOfLivingIndex": 90.5,
-        "stateTaxRate": 0.0765,
-        "propertyTaxRate": 0.0165
-      },
-      "demographics": {
-        "population": 327,
-        "diversityIndex": 60.5,
-        "eastAsianPercent": 0.015,
-        "crimeRate": 600
       },
       "quality": {
         "qualityOfLifeScore": 68,
@@ -3277,6 +6714,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 106846,
+        "medianAge": 35.6,
+        "under18Percent": 24,
+        "age18to34Percent": 147.3,
+        "age35to54Percent": 31,
+        "age55PlusPercent": 81300.1,
+        "whitePercent": 1.8,
+        "blackPercent": 82.9,
+        "hispanicPercent": 10.7,
+        "asianPercent": 4,
+        "pacificIslanderPercent": 2.7,
+        "nativeAmericanPercent": 66.6,
+        "otherRacePercent": 4,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.14,
+        "indianPercent": 0.02,
+        "filipinoPercent": 2.53,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.15,
+        "mexicanPercent": 13.35,
+        "puertoRicanPercent": 1.9,
+        "cubanPercent": 0.06,
+        "salvadoranPercent": 0.82,
+        "guatemalanPercent": 0.15,
+        "colombianPercent": null,
+        "diversityIndex": -15,
+        "highSchoolOrHigherPercent": 88.5,
+        "bachelorsOrHigherPercent": 25.1,
+        "graduateDegreePercent": 18.1,
+        "medianHouseholdIncome": 59174,
+        "perCapitaIncome": 32001,
+        "povertyRate": 16.1,
+        "foreignBornPercent": 8.9,
+        "familyHouseholdsPercent": 38.5,
+        "marriedCouplePercent": 15,
+        "singlePersonPercent": 18.6,
+        "englishOnlyPercent": 83.6,
+        "spanishAtHomePercent": 16.4,
+        "asianLanguageAtHomePercent": 1
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 37,
+          "bikeScore": 31,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:47:00.211Z"
+        },
+        "crime": {
+          "violentCrimeRate": 324,
+          "propertyCrimeRate": 1496,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 38,
+          "healthyDaysPercent": 78,
+          "hazardousDays": 12,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 71,
+          "providerCount": 5,
+          "maxDownloadSpeed": 8000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 91,
+          "schoolCount": 45
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 95,
+          "hospitalBeds100k": 240,
+          "hpsaScore": 8
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": -0.133,
+          "democratPercent": 42.5,
+          "republicanPercent": 55.8,
+          "voterTurnout": 74.2,
+          "marginOfVictory": 13.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 425,
+          "evangelicalProtestant": 125,
+          "mainlineProtestant": 185,
+          "jewish": 5,
+          "muslim": 5,
+          "unaffiliated": 195,
+          "lds": null,
+          "diversityIndex": 70,
+          "dominantTradition": "Catholic",
+          "dataYear": 2020
+        }
       }
     },
     "memphis": {
@@ -3310,18 +6851,6 @@
           "julyDewpoint": 71.2,
           "summerHumidityIndex": 73
         }
-      },
-      "cost": {
-        "medianHomePrice": 180000,
-        "costOfLivingIndex": 90.5,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.0125
-      },
-      "demographics": {
-        "population": 1336,
-        "diversityIndex": 67,
-        "eastAsianPercent": 0.015,
-        "crimeRate": 2050
       },
       "quality": {
         "qualityOfLifeScore": 50,
@@ -3363,6 +6892,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 630027,
+        "medianAge": 34.5,
+        "under18Percent": 24.6,
+        "age18to34Percent": 147,
+        "age35to54Percent": 31.6,
+        "age55PlusPercent": 475227.3,
+        "whitePercent": 2.7,
+        "blackPercent": 92,
+        "hispanicPercent": 5.6,
+        "asianPercent": 64.1,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 24.1,
+        "otherRacePercent": 1.6,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.31,
+        "indianPercent": 0.01,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.03,
+        "japanesePercent": 0.07,
+        "mexicanPercent": 4.81,
+        "puertoRicanPercent": 0.31,
+        "cubanPercent": 0.18,
+        "salvadoranPercent": 1.74,
+        "guatemalanPercent": 0.75,
+        "colombianPercent": null,
+        "diversityIndex": -32,
+        "highSchoolOrHigherPercent": 87.2,
+        "bachelorsOrHigherPercent": 27.9,
+        "graduateDegreePercent": 16.9,
+        "medianHouseholdIncome": 48090,
+        "perCapitaIncome": 31060,
+        "povertyRate": 23.6,
+        "foreignBornPercent": 6.3,
+        "familyHouseholdsPercent": 27.4,
+        "marriedCouplePercent": 9.2,
+        "singlePersonPercent": 21,
+        "englishOnlyPercent": 90.4,
+        "spanishAtHomePercent": 9.6,
+        "asianLanguageAtHomePercent": 0.8
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 45,
+          "bikeScore": 38,
+          "transitScore": 0,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:47:00.606Z"
+        },
+        "crime": {
+          "violentCrimeRate": 672,
+          "propertyCrimeRate": 2660,
+          "trend3Year": "rising",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 48,
+          "healthyDaysPercent": 64,
+          "hazardousDays": 26,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 87,
+          "providerCount": 5,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 15,
+          "graduationRate": 80,
+          "schoolCount": 180
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 105,
+          "hospitalBeds100k": 340,
+          "hpsaScore": 10
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.227,
+          "democratPercent": 60.5,
+          "republicanPercent": 37.8,
+          "voterTurnout": 56.8,
+          "marginOfVictory": 22.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 45,
+          "evangelicalProtestant": 485,
+          "mainlineProtestant": 95,
+          "jewish": 12,
+          "muslim": 12,
+          "unaffiliated": 265,
+          "lds": null,
+          "diversityIndex": 62,
+          "dominantTradition": "Evangelical Protestant",
+          "dataYear": 2020
+        }
       }
     },
     "san-diego": {
@@ -3396,18 +7029,6 @@
           "julyDewpoint": 61.5,
           "summerHumidityIndex": 78
         }
-      },
-      "cost": {
-        "medianHomePrice": 1000000,
-        "costOfLivingIndex": 170,
-        "stateTaxRate": 0.133,
-        "propertyTaxRate": 0.008
-      },
-      "demographics": {
-        "population": 3280,
-        "diversityIndex": 70,
-        "eastAsianPercent": 0.119,
-        "crimeRate": 410
       },
       "quality": {
         "qualityOfLifeScore": 80,
@@ -3449,6 +7070,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 1383987,
+        "medianAge": 35.8,
+        "under18Percent": 19,
+        "age18to34Percent": 157.5,
+        "age35to54Percent": 30.8,
+        "age55PlusPercent": 1121510.9,
+        "whitePercent": 3.4,
+        "blackPercent": 69.9,
+        "hispanicPercent": 16.5,
+        "asianPercent": 5.6,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 41.5,
+        "otherRacePercent": 17.1,
+        "twoOrMoreRacesPercent": 0.4,
+        "chinesePercent": 3.15,
+        "indianPercent": 0.07,
+        "filipinoPercent": 0.04,
+        "vietnamesePercent": null,
+        "koreanPercent": 0.01,
+        "japanesePercent": 1.06,
+        "mexicanPercent": 25.56,
+        "puertoRicanPercent": 0.83,
+        "cubanPercent": 0.28,
+        "salvadoranPercent": 0.89,
+        "guatemalanPercent": 0.32,
+        "colombianPercent": 0.01,
+        "diversityIndex": 28,
+        "highSchoolOrHigherPercent": 89.7,
+        "bachelorsOrHigherPercent": 48.7,
+        "graduateDegreePercent": 28.4,
+        "medianHouseholdIncome": 98657,
+        "perCapitaIncome": 51368,
+        "povertyRate": 11.4,
+        "foreignBornPercent": 24.9,
+        "familyHouseholdsPercent": 44.8,
+        "marriedCouplePercent": 18.5,
+        "singlePersonPercent": 14.2,
+        "englishOnlyPercent": 61.4,
+        "spanishAtHomePercent": 38.6,
+        "asianLanguageAtHomePercent": 4.6
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 58,
+          "bikeScore": 49,
+          "transitScore": -48,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:47:01.000Z"
+        },
+        "crime": {
+          "violentCrimeRate": 499,
+          "propertyCrimeRate": 2694,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 49,
+          "healthyDaysPercent": 62,
+          "hazardousDays": 28,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 75,
+          "providerCount": 5,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 22,
+          "graduationRate": 87,
+          "schoolCount": 225
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 100,
+          "hospitalBeds100k": 230,
+          "hpsaScore": 6
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.197,
+          "democratPercent": 58.5,
+          "republicanPercent": 38.8,
+          "voterTurnout": 68.2,
+          "marginOfVictory": 19.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 285,
+          "evangelicalProtestant": 95,
+          "mainlineProtestant": 45,
+          "jewish": 28,
+          "muslim": 12,
+          "unaffiliated": 420,
+          "lds": null,
+          "diversityIndex": 66,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "santa-barbara": {
@@ -3482,18 +7207,6 @@
           "julyDewpoint": 59.2,
           "summerHumidityIndex": 63
         }
-      },
-      "cost": {
-        "medianHomePrice": 1470000,
-        "costOfLivingIndex": 155,
-        "stateTaxRate": 0.133,
-        "propertyTaxRate": 0.008
-      },
-      "demographics": {
-        "population": 444,
-        "diversityIndex": 65,
-        "eastAsianPercent": 0.05,
-        "crimeRate": 600
       },
       "quality": {
         "qualityOfLifeScore": 85,
@@ -3535,6 +7248,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 88640,
+        "medianAge": 39.6,
+        "under18Percent": 16.8,
+        "age18to34Percent": 161.3,
+        "age35to54Percent": 43.7,
+        "age55PlusPercent": 73810.8,
+        "whitePercent": 5.1,
+        "blackPercent": 63.9,
+        "hispanicPercent": 22.9,
+        "asianPercent": 1.2,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 55.1,
+        "otherRacePercent": 3.6,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 0.75,
+        "indianPercent": 0,
+        "filipinoPercent": 0.01,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.43,
+        "mexicanPercent": 30.58,
+        "puertoRicanPercent": 0.25,
+        "cubanPercent": 0.13,
+        "salvadoranPercent": 2.67,
+        "guatemalanPercent": 1.61,
+        "colombianPercent": null,
+        "diversityIndex": 23,
+        "highSchoolOrHigherPercent": 88.7,
+        "bachelorsOrHigherPercent": 50.6,
+        "graduateDegreePercent": 29.6,
+        "medianHouseholdIncome": 98346,
+        "perCapitaIncome": 58989,
+        "povertyRate": 13,
+        "foreignBornPercent": 21.1,
+        "familyHouseholdsPercent": 38.9,
+        "marriedCouplePercent": 12.4,
+        "singlePersonPercent": 18.2,
+        "englishOnlyPercent": 68.2,
+        "spanishAtHomePercent": 31.8,
+        "asianLanguageAtHomePercent": 3.5
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 62,
+          "bikeScore": 53,
+          "transitScore": -9,
+          "description": "Somewhat Walkable",
+          "updatedAt": "2026-01-28T03:47:01.394Z"
+        },
+        "crime": {
+          "violentCrimeRate": 499,
+          "propertyCrimeRate": 2694,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 47,
+          "healthyDaysPercent": 65,
+          "hazardousDays": 25,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 68,
+          "providerCount": 3,
+          "maxDownloadSpeed": 1000
+        },
+        "education": {
+          "studentTeacherRatio": 20,
+          "graduationRate": 91,
+          "schoolCount": 35
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 130,
+          "hospitalBeds100k": 280,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.277,
+          "democratPercent": 62.5,
+          "republicanPercent": 34.8,
+          "voterTurnout": 72.5,
+          "marginOfVictory": 27.7,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 285,
+          "evangelicalProtestant": 65,
+          "mainlineProtestant": 45,
+          "jewish": 18,
+          "muslim": 8,
+          "unaffiliated": 465,
+          "lds": null,
+          "diversityIndex": 61,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "raleigh": {
@@ -3568,18 +7385,6 @@
           "julyDewpoint": 69.7,
           "summerHumidityIndex": 74
         }
-      },
-      "cost": {
-        "medianHomePrice": 378000,
-        "costOfLivingIndex": 97,
-        "stateTaxRate": 0.045,
-        "propertyTaxRate": 0.0051
-      },
-      "demographics": {
-        "population": 1510,
-        "diversityIndex": 65,
-        "eastAsianPercent": 0.07,
-        "crimeRate": 530
       },
       "quality": {
         "qualityOfLifeScore": 75,
@@ -3621,6 +7426,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 465517,
+        "medianAge": 34.6,
+        "under18Percent": 20,
+        "age18to34Percent": 154.7,
+        "age35to54Percent": 25.6,
+        "age55PlusPercent": 372653.8,
+        "whitePercent": 4.9,
+        "blackPercent": 88.4,
+        "hispanicPercent": 8.4,
+        "asianPercent": 27.5,
+        "pacificIslanderPercent": 0.2,
+        "nativeAmericanPercent": 52.5,
+        "otherRacePercent": 4.5,
+        "twoOrMoreRacesPercent": null,
+        "chinesePercent": 0.68,
+        "indianPercent": 0.09,
+        "filipinoPercent": 0.04,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.36,
+        "mexicanPercent": 4.73,
+        "puertoRicanPercent": 1.46,
+        "cubanPercent": 0.48,
+        "salvadoranPercent": 2.1,
+        "guatemalanPercent": 0.33,
+        "colombianPercent": 0.05,
+        "diversityIndex": -14,
+        "highSchoolOrHigherPercent": 92.4,
+        "bachelorsOrHigherPercent": 52.7,
+        "graduateDegreePercent": 32.7,
+        "medianHouseholdIncome": 78631,
+        "perCapitaIncome": 47257,
+        "povertyRate": 11.8,
+        "foreignBornPercent": 13,
+        "familyHouseholdsPercent": 38,
+        "marriedCouplePercent": 16.5,
+        "singlePersonPercent": 19.8,
+        "englishOnlyPercent": 82.3,
+        "spanishAtHomePercent": 17.7,
+        "asianLanguageAtHomePercent": 3.4
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 35,
+          "bikeScore": 30,
+          "transitScore": -100,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:47:01.787Z"
+        },
+        "crime": {
+          "violentCrimeRate": 419,
+          "propertyCrimeRate": 2270,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 42,
+          "healthyDaysPercent": 72,
+          "hazardousDays": 18,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 90,
+          "providerCount": 5,
+          "maxDownloadSpeed": 5000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 90,
+          "schoolCount": 195
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 105,
+          "hospitalBeds100k": 240,
+          "hpsaScore": 5
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.153,
+          "democratPercent": 56.8,
+          "republicanPercent": 41.5,
+          "voterTurnout": 72.8,
+          "marginOfVictory": 15.3,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 65,
+          "evangelicalProtestant": 325,
+          "mainlineProtestant": 125,
+          "jewish": 15,
+          "muslim": 15,
+          "unaffiliated": 345,
+          "lds": null,
+          "diversityIndex": 69,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     },
     "gainesville": {
@@ -3654,18 +7563,6 @@
           "julyDewpoint": 73.7,
           "summerHumidityIndex": 82
         }
-      },
-      "cost": {
-        "medianHomePrice": 235000,
-        "costOfLivingIndex": 96,
-        "stateTaxRate": 0,
-        "propertyTaxRate": 0.01
-      },
-      "demographics": {
-        "population": 360,
-        "diversityIndex": 60,
-        "eastAsianPercent": 0.045,
-        "crimeRate": 740
       },
       "quality": {
         "qualityOfLifeScore": 70,
@@ -3707,6 +7604,110 @@
         },
         "year": "2022",
         "lastUpdated": "2026-01-28"
+      },
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-28",
+        "totalPopulation": 142414,
+        "medianAge": 26,
+        "under18Percent": 13.6,
+        "age18to34Percent": 155.3,
+        "age35to54Percent": 24.3,
+        "age55PlusPercent": 123099.9,
+        "whitePercent": 5.2,
+        "blackPercent": 87.9,
+        "hispanicPercent": 6.2,
+        "asianPercent": 21.5,
+        "pacificIslanderPercent": 0.1,
+        "nativeAmericanPercent": 55.3,
+        "otherRacePercent": 6.1,
+        "twoOrMoreRacesPercent": 0.1,
+        "chinesePercent": 1.6,
+        "indianPercent": 0.08,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.4,
+        "mexicanPercent": 1.12,
+        "puertoRicanPercent": 2.98,
+        "cubanPercent": 2.81,
+        "salvadoranPercent": 1.42,
+        "guatemalanPercent": 0.11,
+        "colombianPercent": null,
+        "diversityIndex": -13,
+        "highSchoolOrHigherPercent": 93.6,
+        "bachelorsOrHigherPercent": 50,
+        "graduateDegreePercent": 26.2,
+        "medianHouseholdIncome": 43783,
+        "perCapitaIncome": 27414,
+        "povertyRate": 29,
+        "foreignBornPercent": 11.2,
+        "familyHouseholdsPercent": 24.4,
+        "marriedCouplePercent": 8.4,
+        "singlePersonPercent": 22,
+        "englishOnlyPercent": 83.1,
+        "spanishAtHomePercent": 16.9,
+        "asianLanguageAtHomePercent": 4.5
+      },
+      "qol": {
+        "walkability": {
+          "walkScore": 42,
+          "bikeScore": 36,
+          "transitScore": -25,
+          "description": "Car-Dependent",
+          "updatedAt": "2026-01-28T03:47:02.185Z"
+        },
+        "crime": {
+          "violentCrimeRate": 384,
+          "propertyCrimeRate": 1878,
+          "trend3Year": "falling",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 38,
+          "healthyDaysPercent": 78,
+          "hazardousDays": 12,
+          "primaryPollutant": "Ozone",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 75,
+          "providerCount": 4,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 85,
+          "schoolCount": 55
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 160,
+          "hospitalBeds100k": 450,
+          "hpsaScore": 0
+        }
+      },
+      "cultural": {
+        "political": {
+          "partisanIndex": 0.124,
+          "democratPercent": 55.2,
+          "republicanPercent": 42.8,
+          "voterTurnout": 68.5,
+          "marginOfVictory": 12.4,
+          "dataYear": 2024
+        },
+        "religious": {
+          "catholic": 75,
+          "evangelicalProtestant": 285,
+          "mainlineProtestant": 85,
+          "jewish": 18,
+          "muslim": 12,
+          "unaffiliated": 415,
+          "lds": null,
+          "diversityIndex": 66,
+          "dominantTradition": "Unaffiliated/Secular",
+          "dataYear": 2020
+        }
       }
     }
   }

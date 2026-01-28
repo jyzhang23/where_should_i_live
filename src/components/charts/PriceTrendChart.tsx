@@ -93,36 +93,59 @@ export function PriceTrendChart({
     ? ((currentPrice - fiveYearsAgo) / fiveYearsAgo) * 100
     : null;
 
+  // Calculate comparison city's current price and change
+  const comparisonCurrentPrice = comparisonCity?.zhviHistory?.length 
+    ? comparisonCity.zhviHistory[comparisonCity.zhviHistory.length - 1]?.value 
+    : null;
+  const comparisonFiveYearsAgo = comparisonCity?.zhviHistory?.find((point) => {
+    const date = new Date(point.date);
+    const fiveYearsAgoDate = new Date();
+    fiveYearsAgoDate.setFullYear(fiveYearsAgoDate.getFullYear() - 5);
+    return date >= fiveYearsAgoDate;
+  })?.value;
+  const comparisonPriceChange = comparisonFiveYearsAgo && comparisonCurrentPrice
+    ? ((comparisonCurrentPrice - comparisonFiveYearsAgo) / comparisonFiveYearsAgo) * 100
+    : null;
+
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base flex items-center justify-between">
-          <span>
-            Home Prices: {cityName}
-            {comparisonCity && (
-              <span className="text-muted-foreground font-normal">
-                {" "}vs {comparisonCity.name}
-              </span>
-            )}
-          </span>
-          {currentPrice && (
-            <span className="text-sm font-normal">
-              Current: <span className="font-semibold">{formatPrice(currentPrice)}</span>
-              {priceChange !== null && (
-                <span
-                  className={`ml-2 ${
-                    priceChange >= 0 ? "text-score-low" : "text-score-high"
-                  }`}
-                >
-                  {priceChange >= 0 ? "+" : ""}
-                  {priceChange.toFixed(1)}% (5yr)
-                </span>
-              )}
-            </span>
-          )}
-        </CardTitle>
+        <CardTitle className="text-base">Home Price History</CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Legend with prices */}
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-3 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-1 rounded bg-blue-500" />
+            <span className="font-medium">{cityName}</span>
+            {currentPrice && (
+              <>
+                <span className="font-bold text-blue-500">{formatPrice(currentPrice)}</span>
+                {priceChange !== null && (
+                  <span className={priceChange >= 0 ? "text-score-low" : "text-score-high"}>
+                    ({priceChange >= 0 ? "+" : ""}{priceChange.toFixed(1)}%)
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+          {comparisonCity && (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-1 rounded bg-orange-500" />
+              <span className="font-medium">{comparisonCity.name}</span>
+              {comparisonCurrentPrice && (
+                <>
+                  <span className="font-bold text-orange-500">{formatPrice(comparisonCurrentPrice)}</span>
+                  {comparisonPriceChange !== null && (
+                    <span className={comparisonPriceChange >= 0 ? "text-score-low" : "text-score-high"}>
+                      ({comparisonPriceChange >= 0 ? "+" : ""}{comparisonPriceChange.toFixed(1)}%)
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
         <div className="h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
@@ -151,35 +174,30 @@ export function PriceTrendChart({
                   borderRadius: "8px",
                   color: "var(--foreground)",
                 }}
-                formatter={(value: number, name: string) => [
-                  formatPrice(value),
+                formatter={(value: number | undefined, name: string | undefined) => [
+                  formatPrice(value ?? 0),
                   name === "value" ? cityName : comparisonCity?.name || "",
                 ]}
                 labelFormatter={(label) => label}
               />
-              <ReferenceLine
-                y={currentPrice}
-                stroke="var(--muted-foreground)"
-                strokeDasharray="3 3"
-                strokeOpacity={0.5}
-              />
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="var(--primary)"
+                name={cityName || "City 1"}
+                stroke="#3b82f6"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: "var(--primary)" }}
+                activeDot={{ r: 4, fill: "#3b82f6" }}
               />
               {comparisonCity && (
                 <Line
                   type="monotone"
                   dataKey="comparison"
-                  stroke="var(--muted-foreground)"
+                  name={comparisonCity.name}
+                  stroke="#f97316"
                   strokeWidth={2}
-                  strokeDasharray="4 4"
                   dot={false}
-                  activeDot={{ r: 4, fill: "var(--muted-foreground)" }}
+                  activeDot={{ r: 4, fill: "#f97316" }}
                 />
               )}
             </LineChart>

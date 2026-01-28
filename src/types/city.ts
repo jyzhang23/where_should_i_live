@@ -35,6 +35,14 @@ export interface CensusDemographics {
   koreanPercent: number | null;
   japanesePercent: number | null;
   
+  // Hispanic/Latino Subgroups (of total population)
+  mexicanPercent: number | null;
+  puertoRicanPercent: number | null;
+  cubanPercent: number | null;
+  salvadoranPercent: number | null;
+  guatemalanPercent: number | null;
+  colombianPercent: number | null;
+  
   // Diversity Index (calculated)
   diversityIndex: number | null;        // 0-100, probability two random people differ
   
@@ -60,6 +68,82 @@ export interface CensusDemographics {
   englishOnlyPercent: number | null;
   spanishAtHomePercent: number | null;
   asianLanguageAtHomePercent: number | null;
+}
+
+// Cultural Data (Political + Religious)
+export interface CulturalMetrics {
+  political: {
+    partisanIndex: number | null;      // -1 (Strong R) to +1 (Strong D)
+    democratPercent: number | null;    // 0-100
+    republicanPercent: number | null;  // 0-100
+    voterTurnout: number | null;       // % of eligible voters
+    marginOfVictory: number | null;    // absolute margin (for competitiveness)
+    dataYear: number | null;
+  } | null;
+  religious: {
+    // Adherents per 1,000 population
+    catholic: number | null;
+    evangelicalProtestant: number | null;
+    mainlineProtestant: number | null;
+    jewish: number | null;
+    muslim: number | null;
+    unaffiliated: number | null;       // "Nones" / secular
+    lds?: number | null;               // LDS/Mormon (significant in some areas)
+    // Derived metrics
+    diversityIndex: number | null;     // 0-100, Simpson's diversity
+    dominantTradition: string | null;  // Which tradition has highest share
+    dataYear: number | null;
+  } | null;
+}
+
+// Quality of Life API Data
+export interface QoLMetrics {
+  // Walk Score API
+  walkability: {
+    walkScore: number | null;
+    bikeScore: number | null;
+    transitScore: number | null;
+    description: string | null;
+    updatedAt: string | null;
+  } | null;
+
+  // FBI Crime Data Explorer
+  crime: {
+    violentCrimeRate: number | null;  // per 100k
+    propertyCrimeRate: number | null; // per 100k
+    trend3Year: "rising" | "falling" | "stable" | null;
+    dataYear: number | null;
+  } | null;
+
+  // EPA AirNow
+  airQuality: {
+    annualAQI: number | null;
+    healthyDaysPercent: number | null;  // AQI < 50
+    hazardousDays: number | null;       // AQI > 100
+    primaryPollutant: string | null;
+    dataYear: number | null;
+  } | null;
+
+  // FCC Broadband Map
+  broadband: {
+    fiberCoveragePercent: number | null;  // >1Gbps
+    providerCount: number | null;
+    maxDownloadSpeed: number | null;      // Mbps
+  } | null;
+
+  // NCES Education
+  education: {
+    studentTeacherRatio: number | null;
+    graduationRate: number | null;
+    schoolCount: number | null;
+  } | null;
+
+  // HRSA Health Resources
+  health: {
+    primaryCarePhysiciansPer100k: number | null;
+    hospitalBeds100k: number | null;
+    hpsaScore: number | null;  // Health Professional Shortage Area
+  } | null;
 }
 
 // Climate data from NOAA ACIS + Open-Meteo
@@ -137,19 +221,30 @@ export interface CityMetrics {
   propertyTaxRate: number | null;
   costOfLivingIndex: number | null;
 
-  // Quality of Life
+  // Quality of Life (legacy - replaced by QoLMetrics from APIs)
+  /** @deprecated Use qol.crime.violentCrimeRate instead */
   crimeRate: number | null;
+  /** @deprecated Use qol.walkability.walkScore instead */
   walkScore: number | null;
+  /** @deprecated Use qol.walkability.transitScore instead */
   transitScore: number | null;
+  /** @deprecated Use qol.broadband.maxDownloadSpeed instead */
   avgBroadbandSpeed: number | null;
+  /** @deprecated No longer used - removed from preferences */
   hasInternationalAirport: boolean | null;
+  /** @deprecated Use qol.health instead */
   healthScore: number | null;
+  /** @deprecated Use qol.airQuality instead */
   pollutionIndex: number | null;
+  /** @deprecated Use qol.airQuality instead */
   waterQualityIndex: number | null;
+  /** @deprecated No longer tracked */
   trafficIndex: number | null;
 
-  // Political
+  // Political (legacy - replaced by cultural.political)
+  /** @deprecated Use cultural.political.democratPercent instead */
   cityDemocratPercent: number | null;
+  /** @deprecated Use cultural.political instead */
   stateDemocratPercent: number | null;
 
   // Sports/Amenities
@@ -165,7 +260,13 @@ export interface CityMetrics {
   // Census demographics (merged from metrics.json, not in database)
   census?: CensusDemographics;
 
-  // Quality of Life aggregate score
+  // QoL API data (merged from metrics.json, not in database)
+  qol?: QoLMetrics;
+
+  // Cultural data (merged from metrics.json, not in database)
+  cultural?: CulturalMetrics;
+
+  // Quality of Life aggregate score (calculated)
   qualityOfLifeScore?: number | null;
 
   dataAsOf: Date;

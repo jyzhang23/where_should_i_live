@@ -81,12 +81,12 @@ export function ComparisonPanel({ rankings, isOpen, onClose, initialCityId }: Co
           </div>
         </div>
 
-        {/* Comparison Content */}
-        <div className="flex-1 overflow-auto p-4">
+        {/* Comparison Content - Single scroll container */}
+        <div className="flex-1 overflow-y-auto p-4">
           {city1Id && city2Id ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Column - Charts */}
-              <div className="space-y-6">
+            <div className="space-y-6">
+              {/* Charts Row - Side by side on large screens */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <ScoreRadarChart
                   cityScore={city1Score}
                   comparisonScore={city2Score}
@@ -102,15 +102,13 @@ export function ComparisonPanel({ rankings, isOpen, onClose, initialCityId }: Co
                 />
               </div>
 
-              {/* Right Column - Metrics Table */}
-              <div>
-                <MetricsComparison
-                  city1={city1Data || null}
-                  city2={city2Data || null}
-                  score1={city1Score}
-                  score2={city2Score}
-                />
-              </div>
+              {/* Metrics Table - Full width below charts */}
+              <MetricsComparison
+                city1={city1Data || null}
+                city2={city2Data || null}
+                score1={city1Score}
+                score2={city2Score}
+              />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">

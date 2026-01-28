@@ -42,6 +42,7 @@
  */
 
 export type HousingSituation = "renter" | "homeowner" | "prospective-buyer";
+export type WorkSituation = "standard" | "local-earner" | "retiree";
 
 export interface CostOfLivingOptions {
   housingSituation: HousingSituation;
@@ -49,6 +50,13 @@ export interface CostOfLivingOptions {
   // For prospective buyer calculation
   medianHomePrice?: number | null;
   currentMortgageRate?: number; // Default ~7% in 2026
+  
+  // Work situation affects the INCOME numerator
+  workSituation?: WorkSituation;
+  // Median household income from Census ACS (for "standard" persona)
+  medianHouseholdIncome?: number | null;
+  // Fixed income for retiree persona
+  retireeFixedIncome?: number;
 }
 
 export interface BEAMetrics {
@@ -84,15 +92,20 @@ export interface TrueCostOfLiving {
   truePurchasingPowerIndex: number | null;   // Higher = better purchasing power
   
   // Component breakdown
-  grossIncome: number | null;                // Per capita personal income
-  afterTaxIncome: number | null;             // Per capita disposable income
+  grossIncome: number | null;                // Per capita personal income (BEA)
+  afterTaxIncome: number | null;             // Per capita disposable income (BEA)
   effectiveTaxRate: number | null;           // % of income paid in taxes
   costOfLivingIndex: number | null;          // RPP used (varies by persona)
   housingCostIndex: number | null;           // RPP for rents specifically
   
-  // Persona-specific
-  persona: HousingSituation;
-  adjustedRPP: number | null;                // RPP adjusted for persona
+  // Work situation persona
+  workSituation: WorkSituation;
+  selectedIncome: number | null;             // The income used based on work situation
+  selectedAfterTaxIncome: number | null;     // After-tax income for the selected persona
+  
+  // Housing situation persona
+  housingPersona: HousingSituation;
+  adjustedRPP: number | null;                // RPP adjusted for housing persona
   monthlyMortgage: number | null;            // For prospective buyers only
   
   // Sub-indices (for display)
@@ -107,17 +120,29 @@ export interface TrueCostOfLiving {
 }
 
 // US National average per capita disposable income (2022)
-// Source: BEA - used to calculate index
+// Source: BEA - used to calculate index for high-earner persona
 const NATIONAL_PER_CAPITA_DISPOSABLE = 56014;
+
+// US National median household income (2022)
+// Source: Census ACS - used for standard professional persona
+const NATIONAL_MEDIAN_HOUSEHOLD_INCOME = 74580;
+
+// Average effective tax rate (federal + state + local) for median earners
+// This is lower than the rate for high earners
+const AVERAGE_TAX_RATE = 0.22; // ~22% for median household income
 
 // Current mortgage rate (2026) - for prospective buyer calculation
 const DEFAULT_MORTGAGE_RATE = 0.07; // 7%
 const MORTGAGE_TERM_YEARS = 30;
 
+// Default retiree fixed income
+const DEFAULT_RETIREE_INCOME = 50000;
+
 // Default options for backward compatibility
 const DEFAULT_OPTIONS: CostOfLivingOptions = {
   housingSituation: "renter",
   includeUtilities: true,
+  workSituation: "local-earner",
 };
 
 /**
@@ -233,38 +258,116 @@ function calculateAdjustedRPP(
 }
 
 /**
+ * Calculate selected income based on work situation persona
+ * 
+ * LOCAL-EARNER: Uses LOCAL Per Capita Income (BEA) - reflects local earning potential
+ *           This shows "how well off are local earners in this city?"
+ * STANDARD: Uses FIXED national median income - answers "where can I afford to live?"
+ *           This is pure affordability - same income in all cities, just compare costs.
+ * RETIREE: Uses user-defined fixed income
+ */
+function calculateSelectedIncome(
+  bea: BEAMetrics,
+  options: CostOfLivingOptions
+): { selectedIncome: number | null; selectedAfterTaxIncome: number | null; nationalBaseline: number } {
+  const workSituation = options.workSituation ?? "local-earner";
+  const beaTaxRate = bea.taxes?.effectiveTaxRate ?? null;
+  
+  switch (workSituation) {
+    case "local-earner": {
+      // Use BEA per capita income - reflects local earning potential
+      // This includes the income boost from local job markets
+      const income = bea.taxes?.perCapitaIncome ?? null;
+      const afterTax = bea.taxes?.perCapitaDisposable ?? null;
+      return { 
+        selectedIncome: income, 
+        selectedAfterTaxIncome: afterTax,
+        nationalBaseline: NATIONAL_PER_CAPITA_DISPOSABLE
+      };
+    }
+    
+    case "retiree": {
+      // Use user-defined fixed income
+      const income = options.retireeFixedIncome ?? DEFAULT_RETIREE_INCOME;
+      // Retirees typically have lower effective tax rates (~15%)
+      const retireeEffectiveTaxRate = 0.15;
+      const afterTax = Math.round(income * (1 - retireeEffectiveTaxRate));
+      // Baseline is same fixed income - comparing how far it goes in each city
+      return {
+        selectedIncome: income,
+        selectedAfterTaxIncome: afterTax,
+        nationalBaseline: afterTax  // Same amount - index shows pure cost impact
+      };
+    }
+    
+    case "standard":
+    default: {
+      // PURE AFFORDABILITY: Use fixed national median income for ALL cities
+      // This answers: "If I have average income, where can I afford to live?"
+      // 
+      // We use a fixed income amount and only vary the local tax rate and RPP
+      // This makes expensive cities (SF, NYC) score POORLY as they should
+      const income = NATIONAL_MEDIAN_HOUSEHOLD_INCOME;
+      
+      // Apply local tax rate to see what you'd actually keep
+      // (higher tax states reduce your after-tax income)
+      const effectiveRate = beaTaxRate !== null 
+        ? Math.min(beaTaxRate / 100, 0.25)  // Cap at 25% to be realistic for median earners
+        : AVERAGE_TAX_RATE;
+      
+      const afterTax = Math.round(income * (1 - effectiveRate));
+      
+      // Baseline is national median after average taxes
+      const nationalMedianAfterTax = Math.round(NATIONAL_MEDIAN_HOUSEHOLD_INCOME * (1 - AVERAGE_TAX_RATE));
+      
+      return {
+        selectedIncome: income,
+        selectedAfterTaxIncome: afterTax,
+        nationalBaseline: nationalMedianAfterTax
+      };
+    }
+  }
+}
+
+/**
  * Calculate the "true" cost of living metrics from BEA data
  * 
  * @param bea - BEA metrics for the city
- * @param options - Calculation options (persona, utilities, etc.)
+ * @param options - Calculation options (housing persona, work persona, utilities, etc.)
  */
 export function calculateTrueCostOfLiving(
   bea: BEAMetrics | undefined,
   options: CostOfLivingOptions = DEFAULT_OPTIONS
 ): TrueCostOfLiving {
+  const workSituation = options.workSituation ?? "standard";
+  
   if (!bea) {
-    return createEmptyResult(options.housingSituation);
+    return createEmptyResult(options.housingSituation, workSituation);
   }
 
+  // Legacy fields (for display purposes)
   const grossIncome = bea.taxes?.perCapitaIncome ?? null;
   const afterTaxIncome = bea.taxes?.perCapitaDisposable ?? null;
   const effectiveTaxRate = bea.taxes?.effectiveTaxRate ?? null;
   const housingCostIndex = bea.regionalPriceParity?.housing ?? null;
   
-  // Get persona-adjusted RPP
+  // Get housing persona-adjusted RPP (cost denominator)
   const { adjustedRPP, monthlyMortgage } = calculateAdjustedRPP(bea, options);
+  
+  // Get work persona-adjusted income (income numerator)
+  const { selectedIncome, selectedAfterTaxIncome, nationalBaseline } = calculateSelectedIncome(bea, options);
 
-  // Calculate true purchasing power using adjusted RPP
-  // Formula: Disposable Income / (Adjusted RPP / 100)
+  // Calculate true purchasing power using work-adjusted income and housing-adjusted RPP
+  // Formula: Selected After-Tax Income / (Adjusted RPP / 100)
   let truePurchasingPower: number | null = null;
-  if (afterTaxIncome !== null && adjustedRPP !== null && adjustedRPP > 0) {
-    truePurchasingPower = Math.round(afterTaxIncome / (adjustedRPP / 100));
+  if (selectedAfterTaxIncome !== null && adjustedRPP !== null && adjustedRPP > 0) {
+    truePurchasingPower = Math.round(selectedAfterTaxIncome / (adjustedRPP / 100));
   }
 
-  // Calculate index relative to national average
+  // Calculate index relative to appropriate national baseline
   let truePurchasingPowerIndex: number | null = null;
-  if (truePurchasingPower !== null) {
-    truePurchasingPowerIndex = Math.round((truePurchasingPower / NATIONAL_PER_CAPITA_DISPOSABLE) * 100 * 10) / 10;
+  if (truePurchasingPower !== null && nationalBaseline > 0) {
+    truePurchasingPowerIndex = Math.round((truePurchasingPower / nationalBaseline) * 100 * 10) / 10;
   }
 
   return {
@@ -275,7 +378,10 @@ export function calculateTrueCostOfLiving(
     effectiveTaxRate,
     costOfLivingIndex: adjustedRPP,
     housingCostIndex,
-    persona: options.housingSituation,
+    workSituation,
+    selectedIncome,
+    selectedAfterTaxIncome,
+    housingPersona: options.housingSituation,
     adjustedRPP,
     monthlyMortgage,
     goodsIndex: bea.regionalPriceParity?.goods ?? null,
@@ -322,7 +428,10 @@ function getOverallValueRating(index: number | null): TrueCostOfLiving["overallV
   return "very-poor";
 }
 
-function createEmptyResult(persona: HousingSituation = "renter"): TrueCostOfLiving {
+function createEmptyResult(
+  housingPersona: HousingSituation = "renter",
+  workSituation: WorkSituation = "standard"
+): TrueCostOfLiving {
   return {
     truePurchasingPower: null,
     truePurchasingPowerIndex: null,
@@ -331,7 +440,10 @@ function createEmptyResult(persona: HousingSituation = "renter"): TrueCostOfLivi
     effectiveTaxRate: null,
     costOfLivingIndex: null,
     housingCostIndex: null,
-    persona,
+    workSituation,
+    selectedIncome: null,
+    selectedAfterTaxIncome: null,
+    housingPersona,
     adjustedRPP: null,
     monthlyMortgage: null,
     goodsIndex: null,

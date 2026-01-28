@@ -10,6 +10,7 @@ export interface CityScore {
   costScore: number;
   demographicsScore: number;
   qualityOfLifeScore: number;
+  culturalScore: number;
 
   // Weighted total
   totalScore: number;

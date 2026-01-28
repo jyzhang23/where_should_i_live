@@ -49,6 +49,16 @@ export default function Home() {
     return calculateScores(cities, preferences);
   }, [cities, preferences, isHydrated]);
 
+  // Auto-select the top city when scoring results change
+  useEffect(() => {
+    if (scoringResult && scoringResult.rankings.length > 0) {
+      const topCity = scoringResult.rankings.find(r => !r.excluded);
+      if (topCity && (!selectedCityId || !scoringResult.rankings.find(r => r.cityId === selectedCityId))) {
+        setSelectedCityId(topCity.cityId);
+      }
+    }
+  }, [scoringResult, selectedCityId]);
+
   // Find the score for the selected city
   const selectedCityScore = useMemo(() => {
     if (!selectedCityId || !scoringResult) return null;
@@ -78,65 +88,63 @@ export default function Home() {
       {/* Header */}
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">City Rankings</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Where Should I Live</h1>
           <p className="text-muted-foreground mt-1">
             Find your perfect city based on your preferences
           </p>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/help">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <HelpCircle className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>How Rankings Work</TooltipContent>
+            </Tooltip>
+            <AdminPanel />
+            <ThemeToggle />
+          </div>
           {data?.lastUpdated && (
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground">
               Data last updated:{" "}
               {new Date(data.lastUpdated).toLocaleDateString()}
             </p>
           )}
         </div>
-        <div className="flex items-center gap-1">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link href="/help">
-                <Button variant="ghost" size="icon" className="h-9 w-9">
-                  <HelpCircle className="h-4 w-4" />
-                </Button>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent>How Rankings Work</TooltipContent>
-          </Tooltip>
-          <AdminPanel />
-          <ThemeToggle />
-        </div>
       </div>
 
+      {/* Top Row: Three Charts */}
+      {isHydrated && scoringResult && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+          <RankingBarChart
+            rankings={scoringResult.rankings}
+            topN={10}
+            onCitySelect={setSelectedCityId}
+            selectedCityId={selectedCityId}
+          />
+          <ScoreRadarChart cityScore={selectedCityScore} />
+          <PriceTrendChart
+            cityName={selectedCityScore?.cityName || null}
+            zhviHistory={selectedCityData?.zhviHistory || null}
+          />
+        </div>
+      )}
+
+      {/* Bottom Row: Preferences + Rankings */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Preferences Panel - Left Sidebar */}
         <div className="lg:col-span-1">
-          <div className="sticky top-4 space-y-4">
+          <div className="sticky top-4">
             <PreferencePanel />
-            
-            {/* Radar Chart for Selected City */}
-            {isHydrated && (
-              <ScoreRadarChart cityScore={selectedCityScore} />
-            )}
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="lg:col-span-3 space-y-6">
-          {/* Charts Section */}
-          {isHydrated && scoringResult && (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <RankingBarChart
-                rankings={scoringResult.rankings}
-                topN={10}
-                onCitySelect={setSelectedCityId}
-                selectedCityId={selectedCityId}
-              />
-              <PriceTrendChart
-                cityName={selectedCityScore?.cityName || null}
-                zhviHistory={selectedCityData?.zhviHistory || null}
-              />
-            </div>
-          )}
-
-          {/* Rankings Table */}
+        {/* Rankings Table */}
+        <div className="lg:col-span-3">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center justify-between">

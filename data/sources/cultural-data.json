@@ -1,0 +1,757 @@
+{
+  "version": "1.0",
+  "description": "Cultural data for cities - political lean and religious adherence",
+  "sources": {
+    "political": "MIT Election Lab County Presidential Election Returns 2024, Voter turnout from US Elections Project",
+    "religious": "ARDA U.S. Religion Census 2020 (Religious Congregations & Membership Study)"
+  },
+  "nationalAverages": {
+    "political": {
+      "democratPercent": 48.4,
+      "republicanPercent": 49.9,
+      "voterTurnout": 66.0
+    },
+    "religious": {
+      "catholic": 205,
+      "evangelicalProtestant": 256,
+      "mainlineProtestant": 103,
+      "jewish": 22,
+      "muslim": 11,
+      "unaffiliated": 290
+    }
+  },
+  "cities": {
+    "san-francisco": {
+      "political": {
+        "democratPercent": 84.5,
+        "republicanPercent": 12.8,
+        "voterTurnout": 75.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 220,
+        "evangelicalProtestant": 45,
+        "mainlineProtestant": 35,
+        "jewish": 45,
+        "muslim": 15,
+        "unaffiliated": 480,
+        "dataYear": 2020
+      }
+    },
+    "seattle": {
+      "political": {
+        "democratPercent": 70.5,
+        "republicanPercent": 26.1,
+        "voterTurnout": 78.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 145,
+        "evangelicalProtestant": 85,
+        "mainlineProtestant": 65,
+        "jewish": 28,
+        "muslim": 12,
+        "unaffiliated": 520,
+        "dataYear": 2020
+      }
+    },
+    "new-york-city": {
+      "political": {
+        "democratPercent": 68.2,
+        "republicanPercent": 30.2,
+        "voterTurnout": 62.1,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 365,
+        "evangelicalProtestant": 42,
+        "mainlineProtestant": 38,
+        "jewish": 120,
+        "muslim": 32,
+        "unaffiliated": 280,
+        "dataYear": 2020
+      }
+    },
+    "los-angeles": {
+      "political": {
+        "democratPercent": 72.0,
+        "republicanPercent": 25.4,
+        "voterTurnout": 64.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 340,
+        "evangelicalProtestant": 68,
+        "mainlineProtestant": 28,
+        "jewish": 62,
+        "muslim": 18,
+        "unaffiliated": 380,
+        "dataYear": 2020
+      }
+    },
+    "sacramento": {
+      "political": {
+        "democratPercent": 54.8,
+        "republicanPercent": 42.6,
+        "voterTurnout": 68.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 195,
+        "evangelicalProtestant": 95,
+        "mainlineProtestant": 45,
+        "jewish": 18,
+        "muslim": 12,
+        "unaffiliated": 420,
+        "dataYear": 2020
+      }
+    },
+    "boston": {
+      "political": {
+        "democratPercent": 80.0,
+        "republicanPercent": 17.5,
+        "voterTurnout": 72.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 420,
+        "evangelicalProtestant": 28,
+        "mainlineProtestant": 55,
+        "jewish": 65,
+        "muslim": 15,
+        "unaffiliated": 320,
+        "dataYear": 2020
+      }
+    },
+    "portland": {
+      "political": {
+        "democratPercent": 76.0,
+        "republicanPercent": 20.8,
+        "voterTurnout": 74.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 110,
+        "evangelicalProtestant": 75,
+        "mainlineProtestant": 55,
+        "jewish": 18,
+        "muslim": 8,
+        "unaffiliated": 580,
+        "dataYear": 2020
+      }
+    },
+    "las-vegas": {
+      "political": {
+        "democratPercent": 49.0,
+        "republicanPercent": 48.4,
+        "voterTurnout": 61.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 280,
+        "evangelicalProtestant": 85,
+        "mainlineProtestant": 32,
+        "jewish": 35,
+        "muslim": 12,
+        "unaffiliated": 450,
+        "dataYear": 2020
+      }
+    },
+    "chicago": {
+      "political": {
+        "democratPercent": 75.1,
+        "republicanPercent": 22.8,
+        "voterTurnout": 65.4,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 345,
+        "evangelicalProtestant": 78,
+        "mainlineProtestant": 48,
+        "jewish": 42,
+        "muslim": 28,
+        "unaffiliated": 340,
+        "dataYear": 2020
+      }
+    },
+    "washington-dc": {
+      "political": {
+        "democratPercent": 90.0,
+        "republicanPercent": 8.2,
+        "voterTurnout": 68.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 185,
+        "evangelicalProtestant": 125,
+        "mainlineProtestant": 85,
+        "jewish": 48,
+        "muslim": 22,
+        "unaffiliated": 380,
+        "dataYear": 2020
+      }
+    },
+    "houston": {
+      "political": {
+        "democratPercent": 52.5,
+        "republicanPercent": 46.2,
+        "voterTurnout": 58.6,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 225,
+        "evangelicalProtestant": 285,
+        "mainlineProtestant": 68,
+        "jewish": 22,
+        "muslim": 25,
+        "unaffiliated": 280,
+        "dataYear": 2020
+      }
+    },
+    "atlanta": {
+      "political": {
+        "democratPercent": 68.0,
+        "republicanPercent": 30.5,
+        "voterTurnout": 67.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 85,
+        "evangelicalProtestant": 385,
+        "mainlineProtestant": 95,
+        "jewish": 28,
+        "muslim": 18,
+        "unaffiliated": 285,
+        "dataYear": 2020
+      }
+    },
+    "minneapolis": {
+      "political": {
+        "democratPercent": 69.5,
+        "republicanPercent": 28.4,
+        "voterTurnout": 79.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 245,
+        "evangelicalProtestant": 145,
+        "mainlineProtestant": 185,
+        "jewish": 28,
+        "muslim": 18,
+        "unaffiliated": 320,
+        "dataYear": 2020
+      }
+    },
+    "philadelphia": {
+      "political": {
+        "democratPercent": 78.4,
+        "republicanPercent": 20.2,
+        "voterTurnout": 64.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 355,
+        "evangelicalProtestant": 65,
+        "mainlineProtestant": 75,
+        "jewish": 58,
+        "muslim": 22,
+        "unaffiliated": 320,
+        "dataYear": 2020
+      }
+    },
+    "dallas": {
+      "political": {
+        "democratPercent": 49.5,
+        "republicanPercent": 48.8,
+        "voterTurnout": 60.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 185,
+        "evangelicalProtestant": 345,
+        "mainlineProtestant": 85,
+        "jewish": 18,
+        "muslim": 22,
+        "unaffiliated": 265,
+        "dataYear": 2020
+      }
+    },
+    "tampa-bay": {
+      "political": {
+        "democratPercent": 44.5,
+        "republicanPercent": 54.2,
+        "voterTurnout": 68.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 165,
+        "evangelicalProtestant": 185,
+        "mainlineProtestant": 65,
+        "jewish": 42,
+        "muslim": 8,
+        "unaffiliated": 420,
+        "dataYear": 2020
+      }
+    },
+    "denver": {
+      "political": {
+        "democratPercent": 69.5,
+        "republicanPercent": 27.8,
+        "voterTurnout": 76.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 195,
+        "evangelicalProtestant": 125,
+        "mainlineProtestant": 65,
+        "jewish": 32,
+        "muslim": 12,
+        "unaffiliated": 450,
+        "dataYear": 2020
+      }
+    },
+    "charlotte": {
+      "political": {
+        "democratPercent": 52.2,
+        "republicanPercent": 46.5,
+        "voterTurnout": 70.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 65,
+        "evangelicalProtestant": 385,
+        "mainlineProtestant": 135,
+        "jewish": 12,
+        "muslim": 15,
+        "unaffiliated": 285,
+        "dataYear": 2020
+      }
+    },
+    "oklahoma-city": {
+      "political": {
+        "democratPercent": 40.5,
+        "republicanPercent": 57.8,
+        "voterTurnout": 58.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 85,
+        "evangelicalProtestant": 455,
+        "mainlineProtestant": 115,
+        "jewish": 8,
+        "muslim": 12,
+        "unaffiliated": 245,
+        "dataYear": 2020
+      }
+    },
+    "phoenix": {
+      "political": {
+        "democratPercent": 49.8,
+        "republicanPercent": 48.5,
+        "voterTurnout": 66.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 245,
+        "evangelicalProtestant": 145,
+        "mainlineProtestant": 55,
+        "jewish": 28,
+        "muslim": 12,
+        "unaffiliated": 395,
+        "dataYear": 2020
+      }
+    },
+    "baltimore": {
+      "political": {
+        "democratPercent": 78.5,
+        "republicanPercent": 19.8,
+        "voterTurnout": 65.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 185,
+        "evangelicalProtestant": 125,
+        "mainlineProtestant": 95,
+        "jewish": 65,
+        "muslim": 18,
+        "unaffiliated": 380,
+        "dataYear": 2020
+      }
+    },
+    "orlando": {
+      "political": {
+        "democratPercent": 46.5,
+        "republicanPercent": 52.2,
+        "voterTurnout": 67.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 185,
+        "evangelicalProtestant": 195,
+        "mainlineProtestant": 55,
+        "jewish": 35,
+        "muslim": 12,
+        "unaffiliated": 405,
+        "dataYear": 2020
+      }
+    },
+    "indianapolis": {
+      "political": {
+        "democratPercent": 48.5,
+        "republicanPercent": 49.8,
+        "voterTurnout": 62.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 145,
+        "evangelicalProtestant": 285,
+        "mainlineProtestant": 125,
+        "jewish": 15,
+        "muslim": 12,
+        "unaffiliated": 325,
+        "dataYear": 2020
+      }
+    },
+    "nashville": {
+      "political": {
+        "democratPercent": 55.5,
+        "republicanPercent": 42.8,
+        "voterTurnout": 65.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 55,
+        "evangelicalProtestant": 425,
+        "mainlineProtestant": 125,
+        "jewish": 12,
+        "muslim": 15,
+        "unaffiliated": 275,
+        "dataYear": 2020
+      }
+    },
+    "milwaukee": {
+      "political": {
+        "democratPercent": 58.5,
+        "republicanPercent": 39.8,
+        "voterTurnout": 72.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 295,
+        "evangelicalProtestant": 145,
+        "mainlineProtestant": 175,
+        "jewish": 18,
+        "muslim": 12,
+        "unaffiliated": 285,
+        "dataYear": 2020
+      }
+    },
+    "salt-lake-city": {
+      "political": {
+        "democratPercent": 42.5,
+        "republicanPercent": 51.8,
+        "voterTurnout": 71.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 68,
+        "evangelicalProtestant": 45,
+        "mainlineProtestant": 35,
+        "jewish": 8,
+        "muslim": 5,
+        "unaffiliated": 285,
+        "lds": 485,
+        "dataYear": 2020
+      }
+    },
+    "detroit": {
+      "political": {
+        "democratPercent": 68.5,
+        "republicanPercent": 29.8,
+        "voterTurnout": 64.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 285,
+        "evangelicalProtestant": 145,
+        "mainlineProtestant": 95,
+        "jewish": 42,
+        "muslim": 48,
+        "unaffiliated": 305,
+        "dataYear": 2020
+      }
+    },
+    "st-louis": {
+      "political": {
+        "democratPercent": 55.5,
+        "republicanPercent": 42.5,
+        "voterTurnout": 66.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 265,
+        "evangelicalProtestant": 185,
+        "mainlineProtestant": 125,
+        "jewish": 28,
+        "muslim": 15,
+        "unaffiliated": 295,
+        "dataYear": 2020
+      }
+    },
+    "san-antonio": {
+      "political": {
+        "democratPercent": 51.5,
+        "republicanPercent": 46.8,
+        "voterTurnout": 56.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 385,
+        "evangelicalProtestant": 185,
+        "mainlineProtestant": 55,
+        "jewish": 12,
+        "muslim": 15,
+        "unaffiliated": 265,
+        "dataYear": 2020
+      }
+    },
+    "jacksonville": {
+      "political": {
+        "democratPercent": 42.8,
+        "republicanPercent": 55.5,
+        "voterTurnout": 68.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 85,
+        "evangelicalProtestant": 325,
+        "mainlineProtestant": 85,
+        "jewish": 18,
+        "muslim": 12,
+        "unaffiliated": 365,
+        "dataYear": 2020
+      }
+    },
+    "new-orleans": {
+      "political": {
+        "democratPercent": 60.2,
+        "republicanPercent": 37.8,
+        "voterTurnout": 58.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 385,
+        "evangelicalProtestant": 185,
+        "mainlineProtestant": 65,
+        "jewish": 15,
+        "muslim": 8,
+        "unaffiliated": 265,
+        "dataYear": 2020
+      }
+    },
+    "kansas-city": {
+      "political": {
+        "democratPercent": 52.8,
+        "republicanPercent": 45.2,
+        "voterTurnout": 67.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 185,
+        "evangelicalProtestant": 245,
+        "mainlineProtestant": 145,
+        "jewish": 22,
+        "muslim": 12,
+        "unaffiliated": 305,
+        "dataYear": 2020
+      }
+    },
+    "cincinnati": {
+      "political": {
+        "democratPercent": 52.5,
+        "republicanPercent": 45.8,
+        "voterTurnout": 68.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 245,
+        "evangelicalProtestant": 215,
+        "mainlineProtestant": 125,
+        "jewish": 22,
+        "muslim": 12,
+        "unaffiliated": 295,
+        "dataYear": 2020
+      }
+    },
+    "cleveland": {
+      "political": {
+        "democratPercent": 65.5,
+        "republicanPercent": 32.8,
+        "voterTurnout": 64.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 285,
+        "evangelicalProtestant": 145,
+        "mainlineProtestant": 95,
+        "jewish": 48,
+        "muslim": 15,
+        "unaffiliated": 315,
+        "dataYear": 2020
+      }
+    },
+    "buffalo": {
+      "political": {
+        "democratPercent": 58.2,
+        "republicanPercent": 39.5,
+        "voterTurnout": 64.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 385,
+        "evangelicalProtestant": 65,
+        "mainlineProtestant": 85,
+        "jewish": 28,
+        "muslim": 12,
+        "unaffiliated": 325,
+        "dataYear": 2020
+      }
+    },
+    "pittsburgh": {
+      "political": {
+        "democratPercent": 58.8,
+        "republicanPercent": 39.2,
+        "voterTurnout": 68.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 345,
+        "evangelicalProtestant": 85,
+        "mainlineProtestant": 125,
+        "jewish": 32,
+        "muslim": 12,
+        "unaffiliated": 305,
+        "dataYear": 2020
+      }
+    },
+    "miami": {
+      "political": {
+        "democratPercent": 52.8,
+        "republicanPercent": 45.8,
+        "voterTurnout": 62.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 365,
+        "evangelicalProtestant": 125,
+        "mainlineProtestant": 35,
+        "jewish": 85,
+        "muslim": 12,
+        "unaffiliated": 295,
+        "dataYear": 2020
+      }
+    },
+    "green-bay": {
+      "political": {
+        "democratPercent": 42.5,
+        "republicanPercent": 55.8,
+        "voterTurnout": 74.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 425,
+        "evangelicalProtestant": 125,
+        "mainlineProtestant": 185,
+        "jewish": 5,
+        "muslim": 5,
+        "unaffiliated": 195,
+        "dataYear": 2020
+      }
+    },
+    "memphis": {
+      "political": {
+        "democratPercent": 60.5,
+        "republicanPercent": 37.8,
+        "voterTurnout": 56.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 45,
+        "evangelicalProtestant": 485,
+        "mainlineProtestant": 95,
+        "jewish": 12,
+        "muslim": 12,
+        "unaffiliated": 265,
+        "dataYear": 2020
+      }
+    },
+    "san-diego": {
+      "political": {
+        "democratPercent": 58.5,
+        "republicanPercent": 38.8,
+        "voterTurnout": 68.2,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 285,
+        "evangelicalProtestant": 95,
+        "mainlineProtestant": 45,
+        "jewish": 28,
+        "muslim": 12,
+        "unaffiliated": 420,
+        "dataYear": 2020
+      }
+    },
+    "santa-barbara": {
+      "political": {
+        "democratPercent": 62.5,
+        "republicanPercent": 34.8,
+        "voterTurnout": 72.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 285,
+        "evangelicalProtestant": 65,
+        "mainlineProtestant": 45,
+        "jewish": 18,
+        "muslim": 8,
+        "unaffiliated": 465,
+        "dataYear": 2020
+      }
+    },
+    "raleigh": {
+      "political": {
+        "democratPercent": 56.8,
+        "republicanPercent": 41.5,
+        "voterTurnout": 72.8,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 65,
+        "evangelicalProtestant": 325,
+        "mainlineProtestant": 125,
+        "jewish": 15,
+        "muslim": 15,
+        "unaffiliated": 345,
+        "dataYear": 2020
+      }
+    },
+    "gainesville": {
+      "political": {
+        "democratPercent": 55.2,
+        "republicanPercent": 42.8,
+        "voterTurnout": 68.5,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 75,
+        "evangelicalProtestant": 285,
+        "mainlineProtestant": 85,
+        "jewish": 18,
+        "muslim": 12,
+        "unaffiliated": 415,
+        "dataYear": 2020
+      }
+    }
+  }
+}

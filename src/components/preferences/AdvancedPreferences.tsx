@@ -14,27 +14,40 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  TooltipProvider,
 } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   ChevronRight, Info, Thermometer, Users, Heart, Vote, DollarSign, 
   Home, Key, ShoppingCart, Sun, Snowflake, CloudRain, Zap, Leaf, Activity,
-  Cloud, Droplets
+  Cloud, Droplets, HelpCircle, X, Church, ShieldCheck, Briefcase, TrendingUp
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+
+type SectionId = "climate" | "cost" | "demographics" | "qol" | "cultural" | null;
 
 interface CollapsibleSectionProps {
+  id: SectionId;
   title: string;
   icon: React.ReactNode;
   children: React.ReactNode;
-  defaultOpen?: boolean;
+  openSection: SectionId;
+  onToggle: (id: SectionId) => void;
 }
 
-function CollapsibleSection({ title, icon, children, defaultOpen = false }: CollapsibleSectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+function CollapsibleSection({ id, title, icon, children, openSection, onToggle }: CollapsibleSectionProps) {
+  const isOpen = openSection === id;
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <Collapsible open={isOpen} onOpenChange={(open) => onToggle(open ? id : null)}>
       <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 text-sm font-medium hover:text-primary transition-colors">
         <ChevronRight
           className={cn(
@@ -56,14 +69,36 @@ function CollapsibleSection({ title, icon, children, defaultOpen = false }: Coll
 
 export function AdvancedPreferences() {
   const { preferences, updateAdvanced } = usePreferencesStore();
+  const [openSection, setOpenSection] = useState<SectionId>(null);
+
+  const isExpanded = openSection !== null;
 
   return (
-    <div className="space-y-2 border-t pt-4">
+    <div className={cn(
+      "space-y-2 border-t pt-4 transition-all duration-300",
+      isExpanded && "fixed inset-x-0 top-0 bottom-0 z-50 bg-background p-4 overflow-y-auto md:inset-x-auto md:left-0 md:w-[420px] md:border-r md:shadow-xl"
+    )}>
+      {/* Close button when expanded */}
+      {isExpanded && (
+        <div className="flex items-center justify-between mb-4 pb-2 border-b">
+          <h3 className="font-semibold text-lg">Advanced Options</h3>
+          <button
+            onClick={() => setOpenSection(null)}
+            className="p-1 rounded-md hover:bg-muted transition-colors"
+            aria-label="Collapse all sections"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      )}
+
       {/* Climate Details - NOAA-based */}
       <CollapsibleSection
+        id="climate"
         title="Climate Preferences"
         icon={<Thermometer className="h-4 w-4 text-orange-500" />}
-        defaultOpen
+        openSection={openSection}
+        onToggle={setOpenSection}
       >
         <div className="space-y-4">
           {/* Comfort & Outdoor Days */}
@@ -335,9 +370,11 @@ export function AdvancedPreferences() {
 
       {/* Cost of Living - Housing Situation */}
       <CollapsibleSection
+        id="cost"
         title="Cost of Living"
         icon={<DollarSign className="h-4 w-4 text-green-500" />}
-        defaultOpen
+        openSection={openSection}
+        onToggle={setOpenSection}
       >
         <div className="space-y-4">
           <div className="space-y-3">
@@ -414,7 +451,7 @@ export function AdvancedPreferences() {
             </div>
           )}
 
-          {/* Info box based on selection */}
+          {/* Info box based on housing selection */}
           <div className="p-3 rounded-lg bg-muted/50 text-xs text-muted-foreground">
             {preferences.advanced.costOfLiving.housingSituation === "renter" && (
               <p>
@@ -435,146 +472,802 @@ export function AdvancedPreferences() {
               </p>
             )}
           </div>
+
+          {/* Work Situation - Income Source */}
+          <div className="space-y-3 pt-4 border-t">
+            <div className="flex items-center gap-1">
+              <Label className="text-sm">Your Work Situation</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.costOfLiving.workSituation"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Per-capita income is skewed by ultra-high earners (DC lobbyists, SF tech execs). 
+              Choose your situation for more realistic purchasing power calculations.
+            </p>
+            <div className="grid grid-cols-1 gap-2">
+              {([
+                { value: "local-earner", label: "Local Earner", icon: TrendingUp, desc: "Uses local income levels - how locals fare" },
+                { value: "standard", label: "Standard / Moving", icon: Briefcase, desc: "Pure affordability - same income, compare costs" },
+                { value: "retiree", label: "Retiree / Fixed Income", icon: Heart, desc: "Uses your specified fixed income" },
+              ] as const).map(({ value, label, icon: Icon, desc }) => (
+                <button
+                  key={value}
+                  onClick={() => updateAdvanced("costOfLiving", "workSituation", value)}
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-lg text-left transition-all",
+                    preferences.advanced.costOfLiving.workSituation === value
+                      ? "bg-blue-100 dark:bg-blue-900/30 ring-2 ring-blue-500"
+                      : "bg-muted/50 hover:bg-muted"
+                  )}
+                >
+                  <Icon className={cn(
+                    "h-5 w-5 flex-shrink-0",
+                    preferences.advanced.costOfLiving.workSituation === value
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-muted-foreground"
+                  )} />
+                  <div>
+                    <div className={cn(
+                      "font-medium text-sm",
+                      preferences.advanced.costOfLiving.workSituation === value
+                        ? "text-blue-700 dark:text-blue-300"
+                        : ""
+                    )}>
+                      {label}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{desc}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Retiree fixed income input - only shown for retiree persona */}
+          {preferences.advanced.costOfLiving.workSituation === "retiree" && (
+            <div className="space-y-2 pl-4 border-l-2 border-blue-500/50">
+              <div className="flex items-center gap-1">
+                <Label className="text-sm">Annual Fixed Income</Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-sm">{TOOLTIPS["advanced.costOfLiving.retireeFixedIncome"]}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">$</span>
+                <input
+                  type="number"
+                  min="10000"
+                  max="200000"
+                  step="5000"
+                  value={preferences.advanced.costOfLiving.retireeFixedIncome ?? 50000}
+                  onChange={(e) => updateAdvanced("costOfLiving", "retireeFixedIncome", parseInt(e.target.value) || 50000)}
+                  className="w-32 px-3 py-2 rounded-md border bg-background text-sm"
+                />
+                <span className="text-xs text-muted-foreground">/year (pre-tax)</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Average Social Security: ~$22K | Median Retiree Income: ~$50K
+              </p>
+            </div>
+          )}
+
+          {/* Info box based on work selection */}
+          <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-xs text-muted-foreground">
+            {preferences.advanced.costOfLiving.workSituation === "local-earner" && (
+              <p>
+                <strong>Local Earner:</strong> Uses local Per Capita Income (BEA). Shows how well off 
+                local workers are. Expensive cities score better because local incomes are higher. 
+                Best for &quot;how do locals fare here?&quot;
+              </p>
+            )}
+            {preferences.advanced.costOfLiving.workSituation === "standard" && (
+              <p>
+                <strong>Standard:</strong> Pure affordability comparison. Uses fixed national median 
+                income (~$75K) and only varies by local costs. Expensive cities (SF, NYC) score poorly 
+                as expected. Best for &quot;where can I afford to move?&quot;
+              </p>
+            )}
+            {preferences.advanced.costOfLiving.workSituation === "retiree" && (
+              <p>
+                <strong>Retiree:</strong> Uses your specified fixed income. Shows how far your 
+                retirement income goes in each city. Best for &quot;where can I retire affordably?&quot;
+              </p>
+            )}
+          </div>
         </div>
       </CollapsibleSection>
 
       {/* Demographics Details */}
       <CollapsibleSection
+        id="demographics"
         title="Demographics Details"
         icon={<Users className="h-4 w-4 text-blue-500" />}
+        openSection={openSection}
+        onToggle={setOpenSection}
       >
-        <PreferenceSlider
-          label="Min Metro Population"
-          value={preferences.advanced.demographics.minPopulation}
-          onChange={(v) => updateAdvanced("demographics", "minPopulation", v)}
-          min={0}
-          max={5000}
-          step={100}
-          tooltip={TOOLTIPS["advanced.demographics.minPopulation"]}
-          formatValue={(v) => v === 0 ? "Any" : `${(v / 1000).toFixed(1)}M+`}
-        />
-        <PreferenceSlider
-          label="Min Diversity Index"
-          value={preferences.advanced.demographics.minDiversityIndex}
-          onChange={(v) => updateAdvanced("demographics", "minDiversityIndex", v)}
-          min={0}
-          max={80}
-          tooltip={TOOLTIPS["advanced.demographics.minDiversityIndex"]}
-          formatValue={(v) => v === 0 ? "Any" : `${v}+`}
-        />
-        <PreferenceSlider
-          label="Target East Asian %"
-          value={preferences.advanced.demographics.targetEastAsianPercent}
-          onChange={(v) => updateAdvanced("demographics", "targetEastAsianPercent", v)}
-          min={0}
-          max={30}
-          tooltip={TOOLTIPS["advanced.demographics.targetEastAsianPercent"]}
-          formatValue={(v) => v === 0 ? "No pref" : `~${v}%`}
-        />
+        {/* Population */}
+        <div className="space-y-3 pb-3 border-b border-border/50">
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Population</h4>
+          <PreferenceSlider
+            label="Min City Population"
+            value={preferences.advanced.demographics.minPopulation}
+            onChange={(v) => updateAdvanced("demographics", "minPopulation", v)}
+            min={0}
+            max={2000000}
+            step={50000}
+            tooltip={TOOLTIPS["advanced.demographics.minPopulation"]}
+            formatValue={(v) => v === 0 ? "Any" : v >= 1000000 ? `${(v / 1000000).toFixed(1)}M+` : `${(v / 1000).toFixed(0)}K+`}
+          />
+        </div>
+
+        {/* Diversity */}
+        <div className="space-y-3 py-3 border-b border-border/50">
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Diversity</h4>
+          <PreferenceSlider
+            label="Diversity Importance"
+            value={preferences.advanced.demographics.weightDiversity}
+            onChange={(v) => updateAdvanced("demographics", "weightDiversity", v)}
+            min={0}
+            max={100}
+            tooltip={TOOLTIPS["advanced.demographics.weightDiversity"]}
+            formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+          />
+          {preferences.advanced.demographics.weightDiversity > 0 && (
+            <PreferenceSlider
+              label="Min Diversity Index"
+              value={preferences.advanced.demographics.minDiversityIndex}
+              onChange={(v) => updateAdvanced("demographics", "minDiversityIndex", v)}
+              min={0}
+              max={80}
+              tooltip={TOOLTIPS["advanced.demographics.minDiversityIndex"]}
+              formatValue={(v) => v === 0 ? "Any" : `${v}+`}
+            />
+          )}
+        </div>
+
+        {/* Age Demographics */}
+        <div className="space-y-3 py-3 border-b border-border/50">
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Age Demographics</h4>
+          <PreferenceSlider
+            label="Age Importance"
+            value={preferences.advanced.demographics.weightAge}
+            onChange={(v) => updateAdvanced("demographics", "weightAge", v)}
+            min={0}
+            max={100}
+            tooltip={TOOLTIPS["advanced.demographics.weightAge"]}
+            formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+          />
+          {preferences.advanced.demographics.weightAge > 0 && (
+            <div className="space-y-2">
+              <label className="text-xs text-muted-foreground flex items-center gap-1">
+                Preferred Age Group
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger><HelpCircle className="h-3 w-3" /></TooltipTrigger>
+                    <TooltipContent><p className="max-w-xs text-xs">{TOOLTIPS["advanced.demographics.preferredAgeGroup"]}</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </label>
+              <Select
+                value={preferences.advanced.demographics.preferredAgeGroup}
+                onValueChange={(v) => updateAdvanced("demographics", "preferredAgeGroup", v as "young" | "mixed" | "mature" | "any")}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any (No preference)</SelectItem>
+                  <SelectItem value="young">Young (Median &lt;35)</SelectItem>
+                  <SelectItem value="mixed">Mixed (Median 35-45)</SelectItem>
+                  <SelectItem value="mature">Mature (Median &gt;45)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+
+        {/* Education */}
+        <div className="space-y-3 py-3 border-b border-border/50">
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Education</h4>
+          <PreferenceSlider
+            label="Education Importance"
+            value={preferences.advanced.demographics.weightEducation}
+            onChange={(v) => updateAdvanced("demographics", "weightEducation", v)}
+            min={0}
+            max={100}
+            tooltip={TOOLTIPS["advanced.demographics.weightEducation"]}
+            formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+          />
+          {preferences.advanced.demographics.weightEducation > 0 && (
+            <PreferenceSlider
+              label="Min Bachelor's Degree %"
+              value={preferences.advanced.demographics.minBachelorsPercent}
+              onChange={(v) => updateAdvanced("demographics", "minBachelorsPercent", v)}
+              min={0}
+              max={60}
+              tooltip={TOOLTIPS["advanced.demographics.minBachelorsPercent"]}
+              formatValue={(v) => v === 0 ? "Any" : `${v}%+`}
+            />
+          )}
+        </div>
+
+        {/* Foreign-Born / International Culture */}
+        <div className="space-y-3 py-3 border-b border-border/50">
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">International Culture</h4>
+          <PreferenceSlider
+            label="International Importance"
+            value={preferences.advanced.demographics.weightForeignBorn}
+            onChange={(v) => updateAdvanced("demographics", "weightForeignBorn", v)}
+            min={0}
+            max={100}
+            tooltip={TOOLTIPS["advanced.demographics.weightForeignBorn"]}
+            formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+          />
+          {preferences.advanced.demographics.weightForeignBorn > 0 && (
+            <PreferenceSlider
+              label="Min Foreign-Born %"
+              value={preferences.advanced.demographics.minForeignBornPercent}
+              onChange={(v) => updateAdvanced("demographics", "minForeignBornPercent", v)}
+              min={0}
+              max={40}
+              tooltip={TOOLTIPS["advanced.demographics.minForeignBornPercent"]}
+              formatValue={(v) => v === 0 ? "Any" : `${v}%+`}
+            />
+          )}
+        </div>
+
+        {/* Minority Community */}
+        <div className="space-y-3 py-3 border-b border-border/50">
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Minority Community</h4>
+          
+          {/* Dropdown comes first */}
+          <div className="space-y-2">
+            <label className="text-xs text-muted-foreground flex items-center gap-1">
+              Find Community With
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger><HelpCircle className="h-3 w-3" /></TooltipTrigger>
+                  <TooltipContent><p className="max-w-xs text-xs">{TOOLTIPS["advanced.demographics.minorityGroup"]}</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </label>
+            <Select
+              value={preferences.advanced.demographics.minorityGroup}
+              onValueChange={(v) => {
+                updateAdvanced("demographics", "minorityGroup", v as "none" | "hispanic" | "black" | "asian" | "pacific-islander" | "native-american");
+                // Reset subgroup when changing minority group
+                updateAdvanced("demographics", "minoritySubgroup", "any");
+              }}
+            >
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None (don&apos;t factor in)</SelectItem>
+                <SelectItem value="hispanic">Hispanic/Latino</SelectItem>
+                <SelectItem value="black">Black/African American</SelectItem>
+                <SelectItem value="asian">Asian</SelectItem>
+                <SelectItem value="pacific-islander">Pacific Islander</SelectItem>
+                <SelectItem value="native-american">Native American</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Options only show when a group is selected */}
+          {preferences.advanced.demographics.minorityGroup !== "none" && (
+            <>
+              {/* Subgroup selector for Hispanic and Asian */}
+              {(preferences.advanced.demographics.minorityGroup === "hispanic" || 
+                preferences.advanced.demographics.minorityGroup === "asian") && (
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground flex items-center gap-1">
+                    Specific Subgroup
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger><HelpCircle className="h-3 w-3" /></TooltipTrigger>
+                        <TooltipContent><p className="max-w-xs text-xs">{TOOLTIPS["advanced.demographics.minoritySubgroup"]}</p></TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </label>
+                  <Select
+                    value={preferences.advanced.demographics.minoritySubgroup}
+                    onValueChange={(v) => updateAdvanced("demographics", "minoritySubgroup", v as typeof preferences.advanced.demographics.minoritySubgroup)}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any / All {preferences.advanced.demographics.minorityGroup === "hispanic" ? "Hispanic" : "Asian"}</SelectItem>
+                      {preferences.advanced.demographics.minorityGroup === "hispanic" && (
+                        <>
+                          <SelectItem value="mexican">Mexican</SelectItem>
+                          <SelectItem value="puerto-rican">Puerto Rican</SelectItem>
+                          <SelectItem value="cuban">Cuban</SelectItem>
+                          <SelectItem value="salvadoran">Salvadoran</SelectItem>
+                          <SelectItem value="guatemalan">Guatemalan</SelectItem>
+                          <SelectItem value="colombian">Colombian</SelectItem>
+                        </>
+                      )}
+                      {preferences.advanced.demographics.minorityGroup === "asian" && (
+                        <>
+                          <SelectItem value="chinese">Chinese</SelectItem>
+                          <SelectItem value="indian">Indian</SelectItem>
+                          <SelectItem value="filipino">Filipino</SelectItem>
+                          <SelectItem value="vietnamese">Vietnamese</SelectItem>
+                          <SelectItem value="korean">Korean</SelectItem>
+                          <SelectItem value="japanese">Japanese</SelectItem>
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
+              <PreferenceSlider
+                label="Minimum Presence"
+                value={preferences.advanced.demographics.minMinorityPresence}
+                onChange={(v) => updateAdvanced("demographics", "minMinorityPresence", v)}
+                min={0}
+                max={30}
+                tooltip={TOOLTIPS["advanced.demographics.minMinorityPresence"]}
+                formatValue={(v) => v === 0 ? "Any" : `${v}%+`}
+              />
+              
+              <PreferenceSlider
+                label="Importance"
+                value={preferences.advanced.demographics.minorityImportance}
+                onChange={(v) => updateAdvanced("demographics", "minorityImportance", v)}
+                min={0}
+                max={100}
+                tooltip={TOOLTIPS["advanced.demographics.minorityImportance"]}
+                formatValue={(v) => `${v}%`}
+              />
+            </>
+          )}
+        </div>
+
+        {/* Economic Health */}
+        <div className="space-y-3 pt-3">
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Economic Health</h4>
+          <PreferenceSlider
+            label="Economic Health Importance"
+            value={preferences.advanced.demographics.weightEconomicHealth}
+            onChange={(v) => updateAdvanced("demographics", "weightEconomicHealth", v)}
+            min={0}
+            max={100}
+            tooltip={TOOLTIPS["advanced.demographics.weightEconomicHealth"]}
+            formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+          />
+          {preferences.advanced.demographics.weightEconomicHealth > 0 && (
+            <>
+              <PreferenceSlider
+                label="Min Median Household Income"
+                value={preferences.advanced.demographics.minMedianHouseholdIncome}
+                onChange={(v) => updateAdvanced("demographics", "minMedianHouseholdIncome", v)}
+                min={0}
+                max={150000}
+                step={5000}
+                tooltip={TOOLTIPS["advanced.demographics.minMedianHouseholdIncome"]}
+                formatValue={(v) => v === 0 ? "Any" : `$${(v / 1000).toFixed(0)}K+`}
+              />
+              <PreferenceSlider
+                label="Max Poverty Rate"
+                value={preferences.advanced.demographics.maxPovertyRate}
+                onChange={(v) => updateAdvanced("demographics", "maxPovertyRate", v)}
+                min={5}
+                max={30}
+                tooltip={TOOLTIPS["advanced.demographics.maxPovertyRate"]}
+                formatValue={(v) => v >= 30 ? "Any" : `${v}%`}
+              />
+            </>
+          )}
+        </div>
       </CollapsibleSection>
 
       {/* Quality of Life Details */}
       <CollapsibleSection
+        id="qol"
         title="Quality of Life"
         icon={<Heart className="h-4 w-4 text-red-500" />}
+        openSection={openSection}
+        onToggle={setOpenSection}
       >
-        <PreferenceSlider
-          label="Min Walk Score"
-          value={preferences.advanced.qualityOfLife.minWalkScore}
-          onChange={(v) => updateAdvanced("qualityOfLife", "minWalkScore", v)}
-          min={0}
-          max={90}
-          tooltip={TOOLTIPS["advanced.qualityOfLife.minWalkScore"]}
-          formatValue={(v) => v === 0 ? "Any" : `${v}+`}
-        />
-        <PreferenceSlider
-          label="Min Transit Score"
-          value={preferences.advanced.qualityOfLife.minTransitScore}
-          onChange={(v) => updateAdvanced("qualityOfLife", "minTransitScore", v)}
-          min={0}
-          max={90}
-          tooltip={TOOLTIPS["advanced.qualityOfLife.minTransitScore"]}
-          formatValue={(v) => v === 0 ? "Any" : `${v}+`}
-        />
-        <PreferenceSlider
-          label="Max Crime Rate"
-          value={preferences.advanced.qualityOfLife.maxCrimeRate}
-          onChange={(v) => updateAdvanced("qualityOfLife", "maxCrimeRate", v)}
-          min={100}
-          max={1000}
-          step={50}
-          tooltip={TOOLTIPS["advanced.qualityOfLife.maxCrimeRate"]}
-          formatValue={(v) => `<${v}/100K`}
-        />
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center gap-1">
-            <Label htmlFor="airport" className="text-sm">
-              Require International Airport
-            </Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-sm">{TOOLTIPS["advanced.qualityOfLife.requiresAirport"]}</p>
-              </TooltipContent>
-            </Tooltip>
+        {/* Category Weights */}
+        <div className="space-y-3 pb-4 border-b">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Category Weights</h4>
+          <PreferenceSlider
+            label="Walkability"
+            value={preferences.advanced.qualityOfLife.weights.walkability}
+            onChange={(v) => updateAdvanced("qualityOfLife", "weights.walkability" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            min={0}
+            max={50}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.weights.walkability"]}
+            formatValue={(v) => `${v}%`}
+          />
+          <PreferenceSlider
+            label="Safety"
+            value={preferences.advanced.qualityOfLife.weights.safety}
+            onChange={(v) => updateAdvanced("qualityOfLife", "weights.safety" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            min={0}
+            max={50}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.weights.safety"]}
+            formatValue={(v) => `${v}%`}
+          />
+          <PreferenceSlider
+            label="Air Quality"
+            value={preferences.advanced.qualityOfLife.weights.airQuality}
+            onChange={(v) => updateAdvanced("qualityOfLife", "weights.airQuality" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            min={0}
+            max={50}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.weights.airQuality"]}
+            formatValue={(v) => `${v}%`}
+          />
+          <PreferenceSlider
+            label="Internet"
+            value={preferences.advanced.qualityOfLife.weights.internet}
+            onChange={(v) => updateAdvanced("qualityOfLife", "weights.internet" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            min={0}
+            max={50}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.weights.internet"]}
+            formatValue={(v) => `${v}%`}
+          />
+          <PreferenceSlider
+            label="Schools"
+            value={preferences.advanced.qualityOfLife.weights.schools}
+            onChange={(v) => updateAdvanced("qualityOfLife", "weights.schools" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            min={0}
+            max={50}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.weights.schools"]}
+            formatValue={(v) => `${v}%`}
+          />
+          <PreferenceSlider
+            label="Healthcare"
+            value={preferences.advanced.qualityOfLife.weights.healthcare}
+            onChange={(v) => updateAdvanced("qualityOfLife", "weights.healthcare" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            min={0}
+            max={50}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.weights.healthcare"]}
+            formatValue={(v) => `${v}%`}
+          />
+        </div>
+
+        {/* Walkability Thresholds */}
+        <div className="space-y-3 pt-4 pb-4 border-b">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Walkability</h4>
+          <PreferenceSlider
+            label="Min Walk Score"
+            value={preferences.advanced.qualityOfLife.minWalkScore}
+            onChange={(v) => updateAdvanced("qualityOfLife", "minWalkScore", v)}
+            min={0}
+            max={90}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.minWalkScore"]}
+            formatValue={(v) => v === 0 ? "Any" : `${v}+`}
+          />
+          <PreferenceSlider
+            label="Min Transit Score"
+            value={preferences.advanced.qualityOfLife.minTransitScore}
+            onChange={(v) => updateAdvanced("qualityOfLife", "minTransitScore", v)}
+            min={0}
+            max={90}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.minTransitScore"]}
+            formatValue={(v) => v === 0 ? "Any" : `${v}+`}
+          />
+        </div>
+
+        {/* Safety */}
+        <div className="space-y-3 pt-4 pb-4 border-b">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Safety</h4>
+          <PreferenceSlider
+            label="Max Violent Crime Rate"
+            value={preferences.advanced.qualityOfLife.maxViolentCrimeRate}
+            onChange={(v) => updateAdvanced("qualityOfLife", "maxViolentCrimeRate", v)}
+            min={100}
+            max={800}
+            step={50}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.maxViolentCrimeRate"]}
+            formatValue={(v) => `<${v}/100K`}
+          />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <Label htmlFor="fallingCrime" className="text-sm">
+                Prefer falling crime trend
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.qualityOfLife.preferFallingCrime"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <Switch
+              id="fallingCrime"
+              checked={preferences.advanced.qualityOfLife.preferFallingCrime}
+              onCheckedChange={(v) => updateAdvanced("qualityOfLife", "preferFallingCrime", v)}
+            />
           </div>
-          <Switch
-            id="airport"
-            checked={preferences.advanced.qualityOfLife.requiresAirport}
-            onCheckedChange={(v) => updateAdvanced("qualityOfLife", "requiresAirport", v)}
+        </div>
+
+        {/* Air Quality */}
+        <div className="space-y-3 pt-4 pb-4 border-b">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Air Quality</h4>
+          <PreferenceSlider
+            label="Max Hazardous Days"
+            value={preferences.advanced.qualityOfLife.maxHazardousDays}
+            onChange={(v) => updateAdvanced("qualityOfLife", "maxHazardousDays", v)}
+            min={0}
+            max={60}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.maxHazardousDays"]}
+            formatValue={(v) => v === 0 ? "0 days" : `${v} days/yr`}
+          />
+        </div>
+
+        {/* Internet */}
+        <div className="space-y-3 pt-4 pb-4 border-b">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Internet</h4>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <Label htmlFor="requireFiber" className="text-sm">
+                Require fiber internet
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.qualityOfLife.requireFiber"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <Switch
+              id="requireFiber"
+              checked={preferences.advanced.qualityOfLife.requireFiber}
+              onCheckedChange={(v) => updateAdvanced("qualityOfLife", "requireFiber", v)}
+            />
+          </div>
+          <PreferenceSlider
+            label="Min Providers"
+            value={preferences.advanced.qualityOfLife.minProviders}
+            onChange={(v) => updateAdvanced("qualityOfLife", "minProviders", v)}
+            min={1}
+            max={5}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.minProviders"]}
+            formatValue={(v) => `${v}+`}
+          />
+        </div>
+
+        {/* Schools */}
+        <div className="space-y-3 pt-4 pb-4 border-b">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Schools</h4>
+          <PreferenceSlider
+            label="Max Student-Teacher Ratio"
+            value={preferences.advanced.qualityOfLife.maxStudentTeacherRatio}
+            onChange={(v) => updateAdvanced("qualityOfLife", "maxStudentTeacherRatio", v)}
+            min={10}
+            max={30}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.maxStudentTeacherRatio"]}
+            formatValue={(v) => `${v}:1`}
+          />
+        </div>
+
+        {/* Healthcare */}
+        <div className="space-y-3 pt-4">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Healthcare</h4>
+          <PreferenceSlider
+            label="Min Physicians per 100K"
+            value={preferences.advanced.qualityOfLife.minPhysiciansPer100k}
+            onChange={(v) => updateAdvanced("qualityOfLife", "minPhysiciansPer100k", v)}
+            min={0}
+            max={150}
+            step={10}
+            tooltip={TOOLTIPS["advanced.qualityOfLife.minPhysiciansPer100k"]}
+            formatValue={(v) => v === 0 ? "Any" : `${v}+`}
           />
         </div>
       </CollapsibleSection>
 
-      {/* Political Preferences */}
+      {/* Cultural Preferences */}
       <CollapsibleSection
-        title="Political Preferences"
-        icon={<Vote className="h-4 w-4 text-purple-500" />}
+        id="cultural"
+        title="Cultural Preferences"
+        icon={<Church className="h-4 w-4 text-purple-500" />}
+        openSection={openSection}
+        onToggle={setOpenSection}
       >
-        <div className="space-y-3">
-          <div className="flex items-center gap-1">
-            <Label className="text-sm">Preferred Leaning</Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-sm">{TOOLTIPS["advanced.political.preferredLeaning"]}</p>
-              </TooltipContent>
-            </Tooltip>
+        {/* Privacy Note */}
+        <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded mb-4">
+          <ShieldCheck className="h-3 w-3 inline mr-1" />
+          Political and religious preferences are stored locally in your browser only.
+        </div>
+
+        {/* Political Section */}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-1">
+              <Label className="text-sm font-medium">Political Preference</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.cultural.partisanPreference"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {(["strong-dem", "lean-dem", "swing", "lean-rep", "strong-rep", "neutral"] as const).map((pref) => (
+                <button
+                  key={pref}
+                  onClick={() => updateAdvanced("cultural", "partisanPreference", pref)}
+                  className={cn(
+                    "px-2 py-1 rounded text-xs font-medium transition-all",
+                    preferences.advanced.cultural.partisanPreference === pref
+                      ? pref === "strong-dem"
+                        ? "bg-blue-600 text-white"
+                        : pref === "lean-dem"
+                        ? "bg-blue-400 text-white"
+                        : pref === "swing"
+                        ? "bg-purple-500 text-white"
+                        : pref === "lean-rep"
+                        ? "bg-red-400 text-white"
+                        : pref === "strong-rep"
+                        ? "bg-red-600 text-white"
+                        : "bg-muted text-foreground ring-2 ring-primary"
+                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  {pref === "strong-dem" ? "Strong D" : 
+                   pref === "lean-dem" ? "Lean D" :
+                   pref === "swing" ? "Swing" :
+                   pref === "lean-rep" ? "Lean R" :
+                   pref === "strong-rep" ? "Strong R" : "Neutral"}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {(["blue", "neutral", "red"] as const).map((leaning) => (
-              <button
-                key={leaning}
-                onClick={() => updateAdvanced("political", "preferredLeaning", leaning)}
-                className={cn(
-                  "flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all",
-                  preferences.advanced.political.preferredLeaning === leaning
-                    ? leaning === "blue"
-                      ? "bg-blue-500 text-white"
-                      : leaning === "red"
-                      ? "bg-red-500 text-white"
-                      : "bg-muted text-foreground ring-2 ring-primary"
-                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                )}
-              >
-                {leaning === "blue" ? "Blue" : leaning === "red" ? "Red" : "Neutral"}
-              </button>
-            ))}
+
+          {preferences.advanced.cultural.partisanPreference !== "neutral" && (
+            <PreferenceSlider
+              label="Political Weight"
+              value={preferences.advanced.cultural.partisanWeight}
+              onChange={(v) => updateAdvanced("cultural", "partisanWeight", v)}
+              tooltip={TOOLTIPS["advanced.cultural.partisanWeight"]}
+              formatValue={(v) => v === 0 ? "Ignore" : v >= 80 ? "Very Important" : v >= 40 ? "Important" : "Minor"}
+            />
+          )}
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="highTurnout"
+              checked={preferences.advanced.cultural.preferHighTurnout}
+              onCheckedChange={(v) => updateAdvanced("cultural", "preferHighTurnout", v)}
+            />
+            <div className="flex items-center gap-1">
+              <Label htmlFor="highTurnout" className="text-sm">
+                Prefer high voter turnout
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.cultural.preferHighTurnout"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
-        {preferences.advanced.political.preferredLeaning !== "neutral" && (
-          <PreferenceSlider
-            label="Strength of Preference"
-            value={preferences.advanced.political.strengthOfPreference}
-            onChange={(v) => updateAdvanced("political", "strengthOfPreference", v)}
-            tooltip={TOOLTIPS["advanced.political.strengthOfPreference"]}
-            formatValue={(v) => v === 0 ? "Weak" : v >= 80 ? "Strong" : "Moderate"}
-          />
-        )}
+
+        {/* Divider */}
+        <div className="border-t my-4" />
+
+        {/* Religious Section */}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-1">
+              <Label className="text-sm font-medium">Religious Traditions</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.cultural.religiousTraditions"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { id: "catholic", label: "Catholic" },
+                { id: "evangelical", label: "Evangelical" },
+                { id: "mainline", label: "Mainline Protestant" },
+                { id: "jewish", label: "Jewish" },
+                { id: "muslim", label: "Muslim" },
+                { id: "unaffiliated", label: "Secular/None" },
+              ].map((tradition) => (
+                <div key={tradition.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={tradition.id}
+                    checked={preferences.advanced.cultural.religiousTraditions.includes(tradition.id)}
+                    onCheckedChange={(checked) => {
+                      const current = preferences.advanced.cultural.religiousTraditions;
+                      const updated = checked
+                        ? [...current, tradition.id]
+                        : current.filter((t) => t !== tradition.id);
+                      updateAdvanced("cultural", "religiousTraditions", updated);
+                    }}
+                  />
+                  <Label htmlFor={tradition.id} className="text-sm">
+                    {tradition.label}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {preferences.advanced.cultural.religiousTraditions.length > 0 && (
+            <>
+              <PreferenceSlider
+                label="Minimum Presence (per 1,000)"
+                value={preferences.advanced.cultural.minTraditionPresence}
+                onChange={(v) => updateAdvanced("cultural", "minTraditionPresence", v)}
+                min={0}
+                max={300}
+                step={10}
+                tooltip={TOOLTIPS["advanced.cultural.minTraditionPresence"]}
+                formatValue={(v) => v === 0 ? "Any" : `${v}+`}
+              />
+              <PreferenceSlider
+                label="Traditions Weight"
+                value={preferences.advanced.cultural.traditionsWeight}
+                onChange={(v) => updateAdvanced("cultural", "traditionsWeight", v)}
+                tooltip={TOOLTIPS["advanced.cultural.traditionsWeight"]}
+                formatValue={(v) => v === 0 ? "Ignore" : v >= 80 ? "Very Important" : v >= 40 ? "Important" : "Minor"}
+              />
+            </>
+          )}
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="religiousDiversity"
+              checked={preferences.advanced.cultural.preferReligiousDiversity}
+              onCheckedChange={(v) => updateAdvanced("cultural", "preferReligiousDiversity", v)}
+            />
+            <div className="flex items-center gap-1">
+              <Label htmlFor="religiousDiversity" className="text-sm">
+                Prefer religious diversity
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.cultural.preferReligiousDiversity"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+
+          {preferences.advanced.cultural.preferReligiousDiversity && (
+            <PreferenceSlider
+              label="Diversity Weight"
+              value={preferences.advanced.cultural.diversityWeight}
+              onChange={(v) => updateAdvanced("cultural", "diversityWeight", v)}
+              tooltip={TOOLTIPS["advanced.cultural.diversityWeight"]}
+              formatValue={(v) => v === 0 ? "Ignore" : v >= 80 ? "Very Important" : v >= 40 ? "Important" : "Minor"}
+            />
+          )}
+        </div>
       </CollapsibleSection>
     </div>
   );

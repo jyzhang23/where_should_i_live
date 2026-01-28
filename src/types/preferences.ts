@@ -9,13 +9,13 @@ export interface UserPreferences {
     costOfLiving: number;
     demographics: number;
     qualityOfLife: number;
+    cultural: number;
   };
 
   // Quick filters (toggles)
   filters: {
     requiresNFL: boolean;
     requiresNBA: boolean;
-    requiresAirport: boolean;
     maxHomePrice: number | null;
   };
 
@@ -78,10 +78,20 @@ export interface UserPreferences {
 
     // Cost sub-preferences
     costOfLiving: {
-      // Housing situation affects how RPP is calculated
+      // Housing situation affects how RPP (cost index) is calculated
       housingSituation: "renter" | "homeowner" | "prospective-buyer";
       // Include utilities in renter calculation (older cities have higher utility costs)
       includeUtilities: boolean;
+      
+      // Work situation affects the INCOME numerator in purchasing power calculation
+      workSituation: "standard" | "local-earner" | "retiree";
+      // "standard" = Fixed national median income - pure affordability comparison
+      // "local-earner" = Per Capita Income (BEA) - reflects local earning potential  
+      // "retiree" = User-defined fixed income
+      
+      // Fixed income for retiree persona (annual, pre-tax)
+      retireeFixedIncome: number;
+      
       // Legacy fields (kept for backward compatibility, no longer used in UI)
       maxStateTax: number;
       maxPropertyTax: number;
@@ -89,23 +99,102 @@ export interface UserPreferences {
       weightTaxBurden: number;
     };
 
-    // Demographics sub-preferences
+    // Demographics sub-preferences (Census ACS-based)
     demographics: {
-      minPopulation: number;
-      minDiversityIndex: number;
-      targetEastAsianPercent: number;
+      // Population
+      minPopulation: number;              // Minimum city population, default 0
+      
+      // Diversity
+      minDiversityIndex: number;          // 0-100, Simpson's diversity index
+      weightDiversity: number;            // How important is diversity (0-100)
+      
+      // Age preferences
+      preferredAgeGroup: "young" | "mixed" | "mature" | "any";  // Young: median <35, Mature: >45
+      weightAge: number;                  // 0-100, default 0
+      
+      // Education
+      minBachelorsPercent: number;        // Minimum % with bachelor's degree
+      weightEducation: number;            // 0-100, default 25
+      
+      // Foreign-born / International culture
+      minForeignBornPercent: number;      // % born outside US (proxy for international food/culture)
+      weightForeignBorn: number;          // 0-100, default 0
+      
+      // Minority community presence
+      minorityGroup: "none" | "hispanic" | "black" | "asian" | "pacific-islander" | "native-american";
+      // Subgroup targeting (for Hispanic and Asian)
+      minoritySubgroup: "any" | 
+        // Hispanic subgroups
+        "mexican" | "puerto-rican" | "cuban" | "salvadoran" | "guatemalan" | "colombian" |
+        // Asian subgroups
+        "chinese" | "indian" | "filipino" | "vietnamese" | "korean" | "japanese";
+      // Minimum presence desired (0-30%) - for cultural infrastructure (stores, restaurants, institutions)
+      minMinorityPresence: number;
+      // How important is minority community in the demographics score (0-100%)
+      minorityImportance: number;
+      
+      // Income / Economic health
+      minMedianHouseholdIncome: number;   // Minimum median household income
+      maxPovertyRate: number;             // Maximum poverty rate %
+      weightEconomicHealth: number;       // 0-100, default 25
+      
     };
 
     // Quality of life sub-preferences
     qualityOfLife: {
-      minWalkScore: number;
-      minTransitScore: number;
+      // Walkability thresholds
+      minWalkScore: number;        // 0-100, default 0
+      minTransitScore: number;     // 0-100, default 0
+      
+      // Safety thresholds
+      maxViolentCrimeRate: number; // per 100k, default 500
+      preferFallingCrime: boolean; // bonus for improving trend
+      
+      // Air Quality
+      maxHazardousDays: number;    // default 30
+      
+      // Internet
+      requireFiber: boolean;       // require >1Gbps option
+      minProviders: number;        // competition threshold
+      
+      // Schools
+      maxStudentTeacherRatio: number; // default 20
+      
+      // Healthcare
+      minPhysiciansPer100k: number;   // default 50
+      
+      // Legacy (kept for backward compatibility)
       maxCrimeRate: number;
-      requiresAirport: boolean;
+      
+      // Category weights (sum to 100)
+      weights: {
+        walkability: number;  // default 20
+        safety: number;       // default 25
+        airQuality: number;   // default 15
+        internet: number;     // default 10
+        schools: number;      // default 15
+        healthcare: number;   // default 15
+      };
     };
 
-    // Political preferences
-    political: {
+    // Cultural preferences (political + religious)
+    cultural: {
+      // Political
+      partisanPreference: "strong-dem" | "lean-dem" | "swing" | "lean-rep" | "strong-rep" | "neutral";
+      partisanWeight: number;           // 0-100
+      preferHighTurnout: boolean;       // Civic engagement filter
+      
+      // Religious
+      religiousTraditions: string[];    // Multi-select: ["catholic", "jewish", ...]
+      minTraditionPresence: number;     // Minimum adherents/1000 (default 50)
+      traditionsWeight: number;         // 0-100
+      preferReligiousDiversity: boolean; // High diversity = higher score
+      diversityWeight: number;          // 0-100
+    };
+
+    // Legacy political preferences (kept for migration)
+    /** @deprecated Use cultural instead */
+    political?: {
       preferredLeaning: "blue" | "red" | "neutral";
       strengthOfPreference: number;
     };
@@ -119,11 +208,11 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     costOfLiving: 50,
     demographics: 50,
     qualityOfLife: 50,
+    cultural: 0,  // Off by default (sensitive topic)
   },
   filters: {
     requiresNFL: false,
     requiresNBA: false,
-    requiresAirport: false,
     maxHomePrice: null,
   },
   advanced: {
@@ -158,6 +247,8 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     costOfLiving: {
       housingSituation: "renter",
       includeUtilities: true,
+      workSituation: "local-earner",  // Use local income levels by default
+      retireeFixedIncome: 50000,  // Default $50K/year for retiree persona
       // Legacy fields
       maxStateTax: 0.1,
       maxPropertyTax: 0.015,
@@ -167,17 +258,50 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     demographics: {
       minPopulation: 0,
       minDiversityIndex: 0,
-      targetEastAsianPercent: 0,
+      weightDiversity: 25,
+      preferredAgeGroup: "any",
+      weightAge: 0,
+      minBachelorsPercent: 0,
+      weightEducation: 25,
+      minForeignBornPercent: 0,
+      weightForeignBorn: 0,
+      minorityGroup: "none",
+      minoritySubgroup: "any",
+      minMinorityPresence: 5,        // Default: at least 5% for cultural infrastructure
+      minorityImportance: 50,        // Default: moderately important when enabled
+      minMedianHouseholdIncome: 0,
+      maxPovertyRate: 100,
+      weightEconomicHealth: 25,
     },
     qualityOfLife: {
       minWalkScore: 0,
       minTransitScore: 0,
-      maxCrimeRate: 1000,
-      requiresAirport: false,
+      maxViolentCrimeRate: 500,
+      preferFallingCrime: false,
+      maxHazardousDays: 30,
+      requireFiber: false,
+      minProviders: 2,
+      maxStudentTeacherRatio: 20,
+      minPhysiciansPer100k: 50,
+      maxCrimeRate: 1000, // Legacy
+      weights: {
+        walkability: 20,
+        safety: 25,
+        airQuality: 15,
+        internet: 10,
+        schools: 15,
+        healthcare: 15,
+      },
     },
-    political: {
-      preferredLeaning: "neutral",
-      strengthOfPreference: 0,
+    cultural: {
+      partisanPreference: "neutral",
+      partisanWeight: 0,
+      preferHighTurnout: false,
+      religiousTraditions: [],
+      minTraditionPresence: 50,
+      traditionsWeight: 0,
+      preferReligiousDiversity: false,
+      diversityWeight: 0,
     },
   },
 };
@@ -193,14 +317,14 @@ export const TOOLTIPS: Record<string, string> = {
     "How heavily to weight population and diversity factors. Higher = demographics matter more.",
   "weights.qualityOfLife":
     "How heavily to weight quality of life factors (walkability, transit, crime, pollution). Higher = QoL matters more.",
+  "weights.cultural":
+    "How heavily to weight cultural factors (political lean, religious communities). Set to 0 to ignore. Configure specific preferences in Advanced > Cultural Preferences.",
 
   // Filters
   "filters.requiresNFL":
     "Exclude cities without an NFL team. Excludes cities like Sacramento, Austin, Portland.",
   "filters.requiresNBA":
     "Exclude cities without an NBA team. Excludes cities like San Diego, Austin, Nashville.",
-  "filters.requiresAirport":
-    "Exclude cities without a major international airport. Most large cities have one.",
   "filters.maxHomePrice":
     "Filter out cities where median single-family home exceeds this price.",
 
@@ -260,6 +384,10 @@ export const TOOLTIPS: Record<string, string> = {
     "Your housing situation affects how cost of living is calculated. Renters use the standard BEA index. Homeowners exclude housing costs (your mortgage is fixed). Prospective buyers factor in current home prices and mortgage rates.",
   "advanced.costOfLiving.includeUtilities":
     "Include utility costs in the calculation. Important for renters in older cities (Boston, Philly) where utilities can be significantly higher.",
+  "advanced.costOfLiving.workSituation":
+    "Determines how purchasing power is calculated. 'Standard' uses fixed national median income - pure affordability comparison. 'High Earner' uses local per-capita income - shows how local professionals fare. 'Retiree' uses your specified fixed income.",
+  "advanced.costOfLiving.retireeFixedIncome":
+    "Your annual pre-tax income for the retiree persona. The average Social Security benefit is ~$22K/year; median retiree income is ~$50K.",
   // Legacy tooltips (kept for compatibility)
   "advanced.costOfLiving.maxStateTax":
     "Maximum acceptable state income tax rate. 0% (TX, FL) to 13.3% (CA).",
@@ -270,27 +398,93 @@ export const TOOLTIPS: Record<string, string> = {
   "advanced.costOfLiving.weightTaxBurden":
     "Within cost of living, how much weight to give tax burden vs home prices.",
 
-  // Demographics advanced
+  // Demographics advanced (Census ACS-based)
   "advanced.demographics.minPopulation":
-    "Minimum metro area population (in thousands). NYC is ~20,000, smallest tracked is ~500.",
+    "Minimum city population. NYC: 8.3M, San Francisco: 870K, Gainesville: 140K.",
   "advanced.demographics.minDiversityIndex":
-    "Minimum diversity index (0-100). Higher = more diverse.",
-  "advanced.demographics.targetEastAsianPercent":
-    "Target East Asian population percentage. SF is ~28%, most cities are 2-5%.",
+    "Minimum diversity index (0-100). Probability two random people differ by race. NYC: 77, Salt Lake: 35.",
+  "advanced.demographics.weightDiversity":
+    "How important is racial/ethnic diversity? Higher weight = diversity matters more in scoring.",
+  "advanced.demographics.preferredAgeGroup":
+    "Preferred city age profile. Young (<35 median): college towns. Mixed (35-45): family hubs. Mature (>45): retirement areas.",
+  "advanced.demographics.weightAge":
+    "How important is age demographics? Set to 0 to ignore.",
+  "advanced.demographics.minBachelorsPercent":
+    "Minimum % with bachelor's degree (25+). SF: 58%, Cleveland: 19%. Higher education often correlates with job market strength.",
+  "advanced.demographics.weightEducation":
+    "How important is educational attainment in scoring?",
+  "advanced.demographics.minForeignBornPercent":
+    "Minimum foreign-born %. Miami: 40%, Memphis: 5%. Proxy for international food, culture, and immigrant communities.",
+  "advanced.demographics.weightForeignBorn":
+    "How important is international/immigrant community presence?",
+  "advanced.demographics.minorityGroup":
+    "Select a minority group to find community with. Helps locate cultural resources like grocery stores, restaurants, religious institutions. Subgroup targeting is available for Hispanic and Asian.",
+  "advanced.demographics.minoritySubgroup":
+    "Target a specific subgroup (Hispanic: Mexican, Puerto Rican, Cuban, etc. Asian: Chinese, Indian, Filipino, etc.). Only available for Hispanic and Asian groups.",
+  "advanced.demographics.minMinorityPresence":
+    "Minimum % presence needed for cultural infrastructure. 5% = some restaurants/stores, 10% = established community, 20%+ = major presence.",
+  "advanced.demographics.minorityImportance":
+    "How much does minority community presence matter in your demographics score?",
+  "advanced.demographics.minMedianHouseholdIncome":
+    "Minimum median household income ($). SF: $126K, Memphis: $52K. Indicator of local economic health.",
+  "advanced.demographics.maxPovertyRate":
+    "Maximum acceptable poverty rate %. US avg: 11%. Higher poverty may indicate economic challenges.",
+  "advanced.demographics.weightEconomicHealth":
+    "How important is economic health (income, poverty rate) in scoring?",
 
   // Quality of life advanced
   "advanced.qualityOfLife.minWalkScore":
     "Minimum Walk Score (0-100). NYC is ~88, most suburbs are 20-40.",
   "advanced.qualityOfLife.minTransitScore":
     "Minimum Transit Score (0-100). NYC is ~89, car-dependent cities are 20-40.",
-  "advanced.qualityOfLife.maxCrimeRate":
+  "advanced.qualityOfLife.maxViolentCrimeRate":
     "Maximum violent crime rate per 100K population. National average is ~380.",
-  "advanced.qualityOfLife.requiresAirport":
-    "Require an international airport for easy travel.",
+  "advanced.qualityOfLife.preferFallingCrime":
+    "Give bonus points to cities where crime rates are declining over 3 years.",
+  "advanced.qualityOfLife.maxHazardousDays":
+    "Maximum acceptable days per year with AQI > 100 (unhealthy). Important for those with respiratory issues.",
+  "advanced.qualityOfLife.requireFiber":
+    "Require access to fiber internet (>1Gbps). Essential for remote workers with large file uploads.",
+  "advanced.qualityOfLife.minProviders":
+    "Minimum number of internet providers. More competition = better prices and service.",
+  "advanced.qualityOfLife.maxStudentTeacherRatio":
+    "Maximum students per teacher. Lower ratio = more individual attention. National avg is ~16.",
+  "advanced.qualityOfLife.minPhysiciansPer100k":
+    "Minimum primary care physicians per 100K residents. National avg is ~75.",
+  "advanced.qualityOfLife.weights.walkability":
+    "Weight for walkability/transit scores in QoL calculation.",
+  "advanced.qualityOfLife.weights.safety":
+    "Weight for crime/safety scores in QoL calculation.",
+  "advanced.qualityOfLife.weights.airQuality":
+    "Weight for air quality scores in QoL calculation.",
+  "advanced.qualityOfLife.weights.internet":
+    "Weight for broadband/internet scores in QoL calculation.",
+  "advanced.qualityOfLife.weights.schools":
+    "Weight for education/school quality in QoL calculation.",
+  "advanced.qualityOfLife.weights.healthcare":
+    "Weight for healthcare access in QoL calculation.",
 
-  // Political advanced
-  "advanced.political.preferredLeaning":
-    "Prefer cities/states that lean Democratic (blue), Republican (red), or no preference (neutral).",
-  "advanced.political.strengthOfPreference":
+  // Cultural advanced - Political
+  "advanced.cultural.partisanPreference":
+    "Prefer cities that lean Democratic, Republican, or swing/competitive. 'Neutral' ignores political lean entirely.",
+  "advanced.cultural.partisanWeight":
     "How strongly to weight political alignment (0 = ignore, 100 = very important).",
+  "advanced.cultural.preferHighTurnout":
+    "Prefer cities with high voter turnout (>65%). Often correlates with civic engagement and community activism.",
+  
+  // Cultural advanced - Religious
+  "advanced.cultural.religiousTraditions":
+    "Select religious traditions you want to find community with. Cities with higher presence score better.",
+  "advanced.cultural.minTraditionPresence":
+    "Minimum adherents per 1,000 residents. 50 = small community, 150 = moderate, 300+ = strong presence. National avg Catholic: 205, Evangelical: 256.",
+  "advanced.cultural.traditionsWeight":
+    "How important is finding your religious community (0 = ignore, 100 = very important).",
+  "advanced.cultural.preferReligiousDiversity":
+    "Prefer cities with diverse religious landscape vs. dominated by one tradition.",
+  "advanced.cultural.diversityWeight":
+    "How important is religious diversity (0 = ignore, 100 = very important).",
+
+  // Privacy note for cultural preferences
+  "advanced.cultural.privacyNote":
+    "Political and religious preferences are stored locally in your browser only and never sent to our servers.",
 };

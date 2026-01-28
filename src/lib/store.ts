@@ -98,9 +98,9 @@ export const usePreferencesStore = create<PreferencesState>()(
                   ...DEFAULT_PREFERENCES.advanced.qualityOfLife,
                   ...parsed.advanced?.qualityOfLife,
                 },
-                political: {
-                  ...DEFAULT_PREFERENCES.advanced.political,
-                  ...parsed.advanced?.political,
+                cultural: {
+                  ...DEFAULT_PREFERENCES.advanced.cultural,
+                  ...parsed.advanced?.cultural,
                 },
               },
             };
@@ -151,9 +151,17 @@ export const usePreferencesStore = create<PreferencesState>()(
                 ...DEFAULT_PREFERENCES.advanced.qualityOfLife,
                 ...persisted.preferences.advanced?.qualityOfLife,
               },
-              political: {
-                ...DEFAULT_PREFERENCES.advanced.political,
-                ...persisted.preferences.advanced?.political,
+              cultural: {
+                ...DEFAULT_PREFERENCES.advanced.cultural,
+                ...persisted.preferences.advanced?.cultural,
+                // Migrate from old political preferences if cultural doesn't exist
+                ...(persisted.preferences.advanced?.cultural === undefined && 
+                    persisted.preferences.advanced?.political ? {
+                  partisanPreference: 
+                    persisted.preferences.advanced.political.preferredLeaning === "blue" ? "lean-dem" :
+                    persisted.preferences.advanced.political.preferredLeaning === "red" ? "lean-rep" : "neutral",
+                  partisanWeight: persisted.preferences.advanced.political.strengthOfPreference || 0,
+                } : {}),
               },
             },
           },

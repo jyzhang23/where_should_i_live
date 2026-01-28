@@ -37,10 +37,10 @@ model CityMetrics {
   daysOfSunshine Int? // Days of sunshine per year
   daysOfRain     Int? // Days of rain per year
 
-  // === Demographics ===
-  diversityIndex   Float? // Diversity index (0-100)
-  population       Int? // Metro area population (thousands)
-  eastAsianPercent Float? // East Asian population percentage
+  // === Demographics (Legacy - Census ACS data in metrics.json is primary source) ===
+  diversityIndex   Float? // @deprecated - Use census.diversityIndex from metrics.json
+  population       Int? // Metro area population (thousands) - fallback only
+  eastAsianPercent Float? // @deprecated - Use census.asianPercent from metrics.json
 
   // === Cost of Living ===
   medianHomePrice   Float? // Median single-family home price

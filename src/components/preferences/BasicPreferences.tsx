@@ -5,7 +5,6 @@ import { TOOLTIPS } from "@/types/preferences";
 import { PreferenceSlider } from "./PreferenceSlider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
@@ -50,6 +49,13 @@ export function BasicPreferences() {
           value={preferences.weights.qualityOfLife}
           onChange={(v) => updateWeight("qualityOfLife", v)}
           tooltip={TOOLTIPS["weights.qualityOfLife"]}
+        />
+
+        <PreferenceSlider
+          label="Cultural"
+          value={preferences.weights.cultural}
+          onChange={(v) => updateWeight("cultural", v)}
+          tooltip={TOOLTIPS["weights.cultural"]}
         />
       </div>
 
@@ -101,59 +107,6 @@ export function BasicPreferences() {
           />
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Label htmlFor="airport" className="text-sm">
-              Must have int'l airport
-            </Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-sm">{TOOLTIPS["filters.requiresAirport"]}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <Switch
-            id="airport"
-            checked={preferences.filters.requiresAirport}
-            onCheckedChange={(v) => updateFilter("requiresAirport", v)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center gap-1">
-            <Label htmlFor="maxPrice" className="text-sm">
-              Max home price
-            </Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-sm">{TOOLTIPS["filters.maxHomePrice"]}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">$</span>
-            <Input
-              id="maxPrice"
-              type="number"
-              placeholder="No limit"
-              value={preferences.filters.maxHomePrice ?? ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                updateFilter(
-                  "maxHomePrice",
-                  value === "" ? null : parseInt(value, 10)
-                );
-              }}
-              className="w-full"
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

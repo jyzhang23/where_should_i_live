@@ -185,6 +185,39 @@ async function fetchCensusData(
       console.log(`    Warning: Could not fetch Asian subgroup data`);
     }
 
+    // Fetch Hispanic subgroup data from detailed tables
+    // B03001 = Hispanic Origin by Specific Origin
+    const hispanicVars = [
+      "B03001_004E", // Mexican
+      "B03001_005E", // Puerto Rican
+      "B03001_006E", // Cuban
+      "B03001_008E", // Salvadoran
+      "B03001_010E", // Guatemalan
+      "B03001_015E", // Colombian
+    ].join(",");
+
+    const hispanicUrl = `${ACS_DETAIL_URL}?get=NAME,B01003_001E,${hispanicVars}&for=place:${placeFips}&in=state:${stateFips}${apiKey}`;
+    
+    let hispanicData: Record<string, number | null> = {};
+    try {
+      console.log(`    Fetching Hispanic subgroup data...`);
+      const hispanicResp = await fetch(hispanicUrl);
+      if (hispanicResp.ok) {
+        const hispanicJson = await hispanicResp.json();
+        if (hispanicJson && hispanicJson.length >= 2) {
+          const hispanicHeaders = hispanicJson[0] as string[];
+          const hispanicValues = hispanicJson[1] as (string | number)[];
+          hispanicHeaders.forEach((header, i) => {
+            const val = hispanicValues[i];
+            hispanicData[header] = val === null || val === "" || val === "-" ? null :
+              typeof val === "number" ? val : parseFloat(String(val)) || null;
+          });
+        }
+      }
+    } catch (e) {
+      console.log(`    Warning: Could not fetch Hispanic subgroup data`);
+    }
+
     // Calculate age brackets
     const age18to34 = ((data["DP05_0021PE"] || 0) + (data["DP05_0022PE"] || 0));
     const age35to54 = ((data["DP05_0023PE"] || 0) + (data["DP05_0024PE"] || 0));
@@ -204,7 +237,7 @@ async function fetchCensusData(
     const diversityIndex = calculateDiversityIndex(racePercentages);
 
     // Calculate Asian subgroup percentages (of total population)
-    const totalPop = asianData["B01003_001E"] || data["DP05_0001E"] || 1;
+    const totalPop = asianData["B01003_001E"] || hispanicData["B01003_001E"] || data["DP05_0001E"] || 1;
     const chinesePercent = asianData["B02015_002E"] ? 
       Math.round((asianData["B02015_002E"] / totalPop) * 10000) / 100 : null;
     const filipinoPercent = asianData["B02015_003E"] ?
@@ -217,6 +250,20 @@ async function fetchCensusData(
       Math.round((asianData["B02015_006E"] / totalPop) * 10000) / 100 : null;
     const japanesePercent = asianData["B02015_005E"] ?
       Math.round((asianData["B02015_005E"] / totalPop) * 10000) / 100 : null;
+
+    // Calculate Hispanic subgroup percentages (of total population)
+    const mexicanPercent = hispanicData["B03001_004E"] ?
+      Math.round((hispanicData["B03001_004E"] / totalPop) * 10000) / 100 : null;
+    const puertoRicanPercent = hispanicData["B03001_005E"] ?
+      Math.round((hispanicData["B03001_005E"] / totalPop) * 10000) / 100 : null;
+    const cubanPercent = hispanicData["B03001_006E"] ?
+      Math.round((hispanicData["B03001_006E"] / totalPop) * 10000) / 100 : null;
+    const salvadoranPercent = hispanicData["B03001_008E"] ?
+      Math.round((hispanicData["B03001_008E"] / totalPop) * 10000) / 100 : null;
+    const guatemalanPercent = hispanicData["B03001_010E"] ?
+      Math.round((hispanicData["B03001_010E"] / totalPop) * 10000) / 100 : null;
+    const colombianPercent = hispanicData["B03001_015E"] ?
+      Math.round((hispanicData["B03001_015E"] / totalPop) * 10000) / 100 : null;
 
     return {
       source: `Census ACS 5-Year (${ACS_YEAR})`,
@@ -250,6 +297,14 @@ async function fetchCensusData(
       vietnamesePercent,
       koreanPercent,
       japanesePercent,
+      
+      // Hispanic subgroups
+      mexicanPercent,
+      puertoRicanPercent,
+      cubanPercent,
+      salvadoranPercent,
+      guatemalanPercent,
+      colombianPercent,
       
       // Diversity
       diversityIndex,

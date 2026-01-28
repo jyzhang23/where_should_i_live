@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { BEAMetrics } from "@/lib/cost-of-living";
-import { NOAAClimateData, CensusDemographics } from "@/types/city";
+import { NOAAClimateData, CensusDemographics, QoLMetrics, CulturalMetrics } from "@/types/city";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +19,11 @@ interface MetricsJsonData {
   bea?: BEAMetrics;
   noaa?: NOAAClimateData;
   census?: CensusDemographics;
+  qol?: QoLMetrics;
+  cultural?: CulturalMetrics;
 }
 
-// Load supplementary data from metrics.json (BEA, NOAA, Census, etc.)
+// Load supplementary data from metrics.json (BEA, NOAA, Census, QoL, Cultural, etc.)
 function loadMetricsData(): Record<string, MetricsJsonData> {
   const possiblePaths = [
     join(process.cwd(), "data", "metrics.json"),
@@ -40,6 +42,8 @@ function loadMetricsData(): Record<string, MetricsJsonData> {
             bea?: BEAMetrics;
             climate?: { noaa?: NOAAClimateData };
             census?: CensusDemographics;
+            qol?: QoLMetrics;
+            cultural?: CulturalMetrics;
           };
           
           metricsData[cityId] = {};
@@ -56,6 +60,16 @@ function loadMetricsData(): Record<string, MetricsJsonData> {
           // Census demographics data
           if (metrics.census) {
             metricsData[cityId].census = metrics.census;
+          }
+          
+          // Quality of Life API data
+          if (metrics.qol) {
+            metricsData[cityId].qol = metrics.qol;
+          }
+          
+          // Cultural data (political lean, religious composition)
+          if (metrics.cultural) {
+            metricsData[cityId].cultural = metrics.cultural;
           }
         }
         
@@ -97,6 +111,8 @@ export async function GET() {
             ...(supplementary.bea && { bea: supplementary.bea }),
             ...(supplementary.noaa && { noaa: supplementary.noaa }),
             ...(supplementary.census && { census: supplementary.census }),
+            ...(supplementary.qol && { qol: supplementary.qol }),
+            ...(supplementary.cultural && { cultural: supplementary.cultural }),
           },
         };
       }

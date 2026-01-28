@@ -6,7 +6,7 @@ import { useCity } from "@/hooks/useCity";
 import { useCities } from "@/hooks/useCities";
 import { usePreferencesStore } from "@/lib/store";
 import { calculateScores } from "@/lib/scoring";
-import { ScoreRadarChart, PriceTrendChart } from "@/components/charts";
+// PriceTrendChart is now embedded in CityMetricsGrid
 import { CityMetricsGrid } from "@/components/city/CityMetricsGrid";
 import { ComparisonPanel } from "@/components/comparison";
 import { Button } from "@/components/ui/button";
@@ -116,7 +116,7 @@ export default function CityPage({ params }: CityPageProps) {
 
       {/* Score Overview */}
       {isHydrated && cityScore && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
           <Card className="col-span-2 md:col-span-1 bg-primary/5 border-primary/20">
             <CardContent className="pt-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-1">
@@ -136,19 +136,9 @@ export default function CityPage({ params }: CityPageProps) {
           <ScoreCard label="Cost" score={cityScore.costScore} />
           <ScoreCard label="Demographics" score={cityScore.demographicsScore} />
           <ScoreCard label="Quality of Life" score={cityScore.qualityOfLifeScore} />
+          <ScoreCard label="Cultural" score={cityScore.culturalScore} />
         </div>
       )}
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {isHydrated && (
-          <ScoreRadarChart cityScore={cityScore} />
-        )}
-        <PriceTrendChart
-          cityName={city.name}
-          zhviHistory={city.zhviHistory || null}
-        />
-      </div>
 
       {/* Detailed Metrics */}
       <div className="mb-8">
@@ -157,7 +147,17 @@ export default function CityPage({ params }: CityPageProps) {
           Detailed Metrics
         </h2>
         {city.metrics ? (
-          <CityMetricsGrid metrics={city.metrics} />
+          <CityMetricsGrid 
+            metrics={city.metrics} 
+            cityName={city.name}
+            zhviHistory={city.zhviHistory || null}
+            costPreferences={isHydrated ? {
+              housingSituation: preferences.advanced.costOfLiving.housingSituation,
+              includeUtilities: preferences.advanced.costOfLiving.includeUtilities,
+              workSituation: preferences.advanced.costOfLiving.workSituation,
+              retireeFixedIncome: preferences.advanced.costOfLiving.retireeFixedIncome,
+            } : undefined}
+          />
         ) : (
           <Card>
             <CardContent className="py-12 text-center text-muted-foreground">

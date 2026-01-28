@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { BEAMetrics } from "@/lib/cost-of-living";
-import { NOAAClimateData, CensusDemographics } from "@/types/city";
+import { NOAAClimateData, CensusDemographics, QoLMetrics, CulturalMetrics } from "@/types/city";
 
 // Convert city name to slug (e.g., "San Francisco" -> "san-francisco")
 function cityNameToSlug(name: string): string {
@@ -17,6 +17,8 @@ interface MetricsJsonData {
   bea?: BEAMetrics;
   noaa?: NOAAClimateData;
   census?: CensusDemographics;
+  qol?: QoLMetrics;
+  cultural?: CulturalMetrics;
 }
 
 // Load supplementary data from metrics.json for a specific city
@@ -34,6 +36,8 @@ function loadCityMetricsData(citySlug: string): MetricsJsonData | null {
           bea?: BEAMetrics;
           climate?: { noaa?: NOAAClimateData };
           census?: CensusDemographics;
+          qol?: QoLMetrics;
+          cultural?: CulturalMetrics;
         } | undefined;
 
         if (!cityMetrics) {
@@ -54,6 +58,16 @@ function loadCityMetricsData(citySlug: string): MetricsJsonData | null {
         // Census demographics data
         if (cityMetrics.census) {
           result.census = cityMetrics.census;
+        }
+        
+        // Quality of Life API data
+        if (cityMetrics.qol) {
+          result.qol = cityMetrics.qol;
+        }
+        
+        // Cultural data (political lean, religious composition)
+        if (cityMetrics.cultural) {
+          result.cultural = cityMetrics.cultural;
         }
         
         return result;
@@ -100,6 +114,8 @@ export async function GET(
           ...(supplementary.bea && { bea: supplementary.bea }),
           ...(supplementary.noaa && { noaa: supplementary.noaa }),
           ...(supplementary.census && { census: supplementary.census }),
+          ...(supplementary.qol && { qol: supplementary.qol }),
+          ...(supplementary.cultural && { cultural: supplementary.cultural }),
         },
       };
       return NextResponse.json(mergedCity);
