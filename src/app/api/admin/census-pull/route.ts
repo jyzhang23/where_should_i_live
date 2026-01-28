@@ -219,21 +219,37 @@ async function fetchCensusData(
     }
 
     // Calculate age brackets
-    const age18to34 = ((data["DP05_0021PE"] || 0) + (data["DP05_0022PE"] || 0));
-    const age35to54 = ((data["DP05_0023PE"] || 0) + (data["DP05_0024PE"] || 0));
-    const age55Plus = ((data["DP05_0025PE"] || 0) + (data["DP05_0026PE"] || 0));
+    // Guard against API returning counts instead of percentages (values > 100 are invalid)
+    const sanitizePercent = (val: number | null): number => {
+      if (val === null) return 0;
+      // If value > 100, it's likely a count - skip it
+      if (val > 100) return 0;
+      return val;
+    };
+    
+    const age18to34 = sanitizePercent(data["DP05_0021PE"]) + sanitizePercent(data["DP05_0022PE"]);
+    const age35to54 = sanitizePercent(data["DP05_0023PE"]) + sanitizePercent(data["DP05_0024PE"]);
+    const age55Plus = sanitizePercent(data["DP05_0025PE"]) + sanitizePercent(data["DP05_0026PE"]);
 
     // Calculate diversity index from race percentages
+    // Sanitize race percentages (must be 0-100)
     const racePercentages = [
-      data["DP05_0077PE"] || 0, // White
-      data["DP05_0078PE"] || 0, // Black
-      data["DP05_0071PE"] || 0, // Hispanic
-      data["DP05_0080PE"] || 0, // Asian
-      data["DP05_0081PE"] || 0, // Pacific Islander
-      data["DP05_0079PE"] || 0, // Native American
-      data["DP05_0082PE"] || 0, // Other
-      data["DP05_0083PE"] || 0, // Two or more
+      sanitizePercent(data["DP05_0077PE"]), // White
+      sanitizePercent(data["DP05_0078PE"]), // Black
+      sanitizePercent(data["DP05_0071PE"]), // Hispanic
+      sanitizePercent(data["DP05_0080PE"]), // Asian
+      sanitizePercent(data["DP05_0081PE"]), // Pacific Islander
+      sanitizePercent(data["DP05_0079PE"]), // Native American
+      sanitizePercent(data["DP05_0082PE"]), // Other
+      sanitizePercent(data["DP05_0083PE"]), // Two or more
     ];
+    
+    // Validate: race percentages should sum to roughly 100% (allow some margin for rounding)
+    const raceSum = racePercentages.reduce((a, b) => a + b, 0);
+    if (raceSum < 50 || raceSum > 150) {
+      console.warn(`    Warning: Race percentages sum to ${raceSum.toFixed(1)}% - data may be invalid`);
+    }
+    
     const diversityIndex = calculateDiversityIndex(racePercentages);
 
     // Calculate Asian subgroup percentages (of total population)
@@ -265,6 +281,13 @@ async function fetchCensusData(
     const colombianPercent = hispanicData["B03001_015E"] ?
       Math.round((hispanicData["B03001_015E"] / totalPop) * 10000) / 100 : null;
 
+    // Helper to sanitize percentage or return null if invalid
+    const sanitizePercentOrNull = (val: number | null): number | null => {
+      if (val === null) return null;
+      if (val > 100 || val < 0) return null; // Invalid percentage
+      return Math.round(val * 10) / 10;
+    };
+
     return {
       source: `Census ACS 5-Year (${ACS_YEAR})`,
       year: ACS_YEAR,
@@ -275,20 +298,20 @@ async function fetchCensusData(
       
       // Age
       medianAge: data["DP05_0018E"],
-      under18Percent: data["DP05_0019PE"],
-      age18to34Percent: Math.round(age18to34 * 10) / 10,
-      age35to54Percent: Math.round(age35to54 * 10) / 10,
-      age55PlusPercent: Math.round(age55Plus * 10) / 10,
+      under18Percent: sanitizePercentOrNull(data["DP05_0019PE"]),
+      age18to34Percent: age18to34 > 0 && age18to34 <= 100 ? Math.round(age18to34 * 10) / 10 : null,
+      age35to54Percent: age35to54 > 0 && age35to54 <= 100 ? Math.round(age35to54 * 10) / 10 : null,
+      age55PlusPercent: age55Plus > 0 && age55Plus <= 100 ? Math.round(age55Plus * 10) / 10 : null,
       
-      // Race/Ethnicity
-      whitePercent: data["DP05_0077PE"],
-      blackPercent: data["DP05_0078PE"],
-      hispanicPercent: data["DP05_0071PE"],
-      asianPercent: data["DP05_0080PE"],
-      pacificIslanderPercent: data["DP05_0081PE"],
-      nativeAmericanPercent: data["DP05_0079PE"],
-      otherRacePercent: data["DP05_0082PE"],
-      twoOrMoreRacesPercent: data["DP05_0083PE"],
+      // Race/Ethnicity (sanitized)
+      whitePercent: sanitizePercentOrNull(data["DP05_0077PE"]),
+      blackPercent: sanitizePercentOrNull(data["DP05_0078PE"]),
+      hispanicPercent: sanitizePercentOrNull(data["DP05_0071PE"]),
+      asianPercent: sanitizePercentOrNull(data["DP05_0080PE"]),
+      pacificIslanderPercent: sanitizePercentOrNull(data["DP05_0081PE"]),
+      nativeAmericanPercent: sanitizePercentOrNull(data["DP05_0079PE"]),
+      otherRacePercent: sanitizePercentOrNull(data["DP05_0082PE"]),
+      twoOrMoreRacesPercent: sanitizePercentOrNull(data["DP05_0083PE"]),
       
       // Asian subgroups
       chinesePercent,
@@ -306,31 +329,31 @@ async function fetchCensusData(
       guatemalanPercent,
       colombianPercent,
       
-      // Diversity
-      diversityIndex,
+      // Diversity (0-100 scale is valid)
+      diversityIndex: diversityIndex >= 0 && diversityIndex <= 100 ? diversityIndex : null,
       
       // Education
-      highSchoolOrHigherPercent: data["DP02_0067PE"],
-      bachelorsOrHigherPercent: data["DP02_0068PE"],
-      graduateDegreePercent: data["DP02_0065PE"],
+      highSchoolOrHigherPercent: sanitizePercentOrNull(data["DP02_0067PE"]),
+      bachelorsOrHigherPercent: sanitizePercentOrNull(data["DP02_0068PE"]),
+      graduateDegreePercent: sanitizePercentOrNull(data["DP02_0065PE"]),
       
-      // Income
+      // Income (these are dollar amounts, not percentages - keep as-is)
       medianHouseholdIncome: data["DP03_0062E"],
       perCapitaIncome: data["DP03_0088E"],
-      povertyRate: data["DP03_0128PE"],
+      povertyRate: sanitizePercentOrNull(data["DP03_0128PE"]),
       
       // Foreign born
-      foreignBornPercent: data["DP02_0094PE"],
+      foreignBornPercent: sanitizePercentOrNull(data["DP02_0094PE"]),
       
       // Household
-      familyHouseholdsPercent: data["DP02_0002PE"],
-      marriedCouplePercent: data["DP02_0003PE"],
-      singlePersonPercent: data["DP02_0012PE"],
+      familyHouseholdsPercent: sanitizePercentOrNull(data["DP02_0002PE"]),
+      marriedCouplePercent: sanitizePercentOrNull(data["DP02_0003PE"]),
+      singlePersonPercent: sanitizePercentOrNull(data["DP02_0012PE"]),
       
       // Language
-      englishOnlyPercent: data["DP02_0113PE"],
-      spanishAtHomePercent: data["DP02_0114PE"],
-      asianLanguageAtHomePercent: data["DP02_0118PE"],
+      englishOnlyPercent: sanitizePercentOrNull(data["DP02_0113PE"]),
+      spanishAtHomePercent: sanitizePercentOrNull(data["DP02_0114PE"]),
+      asianLanguageAtHomePercent: sanitizePercentOrNull(data["DP02_0118PE"]),
     };
   } catch (error) {
     console.error(`Error fetching Census data for ${cityName}:`, error);
