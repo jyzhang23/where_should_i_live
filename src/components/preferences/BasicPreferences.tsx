@@ -3,20 +3,26 @@
 import { usePreferencesStore } from "@/lib/store";
 import { TOOLTIPS } from "@/types/preferences";
 import { PreferenceSlider } from "./PreferenceSlider";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
+import { QuickStart } from "./QuickStart";
 
 export function BasicPreferences() {
-  const { preferences, updateWeight, updateFilter } = usePreferencesStore();
+  const { preferences, updateWeight } = usePreferencesStore();
 
   return (
     <div className="space-y-6">
+      {/* Quick Setup */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold">New here?</h3>
+          <p className="text-xs text-muted-foreground">
+            Answer a few questions to get started
+          </p>
+        </div>
+        <QuickStart />
+      </div>
+
+      <hr className="border-border" />
+
       {/* Category Weights */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -57,56 +63,6 @@ export function BasicPreferences() {
           onChange={(v) => updateWeight("cultural", v)}
           tooltip={TOOLTIPS["weights.cultural"]}
         />
-      </div>
-
-      {/* Quick Filters */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          Quick Filters
-        </h3>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Label htmlFor="nfl" className="text-sm">
-              Must have NFL team
-            </Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-sm">{TOOLTIPS["filters.requiresNFL"]}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <Switch
-            id="nfl"
-            checked={preferences.filters.requiresNFL}
-            onCheckedChange={(v) => updateFilter("requiresNFL", v)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Label htmlFor="nba" className="text-sm">
-              Must have NBA team
-            </Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-sm">{TOOLTIPS["filters.requiresNBA"]}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <Switch
-            id="nba"
-            checked={preferences.filters.requiresNBA}
-            onCheckedChange={(v) => updateFilter("requiresNBA", v)}
-          />
-        </div>
-
       </div>
     </div>
   );

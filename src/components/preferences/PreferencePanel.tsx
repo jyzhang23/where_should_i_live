@@ -19,11 +19,16 @@ import {
   ChevronRight,
   Settings2,
   Loader2,
+  Info,
+  Filter,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { TOOLTIPS } from "@/types/preferences";
 import { cn } from "@/lib/utils";
 
 export function PreferencePanel() {
-  const { exportPreferences, importPreferences, resetToDefaults } =
+  const { preferences, exportPreferences, importPreferences, resetToDefaults, updateFilter } =
     usePreferencesStore();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -144,6 +149,58 @@ export function PreferencePanel() {
             </button>
 
             {showAdvanced && <AdvancedPreferences />}
+
+            {/* Filters - at the very bottom */}
+            <div className="space-y-3 pt-4 border-t">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Filter className="h-4 w-4" />
+                <h3 className="text-xs font-medium uppercase tracking-wide">
+                  Hard Filters
+                </h3>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <Label htmlFor="nfl" className="text-sm">
+                    Must have NFL team
+                  </Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="text-sm">{TOOLTIPS["filters.requiresNFL"]}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Switch
+                  id="nfl"
+                  checked={preferences.filters.requiresNFL}
+                  onCheckedChange={(v) => updateFilter("requiresNFL", v)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <Label htmlFor="nba" className="text-sm">
+                    Must have NBA team
+                  </Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="text-sm">{TOOLTIPS["filters.requiresNBA"]}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Switch
+                  id="nba"
+                  checked={preferences.filters.requiresNBA}
+                  onCheckedChange={(v) => updateFilter("requiresNBA", v)}
+                />
+              </div>
+            </div>
           </>
         )}
       </CardContent>
