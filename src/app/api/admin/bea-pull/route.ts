@@ -33,9 +33,25 @@ const BEA_API_KEY = process.env.BEA_API_KEY;
 
 const BEA_API_URL = "https://apps.bea.gov/api/data/";
 
+// State abbreviation to BEA FIPS code mapping
+const STATE_FIPS: Record<string, string> = {
+  AL: "01000", AK: "02000", AZ: "04000", AR: "05000", CA: "06000",
+  CO: "08000", CT: "09000", DE: "10000", DC: "11000", FL: "12000",
+  GA: "13000", HI: "15000", ID: "16000", IL: "17000", IN: "18000",
+  IA: "19000", KS: "20000", KY: "21000", LA: "22000", ME: "23000",
+  MD: "24000", MA: "25000", MI: "26000", MN: "27000", MS: "28000",
+  MO: "29000", MT: "30000", NE: "31000", NV: "32000", NH: "33000",
+  NJ: "34000", NM: "35000", NY: "36000", NC: "37000", ND: "38000",
+  OH: "39000", OK: "40000", OR: "41000", PA: "42000", RI: "44000",
+  SC: "45000", SD: "46000", TN: "47000", TX: "48000", UT: "49000",
+  VT: "50000", VA: "51000", WA: "53000", WV: "54000", WI: "55000",
+  WY: "56000",
+};
+
 interface CityData {
   id: string;
   name: string;
+  state: string;
   beaGeoFips: string | null;
 }
 
@@ -73,10 +89,11 @@ interface RPPData {
 async function fetchBEAData(
   geoFipsList: string[],
   lineCode: string,
-  year: string
+  year: string,
+  tableName: string = "MARPP"
 ): Promise<Map<string, number>> {
   const geoFips = geoFipsList.join(",");
-  const url = `${BEA_API_URL}?UserID=${BEA_API_KEY}&method=GetData&datasetname=Regional&TableName=MARPP&LineCode=${lineCode}&GeoFips=${geoFips}&Year=${year}&ResultFormat=json`;
+  const url = `${BEA_API_URL}?UserID=${BEA_API_KEY}&method=GetData&datasetname=Regional&TableName=${tableName}&LineCode=${lineCode}&GeoFips=${geoFips}&Year=${year}&ResultFormat=json`;
 
   const response = await fetch(url);
   if (!response.ok) {
@@ -102,6 +119,11 @@ async function fetchBEAData(
   }
 
   return result;
+}
+
+// Helper to get primary state from state field (handles "NY/NJ" -> "NY")
+function getPrimaryState(stateField: string): string {
+  return stateField.split("/")[0].trim();
 }
 
 export async function POST(request: NextRequest) {
@@ -164,7 +186,7 @@ export async function POST(request: NextRequest) {
 
     const cities: CityData[] = citiesFile.cities;
 
-    // Get list of GeoFips codes
+    // Get list of GeoFips codes for MSAs
     const geoFipsList = cities
       .filter((c) => c.beaGeoFips)
       .map((c) => c.beaGeoFips!);
@@ -176,13 +198,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get unique state FIPS codes for tax data
+    const stateFipsList = [...new Set(
+      cities
+        .map((c) => STATE_FIPS[getPrimaryState(c.state)])
+        .filter((f): f is string => !!f)
+    )];
+
     // Use most recent year available (2022 is typically the latest)
     const year = "2022";
 
-    console.log(`Fetching BEA data for ${geoFipsList.length} metros...`);
+    console.log(`Fetching BEA data for ${geoFipsList.length} metros and ${stateFipsList.length} states...`);
 
     // Fetch all data types in parallel
     const [
+      // MSA-level data (MARPP table)
       realPersonalIncome,
       realPerCapitaIncome,
       allItems,
@@ -190,17 +220,36 @@ export async function POST(request: NextRequest) {
       rents,
       utilities,
       otherServices,
+      // State-level tax data (SAINC50 table)
+      statePersonalIncome,
+      statePersonalTaxes,
+      stateDisposableIncome,
+      statePerCapitaIncome,
+      statePerCapitaDisposable,
+      stateFederalTaxes,
+      stateStateTaxes,
+      stateLocalTaxes,
     ] = await Promise.all([
-      fetchBEAData(geoFipsList, "1", year),  // Real personal income (purchasing power)
-      fetchBEAData(geoFipsList, "2", year),  // Real per capita personal income
-      fetchBEAData(geoFipsList, "3", year),  // RPP: All items
-      fetchBEAData(geoFipsList, "4", year),  // RPP: Goods
-      fetchBEAData(geoFipsList, "5", year),  // RPP: Services: Rents
-      fetchBEAData(geoFipsList, "6", year),  // RPP: Services: Utilities
-      fetchBEAData(geoFipsList, "7", year),  // RPP: Services: Other
+      // MSA-level
+      fetchBEAData(geoFipsList, "1", year),       // Real personal income (purchasing power)
+      fetchBEAData(geoFipsList, "2", year),       // Real per capita personal income
+      fetchBEAData(geoFipsList, "3", year),       // RPP: All items
+      fetchBEAData(geoFipsList, "4", year),       // RPP: Goods
+      fetchBEAData(geoFipsList, "5", year),       // RPP: Services: Rents
+      fetchBEAData(geoFipsList, "6", year),       // RPP: Services: Utilities
+      fetchBEAData(geoFipsList, "7", year),       // RPP: Services: Other
+      // State-level (SAINC50)
+      fetchBEAData(stateFipsList, "10", year, "SAINC50"),  // Personal income (thousands)
+      fetchBEAData(stateFipsList, "15", year, "SAINC50"),  // Personal current taxes (thousands)
+      fetchBEAData(stateFipsList, "16", year, "SAINC50"),  // Disposable personal income (thousands)
+      fetchBEAData(stateFipsList, "30", year, "SAINC50"),  // Per capita personal income
+      fetchBEAData(stateFipsList, "50", year, "SAINC50"),  // Per capita disposable personal income
+      fetchBEAData(stateFipsList, "70", year, "SAINC50"),  // Federal government taxes (thousands)
+      fetchBEAData(stateFipsList, "120", year, "SAINC50"), // State government taxes (thousands)
+      fetchBEAData(stateFipsList, "180", year, "SAINC50"), // Local government taxes (thousands)
     ]);
 
-    console.log(`Received data for ${allItems.size} metros`);
+    console.log(`Received MSA data for ${allItems.size} metros, state tax data for ${statePersonalTaxes.size} states`);
 
     let successCount = 0;
     let skipCount = 0;
@@ -235,6 +284,21 @@ export async function POST(request: NextRequest) {
         metricsFile.cities[city.id] = {};
       }
 
+      // Get state tax data
+      const stateFips = STATE_FIPS[getPrimaryState(city.state)];
+      const stateIncome = stateFips ? statePersonalIncome.get(stateFips) : null;
+      const stateTaxes = stateFips ? statePersonalTaxes.get(stateFips) : null;
+      const federalTaxes = stateFips ? stateFederalTaxes.get(stateFips) : null;
+      const stateTaxesOnly = stateFips ? stateStateTaxes.get(stateFips) : null;
+      const localTaxes = stateFips ? stateLocalTaxes.get(stateFips) : null;
+      const perCapitaIncome = stateFips ? statePerCapitaIncome.get(stateFips) : null;
+      const perCapitaDisposable = stateFips ? statePerCapitaDisposable.get(stateFips) : null;
+
+      // Calculate effective tax rate
+      const effectiveTaxRate = stateIncome && stateTaxes 
+        ? Math.round((stateTaxes / stateIncome) * 10000) / 100  // Two decimal places
+        : null;
+
       metricsFile.cities[city.id].bea = {
         purchasingPower: {
           realPersonalIncome: rppData.realPersonalIncome,        // Total (thousands of dollars)
@@ -247,13 +311,25 @@ export async function POST(request: NextRequest) {
           utilities: rppData.utilities,
           otherServices: rppData.otherServices,
         },
+        taxes: {
+          // State-level tax data (applied to city based on state)
+          state: getPrimaryState(city.state),
+          effectiveTaxRate,                              // Percentage of income paid in taxes
+          perCapitaIncome,                               // Per capita personal income ($)
+          perCapitaDisposable,                           // Per capita disposable income ($)
+          // Tax breakdown (thousands of dollars, state total)
+          federalTaxes,
+          stateTaxes: stateTaxesOnly,
+          localTaxes,
+          totalTaxes: stateTaxes,
+        },
         year: rppData.year,
         lastUpdated: new Date().toISOString().split("T")[0],
       };
 
       successCount++;
       console.log(
-        `  ✓ ${city.name}: CoL=${rppData.allItems?.toFixed(1)}, Housing=${rppData.rents?.toFixed(1)}, PerCapita=$${rppData.realPerCapitaIncome?.toLocaleString()}`
+        `  ✓ ${city.name}: CoL=${rppData.allItems?.toFixed(1)}, Housing=${rppData.rents?.toFixed(1)}, TaxRate=${effectiveTaxRate?.toFixed(1)}%`
       );
     }
 
