@@ -8,6 +8,8 @@
  * - Metro (MSA) level ZHVI data
  * - City level ZHVI data (for cities not in MSA data)
  * 
+ * Matches by RegionID (stable numeric identifier), not by name.
+ * 
  * Updates:
  * - data/zhvi-history.json with new structure
  * - Database with new price history
@@ -30,6 +32,7 @@ interface CityData {
   state: string;
   zillowRegionId: number | null;
   zillowRegionName: string | null;
+  zillowGeography?: "msa" | "city";
 }
 
 interface ZHVIHistoryEntry {
@@ -100,53 +103,6 @@ function getDateColumns(row: Record<string, string>): string[] {
   return Object.keys(row).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key));
 }
 
-// City name mapping for matching
-const CITY_NAME_MAPPING: Record<string, { msa?: string; city?: string; state?: string }> = {
-  "san-francisco": { msa: "San Francisco, CA", city: "San Francisco", state: "CA" },
-  "seattle": { msa: "Seattle, WA", city: "Seattle", state: "WA" },
-  "new-york-city": { msa: "New York, NY", city: "New York", state: "NY" },
-  "los-angeles": { msa: "Los Angeles, CA", city: "Los Angeles", state: "CA" },
-  "sacramento": { msa: "Sacramento, CA", city: "Sacramento", state: "CA" },
-  "boston": { msa: "Boston, MA", city: "Boston", state: "MA" },
-  "portland": { msa: "Portland, OR", city: "Portland", state: "OR" },
-  "las-vegas": { msa: "Las Vegas, NV", city: "Las Vegas", state: "NV" },
-  "chicago": { msa: "Chicago, IL", city: "Chicago", state: "IL" },
-  "washington-dc": { msa: "Washington, DC", city: "Washington", state: "DC" },
-  "houston": { msa: "Houston, TX", city: "Houston", state: "TX" },
-  "atlanta": { msa: "Atlanta, GA", city: "Atlanta", state: "GA" },
-  "minneapolis": { msa: "Minneapolis, MN", city: "Minneapolis", state: "MN" },
-  "philadelphia": { msa: "Philadelphia, PA", city: "Philadelphia", state: "PA" },
-  "dallas": { msa: "Dallas, TX", city: "Dallas", state: "TX" },
-  "tampa-bay": { msa: "Tampa, FL", city: "Tampa", state: "FL" },
-  "denver": { msa: "Denver, CO", city: "Denver", state: "CO" },
-  "charlotte": { msa: "Charlotte, NC", city: "Charlotte", state: "NC" },
-  "oklahoma-city": { msa: "Oklahoma City, OK", city: "Oklahoma City", state: "OK" },
-  "phoenix": { msa: "Phoenix, AZ", city: "Phoenix", state: "AZ" },
-  "baltimore": { msa: "Baltimore, MD", city: "Baltimore", state: "MD" },
-  "orlando": { msa: "Orlando, FL", city: "Orlando", state: "FL" },
-  "indianapolis": { msa: "Indianapolis, IN", city: "Indianapolis", state: "IN" },
-  "nashville": { msa: "Nashville, TN", city: "Nashville", state: "TN" },
-  "milwaukee": { msa: "Milwaukee, WI", city: "Milwaukee", state: "WI" },
-  "salt-lake-city": { msa: "Salt Lake City, UT", city: "Salt Lake City", state: "UT" },
-  "detroit": { msa: "Detroit, MI", city: "Detroit", state: "MI" },
-  "st-louis": { msa: "St. Louis, MO", city: "St. Louis", state: "MO" },
-  "san-antonio": { msa: "San Antonio, TX", city: "San Antonio", state: "TX" },
-  "jacksonville": { msa: "Jacksonville, FL", city: "Jacksonville", state: "FL" },
-  "new-orleans": { msa: "New Orleans, LA", city: "New Orleans", state: "LA" },
-  "kansas-city": { msa: "Kansas City, MO", city: "Kansas City", state: "MO" },
-  "cincinnati": { msa: "Cincinnati, OH", city: "Cincinnati", state: "OH" },
-  "cleveland": { msa: "Cleveland, OH", city: "Cleveland", state: "OH" },
-  "buffalo": { msa: "Buffalo, NY", city: "Buffalo", state: "NY" },
-  "pittsburgh": { msa: "Pittsburgh, PA", city: "Pittsburgh", state: "PA" },
-  "miami": { msa: "Miami, FL", city: "Miami", state: "FL" },
-  "green-bay": { msa: "Green Bay, WI", city: "Green Bay", state: "WI" },
-  "memphis": { msa: "Memphis, TN", city: "Memphis", state: "TN" },
-  "san-diego": { msa: "San Diego, CA", city: "San Diego", state: "CA" },
-  "santa-barbara": { msa: "Santa Barbara, CA", city: "Santa Barbara", state: "CA" },
-  "raleigh": { msa: "Raleigh, NC", city: "Raleigh", state: "NC" },
-  "gainesville": { msa: "Gainesville, FL", city: "Gainesville", state: "FL" },
-};
-
 export async function POST(request: NextRequest) {
   try {
     // Parse request body
@@ -189,7 +145,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Load cities.json to get our city list
+    // Load cities.json to get our city list with RegionIDs
     const citiesFile = JSON.parse(readFileSync(join(dataDir, "cities.json"), "utf-8"));
     const cities: CityData[] = citiesFile.cities;
 
@@ -211,59 +167,68 @@ export async function POST(request: NextRequest) {
     const cityData = parseCSV(cityCSV);
     console.log(`Parsed ${cityData.length} City rows`);
 
-    // Build lookup maps
-    const msaByName = new Map<string, Record<string, string>>();
+    // Build lookup maps by RegionID (the stable identifier)
+    const msaByRegionId = new Map<number, Record<string, string>>();
     for (const row of msaData) {
-      const name = row.RegionName;
-      if (name) msaByName.set(name, row);
-    }
-
-    // City lookup: key by "CityName, State"
-    const cityByNameState = new Map<string, Record<string, string>>();
-    for (const row of cityData) {
-      const name = row.RegionName;
-      const state = row.State;
-      if (name && state) {
-        cityByNameState.set(`${name}, ${state}`, row);
+      const regionId = parseInt(row.RegionID);
+      if (!isNaN(regionId)) {
+        msaByRegionId.set(regionId, row);
       }
     }
+    console.log(`Built MSA lookup with ${msaByRegionId.size} entries`);
 
-    // Process each city
+    const cityByRegionId = new Map<number, Record<string, string>>();
+    for (const row of cityData) {
+      const regionId = parseInt(row.RegionID);
+      if (!isNaN(regionId)) {
+        cityByRegionId.set(regionId, row);
+      }
+    }
+    console.log(`Built City lookup with ${cityByRegionId.size} entries`);
+
+    // Process each city by matching on RegionID
     const zhviHistory: Record<string, ZHVIHistoryEntry> = {};
     let msaMatches = 0;
     let cityMatches = 0;
+    let noMatch = 0;
     let totalDataPoints = 0;
 
     for (const city of cities) {
-      const mapping = CITY_NAME_MAPPING[city.id];
-      if (!mapping) {
-        console.log(`No mapping for ${city.id}`);
+      if (!city.zillowRegionId) {
+        console.log(`No RegionID for ${city.name}, skipping`);
+        noMatch++;
         continue;
       }
 
-      // Try MSA first
+      // Determine which dataset to use based on zillowGeography or try both
       let row: Record<string, string> | undefined;
-      let geography: "msa" | "city" = "msa";
+      let geography: "msa" | "city";
 
-      if (mapping.msa) {
-        row = msaByName.get(mapping.msa);
+      if (city.zillowGeography === "city") {
+        // City explicitly marked as city-level
+        row = cityByRegionId.get(city.zillowRegionId);
+        geography = "city";
+        if (row) cityMatches++;
+      } else {
+        // Try MSA first, fall back to city
+        row = msaByRegionId.get(city.zillowRegionId);
         if (row) {
+          geography = "msa";
           msaMatches++;
-        }
-      }
-
-      // Fall back to city if no MSA match
-      if (!row && mapping.city && mapping.state) {
-        const cityKey = `${mapping.city}, ${mapping.state}`;
-        row = cityByNameState.get(cityKey);
-        if (row) {
-          cityMatches++;
-          geography = "city";
+        } else {
+          row = cityByRegionId.get(city.zillowRegionId);
+          if (row) {
+            geography = "city";
+            cityMatches++;
+          } else {
+            geography = "msa"; // Default
+          }
         }
       }
 
       if (!row) {
-        console.log(`No Zillow data for ${city.name} (tried MSA: ${mapping.msa}, City: ${mapping.city})`);
+        console.log(`No Zillow data for ${city.name} (RegionID: ${city.zillowRegionId})`);
+        noMatch++;
         continue;
       }
 
@@ -282,10 +247,12 @@ export async function POST(request: NextRequest) {
       totalDataPoints += history.length;
 
       zhviHistory[city.id] = {
-        zillowRegionId: parseInt(row.RegionID) || 0,
+        zillowRegionId: city.zillowRegionId,
         geography,
         history,
       };
+
+      console.log(`  ✓ ${city.name} (${geography}, ${history.length} points)`);
     }
 
     // Save updated zhvi-history.json
@@ -360,6 +327,7 @@ export async function POST(request: NextRequest) {
       stats: {
         msaCitiesMatched: msaMatches,
         cityCitiesMatched: cityMatches,
+        notMatched: noMatch,
         totalCities: msaMatches + cityMatches,
         dataPoints: totalDataPoints,
         zhviPointsCreated: dbPointsCreated,

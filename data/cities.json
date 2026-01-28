@@ -137,8 +137,9 @@
       "id": "washington-dc",
       "name": "Washington D.C.",
       "state": "DC/VA/MD",
-      "zillowRegionId": null,
+      "zillowRegionId": 395209,
       "zillowRegionName": "Washington, DC",
+      "zillowGeography": "msa",
       "sports": {
         "nfl": [
           "Commanders"
@@ -227,8 +228,9 @@
       "id": "tampa-bay",
       "name": "Tampa Bay",
       "state": "FL",
-      "zillowRegionId": null,
+      "zillowRegionId": 395148,
       "zillowRegionName": "Tampa, FL",
+      "zillowGeography": "msa",
       "sports": {
         "nfl": [
           "Buccaneers"
@@ -564,8 +566,9 @@
       "id": "santa-barbara",
       "name": "Santa Barbara",
       "state": "CA",
-      "zillowRegionId": null,
-      "zillowRegionName": "Santa Barbara, CA",
+      "zillowRegionId": 13712,
+      "zillowRegionName": "Santa Barbara",
+      "zillowGeography": "city",
       "sports": {
         "nfl": [],
         "nba": []
