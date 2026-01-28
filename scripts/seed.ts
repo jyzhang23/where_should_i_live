@@ -25,41 +25,55 @@ interface CityData {
   };
 }
 
+// Flexible interface to handle both old and new metrics formats
 interface MetricsData {
-  climate: {
-    avgTemp: number | null;
-    avgWinterTemp: number | null;
-    avgSummerTemp: number | null;
-    daysOfSunshine: number | null;
-    daysOfRain: number | null;
+  climate?: {
+    avgTemp?: number | null;
+    avgWinterTemp?: number | null;
+    avgSummerTemp?: number | null;
+    daysOfSunshine?: number | null;
+    daysOfRain?: number | null;
   };
-  cost: {
-    medianHomePrice: number | null;
-    costOfLivingIndex: number | null;
-    stateTaxRate: number | null;
-    propertyTaxRate: number | null;
+  cost?: {
+    medianHomePrice?: number | null;
+    costOfLivingIndex?: number | null;
+    stateTaxRate?: number | null;
+    propertyTaxRate?: number | null;
   };
-  demographics: {
-    population: number | null;
-    diversityIndex: number | null;
-    eastAsianPercent: number | null;
-    crimeRate: number | null;
+  demographics?: {
+    population?: number | null;
+    diversityIndex?: number | null;
+    eastAsianPercent?: number | null;
+    crimeRate?: number | null;
   };
-  quality: {
-    qualityOfLifeScore: number | null;
-    walkScore: number | null;
-    transitScore: number | null;
-    hasInternationalAirport: boolean;
-    airportCode: string | null;
-    healthScore: number | null;
-    pollutionIndex: number | null;
-    waterQualityIndex: number | null;
-    trafficIndex: number | null;
-    broadbandSpeed: number | null;
+  quality?: {
+    qualityOfLifeScore?: number | null;
+    walkScore?: number | null;
+    transitScore?: number | null;
+    hasInternationalAirport?: boolean;
+    airportCode?: string | null;
+    healthScore?: number | null;
+    pollutionIndex?: number | null;
+    waterQualityIndex?: number | null;
+    trafficIndex?: number | null;
+    broadbandSpeed?: number | null;
   };
-  political: {
-    cityDemocratPercent: number | null;
-    stateDemocratPercent: number | null;
+  political?: {
+    cityDemocratPercent?: number | null;
+    stateDemocratPercent?: number | null;
+  };
+  // New format fields
+  census?: {
+    totalPopulation?: number | null;
+    diversityIndex?: number | null;
+  };
+  qol?: {
+    crime?: {
+      violentCrimeRate?: number | null;
+    };
+    walkability?: {
+      walkScore?: number | null;
+    };
   };
 }
 
@@ -89,11 +103,8 @@ async function main() {
   let citiesUpdated = 0;
 
   for (const city of cities) {
-    const cityMetrics = metrics[city.id];
-    if (!cityMetrics) {
-      console.warn(`No metrics found for ${city.name}, skipping...`);
-      continue;
-    }
+    const cityMetrics = metrics[city.id] || {};
+    // Continue even if metrics are sparse - we'll use defaults
 
     const zhvi = zhviHistory[city.id];
 
@@ -111,34 +122,41 @@ async function main() {
       longitude: null as number | null,
     };
 
-    // Prepare metrics data
+    // Prepare metrics data with optional chaining for flexible format
     const metricsData = {
-      avgTemp: cityMetrics.climate.avgTemp,
-      avgWinterTemp: cityMetrics.climate.avgWinterTemp,
-      avgSummerTemp: cityMetrics.climate.avgSummerTemp,
-      daysOfSunshine: cityMetrics.climate.daysOfSunshine,
-      daysOfRain: cityMetrics.climate.daysOfRain,
-      diversityIndex: cityMetrics.demographics.diversityIndex,
-      population: cityMetrics.demographics.population,
-      eastAsianPercent: cityMetrics.demographics.eastAsianPercent,
-      medianHomePrice: cityMetrics.cost.medianHomePrice,
-      stateTaxRate: cityMetrics.cost.stateTaxRate,
-      propertyTaxRate: cityMetrics.cost.propertyTaxRate,
-      costOfLivingIndex: cityMetrics.cost.costOfLivingIndex,
-      crimeRate: cityMetrics.demographics.crimeRate,
-      walkScore: cityMetrics.quality.walkScore,
-      transitScore: cityMetrics.quality.transitScore,
-      avgBroadbandSpeed: cityMetrics.quality.broadbandSpeed,
-      hasInternationalAirport: cityMetrics.quality.hasInternationalAirport,
-      healthScore: cityMetrics.quality.healthScore,
-      pollutionIndex: cityMetrics.quality.pollutionIndex,
-      waterQualityIndex: cityMetrics.quality.waterQualityIndex,
-      trafficIndex: cityMetrics.quality.trafficIndex,
-      qualityOfLifeScore: cityMetrics.quality.qualityOfLifeScore,
-      cityDemocratPercent: cityMetrics.political.cityDemocratPercent,
-      stateDemocratPercent: cityMetrics.political.stateDemocratPercent,
-      nflTeams: city.sports.nfl.join(", ") || null,
-      nbaTeams: city.sports.nba.join(", ") || null,
+      // Climate
+      avgTemp: cityMetrics.climate?.avgTemp ?? null,
+      avgWinterTemp: cityMetrics.climate?.avgWinterTemp ?? null,
+      avgSummerTemp: cityMetrics.climate?.avgSummerTemp ?? null,
+      daysOfSunshine: cityMetrics.climate?.daysOfSunshine ?? null,
+      daysOfRain: cityMetrics.climate?.daysOfRain ?? null,
+      // Demographics (try both old and new format)
+      diversityIndex: cityMetrics.demographics?.diversityIndex ?? cityMetrics.census?.diversityIndex ?? null,
+      population: cityMetrics.demographics?.population ?? cityMetrics.census?.totalPopulation ?? null,
+      eastAsianPercent: cityMetrics.demographics?.eastAsianPercent ?? null,
+      // Cost
+      medianHomePrice: cityMetrics.cost?.medianHomePrice ?? null,
+      stateTaxRate: cityMetrics.cost?.stateTaxRate ?? null,
+      propertyTaxRate: cityMetrics.cost?.propertyTaxRate ?? null,
+      costOfLivingIndex: cityMetrics.cost?.costOfLivingIndex ?? null,
+      // Crime (try both formats)
+      crimeRate: cityMetrics.demographics?.crimeRate ?? cityMetrics.qol?.crime?.violentCrimeRate ?? null,
+      // Quality (try both formats)
+      walkScore: cityMetrics.quality?.walkScore ?? cityMetrics.qol?.walkability?.walkScore ?? null,
+      transitScore: cityMetrics.quality?.transitScore ?? null,
+      avgBroadbandSpeed: cityMetrics.quality?.broadbandSpeed ?? null,
+      hasInternationalAirport: cityMetrics.quality?.hasInternationalAirport ?? false,
+      healthScore: cityMetrics.quality?.healthScore ?? null,
+      pollutionIndex: cityMetrics.quality?.pollutionIndex ?? null,
+      waterQualityIndex: cityMetrics.quality?.waterQualityIndex ?? null,
+      trafficIndex: cityMetrics.quality?.trafficIndex ?? null,
+      qualityOfLifeScore: cityMetrics.quality?.qualityOfLifeScore ?? null,
+      // Political
+      cityDemocratPercent: cityMetrics.political?.cityDemocratPercent ?? null,
+      stateDemocratPercent: cityMetrics.political?.stateDemocratPercent ?? null,
+      // Sports
+      nflTeams: city.sports?.nfl?.join(", ") || null,
+      nbaTeams: city.sports?.nba?.join(", ") || null,
       dataAsOf: new Date(),
     };
 
