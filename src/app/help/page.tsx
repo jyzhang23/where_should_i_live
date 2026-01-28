@@ -142,52 +142,64 @@ export default function HelpPage() {
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
                 <p>
                   Uses <strong>True Purchasing Power</strong> from the Bureau of Economic Analysis (BEA), 
-                  adjusted based on your housing situation.
+                  adjusted based on your housing situation. The core formula is:
                 </p>
-
-                <h4>Housing Situation Adjustments</h4>
-                <p>
-                  The standard BEA &quot;Housing&quot; index is a blended average that doesn&apos;t perfectly 
-                  fit everyone. We adjust the calculation based on your situation:
-                </p>
-
-                <table className="text-xs w-full">
-                  <thead>
-                    <tr>
-                      <th className="text-left">Persona</th>
-                      <th className="text-left">Calculation Method</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><strong>Renter</strong></td>
-                      <td>Standard BEA RPP (most accurate - based on rental data). Optionally includes utility costs.</td>
-                    </tr>
-                    <tr>
-                      <td><strong>Homeowner</strong></td>
-                      <td>Excludes housing (your mortgage is fixed). Uses: 70% Goods + 30% Services.</td>
-                    </tr>
-                    <tr>
-                      <td><strong>Buyer</strong></td>
-                      <td>BEA data is &quot;lagged&quot;. Uses current Zillow prices + 7% mortgage rate for true affordability.</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <h4>True Purchasing Power Formula</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
                   True Purchasing Power = Disposable Income ÷ (Adjusted RPP ÷ 100)
                 </div>
-
-                <h4>Why BEA Data Can Be Misleading for Buyers</h4>
-                <p className="text-xs">
-                  The BEA &quot;Housing&quot; index reflects what people are <em>currently paying</em>, 
-                  including homeowners locked into 3% mortgages from years ago. In 2026, with 7%+ rates, 
-                  buying the same home costs ~50% more in monthly payments. The &quot;Prospective Buyer&quot; 
-                  option swaps BEA housing data for actual market prices.
+                <p className="text-xs mt-2">
+                  Where <strong>Disposable Income</strong> = Gross Income − All Taxes (federal + state + local),
+                  and <strong>Adjusted RPP</strong> varies by your housing situation.
                 </p>
 
-                <h4>What&apos;s Included in Each Index</h4>
+                <h4>1. Renter</h4>
+                <p className="text-xs">
+                  The standard BEA RPP is most accurate for renters, as it&apos;s heavily weighted by 
+                  American Community Survey rental data.
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  Adjusted RPP = RPP All Items{"\n"}
+                  {"\n"}
+                  If &quot;Include Utilities&quot; is enabled:{"\n"}
+                  {"  "}Adjusted RPP += (Utilities Index − 100) × 0.05
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  💡 Renters in older cities (Boston, Philly) often have higher utility costs 
+                  not captured in base rent prices.
+                </p>
+
+                <h4>2. Homeowner (Fixed Mortgage)</h4>
+                <p className="text-xs">
+                  If you already own with a fixed-rate mortgage, housing costs are locked in and 
+                  irrelevant. You only care about goods and services prices.
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  Adjusted RPP = (0.70 × Goods Index) + (0.30 × Services Index)
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  💡 This excludes housing entirely since your &quot;rent&quot; (mortgage) doesn&apos;t 
+                  change based on local market conditions.
+                </p>
+
+                <h4>3. Prospective Buyer</h4>
+                <p className="text-xs">
+                  BEA data is &quot;lagged&quot; — it reflects homeowners locked into 3% mortgages from years ago. 
+                  For buyers facing 7%+ rates in 2026, we swap BEA housing data for actual market prices.
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  Monthly Mortgage = calculate(Home Price × 0.80, 7%, 30 years){"\n"}
+                  Housing Index = (Monthly Mortgage ÷ $2,128) × 100{"\n"}
+                  {"\n"}
+                  Adjusted RPP = (0.40 × Housing Index){"\n"}
+                  {"             "}+ (0.35 × Goods Index){"\n"}
+                  {"             "}+ (0.25 × Services Index)
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  💡 $2,128 is the national average monthly mortgage payment (2026 estimate based on 
+                  ~$400K median home at 7%). Uses Zillow median home prices for each city.
+                </p>
+
+                <h4>What&apos;s Included Where</h4>
                 <table className="text-xs w-full">
                   <thead>
                     <tr>
@@ -207,17 +219,18 @@ export default function HelpPage() {
                   </tbody>
                 </table>
 
-                <h4>Scoring</h4>
+                <h4>Final Scoring</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  Purchasing Power Index: 100 = national average{"\n"}
+                  Purchasing Power Index = (True PP ÷ $56,014) × 100{"\n"}
+                  {"  "}where $56,014 = national avg disposable income{"\n"}
                   {"\n"}
-                  Score mapping:{"\n"}
-                  {"  "}Index 70 → Score 0 (very poor value){"\n"}
+                  Cost Score = ((Index − 70) ÷ 60) × 100{"\n"}
+                  {"  "}Index 70 → Score 0 (very poor){"\n"}
                   {"  "}Index 100 → Score 50 (average){"\n"}
-                  {"  "}Index 130 → Score 100 (excellent value)
+                  {"  "}Index 130 → Score 100 (excellent)
                 </div>
-                <p className="text-muted-foreground">
-                  Data: BEA Regional Price Parities, Personal Income tables, and Zillow ZHVI.
+                <p className="text-muted-foreground text-xs">
+                  Data sources: BEA Regional Price Parities (MARPP), Personal Income (SAINC50), Zillow ZHVI.
                 </p>
               </AccordionContent>
             </AccordionItem>
