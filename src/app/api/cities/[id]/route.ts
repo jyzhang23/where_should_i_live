@@ -21,6 +21,33 @@ interface MetricsJsonData {
   cultural?: CulturalMetrics;
 }
 
+// Load ZHVI price for a specific city
+function loadCityZHVIPrice(citySlug: string): number | null {
+  const possiblePaths = [
+    join(process.cwd(), "data", "zhvi-history.json"),
+    join(process.cwd(), "../data", "zhvi-history.json"),
+  ];
+
+  for (const path of possiblePaths) {
+    if (existsSync(path)) {
+      try {
+        const zhviFile = JSON.parse(readFileSync(path, "utf-8"));
+        const cityData = zhviFile.cities?.[citySlug] as { history?: { date: string; value: number }[] } | undefined;
+        
+        if (cityData?.history && cityData.history.length > 0) {
+          // Get the latest value
+          const latest = cityData.history[cityData.history.length - 1];
+          return latest.value;
+        }
+      } catch (error) {
+        console.error("Error loading ZHVI data:", error);
+      }
+    }
+  }
+  
+  return null;
+}
+
 // Load supplementary data from metrics.json for a specific city
 function loadCityMetricsData(citySlug: string): MetricsJsonData | null {
   const possiblePaths = [
@@ -104,24 +131,26 @@ export async function GET(
     // Load supplementary data from metrics.json (BEA, NOAA, etc.)
     const slug = cityNameToSlug(city.name);
     const supplementary = loadCityMetricsData(slug);
+    
+    // Load ZHVI price for median home price
+    const zhviPrice = loadCityZHVIPrice(slug);
 
-    // Merge supplementary data into city metrics
-    if (city.metrics && supplementary) {
-      const mergedCity = {
-        ...city,
-        metrics: {
-          ...city.metrics,
-          ...(supplementary.bea && { bea: supplementary.bea }),
-          ...(supplementary.noaa && { noaa: supplementary.noaa }),
-          ...(supplementary.census && { census: supplementary.census }),
-          ...(supplementary.qol && { qol: supplementary.qol }),
-          ...(supplementary.cultural && { cultural: supplementary.cultural }),
-        },
-      };
-      return NextResponse.json(mergedCity);
-    }
-
-    return NextResponse.json(city);
+    // Always merge supplementary data and ZHVI price into city metrics
+    const mergedMetrics = {
+      ...city.metrics,
+      // Use ZHVI price if available
+      medianHomePrice: zhviPrice ?? city.metrics?.medianHomePrice ?? null,
+      ...(supplementary?.bea && { bea: supplementary.bea }),
+      ...(supplementary?.noaa && { noaa: supplementary.noaa }),
+      ...(supplementary?.census && { census: supplementary.census }),
+      ...(supplementary?.qol && { qol: supplementary.qol }),
+      ...(supplementary?.cultural && { cultural: supplementary.cultural }),
+    };
+    
+    return NextResponse.json({
+      ...city,
+      metrics: mergedMetrics,
+    });
   } catch (error) {
     console.error("Error fetching city:", error);
     return NextResponse.json(

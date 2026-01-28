@@ -68,7 +68,7 @@ function CollapsibleSection({ id, title, icon, children, openSection, onToggle }
 }
 
 export function AdvancedPreferences() {
-  const { preferences, updateAdvanced } = usePreferencesStore();
+  const { preferences, updateAdvanced, updateQoLWeight } = usePreferencesStore();
   const [openSection, setOpenSection] = useState<SectionId>(null);
 
   const isExpanded = openSection !== null;
@@ -888,7 +888,7 @@ export function AdvancedPreferences() {
           <PreferenceSlider
             label="Walkability"
             value={preferences.advanced.qualityOfLife.weights.walkability}
-            onChange={(v) => updateAdvanced("qualityOfLife", "weights.walkability" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            onChange={(v) => updateQoLWeight("walkability", v)}
             min={0}
             max={50}
             tooltip={TOOLTIPS["advanced.qualityOfLife.weights.walkability"]}
@@ -897,7 +897,7 @@ export function AdvancedPreferences() {
           <PreferenceSlider
             label="Safety"
             value={preferences.advanced.qualityOfLife.weights.safety}
-            onChange={(v) => updateAdvanced("qualityOfLife", "weights.safety" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            onChange={(v) => updateQoLWeight("safety", v)}
             min={0}
             max={50}
             tooltip={TOOLTIPS["advanced.qualityOfLife.weights.safety"]}
@@ -906,7 +906,7 @@ export function AdvancedPreferences() {
           <PreferenceSlider
             label="Air Quality"
             value={preferences.advanced.qualityOfLife.weights.airQuality}
-            onChange={(v) => updateAdvanced("qualityOfLife", "weights.airQuality" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            onChange={(v) => updateQoLWeight("airQuality", v)}
             min={0}
             max={50}
             tooltip={TOOLTIPS["advanced.qualityOfLife.weights.airQuality"]}
@@ -915,7 +915,7 @@ export function AdvancedPreferences() {
           <PreferenceSlider
             label="Internet"
             value={preferences.advanced.qualityOfLife.weights.internet}
-            onChange={(v) => updateAdvanced("qualityOfLife", "weights.internet" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            onChange={(v) => updateQoLWeight("internet", v)}
             min={0}
             max={50}
             tooltip={TOOLTIPS["advanced.qualityOfLife.weights.internet"]}
@@ -924,7 +924,7 @@ export function AdvancedPreferences() {
           <PreferenceSlider
             label="Schools"
             value={preferences.advanced.qualityOfLife.weights.schools}
-            onChange={(v) => updateAdvanced("qualityOfLife", "weights.schools" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            onChange={(v) => updateQoLWeight("schools", v)}
             min={0}
             max={50}
             tooltip={TOOLTIPS["advanced.qualityOfLife.weights.schools"]}
@@ -933,7 +933,7 @@ export function AdvancedPreferences() {
           <PreferenceSlider
             label="Healthcare"
             value={preferences.advanced.qualityOfLife.weights.healthcare}
-            onChange={(v) => updateAdvanced("qualityOfLife", "weights.healthcare" as keyof typeof preferences.advanced.qualityOfLife, v)}
+            onChange={(v) => updateQoLWeight("healthcare", v)}
             min={0}
             max={50}
             tooltip={TOOLTIPS["advanced.qualityOfLife.weights.healthcare"]}

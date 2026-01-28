@@ -45,8 +45,10 @@ interface WalkabilityData {
 }
 
 // Pre-populated walkability data for major cities
-// Source: Walk Score website + EPA Walkability Index (2024)
-// Used as fallback when API is unavailable
+// Source: Manually researched from walkscore.com (January 2025)
+// Transit scores are manual because EPA Smart Location Database metrics (D4A, D4C, D5BR)
+// proved too noisy at metro scale - suburban census blocks dilute city-center scores.
+// Walk/Bike scores now come from EPA API; transit uses this fallback data.
 const CITY_WALKSCORE_DATA: Record<string, WalkabilityData> = {
   "san-francisco": { walkScore: 88, bikeScore: 72, transitScore: 80, description: "Very Walkable", updatedAt: null },
   "seattle": { walkScore: 74, bikeScore: 70, transitScore: 64, description: "Very Walkable", updatedAt: null },

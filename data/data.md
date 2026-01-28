@@ -241,32 +241,31 @@ GET https://climate-api.open-meteo.com/v1/climate?
 
 ---
 
-### Priority 5: Quality of Life Scores
+### Priority 5: Quality of Life Scores ✅ PARTIALLY IMPLEMENTED
 
 #### Walk Score API
 
 **URL:** https://www.walkscore.com/professional/api.php
 
-**Available Data:**
-- Walk Score (0-100)
-- Transit Score (0-100)
-- Bike Score (0-100)
+**Status:** NOT INTEGRATED (requires API key with paid tier for commercial use)
 
-**Endpoint:**
-```
-GET http://api.walkscore.com/score?
-    format=json&
-    address={address}&
-    lat={lat}&lon={lon}&
-    wsapikey={key}
-```
+**Current Implementation:**
+- **Walk Score & Bike Score:** Derived from EPA National Walkability Index (free ArcGIS API)
+  - NatWalkInd (1-20) converted to 0-100 scale for walk score
+  - D3B (street intersection density) normalized for bike score
+- **Transit Score:** Manually researched from walkscore.com (January 2025)
+  - EPA transit metrics (D4A, D4C, D5BR) were tested but proved too noisy at metro scale
+  - Suburban census blocks dilute city-center scores, producing inaccurate national comparisons
+  - Hardcoded fallback data for ~45 major metros
 
-**Cost:** Free tier (5,000 requests/day), paid plans available
+**Alternative Considered:** AllTransit API (Center for Neighborhood Technology)
+- Provides 0-10 Performance Score based on GTFS data
+- Would be more accurate but requires paid access
 
-**Integration Approach:**
-- Request API key
-- Query by city center coordinates
-- Update quarterly
+**Future Improvements:**
+- Request Walk Score API key for automated transit data
+- Or integrate AllTransit if budget allows
+- Current manual data should be refreshed annually
 
 ---
 
@@ -332,31 +331,48 @@ GET https://www.airnowapi.org/aq/observation/latLong/historical/?
 - [ ] Parse and import new price data
 - [ ] Schedule monthly refresh
 
-### Phase 2: Census Integration
-- [ ] Obtain Census API key
-- [ ] Map MSA codes to cities
-- [ ] Import demographic data
-- [ ] Add new demographic metrics to schema
+### Phase 2: Census Integration ✅ COMPLETE
+- [x] Obtain Census API key (optional - works without)
+- [x] Map FIPS codes to cities (place-level, not MSA)
+- [x] Import demographic data (age, race, income, education, etc.)
+- [x] Add new demographic metrics to schema
 
-### Phase 3: Crime Data
-- [ ] Obtain FBI API key
-- [ ] Import crime statistics
-- [ ] Add crime trend visualization
+### Phase 3: Crime Data ✅ COMPLETE
+- [x] Integrate FBI Crime Data Explorer API
+- [x] Import crime statistics (violent crime rate, 3-year trends)
+- [ ] Add crime trend visualization (future enhancement)
 
-### Phase 4: Weather Integration
-- [ ] Integrate Open-Meteo or NWS
-- [ ] Import climate normals
-- [ ] Add seasonal weather breakdown
+### Phase 4: Weather/Climate Integration ✅ COMPLETE
+- [x] Integrate NOAA ACIS for historical climate normals
+- [x] Integrate Open-Meteo for comfort metrics
+- [x] Import seasonal weather breakdown
+- [x] Calculate climate usability scores (outdoor comfort days)
 
-### Phase 5: Real-time Scores
-- [ ] Obtain Walk Score API key
-- [ ] Update walkability metrics
-- [ ] Add bike score to metrics
+### Phase 5: Walkability Scores ⚠️ PARTIAL
+- [ ] Obtain Walk Score API key (not integrated - requires paid tier)
+- [x] Walk/Bike scores from EPA National Walkability Index
+- [x] Transit scores from manual walkscore.com research (Jan 2025)
+- [ ] Future: AllTransit API integration (paid)
 
-### Phase 6: Air Quality
-- [ ] Obtain EPA API key
-- [ ] Import AQI data
-- [ ] Add air quality to quality of life section
+### Phase 6: Air Quality ✅ COMPLETE
+- [x] Integrate EPA AQS API
+- [x] Import AQI data (healthy days %, good days %, hazardous days)
+- [x] Add air quality to quality of life section
+
+### Phase 7: Additional QoL APIs ✅ COMPLETE
+- [x] FCC Broadband Map (fiber coverage, provider count)
+- [x] NCES Education (student-teacher ratio, graduation rates)
+- [x] HRSA Healthcare (physicians per capita, shortage areas)
+
+### Phase 8: Cost of Living ✅ COMPLETE
+- [x] BEA Regional Price Parities (housing, goods, services)
+- [x] BEA Personal Income (state taxes)
+- [x] Persona-based scoring (renter/owner/buyer × standard/local/retiree)
+
+### Phase 9: Cultural Data ✅ COMPLETE
+- [x] MIT Election Lab county-level presidential results
+- [x] ARDA religious congregation data
+- [x] Political and religious preference matching
 
 ---
 
@@ -376,11 +392,17 @@ EPA_API_KEY=your_key_here
 
 ## Data Freshness Goals
 
-| Data Type | Current | Target | Update Frequency |
-|-----------|---------|--------|------------------|
-| Home Prices | Static | Automated | Monthly |
-| Demographics | Static | Automated | Annually |
-| Crime Rates | Static | Automated | Annually |
-| Weather/Climate | Static | Automated | On change (rare) |
-| Walk/Transit Scores | Static | Automated | Quarterly |
-| Air Quality | N/A | New | Daily/Weekly |
+| Data Type | Status | Source | Update Frequency |
+|-----------|--------|--------|------------------|
+| Home Prices | ✅ Implemented | Zillow ZHVI (manual CSV) | Monthly (manual) |
+| Demographics | ✅ Implemented | Census ACS API | Annually |
+| Crime Rates | ✅ Implemented | FBI CDE API | Annually |
+| Weather/Climate | ✅ Implemented | NOAA ACIS + Open-Meteo | On change (rare) |
+| Walk/Bike Scores | ✅ Implemented | EPA Walkability Index API | Quarterly |
+| Transit Scores | ⚠️ Manual | walkscore.com (Jan 2025) | Annually (manual) |
+| Air Quality | ✅ Implemented | EPA AQS API | Annually |
+| Broadband | ✅ Implemented | FCC Broadband Map API | Annually |
+| Education | ✅ Implemented | NCES EDGE API | Annually |
+| Healthcare | ✅ Implemented | HRSA API | Annually |
+| Cost of Living | ✅ Implemented | BEA API | Annually |
+| Cultural | ✅ Implemented | MIT Election + ARDA (static) | After elections |

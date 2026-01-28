@@ -18,6 +18,10 @@ interface PreferencesState {
     key: Key,
     value: UserPreferences["advanced"][Category][Key]
   ) => void;
+  updateQoLWeight: (
+    key: keyof UserPreferences["advanced"]["qualityOfLife"]["weights"],
+    value: number
+  ) => void;
   resetToDefaults: () => void;
   exportPreferences: () => string;
   importPreferences: (json: string) => boolean;
@@ -61,6 +65,23 @@ export const usePreferencesStore = create<PreferencesState>()(
               [category]: {
                 ...state.preferences.advanced[category],
                 [key]: value,
+              },
+            },
+          },
+        })),
+
+      updateQoLWeight: (key, value) =>
+        set((state) => ({
+          preferences: {
+            ...state.preferences,
+            advanced: {
+              ...state.preferences.advanced,
+              qualityOfLife: {
+                ...state.preferences.advanced.qualityOfLife,
+                weights: {
+                  ...state.preferences.advanced.qualityOfLife.weights,
+                  [key]: value,
+                },
               },
             },
           },

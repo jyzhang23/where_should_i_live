@@ -16,7 +16,6 @@ export interface UserPreferences {
   filters: {
     requiresNFL: boolean;
     requiresNBA: boolean;
-    maxHomePrice: number | null;
   };
 
   // === ADVANCED OPTIONS (collapsible) ===
@@ -213,7 +212,6 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   filters: {
     requiresNFL: false,
     requiresNBA: false,
-    maxHomePrice: null,
   },
   advanced: {
     climate: {
@@ -325,8 +323,6 @@ export const TOOLTIPS: Record<string, string> = {
     "Exclude cities without an NFL team. Excludes cities like Sacramento, Austin, Portland.",
   "filters.requiresNBA":
     "Exclude cities without an NBA team. Excludes cities like San Diego, Austin, Nashville.",
-  "filters.maxHomePrice":
-    "Filter out cities where median single-family home exceeds this price.",
 
   // Climate advanced (NOAA-based)
   "advanced.climate.weightComfortDays":

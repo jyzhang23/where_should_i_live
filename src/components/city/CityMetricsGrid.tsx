@@ -845,12 +845,6 @@ export function CityMetricsGrid({ metrics, cityName, zhviHistory, costPreference
                   value={formatPrice(metrics.medianHomePrice)}
                   tooltip="Median single-family home price (Zillow ZHVI)"
                 />
-                <MetricItem
-                  icon={<Percent className="h-4 w-4" />}
-                  label="State Tax Rate"
-                  value={formatPercent(metrics.stateTaxRate)}
-                  tooltip="Top marginal state income tax rate"
-                />
               </div>
             </div>
 

@@ -483,7 +483,7 @@ export default function HelpPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>Walkability</td><td>EPA National Walkability Index</td><td>20%</td></tr>
+                    <tr><td>Walkability</td><td>EPA Walkability Index + Walk Score (manual)</td><td>20%</td></tr>
                     <tr><td>Safety</td><td>FBI Crime Data Explorer</td><td>25%</td></tr>
                     <tr><td>Air Quality</td><td>EPA AQS</td><td>15%</td></tr>
                     <tr><td>Internet</td><td>FCC Broadband Map</td><td>10%</td></tr>
@@ -492,13 +492,17 @@ export default function HelpPage() {
                   </tbody>
                 </table>
 
-                <h4>Walkability (EPA National Walkability Index)</h4>
+                <h4>Walkability &amp; Transit Scores</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  EPA Index (1-20) converted to 0-100 scale{"\n"}
-                  Based on: intersection density, transit access, employment mix{"\n"}
-                  Penalties if below min thresholds
+                  Walk Score: EPA NatWalkInd (1-20) → 0-100 scale{"\n"}
+                  Bike Score: EPA street density (D3B) normalized{"\n"}
+                  Transit Score: Manual data from walkscore.com (Jan 2025)
                 </div>
-                <p className="text-xs text-muted-foreground">EPA Walkability Index measures neighborhood design factors. Higher = more walkable.</p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Walk/Bike:</strong> From EPA National Walkability Index API (based on intersection density, land use mix).{" "}
+                  <strong>Transit:</strong> Manually researched from walkscore.com — EPA transit metrics (D4A, D4C, D5BR) 
+                  proved too noisy at metro scale for reliable national comparisons.
+                </p>
 
                 <h4>Safety (FBI Crime Data)</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
@@ -551,7 +555,8 @@ export default function HelpPage() {
                   sources is used:
                 </p>
                 <ul className="text-xs text-muted-foreground list-disc pl-4 mt-2 space-y-1">
-                  <li><strong>Walkability:</strong> EPA National Walkability Index (ArcGIS)</li>
+                  <li><strong>Walk/Bike Score:</strong> EPA National Walkability Index (ArcGIS) — walk score from NatWalkInd, bike score from street density (D3B)</li>
+                  <li><strong>Transit Score:</strong> Manually researched from walkscore.com (January 2025) — EPA transit metrics proved unreliable at metro scale</li>
                   <li><strong>Crime:</strong> FBI Uniform Crime Reports (UCR) 2022 state-level data</li>
                   <li><strong>Air Quality:</strong> EPA Air Quality System (AQS) annual summaries</li>
                   <li><strong>Broadband:</strong> FCC National Broadband Map / BroadbandMap.com 2024 - verified city-level fiber coverage and provider counts</li>
@@ -562,6 +567,12 @@ export default function HelpPage() {
                   <em>Note:</em> For some smaller metros where city-specific data is unavailable, healthcare and broadband
                   metrics are estimated from state-level averages adjusted for local factors (presence of major
                   medical centers, known shortage area designations, regional ISP coverage reports).
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  <em>Transit Score Methodology:</em> We attempted to calculate transit scores from EPA Smart Location Database 
+                  metrics (D4A proximity, D4C frequency, D5BR job accessibility), but metro-level aggregation produced inaccurate 
+                  results due to suburban census blocks diluting city-center scores. The AllTransit API from CNT would be ideal 
+                  but requires paid access.
                 </p>
               </AccordionContent>
             </AccordionItem>

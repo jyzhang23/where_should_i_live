@@ -23,6 +23,38 @@ interface MetricsJsonData {
   cultural?: CulturalMetrics;
 }
 
+// Load ZHVI history data for median home prices
+function loadZHVIData(): Record<string, number> {
+  const possiblePaths = [
+    join(process.cwd(), "data", "zhvi-history.json"),
+    join(process.cwd(), "../data", "zhvi-history.json"),
+  ];
+
+  for (const path of possiblePaths) {
+    if (existsSync(path)) {
+      try {
+        const zhviFile = JSON.parse(readFileSync(path, "utf-8"));
+        const latestPrices: Record<string, number> = {};
+        
+        for (const [cityId, data] of Object.entries(zhviFile.cities || {})) {
+          const cityData = data as { history?: { date: string; value: number }[] };
+          if (cityData.history && cityData.history.length > 0) {
+            // Get the latest value
+            const latest = cityData.history[cityData.history.length - 1];
+            latestPrices[cityId] = latest.value;
+          }
+        }
+        
+        return latestPrices;
+      } catch (error) {
+        console.error("Error loading ZHVI data:", error);
+      }
+    }
+  }
+  
+  return {};
+}
+
 // Load supplementary data from metrics.json (BEA, NOAA, Census, QoL, Cultural, etc.)
 function loadMetricsData(): Record<string, MetricsJsonData> {
   const possiblePaths = [
@@ -97,26 +129,32 @@ export async function GET() {
 
     // Load supplementary data from metrics.json (BEA, NOAA, etc.)
     const metricsData = loadMetricsData();
+    
+    // Load ZHVI data for median home prices
+    const zhviPrices = loadZHVIData();
 
     // Merge supplementary data into city metrics (using slug derived from city name)
     const citiesWithData = cities.map((city) => {
       const slug = cityNameToSlug(city.name);
       const supplementary = metricsData[slug];
+      const zhviPrice = zhviPrices[slug];
       
-      if (city.metrics && supplementary) {
-        return {
-          ...city,
-          metrics: {
-            ...city.metrics,
-            ...(supplementary.bea && { bea: supplementary.bea }),
-            ...(supplementary.noaa && { noaa: supplementary.noaa }),
-            ...(supplementary.census && { census: supplementary.census }),
-            ...(supplementary.qol && { qol: supplementary.qol }),
-            ...(supplementary.cultural && { cultural: supplementary.cultural }),
-          },
-        };
-      }
-      return city;
+      // Build merged metrics
+      const mergedMetrics = {
+        ...city.metrics,
+        // Use ZHVI price if available for medianHomePrice
+        medianHomePrice: zhviPrice ?? city.metrics?.medianHomePrice ?? null,
+        ...(supplementary?.bea && { bea: supplementary.bea }),
+        ...(supplementary?.noaa && { noaa: supplementary.noaa }),
+        ...(supplementary?.census && { census: supplementary.census }),
+        ...(supplementary?.qol && { qol: supplementary.qol }),
+        ...(supplementary?.cultural && { cultural: supplementary.cultural }),
+      };
+      
+      return {
+        ...city,
+        metrics: mergedMetrics,
+      };
     });
 
     // Get the last refresh timestamp

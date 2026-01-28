@@ -109,14 +109,6 @@ function checkFilters(
     return "No NBA team";
   }
 
-  if (
-    filters.maxHomePrice !== null &&
-    metrics.medianHomePrice !== null &&
-    metrics.medianHomePrice > filters.maxHomePrice
-  ) {
-    return `Home price ($${(metrics.medianHomePrice / 1000).toFixed(0)}K) exceeds budget`;
-  }
-
   return null;
 }
 

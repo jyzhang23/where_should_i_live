@@ -85,14 +85,16 @@ async function fetchCensusData(
       "DP05_0001E",
       // Median age
       "DP05_0018E",
-      // Age groups
-      "DP05_0019PE", // Under 18 %
-      "DP05_0021PE", // 18-24 %
-      "DP05_0022PE", // 25-34 %
-      "DP05_0023PE", // 35-44 %
-      "DP05_0024PE", // 45-54 %
-      "DP05_0025PE", // 55-64 %
-      "DP05_0026PE", // 65+ %
+      // Age groups - Using discrete brackets and cumulative "18 years and over"
+      "DP05_0019PE", // Under 18 years %
+      "DP05_0021PE", // 18 years and over % (cumulative - used for subtraction calculation)
+      "DP05_0011PE", // 35 to 44 years %
+      "DP05_0012PE", // 45 to 54 years %
+      "DP05_0013PE", // 55 to 59 years %
+      "DP05_0014PE", // 60 to 64 years %
+      "DP05_0015PE", // 65 to 74 years %
+      "DP05_0016PE", // 75 to 84 years %
+      "DP05_0017PE", // 85 years and over %
       // Race (percentages) - 2022 ACS variable codes
       "DP05_0079PE", // White alone, Not Hispanic or Latino
       "DP05_0080PE", // Black or African American alone, Not Hispanic
@@ -227,9 +229,21 @@ async function fetchCensusData(
       return val;
     };
     
-    const age18to34 = sanitizePercent(data["DP05_0021PE"]) + sanitizePercent(data["DP05_0022PE"]);
-    const age35to54 = sanitizePercent(data["DP05_0023PE"]) + sanitizePercent(data["DP05_0024PE"]);
-    const age55Plus = sanitizePercent(data["DP05_0025PE"]) + sanitizePercent(data["DP05_0026PE"]);
+    // Calculate age groups using discrete brackets and subtraction from cumulative "18 years and over"
+    // This approach is more accurate than using the misleading cumulative-only variables
+    const over18 = sanitizePercent(data["DP05_0021PE"]); // 18 years and over (cumulative)
+    const age35to44 = sanitizePercent(data["DP05_0011PE"]);
+    const age45to54 = sanitizePercent(data["DP05_0012PE"]);
+    const age55to59 = sanitizePercent(data["DP05_0013PE"]);
+    const age60to64 = sanitizePercent(data["DP05_0014PE"]);
+    const age65to74 = sanitizePercent(data["DP05_0015PE"]);
+    const age75to84 = sanitizePercent(data["DP05_0016PE"]);
+    const age85plus = sanitizePercent(data["DP05_0017PE"]);
+    
+    const age35to54 = age35to44 + age45to54;
+    const age55Plus = age55to59 + age60to64 + age65to74 + age75to84 + age85plus;
+    // age18to34 = (18 years and over) - (35-54) - (55+)
+    const age18to34 = over18 - age35to54 - age55Plus;
 
     // Calculate diversity index from race percentages (2022 ACS variable codes)
     // Sanitize race percentages (must be 0-100)

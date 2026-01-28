@@ -129,11 +129,25 @@ cities-app/
 
 ## Data Sources
 
-The app uses data from:
-- [Zillow Research](https://zillow.com/research/data/) - Home value index (ZHVI)
-- US Census Bureau - Demographics
-- FBI Crime Data Explorer - Crime statistics
-- Various sources for weather, walkability, etc.
+The app pulls data from official government APIs plus some manual research:
+
+| Category | Source | API/Method |
+|----------|--------|------------|
+| Housing | [Zillow Research](https://zillow.com/research/data/) | Manual CSV import |
+| Demographics | US Census Bureau ACS | API (free) |
+| Crime | FBI Crime Data Explorer | API (free) |
+| Climate | NOAA ACIS + Open-Meteo | API (free) |
+| Cost of Living | BEA Regional Price Parities | API (free) |
+| Air Quality | EPA AQS | API (free) |
+| Walk/Bike Score | EPA National Walkability Index | API (free) |
+| Transit Score | walkscore.com | Manual research (Jan 2025) |
+| Broadband | FCC National Broadband Map | API (free) |
+| Education | NCES EDGE | API (free) |
+| Healthcare | HRSA | API (free) |
+| Political | MIT Election Lab | Static JSON |
+| Religious | ARDA | Static JSON |
+
+See `data/data.md` for detailed documentation on each data source.
 
 ## Deployment
 
