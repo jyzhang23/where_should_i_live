@@ -153,13 +153,24 @@ export default function Home() {
                   </span>
                 )}
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Click a row to see charts update. Click the{" "}
-                <span className="inline-flex items-center gap-1 text-primary">
-                  arrow icon <span className="text-xs">↗</span>
-                </span>{" "}
-                for full city details.
-              </p>
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-sm text-muted-foreground">
+                  Click a row to see charts update. Click{" "}
+                  <span className="inline-flex items-center gap-1 text-primary">
+                    View <span className="text-xs">↗</span>
+                  </span>{" "}
+                  for full details, or compare two cities side by side.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowComparison(true)}
+                  className="flex items-center gap-2 shrink-0"
+                >
+                  <GitCompare className="h-4 w-4" />
+                  Compare
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -167,29 +178,11 @@ export default function Home() {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : scoringResult ? (
-                <>
-                  <RankingTable
-                    rankings={scoringResult.rankings}
-                    onCityClick={setSelectedCityId}
-                    selectedCityId={selectedCityId}
-                  />
-                  
-                  {/* Compare Cities Action */}
-                  <div className="mt-6 pt-4 border-t flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">
-                      Want to compare two cities side by side? View detailed metrics, charts, and price trends.
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowComparison(true)}
-                      className="flex items-center gap-2 ml-4 shrink-0"
-                    >
-                      <GitCompare className="h-4 w-4" />
-                      Compare Cities
-                    </Button>
-                  </div>
-                </>
+                <RankingTable
+                  rankings={scoringResult.rankings}
+                  onCityClick={setSelectedCityId}
+                  selectedCityId={selectedCityId}
+                />
               ) : (
                 <p className="text-center text-muted-foreground py-12">
                   No cities to display
