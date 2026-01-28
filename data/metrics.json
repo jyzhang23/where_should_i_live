@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "Current city metrics (updateable via APIs)",
-  "lastUpdated": "2026-01-28",
+  "lastUpdated": "2026-01-28T18:13:35.994Z",
   "sources": {
     "climate": "NOAA ACIS (30-year normals) + Open-Meteo (2014-2023 averages)",
     "quality": "WalkScore, Numbeo, ACSM, etc.",
@@ -48,7 +48,7 @@
       "url": "https://www.epa.gov/smartgrowth/smart-location-mapping#walkability",
       "description": "Walkability scores based on intersection density, transit access, and employment mix",
       "dataSource": "EPA ArcGIS API",
-      "lastUpdated": "2026-01-28T03:47:02.487Z"
+      "lastUpdated": "2026-01-28T18:13:35.994Z"
     },
     "cultural": {
       "political": "MIT Election Lab County Presidential Election Returns 2024, Voter turnout from US Elections Project",
@@ -178,9 +178,9 @@
         "walkability": {
           "walkScore": 40,
           "bikeScore": 34,
-          "transitScore": -100,
+          "transitScore": 80,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:44.903Z"
+          "updatedAt": "2026-01-28T18:13:18.497Z"
         },
         "crime": {
           "violentCrimeRate": 499,
@@ -356,9 +356,9 @@
         "walkability": {
           "walkScore": 64,
           "bikeScore": 54,
-          "transitScore": 0,
+          "transitScore": 64,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:45.293Z"
+          "updatedAt": "2026-01-28T18:13:18.927Z"
         },
         "crime": {
           "violentCrimeRate": 394,
@@ -534,9 +534,9 @@
         "walkability": {
           "walkScore": 57,
           "bikeScore": 48,
-          "transitScore": 0,
+          "transitScore": 89,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:45.697Z"
+          "updatedAt": "2026-01-28T18:13:19.339Z"
         },
         "crime": {
           "violentCrimeRate": 364,
@@ -712,9 +712,9 @@
         "walkability": {
           "walkScore": 55,
           "bikeScore": 47,
-          "transitScore": 0,
+          "transitScore": 53,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:46.098Z"
+          "updatedAt": "2026-01-28T18:13:19.745Z"
         },
         "crime": {
           "violentCrimeRate": 499,
@@ -890,9 +890,9 @@
         "walkability": {
           "walkScore": 18,
           "bikeScore": 15,
-          "transitScore": -100,
+          "transitScore": 30,
           "description": "Almost All Errands Require a Car",
-          "updatedAt": "2026-01-28T03:46:46.493Z"
+          "updatedAt": "2026-01-28T18:13:20.148Z"
         },
         "crime": {
           "violentCrimeRate": 499,
@@ -1068,9 +1068,9 @@
         "walkability": {
           "walkScore": 58,
           "bikeScore": 49,
-          "transitScore": 0,
+          "transitScore": 74,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:46.889Z"
+          "updatedAt": "2026-01-28T18:13:20.548Z"
         },
         "crime": {
           "violentCrimeRate": 327,
@@ -1246,9 +1246,9 @@
         "walkability": {
           "walkScore": 33,
           "bikeScore": 28,
-          "transitScore": -100,
+          "transitScore": 51,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:47.291Z"
+          "updatedAt": "2026-01-28T18:13:20.969Z"
         },
         "crime": {
           "violentCrimeRate": 292,
@@ -1424,9 +1424,9 @@
         "walkability": {
           "walkScore": 61,
           "bikeScore": 52,
-          "transitScore": 1,
+          "transitScore": 31,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:47.678Z"
+          "updatedAt": "2026-01-28T18:13:21.385Z"
         },
         "crime": {
           "violentCrimeRate": 460,
@@ -1602,9 +1602,9 @@
         "walkability": {
           "walkScore": 43,
           "bikeScore": 37,
-          "transitScore": 1,
+          "transitScore": 65,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:48.370Z"
+          "updatedAt": "2026-01-28T18:13:21.812Z"
         },
         "crime": {
           "violentCrimeRate": 416,
@@ -1780,9 +1780,9 @@
         "walkability": {
           "walkScore": 63,
           "bikeScore": 54,
-          "transitScore": -30,
+          "transitScore": 69,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:48.765Z"
+          "updatedAt": "2026-01-28T18:13:22.218Z"
         },
         "crime": {
           "violentCrimeRate": 812,
@@ -1958,9 +1958,9 @@
         "walkability": {
           "walkScore": 23,
           "bikeScore": 20,
-          "transitScore": -100,
+          "transitScore": 36,
           "description": "Almost All Errands Require a Car",
-          "updatedAt": "2026-01-28T03:46:49.159Z"
+          "updatedAt": "2026-01-28T18:13:22.618Z"
         },
         "crime": {
           "violentCrimeRate": 446,
@@ -2136,9 +2136,9 @@
         "walkability": {
           "walkScore": 23,
           "bikeScore": 20,
-          "transitScore": -100,
+          "transitScore": 48,
           "description": "Almost All Errands Require a Car",
-          "updatedAt": "2026-01-28T03:46:49.552Z"
+          "updatedAt": "2026-01-28T18:13:23.023Z"
         },
         "crime": {
           "violentCrimeRate": 400,
@@ -2314,9 +2314,9 @@
         "walkability": {
           "walkScore": 49,
           "bikeScore": 42,
-          "transitScore": -13,
+          "transitScore": 55,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:50.019Z"
+          "updatedAt": "2026-01-28T18:13:23.433Z"
         },
         "crime": {
           "violentCrimeRate": 281,
@@ -2492,9 +2492,9 @@
         "walkability": {
           "walkScore": 49,
           "bikeScore": 42,
-          "transitScore": 0,
+          "transitScore": 67,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:50.415Z"
+          "updatedAt": "2026-01-28T18:13:23.843Z"
         },
         "crime": {
           "violentCrimeRate": 310,
@@ -2670,9 +2670,9 @@
         "walkability": {
           "walkScore": 21,
           "bikeScore": 18,
-          "transitScore": -100,
+          "transitScore": 39,
           "description": "Almost All Errands Require a Car",
-          "updatedAt": "2026-01-28T03:46:50.809Z"
+          "updatedAt": "2026-01-28T18:13:24.245Z"
         },
         "crime": {
           "violentCrimeRate": 446,
@@ -2848,9 +2848,9 @@
         "walkability": {
           "walkScore": 78,
           "bikeScore": 66,
-          "transitScore": 1,
+          "transitScore": 28,
           "description": "Very Walkable",
-          "updatedAt": "2026-01-28T03:46:51.275Z"
+          "updatedAt": "2026-01-28T18:13:24.658Z"
         },
         "crime": {
           "violentCrimeRate": 384,
@@ -3026,9 +3026,9 @@
         "walkability": {
           "walkScore": 41,
           "bikeScore": 35,
-          "transitScore": 1,
+          "transitScore": 46,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:51.669Z"
+          "updatedAt": "2026-01-28T18:13:25.059Z"
         },
         "crime": {
           "violentCrimeRate": 492,
@@ -3204,9 +3204,9 @@
         "walkability": {
           "walkScore": 18,
           "bikeScore": 15,
-          "transitScore": -100,
+          "transitScore": 21,
           "description": "Almost All Errands Require a Car",
-          "updatedAt": "2026-01-28T03:46:52.057Z"
+          "updatedAt": "2026-01-28T18:13:25.472Z"
         },
         "crime": {
           "violentCrimeRate": 419,
@@ -3382,9 +3382,9 @@
         "walkability": {
           "walkScore": 27,
           "bikeScore": 23,
-          "transitScore": -100,
+          "transitScore": 14,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:52.452Z"
+          "updatedAt": "2026-01-28T18:13:25.878Z"
         },
         "crime": {
           "violentCrimeRate": 458,
@@ -3560,9 +3560,9 @@
         "walkability": {
           "walkScore": 75,
           "bikeScore": 64,
-          "transitScore": 0,
+          "transitScore": 29,
           "description": "Very Walkable",
-          "updatedAt": "2026-01-28T03:46:52.842Z"
+          "updatedAt": "2026-01-28T18:13:26.280Z"
         },
         "crime": {
           "violentCrimeRate": 485,
@@ -3738,9 +3738,9 @@
         "walkability": {
           "walkScore": 40,
           "bikeScore": 34,
-          "transitScore": 1,
+          "transitScore": 54,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:53.237Z"
+          "updatedAt": "2026-01-28T18:13:26.679Z"
         },
         "crime": {
           "violentCrimeRate": 454,
@@ -3916,9 +3916,9 @@
         "walkability": {
           "walkScore": 37,
           "bikeScore": 31,
-          "transitScore": -100,
+          "transitScore": 26,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:53.629Z"
+          "updatedAt": "2026-01-28T18:13:27.084Z"
         },
         "crime": {
           "violentCrimeRate": 384,
@@ -4094,9 +4094,9 @@
         "walkability": {
           "walkScore": 32,
           "bikeScore": 27,
-          "transitScore": -100,
+          "transitScore": 22,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:54.023Z"
+          "updatedAt": "2026-01-28T18:13:27.537Z"
         },
         "crime": {
           "violentCrimeRate": 382,
@@ -4272,9 +4272,9 @@
         "walkability": {
           "walkScore": 39,
           "bikeScore": 33,
-          "transitScore": -100,
+          "transitScore": 23,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:54.412Z"
+          "updatedAt": "2026-01-28T18:13:27.937Z"
         },
         "crime": {
           "violentCrimeRate": 672,
@@ -4450,9 +4450,9 @@
         "walkability": {
           "walkScore": 51,
           "bikeScore": 43,
-          "transitScore": 1,
+          "transitScore": 49,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:54.806Z"
+          "updatedAt": "2026-01-28T18:13:28.344Z"
         },
         "crime": {
           "violentCrimeRate": 324,
@@ -4628,9 +4628,9 @@
         "walkability": {
           "walkScore": 31,
           "bikeScore": 26,
-          "transitScore": -100,
+          "transitScore": 42,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:55.195Z"
+          "updatedAt": "2026-01-28T18:13:28.773Z"
         },
         "crime": {
           "violentCrimeRate": 260,
@@ -4806,9 +4806,9 @@
         "walkability": {
           "walkScore": 25,
           "bikeScore": 21,
-          "transitScore": -100,
+          "transitScore": 32,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:55.590Z"
+          "updatedAt": "2026-01-28T18:13:29.173Z"
         },
         "crime": {
           "violentCrimeRate": 478,
@@ -4984,9 +4984,9 @@
         "walkability": {
           "walkScore": 48,
           "bikeScore": 41,
-          "transitScore": -56,
+          "transitScore": 45,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:55.982Z"
+          "updatedAt": "2026-01-28T18:13:29.587Z"
         },
         "crime": {
           "violentCrimeRate": 543,
@@ -5162,9 +5162,9 @@
         "walkability": {
           "walkScore": 61,
           "bikeScore": 52,
-          "transitScore": 0,
+          "transitScore": 28,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:56.382Z"
+          "updatedAt": "2026-01-28T18:13:29.996Z"
         },
         "crime": {
           "violentCrimeRate": 446,
@@ -5340,9 +5340,9 @@
         "walkability": {
           "walkScore": 27,
           "bikeScore": 23,
-          "transitScore": -100,
+          "transitScore": 22,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:56.769Z"
+          "updatedAt": "2026-01-28T18:13:30.399Z"
         },
         "crime": {
           "violentCrimeRate": 384,
@@ -5518,9 +5518,9 @@
         "walkability": {
           "walkScore": 64,
           "bikeScore": 54,
-          "transitScore": -16,
+          "transitScore": 48,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:57.161Z"
+          "updatedAt": "2026-01-28T18:13:30.804Z"
         },
         "crime": {
           "violentCrimeRate": 639,
@@ -5696,9 +5696,9 @@
         "walkability": {
           "walkScore": 31,
           "bikeScore": 26,
-          "transitScore": -100,
+          "transitScore": 26,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:57.550Z"
+          "updatedAt": "2026-01-28T18:13:31.213Z"
         },
         "crime": {
           "violentCrimeRate": 543,
@@ -5874,9 +5874,9 @@
         "walkability": {
           "walkScore": 42,
           "bikeScore": 36,
-          "transitScore": -100,
+          "transitScore": 38,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:58.248Z"
+          "updatedAt": "2026-01-28T18:13:31.614Z"
         },
         "crime": {
           "violentCrimeRate": 308,
@@ -6052,9 +6052,9 @@
         "walkability": {
           "walkScore": 41,
           "bikeScore": 35,
-          "transitScore": -62,
+          "transitScore": 45,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:58.640Z"
+          "updatedAt": "2026-01-28T18:13:32.015Z"
         },
         "crime": {
           "violentCrimeRate": 308,
@@ -6230,9 +6230,9 @@
         "walkability": {
           "walkScore": 56,
           "bikeScore": 48,
-          "transitScore": -30,
+          "transitScore": 50,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:59.037Z"
+          "updatedAt": "2026-01-28T18:13:32.415Z"
         },
         "crime": {
           "violentCrimeRate": 364,
@@ -6408,9 +6408,9 @@
         "walkability": {
           "walkScore": 32,
           "bikeScore": 27,
-          "transitScore": -100,
+          "transitScore": 52,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:46:59.427Z"
+          "updatedAt": "2026-01-28T18:13:32.816Z"
         },
         "crime": {
           "violentCrimeRate": 310,
@@ -6586,9 +6586,9 @@
         "walkability": {
           "walkScore": 68,
           "bikeScore": 58,
-          "transitScore": 1,
+          "transitScore": 57,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:46:59.821Z"
+          "updatedAt": "2026-01-28T18:13:33.226Z"
         },
         "crime": {
           "violentCrimeRate": 384,
@@ -6764,9 +6764,9 @@
         "walkability": {
           "walkScore": 37,
           "bikeScore": 31,
-          "transitScore": -100,
+          "transitScore": 28,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:47:00.211Z"
+          "updatedAt": "2026-01-28T18:13:33.656Z"
         },
         "crime": {
           "violentCrimeRate": 324,
@@ -6942,9 +6942,9 @@
         "walkability": {
           "walkScore": 45,
           "bikeScore": 38,
-          "transitScore": 0,
+          "transitScore": 30,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:47:00.606Z"
+          "updatedAt": "2026-01-28T18:13:34.071Z"
         },
         "crime": {
           "violentCrimeRate": 672,
@@ -7120,9 +7120,9 @@
         "walkability": {
           "walkScore": 58,
           "bikeScore": 49,
-          "transitScore": -48,
+          "transitScore": 37,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:47:01.000Z"
+          "updatedAt": "2026-01-28T18:13:34.482Z"
         },
         "crime": {
           "violentCrimeRate": 499,
@@ -7298,9 +7298,9 @@
         "walkability": {
           "walkScore": 62,
           "bikeScore": 53,
-          "transitScore": -9,
+          "transitScore": 38,
           "description": "Somewhat Walkable",
-          "updatedAt": "2026-01-28T03:47:01.394Z"
+          "updatedAt": "2026-01-28T18:13:34.886Z"
         },
         "crime": {
           "violentCrimeRate": 499,
@@ -7476,9 +7476,9 @@
         "walkability": {
           "walkScore": 35,
           "bikeScore": 30,
-          "transitScore": -100,
+          "transitScore": 17,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:47:01.787Z"
+          "updatedAt": "2026-01-28T18:13:35.290Z"
         },
         "crime": {
           "violentCrimeRate": 419,
@@ -7654,9 +7654,9 @@
         "walkability": {
           "walkScore": 42,
           "bikeScore": 36,
-          "transitScore": -25,
+          "transitScore": 22,
           "description": "Car-Dependent",
-          "updatedAt": "2026-01-28T03:47:02.185Z"
+          "updatedAt": "2026-01-28T18:13:35.692Z"
         },
         "crime": {
           "violentCrimeRate": 384,

@@ -196,20 +196,18 @@ async function fetchEPAWalkabilityData(
     const avgTransitAccess = weightedTransitAccess / totalWeight;
 
     // Convert to Walk Score scale (0-100)
-    const walkScore = convertIndexToScore(avgWalkIndex);
-    
-    // Transit score: D4A is jobs accessible by transit, normalize to 0-100
-    // Typical range is 0-500000, with urban areas having higher values
-    const transitScore = Math.min(100, Math.round((avgTransitAccess / 100000) * 100));
+    const walkScore = Math.max(0, Math.min(100, convertIndexToScore(avgWalkIndex)));
     
     // Bike score: estimate based on walk score and intersection density
     // Cities with high walkability tend to have decent bikeability
-    const bikeScore = Math.round(walkScore * 0.85);
-
+    const bikeScore = Math.max(0, Math.min(100, Math.round(walkScore * 0.85)));
+    
+    // Note: EPA D4A (jobs accessible by transit) doesn't translate well to transit score
+    // Return null for transit - we'll use fallback data for transit scores
     return {
       walkScore,
       bikeScore,
-      transitScore,
+      transitScore: null, // Will be filled from fallback data
       description: getWalkabilityDescription(walkScore),
       updatedAt: new Date().toISOString(),
     };
@@ -339,11 +337,21 @@ export async function POST(request: NextRequest) {
           };
         }
 
+        // Get fallback transit score if EPA data doesn't have one
+        let transitScore = walkabilityData.transitScore;
+        if (transitScore === null || transitScore === undefined) {
+          const fallback = getFallbackData(city.id, CITY_WALKSCORE_DATA);
+          transitScore = fallback?.transitScore ?? null;
+        }
+        
+        // Ensure all scores are bounded 0-100
+        const boundScore = (s: number | null) => s === null ? null : Math.max(0, Math.min(100, s));
+        
         // Update walkability data
         metricsFile.cities[city.id].qol!.walkability = {
-          walkScore: walkabilityData.walkScore,
-          bikeScore: walkabilityData.bikeScore,
-          transitScore: walkabilityData.transitScore,
+          walkScore: boundScore(walkabilityData.walkScore),
+          bikeScore: boundScore(walkabilityData.bikeScore),
+          transitScore: boundScore(transitScore),
           description: walkabilityData.description,
           updatedAt: walkabilityData.updatedAt || new Date().toISOString(),
         };
