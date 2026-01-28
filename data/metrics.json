@@ -37,10 +37,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 15,
           "seasonalStability": null,
-          "cloudyDays": 90,
-          "avgCloudCover": 50,
-          "julyDewpoint": 54.3,
-          "summerHumidityIndex": 78
+          "cloudyDays": 110,
+          "avgCloudCover": 52,
+          "julyDewpoint": 53.5,
+          "summerHumidityIndex": 80
         }
       },
       "cost": {
@@ -123,9 +123,9 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 14.8,
           "seasonalStability": null,
-          "cloudyDays": 177,
+          "cloudyDays": 180,
           "avgCloudCover": 66,
-          "julyDewpoint": 54.3,
+          "julyDewpoint": 54.5,
           "summerHumidityIndex": 68
         }
       },
@@ -209,10 +209,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 14.5,
           "seasonalStability": null,
-          "cloudyDays": 125,
-          "avgCloudCover": 58,
-          "julyDewpoint": 66.7,
-          "summerHumidityIndex": 75
+          "cloudyDays": 132,
+          "avgCloudCover": 57,
+          "julyDewpoint": 67.4,
+          "summerHumidityIndex": 76
         }
       },
       "cost": {
@@ -295,10 +295,10 @@
           "firstFallFreeze": null,
           "diurnalSwing": 13.9,
           "seasonalStability": null,
-          "cloudyDays": 48,
-          "avgCloudCover": 38,
-          "julyDewpoint": 61.3,
-          "summerHumidityIndex": 75
+          "cloudyDays": 51,
+          "avgCloudCover": 40,
+          "julyDewpoint": 61.4,
+          "summerHumidityIndex": 79
         }
       },
       "cost": {
@@ -381,10 +381,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 26.7,
           "seasonalStability": null,
-          "cloudyDays": 68,
-          "avgCloudCover": 37,
-          "julyDewpoint": 50.8,
-          "summerHumidityIndex": 46
+          "cloudyDays": 65,
+          "avgCloudCover": 36,
+          "julyDewpoint": 50.3,
+          "summerHumidityIndex": 45
         }
       },
       "cost": {
@@ -467,10 +467,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 15,
           "seasonalStability": null,
-          "cloudyDays": 128,
-          "avgCloudCover": 58,
-          "julyDewpoint": 63.9,
-          "summerHumidityIndex": 75
+          "cloudyDays": 138,
+          "avgCloudCover": 59,
+          "julyDewpoint": 64.5,
+          "summerHumidityIndex": 76
         }
       },
       "cost": {
@@ -553,10 +553,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 17.2,
           "seasonalStability": null,
-          "cloudyDays": 166,
+          "cloudyDays": 171,
           "avgCloudCover": 63,
-          "julyDewpoint": 53.5,
-          "summerHumidityIndex": 61
+          "julyDewpoint": 53.7,
+          "summerHumidityIndex": 60
         }
       },
       "cost": {
@@ -639,10 +639,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 21.9,
           "seasonalStability": null,
-          "cloudyDays": 33,
-          "avgCloudCover": 29,
-          "julyDewpoint": 42.8,
-          "summerHumidityIndex": 23
+          "cloudyDays": 36,
+          "avgCloudCover": 28,
+          "julyDewpoint": 43.5,
+          "summerHumidityIndex": 26
         }
       },
       "cost": {
@@ -725,10 +725,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 17.7,
           "seasonalStability": null,
-          "cloudyDays": 144,
-          "avgCloudCover": 61,
-          "julyDewpoint": 63.1,
-          "summerHumidityIndex": 74
+          "cloudyDays": 148,
+          "avgCloudCover": 60,
+          "julyDewpoint": 63,
+          "summerHumidityIndex": 75
         }
       },
       "cost": {
@@ -812,8 +812,8 @@
           "diurnalSwing": 17,
           "seasonalStability": null,
           "cloudyDays": 123,
-          "avgCloudCover": 58,
-          "julyDewpoint": 67.5,
+          "avgCloudCover": 55,
+          "julyDewpoint": 67.7,
           "summerHumidityIndex": 73
         }
       },
@@ -897,10 +897,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 20.1,
           "seasonalStability": null,
-          "cloudyDays": 128,
-          "avgCloudCover": 57,
-          "julyDewpoint": 74.3,
-          "summerHumidityIndex": 77
+          "cloudyDays": 127,
+          "avgCloudCover": 55,
+          "julyDewpoint": 74.5,
+          "summerHumidityIndex": 76
         }
       },
       "cost": {
@@ -983,10 +983,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 18.8,
           "seasonalStability": null,
-          "cloudyDays": 126,
+          "cloudyDays": 133,
           "avgCloudCover": 56,
-          "julyDewpoint": 69.3,
-          "summerHumidityIndex": 76
+          "julyDewpoint": 70.3,
+          "summerHumidityIndex": 79
         }
       },
       "cost": {
@@ -1069,10 +1069,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 17.4,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 124,
+          "avgCloudCover": 58,
+          "julyDewpoint": 60.6,
+          "summerHumidityIndex": 69
         }
       },
       "cost": {
@@ -1155,10 +1155,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 17,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 128,
+          "avgCloudCover": 56,
+          "julyDewpoint": 66.9,
+          "summerHumidityIndex": 70
         }
       },
       "cost": {
@@ -1241,10 +1241,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 20.5,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 95,
+          "avgCloudCover": 46,
+          "julyDewpoint": 68,
+          "summerHumidityIndex": 56
         }
       },
       "cost": {
@@ -1327,10 +1327,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 16.8,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 110,
+          "avgCloudCover": 54,
+          "julyDewpoint": 74.4,
+          "summerHumidityIndex": 79
         }
       },
       "cost": {
@@ -1413,10 +1413,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 28.2,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 80,
+          "avgCloudCover": 46,
+          "julyDewpoint": 50.2,
+          "summerHumidityIndex": 45
         }
       },
       "cost": {
@@ -1499,10 +1499,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 21.4,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 127,
+          "avgCloudCover": 55,
+          "julyDewpoint": 68.8,
+          "summerHumidityIndex": 73
         }
       },
       "cost": {
@@ -1585,10 +1585,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 22.3,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 83,
+          "avgCloudCover": 44,
+          "julyDewpoint": 65.9,
+          "summerHumidityIndex": 58
         }
       },
       "cost": {
@@ -1671,10 +1671,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 23.3,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 42,
+          "avgCloudCover": 30,
+          "julyDewpoint": 56.8,
+          "summerHumidityIndex": 38
         }
       },
       "cost": {
@@ -1757,10 +1757,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 19.9,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 124,
+          "avgCloudCover": 55,
+          "julyDewpoint": 67.8,
+          "summerHumidityIndex": 73
         }
       },
       "cost": {
@@ -1843,10 +1843,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 19.8,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 117,
+          "avgCloudCover": 56,
+          "julyDewpoint": 74.5,
+          "summerHumidityIndex": 84
         }
       },
       "cost": {
@@ -1929,10 +1929,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 18.5,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 140,
+          "avgCloudCover": 59,
+          "julyDewpoint": 65.3,
+          "summerHumidityIndex": 74
         }
       },
       "cost": {
@@ -2015,10 +2015,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 20.5,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 128,
+          "avgCloudCover": 56,
+          "julyDewpoint": 70.1,
+          "summerHumidityIndex": 78
         }
       },
       "cost": {
@@ -2101,10 +2101,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 15.6,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 145,
+          "avgCloudCover": 60,
+          "julyDewpoint": 62.1,
+          "summerHumidityIndex": 76
         }
       },
       "cost": {
@@ -2187,10 +2187,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 21.9,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 109,
+          "avgCloudCover": 49,
+          "julyDewpoint": 41.6,
+          "summerHumidityIndex": 32
         }
       },
       "cost": {
@@ -2273,10 +2273,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 17.4,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 152,
+          "avgCloudCover": 62,
+          "julyDewpoint": 61.9,
+          "summerHumidityIndex": 71
         }
       },
       "cost": {
@@ -2359,10 +2359,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 18.4,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 123,
+          "avgCloudCover": 54,
+          "julyDewpoint": 68,
+          "summerHumidityIndex": 74
         }
       },
       "cost": {
@@ -2445,10 +2445,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 21.5,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 115,
+          "avgCloudCover": 51,
+          "julyDewpoint": 69.4,
+          "summerHumidityIndex": 65
         }
       },
       "cost": {
@@ -2531,10 +2531,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 21.3,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 136,
+          "avgCloudCover": 57,
+          "julyDewpoint": 74.3,
+          "summerHumidityIndex": 83
         }
       },
       "cost": {
@@ -2617,10 +2617,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 17.1,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 126,
+          "avgCloudCover": 55,
+          "julyDewpoint": 75.5,
+          "summerHumidityIndex": 82
         }
       },
       "cost": {
@@ -2703,10 +2703,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 20.1,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 99,
+          "avgCloudCover": 50,
+          "julyDewpoint": 67.4,
+          "summerHumidityIndex": 72
         }
       },
       "cost": {
@@ -2789,10 +2789,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 19.2,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 136,
+          "avgCloudCover": 58,
+          "julyDewpoint": 65.8,
+          "summerHumidityIndex": 73
         }
       },
       "cost": {
@@ -2875,10 +2875,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 17,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 164,
+          "avgCloudCover": 64,
+          "julyDewpoint": 62.7,
+          "summerHumidityIndex": 74
         }
       },
       "cost": {
@@ -2961,10 +2961,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 16,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 179,
+          "avgCloudCover": 67,
+          "julyDewpoint": 62,
+          "summerHumidityIndex": 77
         }
       },
       "cost": {
@@ -3047,10 +3047,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 18.7,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 163,
+          "avgCloudCover": 64,
+          "julyDewpoint": 63.1,
+          "summerHumidityIndex": 75
         }
       },
       "cost": {
@@ -3133,10 +3133,10 @@
           "firstFallFreeze": null,
           "diurnalSwing": 13.7,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 104,
+          "avgCloudCover": 54,
+          "julyDewpoint": 74.8,
+          "summerHumidityIndex": 81
         }
       },
       "cost": {
@@ -3219,10 +3219,10 @@
           "firstFallFreeze": "01-10",
           "diurnalSwing": 18.8,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 138,
+          "avgCloudCover": 60,
+          "julyDewpoint": 58.5,
+          "summerHumidityIndex": 68
         }
       },
       "cost": {
@@ -3305,10 +3305,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 18.7,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 111,
+          "avgCloudCover": 50,
+          "julyDewpoint": 71.2,
+          "summerHumidityIndex": 73
         }
       },
       "cost": {
@@ -3391,10 +3391,10 @@
           "firstFallFreeze": null,
           "diurnalSwing": 12.2,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 64,
+          "avgCloudCover": 43,
+          "julyDewpoint": 61.5,
+          "summerHumidityIndex": 78
         }
       },
       "cost": {
@@ -3477,10 +3477,10 @@
           "firstFallFreeze": "01-12",
           "diurnalSwing": 20.6,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 56,
+          "avgCloudCover": 35,
+          "julyDewpoint": 59.2,
+          "summerHumidityIndex": 63
         }
       },
       "cost": {
@@ -3563,10 +3563,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 21.6,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 123,
+          "avgCloudCover": 54,
+          "julyDewpoint": 69.7,
+          "summerHumidityIndex": 74
         }
       },
       "cost": {
@@ -3649,10 +3649,10 @@
           "firstFallFreeze": "01-11",
           "diurnalSwing": 22.6,
           "seasonalStability": null,
-          "cloudyDays": null,
-          "avgCloudCover": null,
-          "julyDewpoint": null,
-          "summerHumidityIndex": null
+          "cloudyDays": 133,
+          "avgCloudCover": 57,
+          "julyDewpoint": 73.7,
+          "summerHumidityIndex": 82
         }
       },
       "cost": {

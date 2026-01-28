@@ -1,5 +1,63 @@
 import { NextResponse } from "next/server";
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
 import prisma from "@/lib/db";
+import { BEAMetrics } from "@/lib/cost-of-living";
+import { NOAAClimateData } from "@/types/city";
+
+// Convert city name to slug (e.g., "San Francisco" -> "san-francisco")
+function cityNameToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
+interface MetricsJsonData {
+  bea?: BEAMetrics;
+  noaa?: NOAAClimateData;
+}
+
+// Load supplementary data from metrics.json for a specific city
+function loadCityMetricsData(citySlug: string): MetricsJsonData | null {
+  const possiblePaths = [
+    join(process.cwd(), "data", "metrics.json"),
+    join(process.cwd(), "../data", "metrics.json"),
+  ];
+
+  for (const path of possiblePaths) {
+    if (existsSync(path)) {
+      try {
+        const metricsFile = JSON.parse(readFileSync(path, "utf-8"));
+        const cityMetrics = metricsFile.cities?.[citySlug] as {
+          bea?: BEAMetrics;
+          climate?: { noaa?: NOAAClimateData };
+        } | undefined;
+
+        if (!cityMetrics) {
+          return null;
+        }
+
+        const result: MetricsJsonData = {};
+        
+        if (cityMetrics.bea) {
+          result.bea = cityMetrics.bea;
+        }
+        
+        // NOAA data is nested under climate.noaa
+        if (cityMetrics.climate?.noaa) {
+          result.noaa = cityMetrics.climate.noaa;
+        }
+        
+        return result;
+      } catch (error) {
+        console.error("Error loading metrics data:", error);
+      }
+    }
+  }
+  
+  return null;
+}
 
 export async function GET(
   request: Request,
@@ -20,6 +78,23 @@ export async function GET(
 
     if (!city) {
       return NextResponse.json({ error: "City not found" }, { status: 404 });
+    }
+
+    // Load supplementary data from metrics.json (BEA, NOAA, etc.)
+    const slug = cityNameToSlug(city.name);
+    const supplementary = loadCityMetricsData(slug);
+
+    // Merge supplementary data into city metrics
+    if (city.metrics && supplementary) {
+      const mergedCity = {
+        ...city,
+        metrics: {
+          ...city.metrics,
+          ...(supplementary.bea && { bea: supplementary.bea }),
+          ...(supplementary.noaa && { noaa: supplementary.noaa }),
+        },
+      };
+      return NextResponse.json(mergedCity);
     }
 
     return NextResponse.json(city);
