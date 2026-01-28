@@ -140,31 +140,50 @@ export default function HelpPage() {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
-                <p>Combines home price score and tax burden score based on your weight distribution:</p>
-
-                <h4>Home Price Score</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  home_score = 100 - ((price - $300K) / $1.2M) × 100
-                </div>
                 <p>
-                  A $300K home = 100 points, $1.5M home = 0 points. Linear scale between.
+                  Uses <strong>True Purchasing Power</strong> from the Bureau of Economic Analysis (BEA), 
+                  which combines taxes and regional prices into a single measure of what your income can actually buy.
                 </p>
 
-                <h4>Tax Burden Score</h4>
+                <h4>True Purchasing Power Formula</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if state_tax &gt; max_state_tax:{"\n"}
-                  {"  "}penalty = ((state_tax - max_state_tax) / max_state_tax) × 50{"\n"}
-                  {"\n"}
-                  if property_tax &gt; max_property_tax:{"\n"}
-                  {"  "}penalty = ((property_tax - max_property_tax) / max_property_tax) × 50
+                  True Purchasing Power = Disposable Income ÷ (RPP ÷ 100)
                 </div>
+                <p>Where:</p>
+                <ul className="text-xs">
+                  <li><strong>Disposable Income</strong> = Gross Income - All Taxes (federal + state + local)</li>
+                  <li><strong>RPP</strong> = Regional Price Parity (100 = national average cost of living)</li>
+                </ul>
 
-                <h4>Combined Score</h4>
+                <h4>What&apos;s Included</h4>
+                <table className="text-xs w-full">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Factor</th>
+                      <th className="text-left">Captured Via</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Rent / Housing</td><td>RPP (primary factor)</td></tr>
+                    <tr><td>Groceries / Goods</td><td>RPP</td></tr>
+                    <tr><td>Sales Tax</td><td>RPP (in retail prices)</td></tr>
+                    <tr><td>State Income Tax</td><td>Disposable Income</td></tr>
+                    <tr><td>Federal Income Tax</td><td>Disposable Income</td></tr>
+                    <tr><td>Local Taxes</td><td>Disposable Income</td></tr>
+                  </tbody>
+                </table>
+
+                <h4>Scoring</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  cost_score = (home_score × home_weight + tax_score × tax_weight) / total_weight
+                  Purchasing Power Index: 100 = national average{"\n"}
+                  {"\n"}
+                  Score mapping:{"\n"}
+                  {"  "}Index 70 → Score 0 (very poor value){"\n"}
+                  {"  "}Index 100 → Score 50 (average){"\n"}
+                  {"  "}Index 130 → Score 100 (excellent value)
                 </div>
                 <p className="text-muted-foreground">
-                  Your "Weight: Home Price" and "Weight: Tax Burden" settings control this distribution.
+                  Data source: Bureau of Economic Analysis (BEA) Regional Price Parities and Personal Income tables.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -308,11 +327,11 @@ export default function HelpPage() {
           <ul>
             <li>
               <strong>Category weights are relative:</strong> Setting Climate to 80 and Cost to 40 
-              means climate is twice as important as cost. The actual numbers don't matter, 
+              means climate is twice as important as cost. The actual numbers don&apos;t matter, 
               only their ratios.
             </li>
             <li>
-              <strong>Set weight to 0 to ignore a category:</strong> If you don't care about 
+              <strong>Set weight to 0 to ignore a category:</strong> If you don&apos;t care about 
               demographics at all, set its weight to 0.
             </li>
             <li>
@@ -320,8 +339,13 @@ export default function HelpPage() {
               completely exclude cities. Use the scoring system for softer preferences.
             </li>
             <li>
+              <strong>Cost of Living uses official BEA data:</strong> The cost score automatically 
+              accounts for taxes, housing, and regional prices using government data. No manual 
+              configuration needed.
+            </li>
+            <li>
               <strong>Advanced options fine-tune scores:</strong> The advanced settings let you 
-              adjust exactly how each metric is evaluated (ideal temperature, tax thresholds, etc.)
+              adjust how climate, demographics, and quality of life metrics are evaluated.
             </li>
             <li>
               <strong>Export your preferences:</strong> Once you have settings you like, export 

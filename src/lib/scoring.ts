@@ -1,6 +1,7 @@
 import { CityWithMetrics } from "@/types/city";
 import { UserPreferences } from "@/types/preferences";
 import { CityScore, ScoringResult } from "@/types/scores";
+import { calculateTrueCostOfLiving } from "@/lib/cost-of-living";
 
 /**
  * Calculate scores for all cities based on user preferences
@@ -167,46 +168,56 @@ function calculateClimateScore(
 
 /**
  * Calculate cost of living score (0-100)
- * Higher score = more affordable
+ * Higher score = better purchasing power / more affordable
+ * 
+ * Uses BEA "True Cost of Living" formula:
+ *   True Purchasing Power = Disposable Income / (RPP / 100)
+ * 
+ * This accounts for:
+ * - State/federal/local taxes (via disposable income)
+ * - Regional price differences (via RPP)
+ * - Housing costs (included in RPP)
+ * 
+ * Falls back to home price-based scoring if BEA data unavailable.
  */
 function calculateCostScore(
   city: CityWithMetrics,
-  preferences: UserPreferences
+  _preferences: UserPreferences
 ): number {
   const metrics = city.metrics!;
-  const { maxStateTax, maxPropertyTax, weightHomePrice, weightTaxBurden } =
-    preferences.advanced.costOfLiving;
 
-  let homePriceScore = 100;
-  let taxScore = 100;
+  // Try to use BEA True Purchasing Power data
+  // @ts-expect-error - bea field may exist on metrics from API
+  const beaData = metrics.bea;
+  
+  if (beaData) {
+    const trueCostOfLiving = calculateTrueCostOfLiving(beaData);
+    
+    if (trueCostOfLiving.truePurchasingPowerIndex !== null) {
+      // Convert True Purchasing Power Index to a 0-100 score
+      // Index: 100 = national average, higher = better
+      // Score mapping:
+      //   Index 80 (poor) -> Score ~30
+      //   Index 100 (average) -> Score ~60
+      //   Index 120 (excellent) -> Score ~90
+      const index = trueCostOfLiving.truePurchasingPowerIndex;
+      
+      // Linear mapping: index 70-130 -> score 0-100
+      const score = ((index - 70) / 60) * 100;
+      return Math.max(0, Math.min(100, score));
+    }
+  }
 
+  // Fallback: Use simple home price-based scoring if no BEA data
   // Home price score (inversely proportional)
   // $300K = 100, $1.5M = 0
   if (metrics.medianHomePrice !== null) {
     const price = metrics.medianHomePrice;
-    homePriceScore = Math.max(0, 100 - ((price - 300000) / 1200000) * 100);
+    return Math.max(0, 100 - ((price - 300000) / 1200000) * 100);
   }
 
-  // Tax burden score
-  if (metrics.stateTaxRate !== null) {
-    if (metrics.stateTaxRate > maxStateTax) {
-      taxScore -= ((metrics.stateTaxRate - maxStateTax) / maxStateTax) * 50;
-    }
-  }
-
-  if (metrics.propertyTaxRate !== null) {
-    if (metrics.propertyTaxRate > maxPropertyTax) {
-      taxScore -= ((metrics.propertyTaxRate - maxPropertyTax) / maxPropertyTax) * 50;
-    }
-  }
-
-  taxScore = Math.max(0, taxScore);
-
-  // Weighted combination
-  const totalWeight = weightHomePrice + weightTaxBurden;
-  if (totalWeight === 0) return 50;
-
-  return (homePriceScore * weightHomePrice + taxScore * weightTaxBurden) / totalWeight;
+  // No data available - return neutral score
+  return 50;
 }
 
 /**

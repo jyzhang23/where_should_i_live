@@ -24,11 +24,20 @@ import {
   Car,
   Vote,
   Info,
+  DollarSign,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  calculateTrueCostOfLiving,
+  formatCurrency,
+  getRatingColor,
+  BEAMetrics,
+} from "@/lib/cost-of-living";
 
 interface CityMetricsGridProps {
   metrics: CityMetrics;
+  bea?: BEAMetrics;
 }
 
 interface MetricItemProps {
@@ -66,7 +75,7 @@ function MetricItem({ icon, label, value, unit, tooltip, colorClass }: MetricIte
   );
 }
 
-export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
+export function CityMetricsGrid({ metrics, bea }: CityMetricsGridProps) {
   const formatTemp = (temp: number | null) => temp !== null ? `${temp.toFixed(0)}°F` : null;
   const formatPercent = (val: number | null) => val !== null ? `${(val * 100).toFixed(1)}%` : null;
   const formatPrice = (price: number | null) => {
@@ -93,6 +102,9 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
     if (score >= 40) return "text-score-medium";
     return "text-score-low";
   };
+
+  // Calculate True Cost of Living from BEA data
+  const trueCostOfLiving = calculateTrueCostOfLiving(bea);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -142,40 +154,111 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
         </CardContent>
       </Card>
 
-      {/* Cost of Living Section */}
+      {/* Cost of Living Section - Now powered by BEA data */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Home className="h-4 w-4 text-emerald-500" />
+            <DollarSign className="h-4 w-4 text-emerald-500" />
             Cost of Living
+            {bea && (
+              <span className="text-xs font-normal text-muted-foreground ml-auto">
+                BEA {bea.year}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2">
-          <MetricItem
-            icon={<Home className="h-4 w-4" />}
-            label="Median Home Price"
-            value={formatPrice(metrics.medianHomePrice)}
-            tooltip="Median single-family home price"
-          />
-          <MetricItem
-            icon={<Percent className="h-4 w-4" />}
-            label="State Tax Rate"
-            value={formatPercent(metrics.stateTaxRate)}
-            tooltip="Top marginal state income tax rate"
-          />
-          <MetricItem
-            icon={<Percent className="h-4 w-4" />}
-            label="Property Tax"
-            value={formatPercent(metrics.propertyTaxRate)}
-            tooltip="Effective property tax rate"
-          />
-          <MetricItem
-            icon={<Activity className="h-4 w-4" />}
-            label="Cost Index"
-            value={metrics.costOfLivingIndex}
-            tooltip="Cost of living index (100 = national average)"
-            colorClass={getScoreColor(metrics.costOfLivingIndex ? 200 - metrics.costOfLivingIndex : null)}
-          />
+        <CardContent className="space-y-4">
+          {/* True Purchasing Power - Key metric */}
+          {trueCostOfLiving.truePurchasingPower !== null && (
+            <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    True Purchasing Power
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3 w-3 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="text-sm">
+                          What your after-tax income can actually buy, adjusted for local prices.
+                          Formula: Disposable Income ÷ (Regional Price Parity ÷ 100)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="text-xl font-bold text-emerald-700 dark:text-emerald-400">
+                    {formatCurrency(trueCostOfLiving.truePurchasingPower)}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">vs. Average</div>
+                  <div className={cn(
+                    "text-lg font-semibold",
+                    getRatingColor(trueCostOfLiving.overallValueRating, "value")
+                  )}>
+                    {trueCostOfLiving.truePurchasingPowerIndex?.toFixed(1)}
+                    <span className="text-xs font-normal text-muted-foreground ml-1">
+                      ({trueCostOfLiving.overallValueRating})
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Detailed breakdown */}
+          <div className="grid grid-cols-2 gap-2">
+            <MetricItem
+              icon={<TrendingUp className="h-4 w-4" />}
+              label="RPP (Cost Index)"
+              value={trueCostOfLiving.costOfLivingIndex?.toFixed(1) ?? metrics.costOfLivingIndex}
+              tooltip="Regional Price Parity: 100 = national average. Higher = more expensive."
+              colorClass={getRatingColor(trueCostOfLiving.costOfLivingRating, "col")}
+            />
+            <MetricItem
+              icon={<Home className="h-4 w-4" />}
+              label="Housing Index"
+              value={trueCostOfLiving.housingCostIndex?.toFixed(1)}
+              tooltip="Regional housing/rent prices: 100 = national average"
+              colorClass={trueCostOfLiving.housingCostIndex 
+                ? trueCostOfLiving.housingCostIndex > 150 
+                  ? "text-red-600 dark:text-red-400" 
+                  : trueCostOfLiving.housingCostIndex < 90 
+                    ? "text-green-600 dark:text-green-400" 
+                    : ""
+                : ""}
+            />
+            <MetricItem
+              icon={<Percent className="h-4 w-4" />}
+              label="Effective Tax Rate"
+              value={trueCostOfLiving.effectiveTaxRate !== null 
+                ? `${trueCostOfLiving.effectiveTaxRate.toFixed(1)}%` 
+                : formatPercent(metrics.stateTaxRate)}
+              tooltip="Total taxes as % of income (federal + state + local)"
+              colorClass={getRatingColor(trueCostOfLiving.taxBurdenRating, "tax")}
+            />
+            <MetricItem
+              icon={<DollarSign className="h-4 w-4" />}
+              label="Disposable Income"
+              value={trueCostOfLiving.afterTaxIncome !== null 
+                ? formatCurrency(trueCostOfLiving.afterTaxIncome) 
+                : null}
+              tooltip="Per capita income after all taxes"
+            />
+            <MetricItem
+              icon={<Home className="h-4 w-4" />}
+              label="Median Home Price"
+              value={formatPrice(metrics.medianHomePrice)}
+              tooltip="Median single-family home price (Zillow ZHVI)"
+            />
+            <MetricItem
+              icon={<Percent className="h-4 w-4" />}
+              label="State Tax Rate"
+              value={formatPercent(metrics.stateTaxRate)}
+              tooltip="Top marginal state income tax rate"
+            />
+          </div>
         </CardContent>
       </Card>
 

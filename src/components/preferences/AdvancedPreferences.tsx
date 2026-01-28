@@ -15,7 +15,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight, Info, Thermometer, DollarSign, Users, Heart, Vote } from "lucide-react";
+import { ChevronRight, Info, Thermometer, Users, Heart, Vote } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -107,49 +107,8 @@ export function AdvancedPreferences() {
         />
       </CollapsibleSection>
 
-      {/* Cost of Living Details */}
-      <CollapsibleSection
-        title="Cost of Living Details"
-        icon={<DollarSign className="h-4 w-4 text-green-500" />}
-      >
-        <PreferenceSlider
-          label="Max State Income Tax"
-          value={preferences.advanced.costOfLiving.maxStateTax * 100}
-          onChange={(v) => updateAdvanced("costOfLiving", "maxStateTax", v / 100)}
-          min={0}
-          max={15}
-          step={0.5}
-          tooltip={TOOLTIPS["advanced.costOfLiving.maxStateTax"]}
-          formatValue={(v) => `${v.toFixed(1)}%`}
-        />
-        <PreferenceSlider
-          label="Max Property Tax"
-          value={preferences.advanced.costOfLiving.maxPropertyTax * 100}
-          onChange={(v) => updateAdvanced("costOfLiving", "maxPropertyTax", v / 100)}
-          min={0}
-          max={3}
-          step={0.1}
-          tooltip={TOOLTIPS["advanced.costOfLiving.maxPropertyTax"]}
-          formatValue={(v) => `${v.toFixed(1)}%`}
-        />
-        <div className="pt-2 border-t">
-          <p className="text-xs text-muted-foreground mb-3">
-            Weight distribution within cost category:
-          </p>
-          <PreferenceSlider
-            label="Home Price Weight"
-            value={preferences.advanced.costOfLiving.weightHomePrice}
-            onChange={(v) => updateAdvanced("costOfLiving", "weightHomePrice", v)}
-            tooltip={TOOLTIPS["advanced.costOfLiving.weightHomePrice"]}
-          />
-          <PreferenceSlider
-            label="Tax Burden Weight"
-            value={preferences.advanced.costOfLiving.weightTaxBurden}
-            onChange={(v) => updateAdvanced("costOfLiving", "weightTaxBurden", v)}
-            tooltip={TOOLTIPS["advanced.costOfLiving.weightTaxBurden"]}
-          />
-        </div>
-      </CollapsibleSection>
+      {/* Cost of Living - Now uses BEA data automatically */}
+      {/* Advanced sliders removed - calculation uses True Purchasing Power from BEA */}
 
       {/* Demographics Details */}
       <CollapsibleSection
