@@ -92,19 +92,6 @@ export default function Home() {
         <div className="flex items-center gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9"
-                onClick={() => setShowComparison(true)}
-              >
-                <GitCompare className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Compare Cities</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
               <Link href="/help">
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <HelpCircle className="h-4 w-4" />
@@ -180,11 +167,29 @@ export default function Home() {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : scoringResult ? (
-                <RankingTable
-                  rankings={scoringResult.rankings}
-                  onCityClick={setSelectedCityId}
-                  selectedCityId={selectedCityId}
-                />
+                <>
+                  <RankingTable
+                    rankings={scoringResult.rankings}
+                    onCityClick={setSelectedCityId}
+                    selectedCityId={selectedCityId}
+                  />
+                  
+                  {/* Compare Cities Action */}
+                  <div className="mt-6 pt-4 border-t flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Want to compare two cities side by side? View detailed metrics, charts, and price trends.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowComparison(true)}
+                      className="flex items-center gap-2 ml-4 shrink-0"
+                    >
+                      <GitCompare className="h-4 w-4" />
+                      Compare Cities
+                    </Button>
+                  </div>
+                </>
               ) : (
                 <p className="text-center text-muted-foreground py-12">
                   No cities to display
