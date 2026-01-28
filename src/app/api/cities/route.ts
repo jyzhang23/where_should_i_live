@@ -6,6 +6,14 @@ import { BEAMetrics } from "@/lib/cost-of-living";
 
 export const dynamic = "force-dynamic";
 
+// Convert city name to slug (e.g., "San Francisco" -> "san-francisco")
+function cityNameToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
 // Load BEA data from metrics.json
 function loadBEAData(): Record<string, BEAMetrics> {
   const possiblePaths = [
@@ -52,14 +60,15 @@ export async function GET() {
     // Load BEA data from metrics.json
     const beaData = loadBEAData();
 
-    // Merge BEA data into city metrics
+    // Merge BEA data into city metrics (using slug derived from city name)
     const citiesWithBEA = cities.map((city) => {
-      if (city.metrics && beaData[city.id]) {
+      const slug = cityNameToSlug(city.name);
+      if (city.metrics && beaData[slug]) {
         return {
           ...city,
           metrics: {
             ...city.metrics,
-            bea: beaData[city.id],
+            bea: beaData[slug],
           },
         };
       }
