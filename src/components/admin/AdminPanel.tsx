@@ -27,12 +27,14 @@ interface RefreshResult {
   stats?: {
     citiesCreated?: number;
     citiesUpdated?: number;
+    citiesSkipped?: number;
     totalCities?: number;
     metricsUpdated?: number;
     zhviPointsCreated?: number;
     msaCitiesMatched?: number;
     cityCitiesMatched?: number;
     dataPoints?: number;
+    dataYear?: string;
   };
   message?: string;
   error?: string;
@@ -90,7 +92,33 @@ async function pullZillowData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-type ActionType = "reinitialize" | "zillow";
+async function pullBEAData(password: string): Promise<RefreshResult> {
+  const response = await fetch("/api/admin/bea-pull", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+
+  const text = await response.text();
+  if (!text) {
+    throw new Error("Server returned empty response. Check server logs.");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid server response: ${text.slice(0, 100)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || "BEA pull failed");
+  }
+
+  return data;
+}
+
+type ActionType = "reinitialize" | "zillow" | "bea";
 
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -127,7 +155,21 @@ export function AdminPanel() {
     },
   });
 
-  const isPending = reinitMutation.isPending || zillowMutation.isPending;
+  const beaMutation = useMutation({
+    mutationFn: pullBEAData,
+    onSuccess: (data) => {
+      setResult(data);
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+    },
+    onError: (error: Error) => {
+      setResult({ success: false, error: error.message });
+    },
+    onSettled: () => {
+      setActiveAction(null);
+    },
+  });
+
+  const isPending = reinitMutation.isPending || zillowMutation.isPending || beaMutation.isPending;
 
   const handleReinitialize = () => {
     if (!password) return;
@@ -141,6 +183,13 @@ export function AdminPanel() {
     setResult(null);
     setActiveAction("zillow");
     zillowMutation.mutate(password);
+  };
+
+  const handleBEAPull = () => {
+    if (!password) return;
+    setResult(null);
+    setActiveAction("bea");
+    beaMutation.mutate(password);
   };
 
   const handleClose = () => {
@@ -235,6 +284,29 @@ export function AdminPanel() {
                 </Button>
               </div>
             </div>
+
+            <div className="p-3 rounded-lg border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">Pull BEA Data</p>
+                  <p className="text-xs text-muted-foreground">
+                    Cost of living, housing, goods prices (RPP)
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBEAPull}
+                  disabled={!password || isPending}
+                >
+                  {activeAction === "bea" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Result Display */}
@@ -282,6 +354,12 @@ export function AdminPanel() {
                           {result.stats.zhviPointsCreated !== undefined && (
                             <li>ZHVI points: {result.stats.zhviPointsCreated.toLocaleString()}</li>
                           )}
+                          {result.stats.citiesSkipped !== undefined && result.stats.citiesSkipped > 0 && (
+                            <li>Cities skipped: {result.stats.citiesSkipped}</li>
+                          )}
+                          {result.stats.dataYear !== undefined && (
+                            <li>Data year: {result.stats.dataYear}</li>
+                          )}
                         </ul>
                       )}
                     </>
@@ -302,6 +380,8 @@ export function AdminPanel() {
               <span>
                 {activeAction === "zillow"
                   ? "Downloading Zillow data... This may take a moment."
+                  : activeAction === "bea"
+                  ? "Fetching BEA price data..."
                   : "Reinitializing data..."}
               </span>
             </div>

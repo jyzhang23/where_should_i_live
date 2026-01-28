@@ -15,7 +15,8 @@
         "nba": [
           "Warriors"
         ]
-      }
+      },
+      "beaGeoFips": "41860"
     },
     {
       "id": "seattle",
@@ -28,7 +29,8 @@
           "Seahawks"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "42660"
     },
     {
       "id": "new-york-city",
@@ -45,7 +47,8 @@
           "Knicks",
           "Nets"
         ]
-      }
+      },
+      "beaGeoFips": "35620"
     },
     {
       "id": "los-angeles",
@@ -62,7 +65,8 @@
           "Lakers",
           "Clippers"
         ]
-      }
+      },
+      "beaGeoFips": "31080"
     },
     {
       "id": "sacramento",
@@ -75,7 +79,8 @@
         "nba": [
           "Kings"
         ]
-      }
+      },
+      "beaGeoFips": "40900"
     },
     {
       "id": "boston",
@@ -90,7 +95,8 @@
         "nba": [
           "Celtics"
         ]
-      }
+      },
+      "beaGeoFips": "14460"
     },
     {
       "id": "portland",
@@ -103,7 +109,8 @@
         "nba": [
           "Trail Blazers"
         ]
-      }
+      },
+      "beaGeoFips": "38900"
     },
     {
       "id": "las-vegas",
@@ -116,7 +123,8 @@
           "Raiders"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "29820"
     },
     {
       "id": "chicago",
@@ -131,7 +139,8 @@
         "nba": [
           "Bulls"
         ]
-      }
+      },
+      "beaGeoFips": "16980"
     },
     {
       "id": "washington-dc",
@@ -147,7 +156,8 @@
         "nba": [
           "Wizards"
         ]
-      }
+      },
+      "beaGeoFips": "47900"
     },
     {
       "id": "houston",
@@ -162,7 +172,8 @@
         "nba": [
           "Rockets"
         ]
-      }
+      },
+      "beaGeoFips": "26420"
     },
     {
       "id": "atlanta",
@@ -177,7 +188,8 @@
         "nba": [
           "Hawks"
         ]
-      }
+      },
+      "beaGeoFips": "12060"
     },
     {
       "id": "minneapolis",
@@ -192,7 +204,8 @@
         "nba": [
           "Timberwolves"
         ]
-      }
+      },
+      "beaGeoFips": "33460"
     },
     {
       "id": "philadelphia",
@@ -207,7 +220,8 @@
         "nba": [
           "76ers"
         ]
-      }
+      },
+      "beaGeoFips": "37980"
     },
     {
       "id": "dallas",
@@ -222,7 +236,8 @@
         "nba": [
           "Mavericks"
         ]
-      }
+      },
+      "beaGeoFips": "19100"
     },
     {
       "id": "tampa-bay",
@@ -236,7 +251,8 @@
           "Buccaneers"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "45300"
     },
     {
       "id": "denver",
@@ -251,7 +267,8 @@
         "nba": [
           "Nuggets"
         ]
-      }
+      },
+      "beaGeoFips": "19740"
     },
     {
       "id": "charlotte",
@@ -266,7 +283,8 @@
         "nba": [
           "Hornets"
         ]
-      }
+      },
+      "beaGeoFips": "16740"
     },
     {
       "id": "oklahoma-city",
@@ -279,7 +297,8 @@
         "nba": [
           "Thunder"
         ]
-      }
+      },
+      "beaGeoFips": "36420"
     },
     {
       "id": "phoenix",
@@ -294,7 +313,8 @@
         "nba": [
           "Suns"
         ]
-      }
+      },
+      "beaGeoFips": "38060"
     },
     {
       "id": "baltimore",
@@ -307,7 +327,8 @@
           "Ravens"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "12580"
     },
     {
       "id": "orlando",
@@ -320,7 +341,8 @@
         "nba": [
           "Magic"
         ]
-      }
+      },
+      "beaGeoFips": "36740"
     },
     {
       "id": "indianapolis",
@@ -335,7 +357,8 @@
         "nba": [
           "Pacers"
         ]
-      }
+      },
+      "beaGeoFips": "26900"
     },
     {
       "id": "nashville",
@@ -348,7 +371,8 @@
           "Titans"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "34980"
     },
     {
       "id": "milwaukee",
@@ -361,7 +385,8 @@
         "nba": [
           "Bucks"
         ]
-      }
+      },
+      "beaGeoFips": "33340"
     },
     {
       "id": "salt-lake-city",
@@ -374,7 +399,8 @@
         "nba": [
           "Jazz"
         ]
-      }
+      },
+      "beaGeoFips": "41620"
     },
     {
       "id": "detroit",
@@ -389,7 +415,8 @@
         "nba": [
           "Pistons"
         ]
-      }
+      },
+      "beaGeoFips": "19820"
     },
     {
       "id": "st-louis",
@@ -400,7 +427,8 @@
       "sports": {
         "nfl": [],
         "nba": []
-      }
+      },
+      "beaGeoFips": "41180"
     },
     {
       "id": "san-antonio",
@@ -413,7 +441,8 @@
         "nba": [
           "Spurs"
         ]
-      }
+      },
+      "beaGeoFips": "41700"
     },
     {
       "id": "jacksonville",
@@ -426,7 +455,8 @@
           "Jaguars"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "27260"
     },
     {
       "id": "new-orleans",
@@ -441,7 +471,8 @@
         "nba": [
           "Pelicans"
         ]
-      }
+      },
+      "beaGeoFips": "35380"
     },
     {
       "id": "kansas-city",
@@ -454,7 +485,8 @@
           "Chiefs"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "28140"
     },
     {
       "id": "cincinnati",
@@ -467,7 +499,8 @@
           "Bengals"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "17140"
     },
     {
       "id": "cleveland",
@@ -482,7 +515,8 @@
         "nba": [
           "Cavaliers"
         ]
-      }
+      },
+      "beaGeoFips": "17460"
     },
     {
       "id": "buffalo",
@@ -495,7 +529,8 @@
           "Bills"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "15380"
     },
     {
       "id": "pittsburgh",
@@ -508,7 +543,8 @@
           "Steelers"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "38300"
     },
     {
       "id": "miami",
@@ -523,7 +559,8 @@
         "nba": [
           "Heat"
         ]
-      }
+      },
+      "beaGeoFips": "33100"
     },
     {
       "id": "green-bay",
@@ -536,7 +573,8 @@
           "Packers"
         ],
         "nba": []
-      }
+      },
+      "beaGeoFips": "24580"
     },
     {
       "id": "memphis",
@@ -549,7 +587,8 @@
         "nba": [
           "Grizzlies"
         ]
-      }
+      },
+      "beaGeoFips": "32820"
     },
     {
       "id": "san-diego",
@@ -560,7 +599,8 @@
       "sports": {
         "nfl": [],
         "nba": []
-      }
+      },
+      "beaGeoFips": "41740"
     },
     {
       "id": "santa-barbara",
@@ -572,7 +612,8 @@
       "sports": {
         "nfl": [],
         "nba": []
-      }
+      },
+      "beaGeoFips": "42200"
     },
     {
       "id": "raleigh",
@@ -583,7 +624,8 @@
       "sports": {
         "nfl": [],
         "nba": []
-      }
+      },
+      "beaGeoFips": "39580"
     },
     {
       "id": "gainesville",
@@ -594,7 +636,8 @@
       "sports": {
         "nfl": [],
         "nba": []
-      }
+      },
+      "beaGeoFips": "23540"
     }
   ]
 }
