@@ -1,7 +1,7 @@
 import { CityWithMetrics } from "@/types/city";
 import { UserPreferences } from "@/types/preferences";
 import { CityScore, ScoringResult } from "@/types/scores";
-import { calculateTrueCostOfLiving } from "@/lib/cost-of-living";
+import { calculateTrueCostOfLiving, CostOfLivingOptions } from "@/lib/cost-of-living";
 
 /**
  * Calculate scores for all cities based on user preferences
@@ -170,28 +170,34 @@ function calculateClimateScore(
  * Calculate cost of living score (0-100)
  * Higher score = better purchasing power / more affordable
  * 
- * Uses BEA "True Cost of Living" formula:
- *   True Purchasing Power = Disposable Income / (RPP / 100)
+ * Uses BEA "True Cost of Living" formula with persona-based adjustments:
  * 
- * This accounts for:
- * - State/federal/local taxes (via disposable income)
- * - Regional price differences (via RPP)
- * - Housing costs (included in RPP)
+ * RENTER: Standard BEA RPP (weighted by rental data)
+ * HOMEOWNER: Goods + Services only (mortgage is fixed)
+ * PROSPECTIVE BUYER: Uses current home prices + mortgage rates
  * 
  * Falls back to home price-based scoring if BEA data unavailable.
  */
 function calculateCostScore(
   city: CityWithMetrics,
-  _preferences: UserPreferences
+  preferences: UserPreferences
 ): number {
   const metrics = city.metrics!;
+  const { housingSituation, includeUtilities } = preferences.advanced.costOfLiving;
 
   // Try to use BEA True Purchasing Power data
   // @ts-expect-error - bea field may exist on metrics from API
   const beaData = metrics.bea;
   
   if (beaData) {
-    const trueCostOfLiving = calculateTrueCostOfLiving(beaData);
+    // Build options based on user's housing situation
+    const options: CostOfLivingOptions = {
+      housingSituation: housingSituation || "renter",
+      includeUtilities: includeUtilities ?? true,
+      medianHomePrice: metrics.medianHomePrice,
+    };
+    
+    const trueCostOfLiving = calculateTrueCostOfLiving(beaData, options);
     
     if (trueCostOfLiving.truePurchasingPowerIndex !== null) {
       // Convert True Purchasing Power Index to a 0-100 score

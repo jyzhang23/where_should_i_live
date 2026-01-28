@@ -142,34 +142,68 @@ export default function HelpPage() {
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
                 <p>
                   Uses <strong>True Purchasing Power</strong> from the Bureau of Economic Analysis (BEA), 
-                  which combines taxes and regional prices into a single measure of what your income can actually buy.
+                  adjusted based on your housing situation.
                 </p>
+
+                <h4>Housing Situation Adjustments</h4>
+                <p>
+                  The standard BEA &quot;Housing&quot; index is a blended average that doesn&apos;t perfectly 
+                  fit everyone. We adjust the calculation based on your situation:
+                </p>
+
+                <table className="text-xs w-full">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Persona</th>
+                      <th className="text-left">Calculation Method</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Renter</strong></td>
+                      <td>Standard BEA RPP (most accurate - based on rental data). Optionally includes utility costs.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Homeowner</strong></td>
+                      <td>Excludes housing (your mortgage is fixed). Uses: 70% Goods + 30% Services.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Buyer</strong></td>
+                      <td>BEA data is &quot;lagged&quot;. Uses current Zillow prices + 7% mortgage rate for true affordability.</td>
+                    </tr>
+                  </tbody>
+                </table>
 
                 <h4>True Purchasing Power Formula</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  True Purchasing Power = Disposable Income ÷ (RPP ÷ 100)
+                  True Purchasing Power = Disposable Income ÷ (Adjusted RPP ÷ 100)
                 </div>
-                <p>Where:</p>
-                <ul className="text-xs">
-                  <li><strong>Disposable Income</strong> = Gross Income - All Taxes (federal + state + local)</li>
-                  <li><strong>RPP</strong> = Regional Price Parity (100 = national average cost of living)</li>
-                </ul>
 
-                <h4>What&apos;s Included</h4>
+                <h4>Why BEA Data Can Be Misleading for Buyers</h4>
+                <p className="text-xs">
+                  The BEA &quot;Housing&quot; index reflects what people are <em>currently paying</em>, 
+                  including homeowners locked into 3% mortgages from years ago. In 2026, with 7%+ rates, 
+                  buying the same home costs ~50% more in monthly payments. The &quot;Prospective Buyer&quot; 
+                  option swaps BEA housing data for actual market prices.
+                </p>
+
+                <h4>What&apos;s Included in Each Index</h4>
                 <table className="text-xs w-full">
                   <thead>
                     <tr>
                       <th className="text-left">Factor</th>
-                      <th className="text-left">Captured Via</th>
+                      <th className="text-left">In RPP?</th>
+                      <th className="text-left">In Taxes?</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>Rent / Housing</td><td>RPP (primary factor)</td></tr>
-                    <tr><td>Groceries / Goods</td><td>RPP</td></tr>
-                    <tr><td>Sales Tax</td><td>RPP (in retail prices)</td></tr>
-                    <tr><td>State Income Tax</td><td>Disposable Income</td></tr>
-                    <tr><td>Federal Income Tax</td><td>Disposable Income</td></tr>
-                    <tr><td>Local Taxes</td><td>Disposable Income</td></tr>
+                    <tr><td>Rent / Housing</td><td>✓ Primary</td><td>—</td></tr>
+                    <tr><td>Groceries / Goods</td><td>✓</td><td>—</td></tr>
+                    <tr><td>Sales Tax</td><td>✓ (in prices)</td><td>—</td></tr>
+                    <tr><td>State Income Tax</td><td>—</td><td>✓</td></tr>
+                    <tr><td>Federal Income Tax</td><td>—</td><td>✓</td></tr>
+                    <tr><td>Property Tax</td><td>—</td><td>✓</td></tr>
+                    <tr><td>Utilities</td><td>✓ (optional)</td><td>—</td></tr>
                   </tbody>
                 </table>
 
@@ -183,7 +217,7 @@ export default function HelpPage() {
                   {"  "}Index 130 → Score 100 (excellent value)
                 </div>
                 <p className="text-muted-foreground">
-                  Data source: Bureau of Economic Analysis (BEA) Regional Price Parities and Personal Income tables.
+                  Data: BEA Regional Price Parities, Personal Income tables, and Zillow ZHVI.
                 </p>
               </AccordionContent>
             </AccordionItem>

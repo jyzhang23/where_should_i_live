@@ -26,7 +26,30 @@
  * │ Property Tax        │ No (usually)     │ Yes (separate)      │
  * │ Federal Income Tax  │ No               │ Yes                 │
  * └─────────────────────┴──────────────────┴─────────────────────┘
+ * 
+ * PERSONA-BASED ADJUSTMENTS:
+ * 
+ * 1. RENTER: Standard BEA RPP is most accurate (heavily weighted by rental data)
+ *    - Optionally include utilities (important for older cities like Boston, Philly)
+ * 
+ * 2. HOMEOWNER (Fixed Mortgage): Exclude housing from RPP since mortgage is locked
+ *    - Use only Goods + Services indices
+ *    - Formula: (0.70 × Goods Index) + (0.30 × Services Index)
+ * 
+ * 3. PROSPECTIVE BUYER: BEA data is "lagged" - reflects locked-in 3% mortgages
+ *    - Must use current home prices + mortgage rates instead
+ *    - Uses Zillow median price with mortgage-to-income calculation
  */
+
+export type HousingSituation = "renter" | "homeowner" | "prospective-buyer";
+
+export interface CostOfLivingOptions {
+  housingSituation: HousingSituation;
+  includeUtilities: boolean;
+  // For prospective buyer calculation
+  medianHomePrice?: number | null;
+  currentMortgageRate?: number; // Default ~7% in 2026
+}
 
 export interface BEAMetrics {
   purchasingPower?: {
@@ -64,8 +87,18 @@ export interface TrueCostOfLiving {
   grossIncome: number | null;                // Per capita personal income
   afterTaxIncome: number | null;             // Per capita disposable income
   effectiveTaxRate: number | null;           // % of income paid in taxes
-  costOfLivingIndex: number | null;          // RPP (100 = national average)
+  costOfLivingIndex: number | null;          // RPP used (varies by persona)
   housingCostIndex: number | null;           // RPP for rents specifically
+  
+  // Persona-specific
+  persona: HousingSituation;
+  adjustedRPP: number | null;                // RPP adjusted for persona
+  monthlyMortgage: number | null;            // For prospective buyers only
+  
+  // Sub-indices (for display)
+  goodsIndex: number | null;
+  servicesIndex: number | null;
+  utilitiesIndex: number | null;
   
   // Interpretation helpers
   taxBurdenRating: "low" | "moderate" | "high" | "very-high" | null;
@@ -77,25 +110,155 @@ export interface TrueCostOfLiving {
 // Source: BEA - used to calculate index
 const NATIONAL_PER_CAPITA_DISPOSABLE = 56014;
 
+// Current mortgage rate (2026) - for prospective buyer calculation
+const DEFAULT_MORTGAGE_RATE = 0.07; // 7%
+const MORTGAGE_TERM_YEARS = 30;
+
+// Default options for backward compatibility
+const DEFAULT_OPTIONS: CostOfLivingOptions = {
+  housingSituation: "renter",
+  includeUtilities: true,
+};
+
+/**
+ * Calculate monthly mortgage payment
+ * Standard formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+ */
+function calculateMonthlyMortgage(
+  homePrice: number,
+  annualRate: number,
+  years: number,
+  downPaymentPercent: number = 0.20
+): number {
+  const principal = homePrice * (1 - downPaymentPercent);
+  const monthlyRate = annualRate / 12;
+  const numPayments = years * 12;
+  
+  if (monthlyRate === 0) return principal / numPayments;
+  
+  const payment = principal * 
+    (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+    (Math.pow(1 + monthlyRate, numPayments) - 1);
+  
+  return Math.round(payment);
+}
+
+/**
+ * Calculate persona-adjusted RPP
+ * 
+ * RENTER: Standard allItems RPP (+ utilities if enabled)
+ * HOMEOWNER: Goods + Services only (70/30 split), exclude housing
+ * PROSPECTIVE BUYER: Use home price-to-income ratio instead of RPP housing
+ */
+function calculateAdjustedRPP(
+  bea: BEAMetrics,
+  options: CostOfLivingOptions
+): { adjustedRPP: number | null; monthlyMortgage: number | null } {
+  const rpp = bea.regionalPriceParity;
+  
+  if (!rpp) {
+    return { adjustedRPP: null, monthlyMortgage: null };
+  }
+
+  switch (options.housingSituation) {
+    case "renter": {
+      // Standard BEA RPP is most accurate for renters
+      // Optionally adjust for utilities (important for older cities)
+      let base = rpp.allItems;
+      if (base !== null && options.includeUtilities && rpp.utilities !== null) {
+        // Utilities are typically ~5% of cost of living
+        // If utilities are significantly above average, bump up the index
+        const utilitiesDiff = (rpp.utilities - 100) * 0.05;
+        base = base + utilitiesDiff;
+      }
+      return { adjustedRPP: base, monthlyMortgage: null };
+    }
+
+    case "homeowner": {
+      // Existing homeowner with fixed mortgage - exclude housing costs
+      // Formula: 70% Goods + 30% Other Services (excluding rent)
+      const goods = rpp.goods;
+      const services = rpp.otherServices; // "Other" services, not including rent
+      
+      if (goods !== null && services !== null) {
+        const adjusted = (goods * 0.70) + (services * 0.30);
+        return { adjustedRPP: adjusted, monthlyMortgage: null };
+      }
+      
+      // Fallback: if we only have goods, use that
+      if (goods !== null) {
+        return { adjustedRPP: goods, monthlyMortgage: null };
+      }
+      
+      return { adjustedRPP: rpp.allItems, monthlyMortgage: null };
+    }
+
+    case "prospective-buyer": {
+      // Prospective buyer needs current market prices, not lagged BEA data
+      // Calculate a "buyer-adjusted" index using home price and mortgage rates
+      const homePrice = options.medianHomePrice;
+      const mortgageRate = options.currentMortgageRate ?? DEFAULT_MORTGAGE_RATE;
+      
+      if (homePrice && homePrice > 0) {
+        const monthlyMortgage = calculateMonthlyMortgage(
+          homePrice,
+          mortgageRate,
+          MORTGAGE_TERM_YEARS
+        );
+        
+        // National average monthly mortgage payment (2026 estimate)
+        // Based on ~$400K median home at 7% = ~$2,128/month
+        const nationalAvgMortgage = 2128;
+        
+        // Create a housing index based on mortgage payment
+        const housingIndex = (monthlyMortgage / nationalAvgMortgage) * 100;
+        
+        // Blend: 40% housing (mortgage), 35% goods, 25% services
+        // This weights housing heavily since it's the biggest concern for buyers
+        const goods = rpp.goods ?? 100;
+        const services = rpp.otherServices ?? 100;
+        
+        const adjusted = (housingIndex * 0.40) + (goods * 0.35) + (services * 0.25);
+        
+        return { adjustedRPP: adjusted, monthlyMortgage };
+      }
+      
+      // Fallback to standard RPP if no home price data
+      return { adjustedRPP: rpp.allItems, monthlyMortgage: null };
+    }
+
+    default:
+      return { adjustedRPP: rpp.allItems, monthlyMortgage: null };
+  }
+}
+
 /**
  * Calculate the "true" cost of living metrics from BEA data
+ * 
+ * @param bea - BEA metrics for the city
+ * @param options - Calculation options (persona, utilities, etc.)
  */
-export function calculateTrueCostOfLiving(bea: BEAMetrics | undefined): TrueCostOfLiving {
+export function calculateTrueCostOfLiving(
+  bea: BEAMetrics | undefined,
+  options: CostOfLivingOptions = DEFAULT_OPTIONS
+): TrueCostOfLiving {
   if (!bea) {
-    return createEmptyResult();
+    return createEmptyResult(options.housingSituation);
   }
 
   const grossIncome = bea.taxes?.perCapitaIncome ?? null;
   const afterTaxIncome = bea.taxes?.perCapitaDisposable ?? null;
   const effectiveTaxRate = bea.taxes?.effectiveTaxRate ?? null;
-  const costOfLivingIndex = bea.regionalPriceParity?.allItems ?? null;
   const housingCostIndex = bea.regionalPriceParity?.housing ?? null;
+  
+  // Get persona-adjusted RPP
+  const { adjustedRPP, monthlyMortgage } = calculateAdjustedRPP(bea, options);
 
-  // Calculate true purchasing power
-  // Formula: Disposable Income / (RPP / 100)
+  // Calculate true purchasing power using adjusted RPP
+  // Formula: Disposable Income / (Adjusted RPP / 100)
   let truePurchasingPower: number | null = null;
-  if (afterTaxIncome !== null && costOfLivingIndex !== null && costOfLivingIndex > 0) {
-    truePurchasingPower = Math.round(afterTaxIncome / (costOfLivingIndex / 100));
+  if (afterTaxIncome !== null && adjustedRPP !== null && adjustedRPP > 0) {
+    truePurchasingPower = Math.round(afterTaxIncome / (adjustedRPP / 100));
   }
 
   // Calculate index relative to national average
@@ -110,10 +273,16 @@ export function calculateTrueCostOfLiving(bea: BEAMetrics | undefined): TrueCost
     grossIncome,
     afterTaxIncome,
     effectiveTaxRate,
-    costOfLivingIndex,
+    costOfLivingIndex: adjustedRPP,
     housingCostIndex,
+    persona: options.housingSituation,
+    adjustedRPP,
+    monthlyMortgage,
+    goodsIndex: bea.regionalPriceParity?.goods ?? null,
+    servicesIndex: bea.regionalPriceParity?.otherServices ?? null,
+    utilitiesIndex: bea.regionalPriceParity?.utilities ?? null,
     taxBurdenRating: getTaxBurdenRating(effectiveTaxRate),
-    costOfLivingRating: getCostOfLivingRating(costOfLivingIndex),
+    costOfLivingRating: getCostOfLivingRating(adjustedRPP),
     overallValueRating: getOverallValueRating(truePurchasingPowerIndex),
   };
 }
@@ -153,7 +322,7 @@ function getOverallValueRating(index: number | null): TrueCostOfLiving["overallV
   return "very-poor";
 }
 
-function createEmptyResult(): TrueCostOfLiving {
+function createEmptyResult(persona: HousingSituation = "renter"): TrueCostOfLiving {
   return {
     truePurchasingPower: null,
     truePurchasingPowerIndex: null,
@@ -162,6 +331,12 @@ function createEmptyResult(): TrueCostOfLiving {
     effectiveTaxRate: null,
     costOfLivingIndex: null,
     housingCostIndex: null,
+    persona,
+    adjustedRPP: null,
+    monthlyMortgage: null,
+    goodsIndex: null,
+    servicesIndex: null,
+    utilitiesIndex: null,
     taxBurdenRating: null,
     costOfLivingRating: null,
     overallValueRating: null,

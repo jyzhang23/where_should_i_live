@@ -15,7 +15,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight, Info, Thermometer, Users, Heart, Vote } from "lucide-react";
+import { ChevronRight, Info, Thermometer, Users, Heart, Vote, DollarSign, Home, Key, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -107,8 +107,110 @@ export function AdvancedPreferences() {
         />
       </CollapsibleSection>
 
-      {/* Cost of Living - Now uses BEA data automatically */}
-      {/* Advanced sliders removed - calculation uses True Purchasing Power from BEA */}
+      {/* Cost of Living - Housing Situation */}
+      <CollapsibleSection
+        title="Cost of Living"
+        icon={<DollarSign className="h-4 w-4 text-green-500" />}
+        defaultOpen
+      >
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-center gap-1">
+              <Label className="text-sm">Your Housing Situation</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{TOOLTIPS["advanced.costOfLiving.housingSituation"]}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {([
+                { value: "renter", label: "Renter", icon: Key, desc: "Uses standard BEA rental index" },
+                { value: "homeowner", label: "Homeowner", icon: Home, desc: "Excludes housing (mortgage is fixed)" },
+                { value: "prospective-buyer", label: "Prospective Buyer", icon: ShoppingCart, desc: "Uses current home prices + rates" },
+              ] as const).map(({ value, label, icon: Icon, desc }) => (
+                <button
+                  key={value}
+                  onClick={() => updateAdvanced("costOfLiving", "housingSituation", value)}
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-lg text-left transition-all",
+                    preferences.advanced.costOfLiving.housingSituation === value
+                      ? "bg-green-100 dark:bg-green-900/30 ring-2 ring-green-500"
+                      : "bg-muted/50 hover:bg-muted"
+                  )}
+                >
+                  <Icon className={cn(
+                    "h-5 w-5 flex-shrink-0",
+                    preferences.advanced.costOfLiving.housingSituation === value
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-muted-foreground"
+                  )} />
+                  <div>
+                    <div className={cn(
+                      "font-medium text-sm",
+                      preferences.advanced.costOfLiving.housingSituation === value
+                        ? "text-green-700 dark:text-green-300"
+                        : ""
+                    )}>
+                      {label}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{desc}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Include Utilities toggle - only for renters */}
+          {preferences.advanced.costOfLiving.housingSituation === "renter" && (
+            <div className="flex items-center justify-between pt-2 border-t">
+              <div className="flex items-center gap-1">
+                <Label htmlFor="utilities" className="text-sm">
+                  Include Utility Costs
+                </Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-sm">{TOOLTIPS["advanced.costOfLiving.includeUtilities"]}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Switch
+                id="utilities"
+                checked={preferences.advanced.costOfLiving.includeUtilities ?? true}
+                onCheckedChange={(v) => updateAdvanced("costOfLiving", "includeUtilities", v)}
+              />
+            </div>
+          )}
+
+          {/* Info box based on selection */}
+          <div className="p-3 rounded-lg bg-muted/50 text-xs text-muted-foreground">
+            {preferences.advanced.costOfLiving.housingSituation === "renter" && (
+              <p>
+                <strong>Renter:</strong> The BEA index is most accurate for you, as it&apos;s heavily 
+                weighted by rental data from the American Community Survey.
+              </p>
+            )}
+            {preferences.advanced.costOfLiving.housingSituation === "homeowner" && (
+              <p>
+                <strong>Homeowner:</strong> Since your mortgage is fixed, housing costs are excluded. 
+                Score uses only Goods (70%) + Services (30%) indices.
+              </p>
+            )}
+            {preferences.advanced.costOfLiving.housingSituation === "prospective-buyer" && (
+              <p>
+                <strong>Buyer:</strong> BEA data is &quot;lagged&quot; (reflects old 3% mortgages). 
+                We use current home prices with ~7% mortgage rates for accurate comparison.
+              </p>
+            )}
+          </div>
+        </div>
+      </CollapsibleSection>
 
       {/* Demographics Details */}
       <CollapsibleSection

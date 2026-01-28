@@ -33,6 +33,11 @@ export interface UserPreferences {
 
     // Cost sub-preferences
     costOfLiving: {
+      // Housing situation affects how RPP is calculated
+      housingSituation: "renter" | "homeowner" | "prospective-buyer";
+      // Include utilities in renter calculation (older cities have higher utility costs)
+      includeUtilities: boolean;
+      // Legacy fields (kept for backward compatibility, no longer used in UI)
       maxStateTax: number;
       maxPropertyTax: number;
       weightHomePrice: number;
@@ -85,6 +90,9 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       maxRainDays: 120,
     },
     costOfLiving: {
+      housingSituation: "renter",
+      includeUtilities: true,
+      // Legacy fields
       maxStateTax: 0.1,
       maxPropertyTax: 0.015,
       weightHomePrice: 60,
@@ -143,6 +151,11 @@ export const TOOLTIPS: Record<string, string> = {
     "Maximum acceptable rainy days per year. Seattle has ~150, Phoenix has ~35.",
 
   // Cost advanced
+  "advanced.costOfLiving.housingSituation":
+    "Your housing situation affects how cost of living is calculated. Renters use the standard BEA index. Homeowners exclude housing costs (your mortgage is fixed). Prospective buyers factor in current home prices and mortgage rates.",
+  "advanced.costOfLiving.includeUtilities":
+    "Include utility costs in the calculation. Important for renters in older cities (Boston, Philly) where utilities can be significantly higher.",
+  // Legacy tooltips (kept for compatibility)
   "advanced.costOfLiving.maxStateTax":
     "Maximum acceptable state income tax rate. 0% (TX, FL) to 13.3% (CA).",
   "advanced.costOfLiving.maxPropertyTax":
