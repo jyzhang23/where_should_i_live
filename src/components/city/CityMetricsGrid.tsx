@@ -26,6 +26,9 @@ import {
   Info,
   DollarSign,
   TrendingUp,
+  Snowflake,
+  Zap,
+  Leaf,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -77,6 +80,8 @@ function MetricItem({ icon, label, value, unit, tooltip, colorClass }: MetricIte
 export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
   // BEA data is now included in metrics (merged from metrics.json)
   const bea = metrics.bea;
+  // NOAA climate data (30-year normals)
+  const noaa = metrics.noaa;
   const formatTemp = (temp: number | null) => temp !== null ? `${temp.toFixed(0)}°F` : null;
   const formatPercent = (val: number | null) => val !== null ? `${(val * 100).toFixed(1)}%` : null;
   const formatPrice = (price: number | null) => {
@@ -115,43 +120,119 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
           <CardTitle className="text-base flex items-center gap-2">
             <Sun className="h-4 w-4 text-amber-500" />
             Climate
+            {noaa && (
+              <span className="text-xs font-normal text-muted-foreground ml-auto">
+                NOAA {noaa.normalPeriod}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2">
-          <MetricItem
-            icon={<Thermometer className="h-4 w-4" />}
-            label="Avg Temperature"
-            value={formatTemp(metrics.avgTemp)}
-            tooltip="Annual average temperature"
-          />
-          <MetricItem
-            icon={<Thermometer className="h-4 w-4 text-orange-500" />}
-            label="Summer Avg"
-            value={formatTemp(metrics.avgSummerTemp)}
-            tooltip="Average summer temperature (Jun-Aug)"
-          />
-          <MetricItem
-            icon={<Thermometer className="h-4 w-4 text-blue-500" />}
-            label="Winter Avg"
-            value={formatTemp(metrics.avgWinterTemp)}
-            tooltip="Average winter temperature (Dec-Feb)"
-          />
-          <MetricItem
-            icon={<Sun className="h-4 w-4 text-yellow-500" />}
-            label="Sunny Days"
-            value={metrics.daysOfSunshine}
-            unit="/yr"
-            tooltip="Days with significant sunshine per year"
-            colorClass={getScoreColor(metrics.daysOfSunshine ? metrics.daysOfSunshine / 3 : null)}
-          />
-          <MetricItem
-            icon={<CloudRain className="h-4 w-4 text-blue-400" />}
-            label="Rainy Days"
-            value={metrics.daysOfRain}
-            unit="/yr"
-            tooltip="Days with precipitation per year"
-            colorClass={getScoreColor(metrics.daysOfRain ? 100 - metrics.daysOfRain / 1.5 : null)}
-          />
+        <CardContent className="space-y-3">
+          {/* Basic Temperature Info */}
+          <div className="grid grid-cols-2 gap-2">
+            <MetricItem
+              icon={<Thermometer className="h-4 w-4" />}
+              label="Avg Temperature"
+              value={formatTemp(metrics.avgTemp)}
+              tooltip="Annual average temperature"
+            />
+            <MetricItem
+              icon={<Thermometer className="h-4 w-4 text-orange-500" />}
+              label="Summer Avg"
+              value={formatTemp(metrics.avgSummerTemp)}
+              tooltip="Average summer temperature (Jun-Aug)"
+            />
+            <MetricItem
+              icon={<Thermometer className="h-4 w-4 text-blue-500" />}
+              label="Winter Avg"
+              value={formatTemp(metrics.avgWinterTemp)}
+              tooltip="Average winter temperature (Dec-Feb)"
+            />
+            <MetricItem
+              icon={<Sun className="h-4 w-4 text-yellow-500" />}
+              label="Sunny Days"
+              value={metrics.daysOfSunshine}
+              unit="/yr"
+              tooltip="Days with significant sunshine per year"
+              colorClass={getScoreColor(metrics.daysOfSunshine ? metrics.daysOfSunshine / 3 : null)}
+            />
+          </div>
+
+          {/* NOAA Data Section */}
+          {noaa && (
+            <>
+              <div className="pt-2 border-t">
+                <p className="text-xs text-muted-foreground mb-2">30-Year Climate Normals</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <MetricItem
+                    icon={<Sun className="h-4 w-4 text-yellow-500" />}
+                    label="Comfort Days"
+                    value={noaa.comfortDays}
+                    unit="/yr"
+                    tooltip="Days with max temp between 65-80°F (T-shirt weather)"
+                    colorClass={noaa.comfortDays && noaa.comfortDays > 150 ? "text-score-high" : ""}
+                  />
+                  <MetricItem
+                    icon={<Thermometer className="h-4 w-4 text-red-500" />}
+                    label="Extreme Heat"
+                    value={noaa.extremeHeatDays}
+                    unit=" days >95°F"
+                    tooltip="Days per year with max temp above 95°F"
+                    colorClass={noaa.extremeHeatDays && noaa.extremeHeatDays > 30 ? "text-red-500" : "text-score-high"}
+                  />
+                  <MetricItem
+                    icon={<Snowflake className="h-4 w-4 text-blue-400" />}
+                    label="Freeze Days"
+                    value={noaa.freezeDays}
+                    unit=" days <32°F"
+                    tooltip="Days per year with min temp below 32°F"
+                    colorClass={noaa.freezeDays && noaa.freezeDays > 60 ? "text-blue-500" : "text-score-high"}
+                  />
+                  <MetricItem
+                    icon={<CloudRain className="h-4 w-4 text-blue-400" />}
+                    label="Rain Days"
+                    value={noaa.rainDays}
+                    unit="/yr"
+                    tooltip="Days with precipitation > 0.01 inches"
+                    colorClass={getScoreColor(noaa.rainDays ? 100 - noaa.rainDays / 1.5 : null)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <MetricItem
+                  icon={<Zap className="h-4 w-4 text-amber-500" />}
+                  label="Heating Days"
+                  value={noaa.heatingDegreeDays?.toLocaleString()}
+                  unit=" HDD"
+                  tooltip="Heating Degree Days (base 65°F) - proxy for heating costs"
+                />
+                <MetricItem
+                  icon={<Zap className="h-4 w-4 text-orange-500" />}
+                  label="Cooling Days"
+                  value={noaa.coolingDegreeDays?.toLocaleString()}
+                  unit=" CDD"
+                  tooltip="Cooling Degree Days (base 65°F) - proxy for AC costs"
+                />
+                <MetricItem
+                  icon={<Leaf className="h-4 w-4 text-green-500" />}
+                  label="Growing Season"
+                  value={noaa.growingSeasonDays}
+                  unit=" days"
+                  tooltip={`Last spring freeze: ${noaa.lastSpringFreeze || "N/A"}, First fall freeze: ${noaa.firstFallFreeze || "N/A"}`}
+                  colorClass={noaa.growingSeasonDays && noaa.growingSeasonDays > 200 ? "text-score-high" : ""}
+                />
+                <MetricItem
+                  icon={<Activity className="h-4 w-4 text-purple-500" />}
+                  label="Seasonal Stability"
+                  value={noaa.seasonalStability?.toFixed(1)}
+                  unit="°F σ"
+                  tooltip="Standard deviation of monthly avg temps. Lower = more consistent ('perpetual spring')"
+                  colorClass={noaa.seasonalStability && noaa.seasonalStability < 10 ? "text-score-high" : ""}
+                />
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 

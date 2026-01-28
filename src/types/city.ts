@@ -1,6 +1,36 @@
 // City and metrics types that match the Prisma schema
 import { BEAMetrics } from "@/lib/cost-of-living";
 
+// NOAA ACIS climate data (30-year normals)
+export interface NOAAClimateData {
+  source: string;              // "ACIS"
+  station: string;             // ICAO code, e.g., "KSFO"
+  normalPeriod: string;        // "1991-2020"
+  lastUpdated: string;         // ISO date
+
+  // Comfort metrics
+  comfortDays: number | null;        // Days with 65°F <= max temp <= 80°F
+  extremeHeatDays: number | null;    // Days with max temp > 95°F
+  freezeDays: number | null;         // Days with min temp < 32°F
+
+  // Precipitation
+  rainDays: number | null;           // Days with precipitation > 0.01 in
+  annualPrecipitation: number | null; // Total annual precipitation (inches)
+
+  // Utility cost proxy
+  coolingDegreeDays: number | null;  // CDD base 65°F
+  heatingDegreeDays: number | null;  // HDD base 65°F
+
+  // Growing season
+  growingSeasonDays: number | null;  // Days between last spring and first fall freeze
+  lastSpringFreeze: string | null;   // MM-DD format
+  firstFallFreeze: string | null;    // MM-DD format
+
+  // Temperature stability
+  diurnalSwing: number | null;       // Avg daily temp range (°F)
+  seasonalStability: number | null;  // StdDev of monthly avg temps (lower = more stable)
+}
+
 export interface City {
   id: string;
   name: string;
@@ -55,6 +85,12 @@ export interface CityMetrics {
 
   // BEA data (merged from metrics.json, not in database)
   bea?: BEAMetrics;
+
+  // NOAA climate data (merged from metrics.json, not in database)
+  noaa?: NOAAClimateData;
+
+  // Quality of Life aggregate score
+  qualityOfLifeScore?: number | null;
 
   dataAsOf: Date;
   updatedAt: Date;

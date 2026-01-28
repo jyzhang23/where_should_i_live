@@ -96,38 +96,96 @@ export default function HelpPage() {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
-                <p>Starts at 100 points, with penalties and bonuses based on your preferences:</p>
-                
-                <h4>Temperature Penalty</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  penalty = |actual_temp - ideal_temp| × 2
-                </div>
-                <p>Lose 2 points for every degree away from your ideal temperature.</p>
+                <p>
+                  Uses <strong>NOAA ACIS 30-year climate normals</strong> (1991-2020) with 
+                  weighted scoring across 7 factors. Each factor has an importance weight 
+                  (0-100%) that you control.
+                </p>
 
-                <h4>Summer Heat Penalty</h4>
+                <h4>How Weighted Scoring Works</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if summer_temp &gt; max_summer: penalty = (summer_temp - max_summer) × 3
+                  Climate Score = Σ(Factor Score × Weight) / Σ(Weights)
                 </div>
-                <p>Lose 3 points for every degree above your maximum summer temperature.</p>
+                <p className="text-xs text-muted-foreground">
+                  Only factors with weight &gt; 0 are included. Set weight to 0 to ignore a factor.
+                </p>
 
-                <h4>Winter Cold Penalty</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if winter_temp &lt; min_winter: penalty = (min_winter - winter_temp) × 3
-                </div>
-                <p>Lose 3 points for every degree below your minimum winter temperature.</p>
+                <h4>Climate Factors</h4>
+                <table className="text-xs w-full">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Factor</th>
+                      <th className="text-left">What It Measures</th>
+                      <th className="text-left">Score Logic</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Comfort Days</strong></td>
+                      <td>Days with max temp 65-80°F</td>
+                      <td>Score = min(100, actual / desired × 100)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Extreme Heat</strong></td>
+                      <td>Days with max temp &gt;95°F</td>
+                      <td>100 if ≤ max, decreases if over</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Freeze Days</strong></td>
+                      <td>Days with min temp &lt;32°F</td>
+                      <td>100 if ≤ max, decreases if over</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Rain Days</strong></td>
+                      <td>Days with precipitation</td>
+                      <td>100 if ≤ max, decreases if over</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Utility Costs</strong></td>
+                      <td>CDD + HDD (degree days)</td>
+                      <td>100 at 2000, 0 at 9000</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Growing Season</strong></td>
+                      <td>Days between freezes</td>
+                      <td>Score = min(100, actual / desired × 100)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Seasonal Stability</strong></td>
+                      <td>StdDev of monthly temps</td>
+                      <td>100 at σ=5°F, 0 at σ=25°F</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Daily Swing</strong></td>
+                      <td>Avg day/night temp range</td>
+                      <td>100 if ≤ max, decreases if over</td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                <h4>Sunshine Bonus/Penalty</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if sunny_days ≥ min_sunshine: bonus = +10{"\n"}
-                  else: penalty = ((min_sunshine - sunny_days) / min_sunshine) × 20
-                </div>
+                <h4>Example Cities</h4>
+                <table className="text-xs w-full">
+                  <thead>
+                    <tr>
+                      <th className="text-left">City</th>
+                      <th className="text-right">Comfort</th>
+                      <th className="text-right">Heat</th>
+                      <th className="text-right">Freeze</th>
+                      <th className="text-right">CDD+HDD</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>San Diego</td><td className="text-right">267</td><td className="text-right">3</td><td className="text-right">5</td><td className="text-right">~2000</td></tr>
+                    <tr><td>Phoenix</td><td className="text-right">89</td><td className="text-right">107</td><td className="text-right">10</td><td className="text-right">~4500</td></tr>
+                    <tr><td>Seattle</td><td className="text-right">95</td><td className="text-right">3</td><td className="text-right">25</td><td className="text-right">~4700</td></tr>
+                    <tr><td>Minneapolis</td><td className="text-right">89</td><td className="text-right">12</td><td className="text-right">156</td><td className="text-right">~8000</td></tr>
+                    <tr><td>Miami</td><td className="text-right">120</td><td className="text-right">35</td><td className="text-right">0</td><td className="text-right">~3800</td></tr>
+                  </tbody>
+                </table>
 
-                <h4>Rain Penalty</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  if rainy_days &gt; max_rain: penalty = ((rainy_days - max_rain) / max_rain) × 15
-                </div>
-
-                <p className="text-muted-foreground">Final score is clamped between 0 and 100.</p>
+                <p className="text-muted-foreground text-xs">
+                  Data source: NOAA ACIS (data.rcc-acis.org) using major airport weather stations.
+                </p>
               </AccordionContent>
             </AccordionItem>
 

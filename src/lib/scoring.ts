@@ -121,46 +121,140 @@ function checkFilters(
 }
 
 /**
- * Calculate climate score (0-100)
+ * Calculate climate score (0-100) using NOAA data with weighted preferences
+ * Falls back to legacy calculation if NOAA data unavailable
  */
 function calculateClimateScore(
   city: CityWithMetrics,
   preferences: UserPreferences
 ): number {
   const metrics = city.metrics!;
-  const { idealTemp, maxSummerTemp, minWinterTemp, minSunshineDays, maxRainDays } =
-    preferences.advanced.climate;
+  const noaa = metrics.noaa;
+  const prefs = preferences.advanced.climate;
+
+  // If NOAA data available, use weighted scoring
+  if (noaa) {
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    // T-Shirt Weather (comfort days: 65-80°F)
+    if (prefs.weightComfortDays > 0 && noaa.comfortDays !== null) {
+      // Score: ratio of actual to desired, capped at 100
+      const comfortScore = Math.min(100, (noaa.comfortDays / prefs.minComfortDays) * 100);
+      totalScore += comfortScore * prefs.weightComfortDays;
+      totalWeight += prefs.weightComfortDays;
+    }
+
+    // Extreme Heat (inverse - fewer is better)
+    if (prefs.weightExtremeHeat > 0 && noaa.extremeHeatDays !== null) {
+      // Score: 100 if at or below max, decreases linearly
+      const heatScore = prefs.maxExtremeHeatDays > 0
+        ? Math.max(0, 100 - (Math.max(0, noaa.extremeHeatDays - prefs.maxExtremeHeatDays) / prefs.maxExtremeHeatDays) * 100)
+        : (noaa.extremeHeatDays === 0 ? 100 : 50);
+      totalScore += heatScore * prefs.weightExtremeHeat;
+      totalWeight += prefs.weightExtremeHeat;
+    }
+
+    // Freeze Days (inverse - fewer is better)
+    if (prefs.weightFreezeDays > 0 && noaa.freezeDays !== null) {
+      const freezeScore = prefs.maxFreezeDays > 0
+        ? Math.max(0, 100 - (Math.max(0, noaa.freezeDays - prefs.maxFreezeDays) / prefs.maxFreezeDays) * 100)
+        : (noaa.freezeDays === 0 ? 100 : 50);
+      totalScore += freezeScore * prefs.weightFreezeDays;
+      totalWeight += prefs.weightFreezeDays;
+    }
+
+    // Rain Days (inverse - fewer is better)
+    if (prefs.weightRainDays > 0 && noaa.rainDays !== null) {
+      const rainScore = Math.max(0, 100 - (Math.max(0, noaa.rainDays - prefs.maxRainDays) / prefs.maxRainDays) * 100);
+      totalScore += rainScore * prefs.weightRainDays;
+      totalWeight += prefs.weightRainDays;
+    }
+
+    // Utility Costs (inverse - lower CDD+HDD is better)
+    if (prefs.weightUtilityCosts > 0 && 
+        noaa.coolingDegreeDays !== null && 
+        noaa.heatingDegreeDays !== null) {
+      const totalDegreeDays = noaa.coolingDegreeDays + noaa.heatingDegreeDays;
+      // National range: ~2000 (San Diego) to ~9000 (Minneapolis)
+      // Score 100 at 2000, score 0 at 9000
+      const utilityScore = Math.max(0, 100 - ((totalDegreeDays - 2000) / 7000) * 100);
+      totalScore += utilityScore * prefs.weightUtilityCosts;
+      totalWeight += prefs.weightUtilityCosts;
+    }
+
+    // Growing Season
+    if (prefs.weightGrowingSeason > 0 && noaa.growingSeasonDays !== null) {
+      const growScore = Math.min(100, (noaa.growingSeasonDays / prefs.minGrowingSeasonDays) * 100);
+      totalScore += growScore * prefs.weightGrowingSeason;
+      totalWeight += prefs.weightGrowingSeason;
+    }
+
+    // Seasonal Stability (inverse - lower stddev is better)
+    if (prefs.weightSeasonalStability > 0 && noaa.seasonalStability !== null) {
+      // Range: ~5 (San Diego) to ~25 (Minneapolis)
+      // Score 100 at 5, score 0 at 25
+      const stabilityScore = Math.max(0, 100 - ((noaa.seasonalStability - 5) / 20) * 100);
+      totalScore += stabilityScore * prefs.weightSeasonalStability;
+      totalWeight += prefs.weightSeasonalStability;
+    }
+
+    // Diurnal Swing (inverse - smaller swing is better)
+    if (prefs.weightDiurnalSwing > 0 && noaa.diurnalSwing !== null) {
+      const swingScore = Math.max(0, 100 - (Math.max(0, noaa.diurnalSwing - 10) / prefs.maxDiurnalSwing) * 100);
+      totalScore += swingScore * prefs.weightDiurnalSwing;
+      totalWeight += prefs.weightDiurnalSwing;
+    }
+
+    // Return weighted average, or 50 if no weights
+    if (totalWeight > 0) {
+      return Math.max(0, Math.min(100, totalScore / totalWeight));
+    }
+  }
+
+  // Fallback: Legacy calculation using basic metrics
+  return calculateLegacyClimateScore(metrics, prefs);
+}
+
+/**
+ * Legacy climate score calculation (fallback when NOAA data unavailable)
+ */
+function calculateLegacyClimateScore(
+  metrics: CityWithMetrics["metrics"],
+  prefs: UserPreferences["advanced"]["climate"]
+): number {
+  if (!metrics) return 50;
 
   let score = 100;
 
   // Temperature score: penalty for deviation from ideal
   if (metrics.avgTemp !== null) {
-    const tempDiff = Math.abs(metrics.avgTemp - idealTemp);
-    score -= tempDiff * 2; // -2 points per degree difference
+    const tempDiff = Math.abs(metrics.avgTemp - prefs.idealTemp);
+    score -= tempDiff * 2;
   }
 
   // Summer temperature penalty
-  if (metrics.avgSummerTemp !== null && metrics.avgSummerTemp > maxSummerTemp) {
-    score -= (metrics.avgSummerTemp - maxSummerTemp) * 3;
+  if (metrics.avgSummerTemp !== null && metrics.avgSummerTemp > prefs.maxSummerTemp) {
+    score -= (metrics.avgSummerTemp - prefs.maxSummerTemp) * 3;
   }
 
   // Winter temperature penalty
-  if (metrics.avgWinterTemp !== null && metrics.avgWinterTemp < minWinterTemp) {
-    score -= (minWinterTemp - metrics.avgWinterTemp) * 3;
+  if (metrics.avgWinterTemp !== null && metrics.avgWinterTemp < prefs.minWinterTemp) {
+    score -= (prefs.minWinterTemp - metrics.avgWinterTemp) * 3;
   }
 
   // Sunshine bonus/penalty
   if (metrics.daysOfSunshine !== null) {
-    if (metrics.daysOfSunshine >= minSunshineDays) {
-      score += 10; // Bonus for meeting sunshine requirement
+    if (metrics.daysOfSunshine >= prefs.minSunshineDays) {
+      score += 10;
     } else {
-      score -= ((minSunshineDays - metrics.daysOfSunshine) / minSunshineDays) * 20;
+      score -= ((prefs.minSunshineDays - metrics.daysOfSunshine) / prefs.minSunshineDays) * 20;
     }
   }
 
   // Rain penalty
-  if (metrics.daysOfRain !== null && metrics.daysOfRain > maxRainDays) {
-    score -= ((metrics.daysOfRain - maxRainDays) / maxRainDays) * 15;
+  if (metrics.daysOfRain !== null && metrics.daysOfRain > prefs.maxRainDays) {
+    score -= ((metrics.daysOfRain - prefs.maxRainDays) / prefs.maxRainDays) * 15;
   }
 
   return Math.max(0, Math.min(100, score));

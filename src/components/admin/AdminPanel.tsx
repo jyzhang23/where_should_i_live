@@ -19,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RefreshCw, Shield, CheckCircle, XCircle, Loader2, Download } from "lucide-react";
+import { RefreshCw, Shield, CheckCircle, XCircle, Loader2, Download, CloudSun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RefreshResult {
@@ -35,6 +35,8 @@ interface RefreshResult {
     cityCitiesMatched?: number;
     dataPoints?: number;
     dataYear?: string;
+    normalPeriod?: string;
+    errors?: string[];
   };
   message?: string;
   error?: string;
@@ -118,7 +120,33 @@ async function pullBEAData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-type ActionType = "reinitialize" | "zillow" | "bea";
+async function pullNOAAData(password: string): Promise<RefreshResult> {
+  const response = await fetch("/api/admin/noaa-pull", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+
+  const text = await response.text();
+  if (!text) {
+    throw new Error("Server returned empty response. Check server logs.");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid server response: ${text.slice(0, 100)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || "NOAA pull failed");
+  }
+
+  return data;
+}
+
+type ActionType = "reinitialize" | "zillow" | "bea" | "noaa";
 
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -169,7 +197,21 @@ export function AdminPanel() {
     },
   });
 
-  const isPending = reinitMutation.isPending || zillowMutation.isPending || beaMutation.isPending;
+  const noaaMutation = useMutation({
+    mutationFn: pullNOAAData,
+    onSuccess: (data) => {
+      setResult(data);
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+    },
+    onError: (error: Error) => {
+      setResult({ success: false, error: error.message });
+    },
+    onSettled: () => {
+      setActiveAction(null);
+    },
+  });
+
+  const isPending = reinitMutation.isPending || zillowMutation.isPending || beaMutation.isPending || noaaMutation.isPending;
 
   const handleReinitialize = () => {
     if (!password) return;
@@ -190,6 +232,13 @@ export function AdminPanel() {
     setResult(null);
     setActiveAction("bea");
     beaMutation.mutate(password);
+  };
+
+  const handleNOAAPull = () => {
+    if (!password) return;
+    setResult(null);
+    setActiveAction("noaa");
+    noaaMutation.mutate(password);
   };
 
   const handleClose = () => {
@@ -307,6 +356,29 @@ export function AdminPanel() {
                 </Button>
               </div>
             </div>
+
+            <div className="p-3 rounded-lg border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">Pull NOAA Climate Data</p>
+                  <p className="text-xs text-muted-foreground">
+                    30-year normals: comfort days, heat/freeze, HDD/CDD
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNOAAPull}
+                  disabled={!password || isPending}
+                >
+                  {activeAction === "noaa" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CloudSun className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Result Display */}
@@ -360,6 +432,14 @@ export function AdminPanel() {
                           {result.stats.dataYear !== undefined && (
                             <li>Data year: {result.stats.dataYear}</li>
                           )}
+                          {result.stats.normalPeriod !== undefined && (
+                            <li>Normal period: {result.stats.normalPeriod}</li>
+                          )}
+                          {result.stats.errors && result.stats.errors.length > 0 && (
+                            <li className="text-amber-600 dark:text-amber-400">
+                              Errors: {result.stats.errors.length} cities failed
+                            </li>
+                          )}
                         </ul>
                       )}
                     </>
@@ -382,6 +462,8 @@ export function AdminPanel() {
                   ? "Downloading Zillow data... This may take a moment."
                   : activeAction === "bea"
                   ? "Fetching BEA price data..."
+                  : activeAction === "noaa"
+                  ? "Fetching NOAA climate data... This may take a few minutes."
                   : "Reinitializing data..."}
               </span>
             </div>

@@ -22,13 +22,46 @@ export interface UserPreferences {
   // === ADVANCED OPTIONS (collapsible) ===
 
   advanced: {
-    // Climate sub-preferences
+    // Climate sub-preferences (NOAA-based)
     climate: {
+      // === COMFORT ===
+      // T-Shirt Weather: How important are comfortable outdoor days?
+      weightComfortDays: number;        // 0-100, default 50
+      minComfortDays: number;           // Days 65-80°F, default 150
+
+      // === EXTREMES ===
+      // Heat Tolerance
+      weightExtremeHeat: number;        // 0-100, default 50
+      maxExtremeHeatDays: number;       // Days >95°F, default 10
+
+      // Cold Tolerance
+      weightFreezeDays: number;         // 0-100, default 50
+      maxFreezeDays: number;            // Days <32°F, default 30
+
+      // === PRECIPITATION ===
+      weightRainDays: number;           // 0-100, default 50
+      maxRainDays: number;              // Default 100
+
+      // === UTILITY COSTS ===
+      weightUtilityCosts: number;       // 0-100, default 50
+      // Uses CDD + HDD internally
+
+      // === GROWING SEASON ===
+      weightGrowingSeason: number;      // 0-100, default 0 (off by default)
+      minGrowingSeasonDays: number;     // Default 180
+
+      // === STABILITY ===
+      weightSeasonalStability: number;  // 0-100, default 25
+      // Lower stddev = more "perpetual spring" like San Diego
+
+      weightDiurnalSwing: number;       // 0-100, default 25
+      maxDiurnalSwing: number;          // °F, default 25
+
+      // Legacy fields (kept for migration/fallback)
       idealTemp: number;
       maxSummerTemp: number;
       minWinterTemp: number;
       minSunshineDays: number;
-      maxRainDays: number;
     };
 
     // Cost sub-preferences
@@ -83,11 +116,26 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   },
   advanced: {
     climate: {
+      // NOAA-based preferences
+      weightComfortDays: 50,
+      minComfortDays: 150,
+      weightExtremeHeat: 50,
+      maxExtremeHeatDays: 10,
+      weightFreezeDays: 50,
+      maxFreezeDays: 30,
+      weightRainDays: 50,
+      maxRainDays: 100,
+      weightUtilityCosts: 50,
+      weightGrowingSeason: 0,  // Off by default
+      minGrowingSeasonDays: 180,
+      weightSeasonalStability: 25,
+      weightDiurnalSwing: 25,
+      maxDiurnalSwing: 25,
+      // Legacy fields
       idealTemp: 65,
       maxSummerTemp: 90,
       minWinterTemp: 30,
       minSunshineDays: 200,
-      maxRainDays: 120,
     },
     costOfLiving: {
       housingSituation: "renter",
@@ -138,7 +186,36 @@ export const TOOLTIPS: Record<string, string> = {
   "filters.maxHomePrice":
     "Filter out cities where median single-family home exceeds this price.",
 
-  // Climate advanced
+  // Climate advanced (NOAA-based)
+  "advanced.climate.weightComfortDays":
+    "How important are 'T-shirt weather' days (65-80°F)? San Diego: 267 days, Chicago: 89 days.",
+  "advanced.climate.minComfortDays":
+    "Minimum desired comfortable outdoor days (65-80°F). Cities with more score higher.",
+  "advanced.climate.weightExtremeHeat":
+    "How important is avoiding extreme heat (>95°F)? Phoenix: 107 days, Seattle: 3 days.",
+  "advanced.climate.maxExtremeHeatDays":
+    "Maximum acceptable extreme heat days (>95°F). Cities exceeding this get penalized.",
+  "advanced.climate.weightFreezeDays":
+    "How important is avoiding freezing temps (<32°F)? Minneapolis: 156 days, Miami: 0 days.",
+  "advanced.climate.maxFreezeDays":
+    "Maximum acceptable freeze days (<32°F). Cities exceeding this get penalized.",
+  "advanced.climate.weightRainDays":
+    "How important is avoiding rainy days? Seattle: 152 days, Phoenix: 36 days.",
+  "advanced.climate.maxRainDays":
+    "Maximum acceptable rainy days per year. Cities exceeding this get penalized.",
+  "advanced.climate.weightUtilityCosts":
+    "How important are utility costs? Based on Heating + Cooling Degree Days. San Diego: low, Minneapolis: high.",
+  "advanced.climate.weightGrowingSeason":
+    "How important is a long growing season for gardening? Miami: 365 days, Boston: 180 days.",
+  "advanced.climate.minGrowingSeasonDays":
+    "Minimum desired growing season length. Cities with longer seasons score higher.",
+  "advanced.climate.weightSeasonalStability":
+    "Prefer consistent year-round temps ('perpetual spring')? San Diego: very stable, Chicago: high variation.",
+  "advanced.climate.weightDiurnalSwing":
+    "Prefer consistent day/night temps? Miami: 10°F swing, Denver: 28°F swing.",
+  "advanced.climate.maxDiurnalSwing":
+    "Maximum acceptable daily temperature swing (°F). Lower = more consistent temps.",
+  // Legacy climate tooltips (for fallback)
   "advanced.climate.idealTemp":
     "Your preferred average annual temperature in °F. Cities closer to this score higher. US cities range from 45°F (Seattle) to 77°F (Miami).",
   "advanced.climate.maxSummerTemp":
@@ -147,8 +224,6 @@ export const TOOLTIPS: Record<string, string> = {
     "Minimum acceptable average winter temperature. Cities below this get penalized.",
   "advanced.climate.minSunshineDays":
     "Minimum days of sunshine per year. Seattle has ~160, Phoenix has ~300.",
-  "advanced.climate.maxRainDays":
-    "Maximum acceptable rainy days per year. Seattle has ~150, Phoenix has ~35.",
 
   // Cost advanced
   "advanced.costOfLiving.housingSituation":

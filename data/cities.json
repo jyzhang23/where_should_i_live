@@ -6,6 +6,7 @@
       "id": "san-francisco",
       "name": "San Francisco",
       "state": "CA",
+      "noaaStation": "KSFO",
       "zillowRegionId": 395057,
       "zillowRegionName": "San Francisco, CA",
       "sports": {
@@ -22,6 +23,7 @@
       "id": "seattle",
       "name": "Seattle",
       "state": "WA",
+      "noaaStation": "KSEA",
       "zillowRegionId": 395078,
       "zillowRegionName": "Seattle, WA",
       "sports": {
@@ -36,6 +38,7 @@
       "id": "new-york-city",
       "name": "New York City",
       "state": "NY/NJ",
+      "noaaStation": "KJFK",
       "zillowRegionId": 394913,
       "zillowRegionName": "New York City, NY",
       "sports": {
@@ -54,6 +57,7 @@
       "id": "los-angeles",
       "name": "Los Angeles",
       "state": "CA",
+      "noaaStation": "KLAX",
       "zillowRegionId": 753899,
       "zillowRegionName": "Los Angeles, CA",
       "sports": {
@@ -72,6 +76,7 @@
       "id": "sacramento",
       "name": "Sacramento",
       "state": "CA",
+      "noaaStation": "KSMF",
       "zillowRegionId": 395045,
       "zillowRegionName": "Sacramento, CA",
       "sports": {
@@ -86,6 +91,7 @@
       "id": "boston",
       "name": "Boston",
       "state": "MA",
+      "noaaStation": "KBOS",
       "zillowRegionId": 394404,
       "zillowRegionName": "Boston, MA",
       "sports": {
@@ -102,6 +108,7 @@
       "id": "portland",
       "name": "Portland",
       "state": "OR",
+      "noaaStation": "KPDX",
       "zillowRegionId": 394998,
       "zillowRegionName": "Portland, OR",
       "sports": {
@@ -116,6 +123,7 @@
       "id": "las-vegas",
       "name": "Las Vegas",
       "state": "NV",
+      "noaaStation": "KLAS",
       "zillowRegionId": 394775,
       "zillowRegionName": "Las Vegas, NV",
       "sports": {
@@ -130,6 +138,7 @@
       "id": "chicago",
       "name": "Chicago",
       "state": "IL",
+      "noaaStation": "KORD",
       "zillowRegionId": 394463,
       "zillowRegionName": "Chicago, IL",
       "sports": {
@@ -146,6 +155,7 @@
       "id": "washington-dc",
       "name": "Washington D.C.",
       "state": "DC/VA/MD",
+      "noaaStation": "KDCA",
       "zillowRegionId": 395209,
       "zillowRegionName": "Washington, DC",
       "zillowGeography": "msa",
@@ -163,6 +173,7 @@
       "id": "houston",
       "name": "Houston",
       "state": "TX",
+      "noaaStation": "KIAH",
       "zillowRegionId": 394692,
       "zillowRegionName": "Houston, TX",
       "sports": {
@@ -179,6 +190,7 @@
       "id": "atlanta",
       "name": "Atlanta",
       "state": "GA",
+      "noaaStation": "KATL",
       "zillowRegionId": 394347,
       "zillowRegionName": "Atlanta, GA",
       "sports": {
@@ -195,6 +207,7 @@
       "id": "minneapolis",
       "name": "Minneapolis",
       "state": "MN",
+      "noaaStation": "KMSP",
       "zillowRegionId": 394865,
       "zillowRegionName": "Minneapolis, MN",
       "sports": {
@@ -211,6 +224,7 @@
       "id": "philadelphia",
       "name": "Philadelphia",
       "state": "PA",
+      "noaaStation": "KPHL",
       "zillowRegionId": 394974,
       "zillowRegionName": "Philadelphia, PA",
       "sports": {
@@ -227,6 +241,7 @@
       "id": "dallas",
       "name": "Dallas",
       "state": "TX",
+      "noaaStation": "KDFW",
       "zillowRegionId": 394514,
       "zillowRegionName": "Dallas, TX",
       "sports": {
@@ -243,6 +258,7 @@
       "id": "tampa-bay",
       "name": "Tampa Bay",
       "state": "FL",
+      "noaaStation": "KTPA",
       "zillowRegionId": 395148,
       "zillowRegionName": "Tampa, FL",
       "zillowGeography": "msa",
@@ -258,6 +274,7 @@
       "id": "denver",
       "name": "Denver",
       "state": "CO",
+      "noaaStation": "KDEN",
       "zillowRegionId": 394530,
       "zillowRegionName": "Denver, CO",
       "sports": {
@@ -274,6 +291,7 @@
       "id": "charlotte",
       "name": "Charlotte",
       "state": "NC",
+      "noaaStation": "KCLT",
       "zillowRegionId": 394458,
       "zillowRegionName": "Charlotte, NC",
       "sports": {
@@ -290,6 +308,7 @@
       "id": "oklahoma-city",
       "name": "Oklahoma City",
       "state": "OK",
+      "noaaStation": "KOKC",
       "zillowRegionId": 394935,
       "zillowRegionName": "Oklahoma City, OK",
       "sports": {
@@ -304,6 +323,7 @@
       "id": "phoenix",
       "name": "Phoenix",
       "state": "AZ",
+      "noaaStation": "KPHX",
       "zillowRegionId": 394976,
       "zillowRegionName": "Phoenix, AZ",
       "sports": {
@@ -320,6 +340,7 @@
       "id": "baltimore",
       "name": "Baltimore",
       "state": "MD",
+      "noaaStation": "KBWI",
       "zillowRegionId": 394358,
       "zillowRegionName": "Baltimore, MD",
       "sports": {
@@ -334,6 +355,7 @@
       "id": "orlando",
       "name": "Orlando",
       "state": "FL",
+      "noaaStation": "KMCO",
       "zillowRegionId": 394943,
       "zillowRegionName": "Orlando, FL",
       "sports": {
@@ -348,6 +370,7 @@
       "id": "indianapolis",
       "name": "Indianapolis",
       "state": "IN",
+      "noaaStation": "KIND",
       "zillowRegionId": 394705,
       "zillowRegionName": "Indianapolis, IN",
       "sports": {
@@ -364,6 +387,7 @@
       "id": "nashville",
       "name": "Nashville",
       "state": "TN",
+      "noaaStation": "KBNA",
       "zillowRegionId": 394902,
       "zillowRegionName": "Nashville, TN",
       "sports": {
@@ -378,6 +402,7 @@
       "id": "milwaukee",
       "name": "Milwaukee",
       "state": "WI",
+      "noaaStation": "KMKE",
       "zillowRegionId": 394862,
       "zillowRegionName": "Milwaukee, WI",
       "sports": {
@@ -392,6 +417,7 @@
       "id": "salt-lake-city",
       "name": "Salt Lake City",
       "state": "UT",
+      "noaaStation": "KSLC",
       "zillowRegionId": 395053,
       "zillowRegionName": "Salt Lake City, UT",
       "sports": {
@@ -406,6 +432,7 @@
       "id": "detroit",
       "name": "Detroit",
       "state": "MI",
+      "noaaStation": "KDTW",
       "zillowRegionId": 394532,
       "zillowRegionName": "Detroit, MI",
       "sports": {
@@ -422,6 +449,7 @@
       "id": "st-louis",
       "name": "St. Louis",
       "state": "MO",
+      "noaaStation": "KSTL",
       "zillowRegionId": 395121,
       "zillowRegionName": "St. Louis, MO",
       "sports": {
@@ -434,6 +462,7 @@
       "id": "san-antonio",
       "name": "San Antonio",
       "state": "TX",
+      "noaaStation": "KSAT",
       "zillowRegionId": 395055,
       "zillowRegionName": "San Antonio, TX",
       "sports": {
@@ -448,6 +477,7 @@
       "id": "jacksonville",
       "name": "Jacksonville",
       "state": "FL",
+      "noaaStation": "KJAX",
       "zillowRegionId": 394714,
       "zillowRegionName": "Jacksonville, FL",
       "sports": {
@@ -462,6 +492,7 @@
       "id": "new-orleans",
       "name": "New Orleans",
       "state": "LA",
+      "noaaStation": "KMSY",
       "zillowRegionId": 394910,
       "zillowRegionName": "New Orleans, LA",
       "sports": {
@@ -478,6 +509,7 @@
       "id": "kansas-city",
       "name": "Kansas City",
       "state": "MO",
+      "noaaStation": "KMCI",
       "zillowRegionId": 394735,
       "zillowRegionName": "Kansas City, MO",
       "sports": {
@@ -492,6 +524,7 @@
       "id": "cincinnati",
       "name": "Cincinnati",
       "state": "OH",
+      "noaaStation": "KCVG",
       "zillowRegionId": 394466,
       "zillowRegionName": "Cincinnati, OH",
       "sports": {
@@ -506,6 +539,7 @@
       "id": "cleveland",
       "name": "Cleveland",
       "state": "OH",
+      "noaaStation": "KCLE",
       "zillowRegionId": 394475,
       "zillowRegionName": "Cleveland, OH",
       "sports": {
@@ -522,6 +556,7 @@
       "id": "buffalo",
       "name": "Buffalo",
       "state": "NY",
+      "noaaStation": "KBUF",
       "zillowRegionId": 394425,
       "zillowRegionName": "Buffalo, NY",
       "sports": {
@@ -536,6 +571,7 @@
       "id": "pittsburgh",
       "name": "Pittsburgh",
       "state": "PA",
+      "noaaStation": "KPIT",
       "zillowRegionId": 394982,
       "zillowRegionName": "Pittsburgh, PA",
       "sports": {
@@ -550,6 +586,7 @@
       "id": "miami",
       "name": "Miami",
       "state": "FL",
+      "noaaStation": "KMIA",
       "zillowRegionId": 394856,
       "zillowRegionName": "Miami, FL",
       "sports": {
@@ -566,6 +603,7 @@
       "id": "green-bay",
       "name": "Green Bay",
       "state": "WI",
+      "noaaStation": "KGRB",
       "zillowRegionId": 394646,
       "zillowRegionName": "Green Bay, WI",
       "sports": {
@@ -580,6 +618,7 @@
       "id": "memphis",
       "name": "Memphis",
       "state": "TN",
+      "noaaStation": "KMEM",
       "zillowRegionId": 394849,
       "zillowRegionName": "Memphis, TN",
       "sports": {
@@ -594,6 +633,7 @@
       "id": "san-diego",
       "name": "San Diego",
       "state": "CA",
+      "noaaStation": "KSAN",
       "zillowRegionId": 395056,
       "zillowRegionName": "San Diego, CA",
       "sports": {
@@ -606,6 +646,7 @@
       "id": "santa-barbara",
       "name": "Santa Barbara",
       "state": "CA",
+      "noaaStation": "KSBA",
       "zillowRegionId": 13712,
       "zillowRegionName": "Santa Barbara",
       "zillowGeography": "city",
@@ -619,6 +660,7 @@
       "id": "raleigh",
       "name": "Raleigh",
       "state": "NC",
+      "noaaStation": "KRDU",
       "zillowRegionId": 395012,
       "zillowRegionName": "Raleigh, NC",
       "sports": {
@@ -631,6 +673,7 @@
       "id": "gainesville",
       "name": "Gainesville",
       "state": "FL",
+      "noaaStation": "KGNV",
       "zillowRegionId": 394622,
       "zillowRegionName": "Gainesville, FL",
       "sports": {

@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { BEAMetrics } from "@/lib/cost-of-living";
+import { NOAAClimateData } from "@/types/city";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +15,13 @@ function cityNameToSlug(name: string): string {
     .replace(/[^a-z0-9-]/g, "");
 }
 
-// Load BEA data from metrics.json
-function loadBEAData(): Record<string, BEAMetrics> {
+interface MetricsJsonData {
+  bea?: BEAMetrics;
+  noaa?: NOAAClimateData;
+}
+
+// Load supplementary data from metrics.json (BEA, NOAA, etc.)
+function loadMetricsData(): Record<string, MetricsJsonData> {
   const possiblePaths = [
     join(process.cwd(), "data", "metrics.json"),
     join(process.cwd(), "../data", "metrics.json"),
@@ -25,19 +31,30 @@ function loadBEAData(): Record<string, BEAMetrics> {
     if (existsSync(path)) {
       try {
         const metricsFile = JSON.parse(readFileSync(path, "utf-8"));
-        const beaData: Record<string, BEAMetrics> = {};
+        const metricsData: Record<string, MetricsJsonData> = {};
         
-        // Extract BEA data for each city
+        // Extract supplementary data for each city
         for (const [cityId, cityMetrics] of Object.entries(metricsFile.cities || {})) {
-          const metrics = cityMetrics as { bea?: BEAMetrics };
+          const metrics = cityMetrics as { 
+            bea?: BEAMetrics;
+            climate?: { noaa?: NOAAClimateData };
+          };
+          
+          metricsData[cityId] = {};
+          
           if (metrics.bea) {
-            beaData[cityId] = metrics.bea;
+            metricsData[cityId].bea = metrics.bea;
+          }
+          
+          // NOAA data is nested under climate.noaa
+          if (metrics.climate?.noaa) {
+            metricsData[cityId].noaa = metrics.climate.noaa;
           }
         }
         
-        return beaData;
+        return metricsData;
       } catch (error) {
-        console.error("Error loading BEA data:", error);
+        console.error("Error loading metrics data:", error);
       }
     }
   }
@@ -57,18 +74,21 @@ export async function GET() {
       },
     });
 
-    // Load BEA data from metrics.json
-    const beaData = loadBEAData();
+    // Load supplementary data from metrics.json (BEA, NOAA, etc.)
+    const metricsData = loadMetricsData();
 
-    // Merge BEA data into city metrics (using slug derived from city name)
-    const citiesWithBEA = cities.map((city) => {
+    // Merge supplementary data into city metrics (using slug derived from city name)
+    const citiesWithData = cities.map((city) => {
       const slug = cityNameToSlug(city.name);
-      if (city.metrics && beaData[slug]) {
+      const supplementary = metricsData[slug];
+      
+      if (city.metrics && supplementary) {
         return {
           ...city,
           metrics: {
             ...city.metrics,
-            bea: beaData[slug],
+            ...(supplementary.bea && { bea: supplementary.bea }),
+            ...(supplementary.noaa && { noaa: supplementary.noaa }),
           },
         };
       }
@@ -82,9 +102,9 @@ export async function GET() {
     });
 
     return NextResponse.json({
-      cities: citiesWithBEA,
+      cities: citiesWithData,
       lastUpdated: lastRefresh?.refreshedAt || null,
-      count: citiesWithBEA.length,
+      count: citiesWithData.length,
     });
   } catch (error) {
     console.error("Error fetching cities:", error);
