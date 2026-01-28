@@ -39,30 +39,35 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
       category: "Climate",
       score: cityScore.climateScore,
       comparison: comparisonScore?.climateScore,
+      nationalAvg: 50,
       fullMark: 100,
     },
     {
       category: "Cost",
       score: cityScore.costScore,
       comparison: comparisonScore?.costScore,
+      nationalAvg: 50,
       fullMark: 100,
     },
     {
       category: "Demographics",
       score: cityScore.demographicsScore,
       comparison: comparisonScore?.demographicsScore,
+      nationalAvg: 50,
       fullMark: 100,
     },
     {
       category: "Quality of Life",
       score: cityScore.qualityOfLifeScore,
       comparison: comparisonScore?.qualityOfLifeScore,
+      nationalAvg: 50,
       fullMark: 100,
     },
     {
       category: "Cultural",
       score: cityScore.culturalScore,
       comparison: comparisonScore?.culturalScore,
+      nationalAvg: 50,
       fullMark: 100,
     },
   ];
@@ -101,6 +106,17 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
                 domain={[0, 100]}
                 tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
                 tickCount={5}
+              />
+              {/* National Average reference line (50 = U.S. average) */}
+              <Radar
+                name="National Avg"
+                dataKey="nationalAvg"
+                stroke="var(--muted-foreground)"
+                fill="transparent"
+                fillOpacity={0}
+                strokeWidth={1}
+                strokeDasharray="4 4"
+                dot={false}
               />
               <Radar
                 name={cityScore.cityName}
@@ -145,6 +161,11 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
             <span className="text-muted-foreground ml-1">overall</span>
           </div>
         )}
+        {/* National average legend */}
+        <div className="flex items-center justify-center gap-1 mt-2 text-xs text-muted-foreground">
+          <span className="inline-block w-4 border-t border-dashed border-muted-foreground" />
+          <span>Dashed line = U.S. national average (50)</span>
+        </div>
       </CardContent>
     </Card>
   );

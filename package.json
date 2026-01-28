@@ -13,7 +13,8 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx scripts/seed.ts",
     "db:studio": "prisma studio",
-    "validate": "tsx scripts/validate-data.ts"
+    "validate": "tsx scripts/validate-data.ts",
+    "test:normalization": "tsx scripts/test-normalization.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.2",

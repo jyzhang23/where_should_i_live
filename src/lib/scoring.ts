@@ -3,6 +3,177 @@ import { UserPreferences } from "@/types/preferences";
 import { CityScore, ScoringResult } from "@/types/scores";
 import { calculateTrueCostOfLiving, CostOfLivingOptions } from "@/lib/cost-of-living";
 
+// ============================================================================
+// NORMALIZATION CONSTANTS - U.S. Geographic Extremes
+// These define the 0-100 bounds for range-based normalization
+// ============================================================================
+
+const CLIMATE_RANGES = {
+  // Comfort Days (65-80°F): More is better
+  comfortDays: { min: 50, max: 280 },         // ~50 (Buffalo) to ~267 (San Diego)
+  // Extreme Heat Days (>95°F): Fewer is better (inverted)
+  extremeHeatDays: { min: 0, max: 90 },       // 0 (coastal) to ~90 (Phoenix)
+  // Freeze Days (<32°F): Fewer is better (inverted)
+  freezeDays: { min: 0, max: 160 },           // 0 (Miami) to ~160 (Minneapolis)
+  // Rain Days: Fewer is better (inverted)
+  rainDays: { min: 30, max: 180 },            // ~30 (Phoenix) to ~180 (Seattle area)
+  // Snow Days: Fewer is better (inverted)
+  snowDays: { min: 0, max: 65 },              // 0 (SoCal) to ~65 (Buffalo)
+  // Cloudy Days: Fewer is better (inverted)
+  cloudyDays: { min: 50, max: 220 },          // ~50 (Phoenix) to ~220 (Seattle)
+  // July Dewpoint: Lower is better (inverted)
+  julyDewpoint: { min: 45, max: 75 },         // ~45 (desert) to ~75 (Houston)
+  // Degree Days (CDD+HDD): Lower is better (inverted)
+  degreeDays: { min: 2000, max: 9000 },       // ~2000 (San Diego) to ~9000 (Minneapolis)
+  // Growing Season: More is better
+  growingSeasonDays: { min: 120, max: 365 },  // ~120 (northern) to 365 (SoCal)
+  // Seasonal Stability (temp stddev): Lower is better (inverted)
+  seasonalStability: { min: 5, max: 28 },     // ~5 (San Diego) to ~28 (Minneapolis)
+  // Diurnal Swing: Smaller is better (inverted)
+  diurnalSwing: { min: 10, max: 35 },         // ~10 (coastal) to ~35 (desert)
+};
+
+// QoL metric ranges for percentile calculation
+const QOL_RANGES = {
+  // Walk Score: 0-100, higher is better
+  walkScore: { min: 20, max: 95 },
+  // Transit Score: 0-100, higher is better
+  transitScore: { min: 0, max: 90 },
+  // Bike Score: 0-100, higher is better
+  bikeScore: { min: 20, max: 85 },
+  // Violent Crime Rate: per 100K, lower is better (inverted)
+  violentCrimeRate: { min: 80, max: 900 },
+  // Healthy Air Days %: higher is better
+  healthyDaysPercent: { min: 50, max: 98 },
+  // Fiber Coverage %: higher is better
+  fiberCoveragePercent: { min: 10, max: 95 },
+  // Student-Teacher Ratio: lower is better (inverted)
+  studentTeacherRatio: { min: 10, max: 25 },
+  // Physicians per 100K: higher is better
+  physiciansPer100k: { min: 30, max: 180 },
+};
+
+// ============================================================================
+// NORMALIZATION UTILITIES
+// ============================================================================
+
+/**
+ * Range-based normalization: maps a value to 0-100 based on U.S. extremes
+ * @param value - The raw value to normalize
+ * @param min - The "best" end of the range (maps to 100)
+ * @param max - The "worst" end of the range (maps to 0)
+ * @param invert - If true, higher raw values are worse (default: false)
+ */
+function normalizeToRange(value: number, min: number, max: number, invert: boolean = false): number {
+  // Clamp to range
+  const clamped = Math.max(min, Math.min(max, value));
+  // Calculate position in range (0-1)
+  const normalized = (clamped - min) / (max - min);
+  // Convert to 0-100 score (invert if needed)
+  const score = invert ? (1 - normalized) * 100 : normalized * 100;
+  return Math.round(Math.max(0, Math.min(100, score)));
+}
+
+/**
+ * Compute percentile rank of a value within an array
+ * @param value - The value to rank
+ * @param allValues - Array of all values in the dataset
+ * @param higherIsBetter - If true, higher values get higher percentiles
+ */
+function toPercentileScore(value: number, allValues: number[], higherIsBetter: boolean = true): number {
+  if (allValues.length === 0) return 50;
+  
+  const sorted = [...allValues].sort((a, b) => a - b);
+  // Find how many values are below this one
+  const belowCount = sorted.filter(v => v < value).length;
+  const percentile = (belowCount / sorted.length) * 100;
+  
+  return higherIsBetter ? percentile : (100 - percentile);
+}
+
+/**
+ * Logarithmic "Critical Mass" curve for minority community presence
+ * Implements diminishing returns: 25%+ presence plateaus in benefit
+ * @param actualPct - Actual percentage of community in city
+ * @param targetPct - User's minimum threshold
+ */
+function minorityPresenceScore(actualPct: number, targetPct: number): number {
+  if (actualPct >= targetPct) {
+    // Above threshold: diminishing returns using log scale
+    // Base score of 75 + logarithmic bonus, cap at 100
+    const excess = actualPct - targetPct;
+    return Math.min(100, 75 + Math.log10(1 + excess * 2) * 15);
+  } else {
+    // Below threshold: steeper linear penalty
+    const deficit = targetPct - actualPct;
+    return Math.max(0, 75 - deficit * 4);
+  }
+}
+
+// ============================================================================
+// QoL PERCENTILE CACHE
+// Pre-computed during scoring to avoid repeated calculations
+// ============================================================================
+
+interface QoLPercentiles {
+  walkScores: number[];
+  transitScores: number[];
+  bikeScores: number[];
+  crimeRates: number[];
+  airQualityPcts: number[];
+  fiberPcts: number[];
+  studentTeacherRatios: number[];
+  physicianRates: number[];
+}
+
+function computeQoLPercentiles(cities: CityWithMetrics[]): QoLPercentiles {
+  const percentiles: QoLPercentiles = {
+    walkScores: [],
+    transitScores: [],
+    bikeScores: [],
+    crimeRates: [],
+    airQualityPcts: [],
+    fiberPcts: [],
+    studentTeacherRatios: [],
+    physicianRates: [],
+  };
+
+  for (const city of cities) {
+    const qol = city.metrics?.qol;
+    if (!qol) continue;
+
+    if (qol.walkability?.walkScore !== null && qol.walkability?.walkScore !== undefined) {
+      percentiles.walkScores.push(qol.walkability.walkScore);
+    }
+    if (qol.walkability?.transitScore !== null && qol.walkability?.transitScore !== undefined) {
+      percentiles.transitScores.push(qol.walkability.transitScore);
+    }
+    if (qol.walkability?.bikeScore !== null && qol.walkability?.bikeScore !== undefined) {
+      percentiles.bikeScores.push(qol.walkability.bikeScore);
+    }
+    if (qol.crime?.violentCrimeRate !== null && qol.crime?.violentCrimeRate !== undefined) {
+      percentiles.crimeRates.push(qol.crime.violentCrimeRate);
+    }
+    if (qol.airQuality?.healthyDaysPercent !== null && qol.airQuality?.healthyDaysPercent !== undefined) {
+      percentiles.airQualityPcts.push(qol.airQuality.healthyDaysPercent);
+    }
+    if (qol.broadband?.fiberCoveragePercent !== null && qol.broadband?.fiberCoveragePercent !== undefined) {
+      percentiles.fiberPcts.push(qol.broadband.fiberCoveragePercent);
+    }
+    if (qol.education?.studentTeacherRatio !== null && qol.education?.studentTeacherRatio !== undefined) {
+      percentiles.studentTeacherRatios.push(qol.education.studentTeacherRatio);
+    }
+    if (qol.health?.primaryCarePhysiciansPer100k !== null && qol.health?.primaryCarePhysiciansPer100k !== undefined) {
+      percentiles.physicianRates.push(qol.health.primaryCarePhysiciansPer100k);
+    }
+  }
+
+  return percentiles;
+}
+
+// Global cache for percentiles (updated per scoring run)
+let qolPercentilesCache: QoLPercentiles | null = null;
+
 /**
  * Calculate scores for all cities based on user preferences
  * This runs entirely client-side for instant feedback
@@ -13,6 +184,9 @@ export function calculateScores(
 ): ScoringResult {
   const rankings: CityScore[] = [];
   let excludedCount = 0;
+
+  // Pre-compute QoL percentiles for all cities (for percentile-based scoring)
+  qolPercentilesCache = computeQoLPercentiles(cities);
 
   for (const city of cities) {
     const metrics = city.metrics;
@@ -124,108 +298,158 @@ function calculateClimateScore(
   const noaa = metrics.noaa;
   const prefs = preferences.advanced.climate;
 
-  // If NOAA data available, use weighted scoring
+  // If NOAA data available, use range-based normalization with weighted scoring
   if (noaa) {
     let totalScore = 0;
     let totalWeight = 0;
 
-    // T-Shirt Weather (comfort days: 65-80°F)
+    // T-Shirt Weather (comfort days: 65-80°F) - More is better
     if (prefs.weightComfortDays > 0 && noaa.comfortDays !== null) {
-      // Score: ratio of actual to desired, capped at 100
-      const comfortScore = Math.min(100, (noaa.comfortDays / prefs.minComfortDays) * 100);
+      // Range-based: 50 days = 0, 280 days = 100
+      const comfortScore = normalizeToRange(
+        noaa.comfortDays,
+        CLIMATE_RANGES.comfortDays.min,
+        CLIMATE_RANGES.comfortDays.max,
+        false // higher is better
+      );
       totalScore += comfortScore * prefs.weightComfortDays;
       totalWeight += prefs.weightComfortDays;
     }
 
-    // Extreme Heat (inverse - fewer is better)
+    // Extreme Heat (>95°F) - Fewer is better
     if (prefs.weightExtremeHeat > 0 && noaa.extremeHeatDays !== null) {
-      // Score: 100 if at or below max, decreases linearly
-      const heatScore = prefs.maxExtremeHeatDays > 0
-        ? Math.max(0, 100 - (Math.max(0, noaa.extremeHeatDays - prefs.maxExtremeHeatDays) / prefs.maxExtremeHeatDays) * 100)
-        : (noaa.extremeHeatDays === 0 ? 100 : 50);
+      // Range-based: 0 days = 100, 90 days = 0
+      const heatScore = normalizeToRange(
+        noaa.extremeHeatDays,
+        CLIMATE_RANGES.extremeHeatDays.min,
+        CLIMATE_RANGES.extremeHeatDays.max,
+        true // lower is better
+      );
       totalScore += heatScore * prefs.weightExtremeHeat;
       totalWeight += prefs.weightExtremeHeat;
     }
 
-    // Freeze Days (inverse - fewer is better)
+    // Freeze Days (<32°F) - Fewer is better
     if (prefs.weightFreezeDays > 0 && noaa.freezeDays !== null) {
-      const freezeScore = prefs.maxFreezeDays > 0
-        ? Math.max(0, 100 - (Math.max(0, noaa.freezeDays - prefs.maxFreezeDays) / prefs.maxFreezeDays) * 100)
-        : (noaa.freezeDays === 0 ? 100 : 50);
+      // Range-based: 0 days = 100, 160 days = 0
+      const freezeScore = normalizeToRange(
+        noaa.freezeDays,
+        CLIMATE_RANGES.freezeDays.min,
+        CLIMATE_RANGES.freezeDays.max,
+        true // lower is better
+      );
       totalScore += freezeScore * prefs.weightFreezeDays;
       totalWeight += prefs.weightFreezeDays;
     }
 
-    // Rain Days (inverse - fewer is better)
+    // Rain Days - Fewer is better
     if (prefs.weightRainDays > 0 && noaa.rainDays !== null) {
-      const rainScore = Math.max(0, 100 - (Math.max(0, noaa.rainDays - prefs.maxRainDays) / prefs.maxRainDays) * 100);
+      // Range-based: 30 days = 100, 180 days = 0
+      const rainScore = normalizeToRange(
+        noaa.rainDays,
+        CLIMATE_RANGES.rainDays.min,
+        CLIMATE_RANGES.rainDays.max,
+        true // lower is better
+      );
       totalScore += rainScore * prefs.weightRainDays;
       totalWeight += prefs.weightRainDays;
     }
 
-    // Snow Days (inverse - fewer is better)
+    // Snow Days - Fewer is better
     if (prefs.weightSnowDays > 0 && noaa.snowDays !== null) {
-      const snowScore = prefs.maxSnowDays > 0
-        ? Math.max(0, 100 - (Math.max(0, noaa.snowDays - prefs.maxSnowDays) / prefs.maxSnowDays) * 100)
-        : (noaa.snowDays === 0 ? 100 : 50);
+      // Range-based: 0 days = 100, 65 days = 0
+      const snowScore = normalizeToRange(
+        noaa.snowDays,
+        CLIMATE_RANGES.snowDays.min,
+        CLIMATE_RANGES.snowDays.max,
+        true // lower is better
+      );
       totalScore += snowScore * prefs.weightSnowDays;
       totalWeight += prefs.weightSnowDays;
     }
 
-    // Cloudy Days / Gloom Factor (inverse - fewer is better)
+    // Cloudy Days / Gloom Factor - Fewer is better
     if (prefs.weightCloudyDays > 0 && noaa.cloudyDays !== null) {
-      const cloudyScore = Math.max(0, 100 - (Math.max(0, noaa.cloudyDays - prefs.maxCloudyDays) / prefs.maxCloudyDays) * 100);
+      // Range-based: 50 days = 100, 220 days = 0
+      const cloudyScore = normalizeToRange(
+        noaa.cloudyDays,
+        CLIMATE_RANGES.cloudyDays.min,
+        CLIMATE_RANGES.cloudyDays.max,
+        true // lower is better
+      );
       totalScore += cloudyScore * prefs.weightCloudyDays;
       totalWeight += prefs.weightCloudyDays;
     }
 
-    // Humidity / Stickiness (inverse - lower dewpoint is better)
+    // Humidity / Stickiness (July dewpoint) - Lower is better
     if (prefs.weightHumidity > 0 && noaa.julyDewpoint !== null) {
-      // Dewpoint range: ~50°F (dry) to ~75°F (oppressive)
-      // Score 100 at/below max, decreases as it goes above
-      const humidityScore = noaa.julyDewpoint <= prefs.maxJulyDewpoint
-        ? 100
-        : Math.max(0, 100 - ((noaa.julyDewpoint - prefs.maxJulyDewpoint) / 15) * 100);
+      // Range-based: 45°F = 100, 75°F = 0
+      const humidityScore = normalizeToRange(
+        noaa.julyDewpoint,
+        CLIMATE_RANGES.julyDewpoint.min,
+        CLIMATE_RANGES.julyDewpoint.max,
+        true // lower is better
+      );
       totalScore += humidityScore * prefs.weightHumidity;
       totalWeight += prefs.weightHumidity;
     }
 
-    // Utility Costs (inverse - lower CDD+HDD is better)
+    // Utility Costs (CDD+HDD) - Lower is better
     if (prefs.weightUtilityCosts > 0 && 
         noaa.coolingDegreeDays !== null && 
         noaa.heatingDegreeDays !== null) {
       const totalDegreeDays = noaa.coolingDegreeDays + noaa.heatingDegreeDays;
-      // National range: ~2000 (San Diego) to ~9000 (Minneapolis)
-      // Score 100 at 2000, score 0 at 9000
-      const utilityScore = Math.max(0, 100 - ((totalDegreeDays - 2000) / 7000) * 100);
+      // Range-based: 2000 = 100 (San Diego), 9000 = 0 (Minneapolis)
+      const utilityScore = normalizeToRange(
+        totalDegreeDays,
+        CLIMATE_RANGES.degreeDays.min,
+        CLIMATE_RANGES.degreeDays.max,
+        true // lower is better
+      );
       totalScore += utilityScore * prefs.weightUtilityCosts;
       totalWeight += prefs.weightUtilityCosts;
     }
 
-    // Growing Season
+    // Growing Season - More is better
     if (prefs.weightGrowingSeason > 0 && noaa.growingSeasonDays !== null) {
-      const growScore = Math.min(100, (noaa.growingSeasonDays / prefs.minGrowingSeasonDays) * 100);
+      // Range-based: 120 days = 0, 365 days = 100
+      const growScore = normalizeToRange(
+        noaa.growingSeasonDays,
+        CLIMATE_RANGES.growingSeasonDays.min,
+        CLIMATE_RANGES.growingSeasonDays.max,
+        false // higher is better
+      );
       totalScore += growScore * prefs.weightGrowingSeason;
       totalWeight += prefs.weightGrowingSeason;
     }
 
-    // Seasonal Stability (inverse - lower stddev is better)
+    // Seasonal Stability (temp stddev) - Lower is better
     if (prefs.weightSeasonalStability > 0 && noaa.seasonalStability !== null) {
-      // Range: ~5 (San Diego) to ~25 (Minneapolis)
-      // Score 100 at 5, score 0 at 25
-      const stabilityScore = Math.max(0, 100 - ((noaa.seasonalStability - 5) / 20) * 100);
+      // Range-based: 5 = 100 (San Diego), 28 = 0 (Minneapolis)
+      const stabilityScore = normalizeToRange(
+        noaa.seasonalStability,
+        CLIMATE_RANGES.seasonalStability.min,
+        CLIMATE_RANGES.seasonalStability.max,
+        true // lower is better
+      );
       totalScore += stabilityScore * prefs.weightSeasonalStability;
       totalWeight += prefs.weightSeasonalStability;
     }
 
-    // Diurnal Swing (inverse - smaller swing is better)
+    // Diurnal Swing - Smaller is better
     if (prefs.weightDiurnalSwing > 0 && noaa.diurnalSwing !== null) {
-      const swingScore = Math.max(0, 100 - (Math.max(0, noaa.diurnalSwing - 10) / prefs.maxDiurnalSwing) * 100);
+      // Range-based: 10 = 100 (coastal), 35 = 0 (desert)
+      const swingScore = normalizeToRange(
+        noaa.diurnalSwing,
+        CLIMATE_RANGES.diurnalSwing.min,
+        CLIMATE_RANGES.diurnalSwing.max,
+        true // lower is better
+      );
       totalScore += swingScore * prefs.weightDiurnalSwing;
       totalWeight += prefs.weightDiurnalSwing;
     }
 
-    // Return weighted average, or 50 if no weights
+    // Return weighted average, or 50 (national average) if no weights
     if (totalWeight > 0) {
       return Math.max(0, Math.min(100, totalScore / totalWeight));
     }
@@ -499,15 +723,10 @@ function calculateDemographicsScore(
     if (actualPct !== null) {
       const minPresence = prefs.minMinorityPresence;
       
-      if (actualPct >= minPresence) {
-        // Meets or exceeds minimum: base score of 70, bonus for exceeding (up to 100)
-        // Each 1% above minimum adds 2 points, capped at 100
-        minorityScore = Math.min(100, 70 + (actualPct - minPresence) * 2);
-      } else {
-        // Below minimum: penalty proportional to how far below
-        // Each 1% below minimum subtracts 5 points from base of 70
-        minorityScore = Math.max(0, 70 - (minPresence - actualPct) * 5);
-      }
+      // Use logarithmic "Critical Mass" curve - diminishing returns above threshold
+      // This reflects reality: 25%+ presence plateaus in practical benefit (grocery stores,
+      // restaurants, cultural events) - 40% doesn't offer 2x the benefit of 20%
+      minorityScore = minorityPresenceScore(actualPct, minPresence);
     }
     
     totalScore += minorityScore * prefs.minorityImportance;
@@ -552,9 +771,9 @@ function calculateDemographicsScore(
     totalWeight += prefs.weightEconomicHealth;
   }
 
-  // If no weights were set, return a neutral score
+  // If no weights were set, return a neutral score (50 = national average)
   if (totalWeight === 0) {
-    return 70;
+    return 50;
   }
 
   return Math.max(0, Math.min(100, totalScore / totalWeight));
@@ -571,7 +790,7 @@ function calculateLegacyDemographicsScore(
   const metrics = city.metrics!;
   const { minPopulation, minDiversityIndex } = preferences.advanced.demographics;
 
-  let score = 70; // Start at neutral
+  let score = 50; // Start at national average
 
   // Population check
   if (metrics.population !== null && minPopulation > 0) {
@@ -604,38 +823,41 @@ function calculateQualityOfLifeScore(
   const metrics = city.metrics!;
   const qol = metrics.qol;
   const prefs = preferences.advanced.qualityOfLife;
+  const percentiles = qolPercentilesCache;
 
-  // If QoL API data is available, use weighted scoring
+  // If QoL API data is available, use percentile-based scoring
   if (qol) {
     let totalScore = 0;
     let totalWeight = 0;
     const weights = prefs.weights;
 
-    // Walkability (Walk Score API)
+    // Walkability (Walk Score API) - Percentile-based
     if (weights.walkability > 0 && qol.walkability) {
       let walkScore = 50;
       const w = qol.walkability;
-      
-      // Average of available scores
       let scoreSum = 0;
       let scoreCount = 0;
       
-      if (w.walkScore !== null) {
-        const adjusted = w.walkScore >= prefs.minWalkScore 
-          ? w.walkScore 
-          : Math.max(0, w.walkScore - (prefs.minWalkScore - w.walkScore) * 0.5);
+      // Use percentile ranking for each sub-score
+      if (w.walkScore !== null && percentiles?.walkScores.length) {
+        const pctScore = toPercentileScore(w.walkScore, percentiles.walkScores, true);
+        // Apply threshold penalty if below minimum
+        const adjusted = w.walkScore >= prefs.minWalkScore
+          ? pctScore
+          : Math.max(0, pctScore - (prefs.minWalkScore - w.walkScore) * 0.5);
         scoreSum += adjusted;
         scoreCount++;
       }
-      if (w.transitScore !== null) {
+      if (w.transitScore !== null && percentiles?.transitScores.length) {
+        const pctScore = toPercentileScore(w.transitScore, percentiles.transitScores, true);
         const adjusted = w.transitScore >= prefs.minTransitScore
-          ? w.transitScore
-          : Math.max(0, w.transitScore - (prefs.minTransitScore - w.transitScore) * 0.5);
+          ? pctScore
+          : Math.max(0, pctScore - (prefs.minTransitScore - w.transitScore) * 0.5);
         scoreSum += adjusted;
         scoreCount++;
       }
-      if (w.bikeScore !== null) {
-        scoreSum += w.bikeScore;
+      if (w.bikeScore !== null && percentiles?.bikeScores.length) {
+        scoreSum += toPercentileScore(w.bikeScore, percentiles.bikeScores, true);
         scoreCount++;
       }
       
@@ -647,25 +869,23 @@ function calculateQualityOfLifeScore(
       totalWeight += weights.walkability;
     }
 
-    // Safety (FBI Crime Data)
+    // Safety (FBI Crime Data) - Percentile-based
     if (weights.safety > 0 && qol.crime) {
       let safetyScore = 50;
       const c = qol.crime;
       
-      if (c.violentCrimeRate !== null) {
-        // Lower crime = higher score
-        // National avg ~380, range 100-800
-        // Score: 800 -> 0, 100 -> 100
-        safetyScore = Math.max(0, Math.min(100, 100 - ((c.violentCrimeRate - 100) / 7)));
+      if (c.violentCrimeRate !== null && percentiles?.crimeRates.length) {
+        // Percentile ranking - lower crime = higher score (inverted)
+        safetyScore = toPercentileScore(c.violentCrimeRate, percentiles.crimeRates, false);
         
         // Penalty if exceeds user threshold
         if (c.violentCrimeRate > prefs.maxViolentCrimeRate) {
-          safetyScore -= ((c.violentCrimeRate - prefs.maxViolentCrimeRate) / prefs.maxViolentCrimeRate) * 30;
+          safetyScore -= Math.min(25, ((c.violentCrimeRate - prefs.maxViolentCrimeRate) / prefs.maxViolentCrimeRate) * 30);
         }
         
         // Bonus for falling crime trend
         if (prefs.preferFallingCrime && c.trend3Year === "falling") {
-          safetyScore += 10;
+          safetyScore += 8;
         } else if (c.trend3Year === "rising") {
           safetyScore -= 5;
         }
@@ -675,19 +895,19 @@ function calculateQualityOfLifeScore(
       totalWeight += weights.safety;
     }
 
-    // Air Quality (EPA AirNow)
+    // Air Quality (EPA AirNow) - Percentile-based
     if (weights.airQuality > 0 && qol.airQuality) {
       let airScore = 50;
       const a = qol.airQuality;
       
-      if (a.healthyDaysPercent !== null) {
-        // Higher healthy days % = better
-        airScore = a.healthyDaysPercent;
+      if (a.healthyDaysPercent !== null && percentiles?.airQualityPcts.length) {
+        // Percentile ranking - higher healthy days = higher score
+        airScore = toPercentileScore(a.healthyDaysPercent, percentiles.airQualityPcts, true);
       }
       
       if (a.hazardousDays !== null && prefs.maxHazardousDays > 0) {
         if (a.hazardousDays > prefs.maxHazardousDays) {
-          airScore -= ((a.hazardousDays - prefs.maxHazardousDays) / prefs.maxHazardousDays) * 30;
+          airScore -= Math.min(25, ((a.hazardousDays - prefs.maxHazardousDays) / prefs.maxHazardousDays) * 30);
         }
       }
       
@@ -695,22 +915,23 @@ function calculateQualityOfLifeScore(
       totalWeight += weights.airQuality;
     }
 
-    // Internet (FCC Broadband)
+    // Internet (FCC Broadband) - Percentile-based
     if (weights.internet > 0 && qol.broadband) {
       let internetScore = 50;
       const b = qol.broadband;
       
-      if (b.fiberCoveragePercent !== null) {
-        internetScore = b.fiberCoveragePercent;
+      if (b.fiberCoveragePercent !== null && percentiles?.fiberPcts.length) {
+        // Percentile ranking - higher fiber coverage = higher score
+        internetScore = toPercentileScore(b.fiberCoveragePercent, percentiles.fiberPcts, true);
         
         // Bonus for competition (multiple providers)
         if (b.providerCount !== null && b.providerCount >= prefs.minProviders) {
-          internetScore += Math.min(20, (b.providerCount - 1) * 5);
+          internetScore += Math.min(15, (b.providerCount - 1) * 4);
         }
         
         // Penalty if fiber required but not available
         if (prefs.requireFiber && b.fiberCoveragePercent < 50) {
-          internetScore -= 30;
+          internetScore -= 20;
         }
       }
       
@@ -718,48 +939,47 @@ function calculateQualityOfLifeScore(
       totalWeight += weights.internet;
     }
 
-    // Schools (NCES Education)
+    // Schools (NCES Education) - Percentile-based
     if (weights.schools > 0 && qol.education) {
       let schoolScore = 50;
       const e = qol.education;
       
-      if (e.studentTeacherRatio !== null) {
-        // Lower ratio = better (more attention)
-        // Range: 10 (excellent) to 25 (poor)
-        schoolScore = Math.max(0, 100 - ((e.studentTeacherRatio - 10) / 15) * 100);
+      if (e.studentTeacherRatio !== null && percentiles?.studentTeacherRatios.length) {
+        // Percentile ranking - lower ratio = higher score (inverted)
+        schoolScore = toPercentileScore(e.studentTeacherRatio, percentiles.studentTeacherRatios, false);
         
         if (e.studentTeacherRatio > prefs.maxStudentTeacherRatio) {
-          schoolScore -= 20;
+          schoolScore -= 15;
         }
       }
       
       if (e.graduationRate !== null) {
-        // Factor in graduation rate
-        schoolScore = (schoolScore + e.graduationRate) / 2;
+        // Factor in graduation rate (blend with percentile score)
+        schoolScore = (schoolScore * 0.6 + e.graduationRate * 0.4);
       }
       
       totalScore += Math.max(0, Math.min(100, schoolScore)) * weights.schools;
       totalWeight += weights.schools;
     }
 
-    // Healthcare (HRSA)
+    // Healthcare (HRSA) - Percentile-based
     if (weights.healthcare > 0 && qol.health) {
       let healthScore = 50;
       const h = qol.health;
       
-      if (h.primaryCarePhysiciansPer100k !== null) {
-        // Higher = better, national avg ~75
-        healthScore = Math.min(100, (h.primaryCarePhysiciansPer100k / 150) * 100);
+      if (h.primaryCarePhysiciansPer100k !== null && percentiles?.physicianRates.length) {
+        // Percentile ranking - higher physician rate = higher score
+        healthScore = toPercentileScore(h.primaryCarePhysiciansPer100k, percentiles.physicianRates, true);
         
         if (h.primaryCarePhysiciansPer100k < prefs.minPhysiciansPer100k) {
-          healthScore -= 20;
+          healthScore -= 15;
         }
       }
       
       // HPSA score (lower = better, means less shortage)
       if (h.hpsaScore !== null) {
         // HPSA 0 = no shortage, 25+ = severe
-        healthScore -= Math.min(30, h.hpsaScore);
+        healthScore -= Math.min(25, h.hpsaScore);
       }
       
       totalScore += Math.max(0, Math.min(100, healthScore)) * weights.healthcare;
@@ -786,7 +1006,7 @@ function calculateLegacyQualityOfLifeScore(
   const { minWalkScore, minTransitScore, maxCrimeRate } =
     preferences.advanced.qualityOfLife;
 
-  let score = 70; // Start at 70, adjust up/down
+  let score = 50; // Start at national average, adjust up/down
 
   // Walk score
   if (metrics.walkScore !== null) {
@@ -842,9 +1062,9 @@ export function calculateCulturalScore(
   const cultural = metrics.cultural;
   const prefs = preferences.advanced.cultural;
 
-  // If no cultural data or all preferences are neutral/zero, return neutral score
+  // If no cultural data or all preferences are neutral/zero, return neutral score (50 = national avg)
   if (!cultural) {
-    return 70;
+    return 50;
   }
 
   let totalScore = 0;
@@ -1023,9 +1243,9 @@ export function calculateCulturalScore(
     }
   }
 
-  // If no weights were set, return neutral score
+  // If no weights were set, return neutral score (50 = national average)
   if (totalWeight === 0) {
-    return 70;
+    return 50;
   }
 
   return Math.max(0, Math.min(100, totalScore / totalWeight));
@@ -1064,4 +1284,53 @@ export function getScoreBgColor(score: number): string {
   if (score >= 75) return "bg-score-high";
   if (score >= 50) return "bg-score-medium";
   return "bg-score-low";
+}
+
+/**
+ * Get interpretation label for a score (relative to national average of 50)
+ */
+export function getScoreLabel(score: number): string {
+  if (score >= 90) return "Exceptional";
+  if (score >= 75) return "Above Average";
+  if (score >= 55) return "Average";
+  if (score >= 45) return "Average";
+  if (score >= 25) return "Below Average";
+  return "Poor";
+}
+
+/**
+ * Get relative indicator for a score vs national average (50)
+ * Returns "+X" for above average, "-X" for below, or "avg" for near-average
+ */
+export function getScoreRelative(score: number): { text: string; color: string } {
+  const diff = score - 50;
+  if (Math.abs(diff) < 5) {
+    return { text: "avg", color: "text-muted-foreground" };
+  }
+  if (diff > 0) {
+    return { text: `+${diff.toFixed(0)}`, color: "text-green-600 dark:text-green-400" };
+  }
+  return { text: `${diff.toFixed(0)}`, color: "text-red-600 dark:text-red-400" };
+}
+
+/**
+ * Get tooltip explanation for a score category
+ */
+export function getScoreTooltip(category: string, score: number): string {
+  const label = getScoreLabel(score);
+  const relative = score >= 50 
+    ? `${(score - 50).toFixed(0)} points above` 
+    : `${(50 - score).toFixed(0)} points below`;
+  
+  const categoryExplanations: Record<string, string> = {
+    climate: "Weather patterns compared to U.S. geographic extremes",
+    cost: "Cost of living adjusted for your income scenario",
+    demographics: "Population, diversity, and community metrics",
+    qol: "Quality of life factors (walkability, safety, schools, etc.)",
+    cultural: "Cultural amenities and political alignment",
+    total: "Weighted average of all category scores",
+  };
+
+  const explanation = categoryExplanations[category.toLowerCase()] || "";
+  return `${label} (${relative} national average)\n${explanation}`;
 }

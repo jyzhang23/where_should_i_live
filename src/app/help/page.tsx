@@ -57,23 +57,24 @@ export default function HelpPage() {
         </CardHeader>
         <CardContent className="prose prose-slate dark:prose-invert max-w-none">
           <p>
-            Each city receives a <strong>total score from 0-100</strong> based on four categories:
+            Each city receives a <strong>total score from 0-100</strong> based on five categories:
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6 not-prose">
-            <ScoreCard icon={<Sun className="h-5 w-5 text-amber-500" />} title="Climate" />
-            <ScoreCard icon={<Home className="h-5 w-5 text-emerald-500" />} title="Cost of Living" />
-            <ScoreCard icon={<Users className="h-5 w-5 text-violet-500" />} title="Demographics" />
-            <ScoreCard icon={<Activity className="h-5 w-5 text-rose-500" />} title="Quality of Life" />
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 my-6 not-prose">
+            <ScoreCard icon={<Sun className="h-5 w-5 text-orange-500" />} title="Climate" />
+            <ScoreCard icon={<Home className="h-5 w-5 text-green-500" />} title="Cost of Living" />
+            <ScoreCard icon={<Users className="h-5 w-5 text-blue-500" />} title="Demographics" />
+            <ScoreCard icon={<Activity className="h-5 w-5 text-red-500" />} title="Quality of Life" />
+            <ScoreCard icon={<Church className="h-5 w-5 text-purple-500" />} title="Cultural" />
           </div>
           <p>
             Your <strong>category weights</strong> determine how much each category contributes to the final score.
             The formula is:
           </p>
           <div className="bg-muted p-4 rounded-lg font-mono text-sm my-4">
-            Total Score = (Climate × W₁ + Cost × W₂ + Demographics × W₃ + QoL × W₄) / (W₁ + W₂ + W₃ + W₄)
+            Total Score = (Climate × W₁ + Cost × W₂ + Demographics × W₃ + QoL × W₄ + Cultural × W₅) / (W₁ + W₂ + W₃ + W₄ + W₅)
           </div>
           <p className="text-sm text-muted-foreground">
-            Where W₁, W₂, W₃, W₄ are your weight settings (0-100 each).
+            Where W₁–W₅ are your weight settings (0-100 each). Cultural is off by default (W₅=0).
           </p>
         </CardContent>
       </Card>
@@ -92,7 +93,7 @@ export default function HelpPage() {
             <AccordionItem value="climate">
               <AccordionTrigger>
                 <span className="flex items-center gap-2">
-                  <Sun className="h-4 w-4 text-amber-500" />
+                  <Sun className="h-4 w-4 text-orange-500" />
                   Climate Score
                 </span>
               </AccordionTrigger>
@@ -210,7 +211,7 @@ export default function HelpPage() {
             <AccordionItem value="cost">
               <AccordionTrigger>
                 <span className="flex items-center gap-2">
-                  <Home className="h-4 w-4 text-emerald-500" />
+                  <Home className="h-4 w-4 text-green-500" />
                   Cost of Living Score
                 </span>
               </AccordionTrigger>
@@ -365,7 +366,7 @@ export default function HelpPage() {
             <AccordionItem value="demographics">
               <AccordionTrigger>
                 <span className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-violet-500" />
+                  <Users className="h-4 w-4 text-blue-500" />
                   Demographics Score
                 </span>
               </AccordionTrigger>
@@ -466,7 +467,7 @@ export default function HelpPage() {
             <AccordionItem value="qol">
               <AccordionTrigger>
                 <span className="flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-rose-500" />
+                  <Activity className="h-4 w-4 text-red-500" />
                   Quality of Life Score
                 </span>
               </AccordionTrigger>
@@ -721,6 +722,115 @@ export default function HelpPage() {
           <p className="text-muted-foreground text-sm mt-4">
             Excluded cities appear at the bottom of the rankings with their exclusion reason shown.
           </p>
+        </CardContent>
+      </Card>
+
+      {/* Score Interpretation */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calculator className="h-5 w-5" />
+            Understanding Your Scores
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-slate dark:prose-invert max-w-none">
+          <h4>The 50-Point Baseline</h4>
+          <p>
+            All scores are normalized so that <strong>50 = U.S. national average</strong>. This means:
+          </p>
+          <ul className="text-sm">
+            <li><strong>Above 50</strong>: Better than the typical U.S. city</li>
+            <li><strong>Below 50</strong>: Below average for that metric</li>
+            <li><strong>75+</strong>: Exceptional (top 25% nationally)</li>
+            <li><strong>25 or below</strong>: Poor (bottom 25% nationally)</li>
+          </ul>
+
+          <h4>Climate Scores</h4>
+          <p className="text-sm">
+            Climate scores use <strong>range-based normalization</strong> against U.S. geographic extremes. 
+            For example, San Diego (267 comfort days) scores near 100, while cities with 50 comfort days 
+            score near 0. This reflects actual climate variety across the country.
+          </p>
+
+          <h4>Quality of Life Scores</h4>
+          <p className="text-sm">
+            QoL sub-scores (walkability, safety, schools, etc.) use <strong>percentile ranking</strong> 
+            among all cities in our database. A city in the top 10% for safety scores 90, regardless 
+            of the underlying crime rate numbers. This ensures all factors have equal &quot;pull&quot; on your rankings.
+          </p>
+
+          <h4>Demographics: Critical Mass</h4>
+          <p className="text-sm">
+            When searching for minority community presence, scores use a <strong>logarithmic curve</strong> 
+            with diminishing returns. This reflects reality: a city with 25% Asian population offers 
+            essentially the same community infrastructure (grocery stores, restaurants, cultural events) 
+            as one with 40%. The &quot;critical mass&quot; threshold is where practical benefits plateau.
+          </p>
+          <div className="bg-muted p-3 rounded text-xs">
+            <p className="font-medium mb-1">Example: Seeking 10% minimum Chinese community</p>
+            <ul className="list-disc ml-4 space-y-1">
+              <li>5% presence → Score ~55 (below threshold penalty)</li>
+              <li>10% presence → Score 75 (meets threshold)</li>
+              <li>15% presence → Score ~85 (bonus for exceeding)</li>
+              <li>25% presence → Score ~92 (diminishing returns kick in)</li>
+              <li>40% presence → Score ~95 (plateau—practical benefit maxed)</li>
+            </ul>
+          </div>
+
+          <h4>Reading the Visual Indicators</h4>
+          <p className="text-sm">
+            Throughout the app, you&apos;ll see relative indicators next to scores:
+          </p>
+          <ul className="text-sm">
+            <li><span className="text-green-600 dark:text-green-400 font-medium">+15</span> means 15 points above U.S. average</li>
+            <li><span className="text-red-600 dark:text-red-400 font-medium">-12</span> means 12 points below U.S. average</li>
+            <li><span className="text-muted-foreground font-medium">avg</span> means within 5 points of average (45-55)</li>
+          </ul>
+          <p className="text-sm">
+            In radar charts, the dashed line at 50 represents the national average—points outside 
+            that line are above average, points inside are below.
+          </p>
+
+          <h4>Real-World Anchor Points</h4>
+          <p className="text-sm">
+            To help you interpret scores, here are actual examples from our scoring system:
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 not-prose text-sm">
+            <div className="bg-muted/50 p-3 rounded">
+              <p className="font-medium text-orange-600 dark:text-orange-400 mb-2">Climate</p>
+              <ul className="space-y-1 text-xs">
+                <li><strong>San Diego</strong>: ~91 (best U.S. weather)</li>
+                <li><strong>Minneapolis</strong>: ~41 (harsh winters)</li>
+                <li className="text-muted-foreground">Spread of ~50 points reflects real climate diversity</li>
+              </ul>
+            </div>
+            <div className="bg-muted/50 p-3 rounded">
+              <p className="font-medium text-red-600 dark:text-red-400 mb-2">Safety (QoL)</p>
+              <ul className="space-y-1 text-xs">
+                <li><strong>Safest cities</strong>: 90-100 (top percentile)</li>
+                <li><strong>High-crime cities</strong>: 10-20 (bottom percentile)</li>
+                <li className="text-muted-foreground">Based on violent crime rate per 100K</li>
+              </ul>
+            </div>
+            <div className="bg-muted/50 p-3 rounded">
+              <p className="font-medium text-blue-600 dark:text-blue-400 mb-2">Demographics (Minority Community)</p>
+              <ul className="space-y-1 text-xs">
+                <li><strong>5% presence</strong>: ~55 (below 10% threshold)</li>
+                <li><strong>25% presence</strong>: ~97 (above threshold)</li>
+                <li><strong>40% presence</strong>: ~100 (plateau effect)</li>
+                <li className="text-muted-foreground">Only 3pt diff between 25% and 40%</li>
+              </ul>
+            </div>
+            <div className="bg-muted/50 p-3 rounded">
+              <p className="font-medium text-green-600 dark:text-green-400 mb-2">Cost of Living</p>
+              <ul className="space-y-1 text-xs">
+                <li><strong>Low-cost cities</strong>: 70-85 (high purchasing power)</li>
+                <li><strong>NYC/SF (standard earner)</strong>: 15-25</li>
+                <li><strong>NYC/SF (local earner)</strong>: 50-65</li>
+                <li className="text-muted-foreground">Persona selection dramatically affects scores</li>
+              </ul>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

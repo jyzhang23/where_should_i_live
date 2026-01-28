@@ -13,8 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ArrowLeft, MapPin, TrendingUp, Award, GitCompare } from "lucide-react";
-import { getScoreColor, getGrade } from "@/lib/scoring";
+import { getScoreColor, getGrade, getScoreRelative, getScoreLabel } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface CityPageProps {
   params: Promise<{ id: string }>;
@@ -188,17 +194,40 @@ export default function CityPage({ params }: CityPageProps) {
 }
 
 function ScoreCard({ label, score }: { label: string; score: number }) {
+  const relative = getScoreRelative(score);
+  const scoreLabel = getScoreLabel(score);
+  
   return (
-    <Card>
-      <CardContent className="pt-6 text-center">
-        <span className="text-sm text-muted-foreground">{label}</span>
-        <div className={cn("text-2xl font-bold", getScoreColor(score))}>
-          {score.toFixed(1)}
-        </div>
-        <div className="text-sm text-muted-foreground">
-          {getGrade(score)}
-        </div>
-      </CardContent>
-    </Card>
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Card className="cursor-help">
+            <CardContent className="pt-6 text-center">
+              <span className="text-sm text-muted-foreground">{label}</span>
+              <div className="flex items-center justify-center gap-2">
+                <span className={cn("text-2xl font-bold", getScoreColor(score))}>
+                  {score.toFixed(1)}
+                </span>
+                <span className={cn("text-sm font-medium", relative.color)}>
+                  {relative.text}
+                </span>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {getGrade(score)} · {scoreLabel}
+              </div>
+            </CardContent>
+          </Card>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs max-w-[200px]">
+          <p className="font-medium">{scoreLabel}</p>
+          <p className="text-muted-foreground mt-1">
+            {score >= 50 
+              ? `${(score - 50).toFixed(0)} points above U.S. average` 
+              : `${(50 - score).toFixed(0)} points below U.S. average`}
+          </p>
+          <p className="text-muted-foreground mt-1">50 = national average</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

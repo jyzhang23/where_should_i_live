@@ -11,9 +11,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CityScore } from "@/types/scores";
-import { getScoreColor } from "@/lib/scoring";
+import { getScoreColor, getScoreRelative } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type SortField = "rank" | "city" | "climate" | "cost" | "demographics" | "qol" | "cultural" | "total";
 type SortDirection = "asc" | "desc";
@@ -107,6 +113,29 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
     return originalIndex + 1;
   };
 
+  // Score cell with tooltip showing relative to national average
+  const ScoreCell = ({ score, category }: { score: number; category: string }) => {
+    const relative = getScoreRelative(score);
+    return (
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-end gap-1">
+              <span className={getScoreColor(score)}>{score.toFixed(1)}</span>
+              <span className={cn("text-[10px] font-medium w-6 text-right", relative.color)}>
+                {relative.text}
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="text-xs">
+            <p>{score >= 50 ? "Above" : "Below"} national average</p>
+            <p className="text-muted-foreground">50 = U.S. average for {category}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -152,23 +181,23 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
                   </span>
                 </div>
               </TableCell>
-              <TableCell className={`text-right ${getScoreColor(city.climateScore)}`}>
-                {city.climateScore.toFixed(1)}
+              <TableCell className="text-right">
+                <ScoreCell score={city.climateScore} category="climate" />
               </TableCell>
-              <TableCell className={`text-right ${getScoreColor(city.costScore)}`}>
-                {city.costScore.toFixed(1)}
+              <TableCell className="text-right">
+                <ScoreCell score={city.costScore} category="cost" />
               </TableCell>
-              <TableCell className={`text-right ${getScoreColor(city.demographicsScore)}`}>
-                {city.demographicsScore.toFixed(1)}
+              <TableCell className="text-right">
+                <ScoreCell score={city.demographicsScore} category="demographics" />
               </TableCell>
-              <TableCell className={`text-right ${getScoreColor(city.qualityOfLifeScore)}`}>
-                {city.qualityOfLifeScore.toFixed(1)}
+              <TableCell className="text-right">
+                <ScoreCell score={city.qualityOfLifeScore} category="quality of life" />
               </TableCell>
-              <TableCell className={`text-right ${getScoreColor(city.culturalScore)}`}>
-                {city.culturalScore.toFixed(1)}
+              <TableCell className="text-right">
+                <ScoreCell score={city.culturalScore} category="cultural fit" />
               </TableCell>
-              <TableCell className={`text-right font-bold ${getScoreColor(city.totalScore)}`}>
-                {city.totalScore.toFixed(1)}
+              <TableCell className="text-right font-bold">
+                <ScoreCell score={city.totalScore} category="overall" />
               </TableCell>
               <TableCell className="text-right">
                 <Link
