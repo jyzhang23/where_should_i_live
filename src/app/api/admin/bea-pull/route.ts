@@ -5,6 +5,8 @@
  * Body: { password: string }
  * 
  * Pulls from BEA Regional dataset, MARPP table:
+ * - LineCode 1: Real personal income (purchasing power)
+ * - LineCode 2: Real per capita personal income (purchasing power per person)
  * - LineCode 3: RPPs: All items (overall cost of living)
  * - LineCode 4: RPPs: Goods
  * - LineCode 5: RPPs: Services: Rents (housing costs)
@@ -14,6 +16,9 @@
  * RPP = Regional Price Parity (100 = national average)
  * Values > 100 = more expensive than average
  * Values < 100 = less expensive than average
+ * 
+ * Real income = nominal income adjusted for regional price differences
+ * (i.e., purchasing power)
  * 
  * API: https://apps.bea.gov/API/docs/index.htm
  */
@@ -55,9 +60,11 @@ interface BEAResponse {
 }
 
 interface RPPData {
+  realPersonalIncome: number | null;      // Purchasing power (total)
+  realPerCapitaIncome: number | null;     // Purchasing power per person
   allItems: number | null;
   goods: number | null;
-  rents: number | null;      // Housing costs
+  rents: number | null;                   // Housing costs
   utilities: number | null;
   otherServices: number | null;
   year: string;
@@ -174,13 +181,23 @@ export async function POST(request: NextRequest) {
 
     console.log(`Fetching BEA data for ${geoFipsList.length} metros...`);
 
-    // Fetch all RPP data types in parallel
-    const [allItems, goods, rents, utilities, otherServices] = await Promise.all([
-      fetchBEAData(geoFipsList, "3", year),  // All items
-      fetchBEAData(geoFipsList, "4", year),  // Goods
-      fetchBEAData(geoFipsList, "5", year),  // Services: Rents
-      fetchBEAData(geoFipsList, "6", year),  // Services: Utilities
-      fetchBEAData(geoFipsList, "7", year),  // Services: Other
+    // Fetch all data types in parallel
+    const [
+      realPersonalIncome,
+      realPerCapitaIncome,
+      allItems,
+      goods,
+      rents,
+      utilities,
+      otherServices,
+    ] = await Promise.all([
+      fetchBEAData(geoFipsList, "1", year),  // Real personal income (purchasing power)
+      fetchBEAData(geoFipsList, "2", year),  // Real per capita personal income
+      fetchBEAData(geoFipsList, "3", year),  // RPP: All items
+      fetchBEAData(geoFipsList, "4", year),  // RPP: Goods
+      fetchBEAData(geoFipsList, "5", year),  // RPP: Services: Rents
+      fetchBEAData(geoFipsList, "6", year),  // RPP: Services: Utilities
+      fetchBEAData(geoFipsList, "7", year),  // RPP: Services: Other
     ]);
 
     console.log(`Received data for ${allItems.size} metros`);
@@ -196,6 +213,8 @@ export async function POST(request: NextRequest) {
       }
 
       const rppData: RPPData = {
+        realPersonalIncome: realPersonalIncome.get(city.beaGeoFips) ?? null,
+        realPerCapitaIncome: realPerCapitaIncome.get(city.beaGeoFips) ?? null,
         allItems: allItems.get(city.beaGeoFips) ?? null,
         goods: goods.get(city.beaGeoFips) ?? null,
         rents: rents.get(city.beaGeoFips) ?? null,
@@ -217,6 +236,10 @@ export async function POST(request: NextRequest) {
       }
 
       metricsFile.cities[city.id].bea = {
+        purchasingPower: {
+          realPersonalIncome: rppData.realPersonalIncome,        // Total (thousands of dollars)
+          realPerCapitaIncome: rppData.realPerCapitaIncome,      // Per person (dollars)
+        },
         regionalPriceParity: {
           allItems: rppData.allItems,
           goods: rppData.goods,
@@ -230,7 +253,7 @@ export async function POST(request: NextRequest) {
 
       successCount++;
       console.log(
-        `  ✓ ${city.name}: CoL=${rppData.allItems?.toFixed(1)}, Housing=${rppData.rents?.toFixed(1)}`
+        `  ✓ ${city.name}: CoL=${rppData.allItems?.toFixed(1)}, Housing=${rppData.rents?.toFixed(1)}, PerCapita=$${rppData.realPerCapitaIncome?.toLocaleString()}`
       );
     }
 
