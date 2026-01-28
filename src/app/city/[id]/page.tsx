@@ -8,11 +8,12 @@ import { usePreferencesStore } from "@/lib/store";
 import { calculateScores } from "@/lib/scoring";
 import { ScoreRadarChart, PriceTrendChart } from "@/components/charts";
 import { CityMetricsGrid } from "@/components/city/CityMetricsGrid";
+import { ClimateScorecard } from "@/components/city/ClimateScorecard";
 import { ComparisonPanel } from "@/components/comparison";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { ArrowLeft, MapPin, TrendingUp, Award, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, TrendingUp, Award, GitCompare, CloudSun } from "lucide-react";
 import { getScoreColor, getGrade } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -149,6 +150,17 @@ export default function CityPage({ params }: CityPageProps) {
           zhviHistory={city.zhviHistory || null}
         />
       </div>
+
+      {/* Climate Scorecard */}
+      {city.metrics && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <CloudSun className="h-5 w-5" />
+            Climate Scorecard
+          </h2>
+          <ClimateScorecard metrics={city.metrics} cityName={city.name} />
+        </div>
+      )}
 
       {/* Detailed Metrics */}
       <div className="mb-8">
