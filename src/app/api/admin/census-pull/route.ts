@@ -93,15 +93,15 @@ async function fetchCensusData(
       "DP05_0024PE", // 45-54 %
       "DP05_0025PE", // 55-64 %
       "DP05_0026PE", // 65+ %
-      // Race (percentages)
-      "DP05_0077PE", // White alone, not Hispanic
-      "DP05_0078PE", // Black alone
-      "DP05_0071PE", // Hispanic or Latino
-      "DP05_0080PE", // Asian alone
-      "DP05_0081PE", // Native Hawaiian/Pacific Islander
-      "DP05_0079PE", // American Indian/Alaska Native
-      "DP05_0082PE", // Some other race
-      "DP05_0083PE", // Two or more races
+      // Race (percentages) - 2022 ACS variable codes
+      "DP05_0079PE", // White alone, Not Hispanic or Latino
+      "DP05_0080PE", // Black or African American alone, Not Hispanic
+      "DP05_0073PE", // Hispanic or Latino (of any race)
+      "DP05_0082PE", // Asian alone, Not Hispanic
+      "DP05_0083PE", // Native Hawaiian/Pacific Islander alone, Not Hispanic
+      "DP05_0081PE", // American Indian/Alaska Native alone, Not Hispanic
+      "DP05_0084PE", // Some other race alone, Not Hispanic
+      "DP05_0085PE", // Two or more races, Not Hispanic
       // Education (25+)
       "DP02_0067PE", // High school graduate or higher
       "DP02_0068PE", // Bachelor's degree or higher
@@ -231,17 +231,17 @@ async function fetchCensusData(
     const age35to54 = sanitizePercent(data["DP05_0023PE"]) + sanitizePercent(data["DP05_0024PE"]);
     const age55Plus = sanitizePercent(data["DP05_0025PE"]) + sanitizePercent(data["DP05_0026PE"]);
 
-    // Calculate diversity index from race percentages
+    // Calculate diversity index from race percentages (2022 ACS variable codes)
     // Sanitize race percentages (must be 0-100)
     const racePercentages = [
-      sanitizePercent(data["DP05_0077PE"]), // White
-      sanitizePercent(data["DP05_0078PE"]), // Black
-      sanitizePercent(data["DP05_0071PE"]), // Hispanic
-      sanitizePercent(data["DP05_0080PE"]), // Asian
-      sanitizePercent(data["DP05_0081PE"]), // Pacific Islander
-      sanitizePercent(data["DP05_0079PE"]), // Native American
-      sanitizePercent(data["DP05_0082PE"]), // Other
-      sanitizePercent(data["DP05_0083PE"]), // Two or more
+      sanitizePercent(data["DP05_0079PE"]), // White alone, Not Hispanic
+      sanitizePercent(data["DP05_0080PE"]), // Black alone, Not Hispanic
+      sanitizePercent(data["DP05_0073PE"]), // Hispanic or Latino
+      sanitizePercent(data["DP05_0082PE"]), // Asian alone, Not Hispanic
+      sanitizePercent(data["DP05_0083PE"]), // Pacific Islander, Not Hispanic
+      sanitizePercent(data["DP05_0081PE"]), // Native American, Not Hispanic
+      sanitizePercent(data["DP05_0084PE"]), // Other, Not Hispanic
+      sanitizePercent(data["DP05_0085PE"]), // Two or more, Not Hispanic
     ];
     
     // Validate: race percentages should sum to roughly 100% (allow some margin for rounding)
@@ -303,15 +303,15 @@ async function fetchCensusData(
       age35to54Percent: age35to54 > 0 && age35to54 <= 100 ? Math.round(age35to54 * 10) / 10 : null,
       age55PlusPercent: age55Plus > 0 && age55Plus <= 100 ? Math.round(age55Plus * 10) / 10 : null,
       
-      // Race/Ethnicity (sanitized)
-      whitePercent: sanitizePercentOrNull(data["DP05_0077PE"]),
-      blackPercent: sanitizePercentOrNull(data["DP05_0078PE"]),
-      hispanicPercent: sanitizePercentOrNull(data["DP05_0071PE"]),
-      asianPercent: sanitizePercentOrNull(data["DP05_0080PE"]),
-      pacificIslanderPercent: sanitizePercentOrNull(data["DP05_0081PE"]),
-      nativeAmericanPercent: sanitizePercentOrNull(data["DP05_0079PE"]),
-      otherRacePercent: sanitizePercentOrNull(data["DP05_0082PE"]),
-      twoOrMoreRacesPercent: sanitizePercentOrNull(data["DP05_0083PE"]),
+      // Race/Ethnicity (sanitized) - 2022 ACS variable codes
+      whitePercent: sanitizePercentOrNull(data["DP05_0079PE"]),
+      blackPercent: sanitizePercentOrNull(data["DP05_0080PE"]),
+      hispanicPercent: sanitizePercentOrNull(data["DP05_0073PE"]),
+      asianPercent: sanitizePercentOrNull(data["DP05_0082PE"]),
+      pacificIslanderPercent: sanitizePercentOrNull(data["DP05_0083PE"]),
+      nativeAmericanPercent: sanitizePercentOrNull(data["DP05_0081PE"]),
+      otherRacePercent: sanitizePercentOrNull(data["DP05_0084PE"]),
+      twoOrMoreRacesPercent: sanitizePercentOrNull(data["DP05_0085PE"]),
       
       // Asian subgroups
       chinesePercent,
