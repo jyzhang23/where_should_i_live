@@ -547,6 +547,10 @@ function calculateCostScore(
       workSituation: workSituation || "standard",
       medianHouseholdIncome: metrics.census?.medianHouseholdIncome ?? null,
       retireeFixedIncome: retireeFixedIncome ?? 50000,
+      // State for accurate tax calculation (retiree/standard personas)
+      state: city.state,
+      // Property tax rate for homeowner calculations
+      propertyTaxRate: metrics.propertyTaxRate,
     };
     
     const trueCostOfLiving = calculateTrueCostOfLiving(beaData, options);
@@ -554,14 +558,24 @@ function calculateCostScore(
     if (trueCostOfLiving.truePurchasingPowerIndex !== null) {
       // Convert True Purchasing Power Index to a 0-100 score
       // Index: 100 = national average, higher = better
-      // Score mapping:
-      //   Index 80 (poor) -> Score ~30
-      //   Index 100 (average) -> Score ~60
-      //   Index 120 (excellent) -> Score ~90
+      // 
+      // The index represents purchasing power relative to baseline:
+      //   Index 80 = 80% of baseline purchasing power (expensive city)
+      //   Index 100 = same as baseline (average city)
+      //   Index 120 = 120% of baseline (affordable city)
+      //
+      // Score mapping (linear, centered at 50):
+      //   Index 60 -> Score 20  (very expensive)
+      //   Index 80 -> Score 35  (expensive)
+      //   Index 100 -> Score 50 (average)
+      //   Index 120 -> Score 65 (affordable)
+      //   Index 140 -> Score 80 (very affordable)
+      //
+      // Formula: score = 50 + (index - 100) * 0.75
+      // This gives ±30 points for ±40 index deviation
       const index = trueCostOfLiving.truePurchasingPowerIndex;
       
-      // Linear mapping: index 70-130 -> score 0-100
-      const score = ((index - 70) / 60) * 100;
+      const score = 50 + (index - 100) * 0.75;
       return Math.max(0, Math.min(100, score));
     }
   }

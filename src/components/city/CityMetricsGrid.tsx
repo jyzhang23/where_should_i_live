@@ -43,8 +43,102 @@ import {
   formatCurrency,
   getRatingColor,
   BEAMetrics,
+  TrueCostOfLiving,
 } from "@/lib/cost-of-living";
 import { PriceTrendChart } from "@/components/charts/PriceTrendChart";
+
+// ============================================
+// Tax Tooltip Helper Functions
+// ============================================
+
+/**
+ * Generate detailed tooltip for effective tax rate
+ */
+function getTaxRateTooltip(trueCostOfLiving: TrueCostOfLiving): string {
+  const breakdown = trueCostOfLiving.taxBreakdown;
+  const workSituation = trueCostOfLiving.workSituation;
+  
+  if (!breakdown) {
+    return "Total taxes as % of income (federal + state + local)";
+  }
+  
+  const lines: string[] = [];
+  
+  // Header based on method
+  if (breakdown.method === "bea") {
+    lines.push("Source: BEA pre-calculated effective rate");
+    if (breakdown.stateName) {
+      lines.push(`State: ${breakdown.stateName}`);
+    }
+  } else {
+    lines.push(`Calculated for ${workSituation} persona:`);
+    if (breakdown.stateName) {
+      lines.push(`State: ${breakdown.stateName}`);
+    }
+    if (breakdown.federalTax !== null) {
+      lines.push(`Federal tax: $${breakdown.federalTax.toLocaleString()}`);
+    }
+    if (breakdown.stateTax !== null) {
+      lines.push(`State tax: $${breakdown.stateTax.toLocaleString()}${breakdown.stateTax === 0 ? " (no income tax)" : ""}`);
+    }
+  }
+  
+  if (breakdown.calculatedEffectiveRate !== null) {
+    lines.push(`Effective rate: ${breakdown.calculatedEffectiveRate}%`);
+  }
+  
+  return lines.join("\n");
+}
+
+/**
+ * Generate detailed tooltip for after-tax income
+ */
+function getAfterTaxIncomeTooltip(trueCostOfLiving: TrueCostOfLiving): string {
+  const breakdown = trueCostOfLiving.taxBreakdown;
+  const workSituation = trueCostOfLiving.workSituation;
+  const selectedIncome = trueCostOfLiving.selectedIncome;
+  const housingPersona = trueCostOfLiving.housingPersona;
+  
+  const lines: string[] = [];
+  
+  // Income source explanation
+  switch (workSituation) {
+    case "local-earner":
+      lines.push("Local Earner: Using local per capita income (BEA)");
+      break;
+    case "standard":
+      lines.push("Standard: Using fixed national median income (~$75K)");
+      break;
+    case "retiree":
+      lines.push(`Retiree: Using your fixed income ($${(selectedIncome ?? 50000).toLocaleString()})`);
+      break;
+  }
+  
+  if (breakdown) {
+    lines.push("");
+    
+    // Tax breakdown
+    if (breakdown.method === "calculated") {
+      if (breakdown.stateName) {
+        const stateNote = breakdown.stateTax === 0 ? " (no income tax)" : "";
+        lines.push(`${breakdown.stateName}${stateNote}`);
+      }
+      if (breakdown.federalTax !== null && breakdown.stateTax !== null) {
+        lines.push(`Income tax: -$${(breakdown.federalTax + breakdown.stateTax).toLocaleString()}`);
+      }
+    } else {
+      lines.push("Tax from BEA data");
+    }
+    
+    // Property tax for homeowners
+    if (breakdown.propertyTax !== null && breakdown.propertyTax > 0) {
+      lines.push(`Property tax: -$${breakdown.propertyTax.toLocaleString()}/yr`);
+      lines.push(`(${housingPersona} @ 60% of median)`);
+    }
+  }
+  
+  return lines.join("\n");
+}
 
 // ============================================
 // Climate Scorecard Helper Functions
@@ -407,6 +501,7 @@ function LifestyleImpact({
 interface CityMetricsGridProps {
   metrics: CityMetrics;
   cityName?: string;
+  stateName?: string;  // For state-specific tax calculations
   zhviHistory?: { id: string; cityId: string; date: Date; value: number }[] | null;
   // Cost of living preferences for persona-based calculations
   costPreferences?: {
@@ -441,7 +536,7 @@ function MetricItem({ icon, label, value, unit, tooltip, colorClass }: MetricIte
                 <Info className="h-3 w-3 text-muted-foreground/50 cursor-help flex-shrink-0" />
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                <p className="text-sm">{tooltip}</p>
+                <p className="text-sm whitespace-pre-line">{tooltip}</p>
               </TooltipContent>
             </Tooltip>
           )}
@@ -452,7 +547,7 @@ function MetricItem({ icon, label, value, unit, tooltip, colorClass }: MetricIte
   );
 }
 
-export function CityMetricsGrid({ metrics, cityName, zhviHistory, costPreferences }: CityMetricsGridProps) {
+export function CityMetricsGrid({ metrics, cityName, stateName, zhviHistory, costPreferences }: CityMetricsGridProps) {
   // BEA data is now included in metrics (merged from metrics.json)
   const bea = metrics.bea;
   // NOAA climate data (30-year normals)
@@ -494,6 +589,8 @@ export function CityMetricsGrid({ metrics, cityName, zhviHistory, costPreference
     medianHomePrice: metrics.medianHomePrice,
     medianHouseholdIncome: metrics.census?.medianHouseholdIncome ?? null,
     retireeFixedIncome: costPreferences?.retireeFixedIncome ?? 50000,
+    state: stateName,  // For state-specific tax calculations
+    propertyTaxRate: metrics.propertyTaxRate,  // For homeowner property tax calculations
   });
 
   // Climate scorecard data
@@ -811,7 +908,9 @@ export function CityMetricsGrid({ metrics, cityName, zhviHistory, costPreference
                   icon={<Home className="h-4 w-4" />}
                   label="Housing Index"
                   value={trueCostOfLiving.housingCostIndex?.toFixed(1)}
-                  tooltip="Regional housing/rent prices: 100 = national average"
+                  tooltip={`Regional housing/rent prices relative to national average.
+100 = national average
+Lower is more affordable`}
                   colorClass={trueCostOfLiving.housingCostIndex 
                     ? trueCostOfLiving.housingCostIndex > 150 
                       ? "text-red-600 dark:text-red-400" 
@@ -823,10 +922,12 @@ export function CityMetricsGrid({ metrics, cityName, zhviHistory, costPreference
                 <MetricItem
                   icon={<Percent className="h-4 w-4" />}
                   label="Effective Tax Rate"
-                  value={trueCostOfLiving.effectiveTaxRate !== null 
-                    ? `${trueCostOfLiving.effectiveTaxRate.toFixed(1)}%` 
-                    : formatPercent(metrics.stateTaxRate)}
-                  tooltip="Total taxes as % of income (federal + state + local)"
+                  value={trueCostOfLiving.taxBreakdown?.calculatedEffectiveRate !== null 
+                    ? `${trueCostOfLiving.taxBreakdown?.calculatedEffectiveRate}%`
+                    : (trueCostOfLiving.effectiveTaxRate !== null 
+                      ? `${trueCostOfLiving.effectiveTaxRate.toFixed(1)}%` 
+                      : formatPercent(metrics.stateTaxRate))}
+                  tooltip={getTaxRateTooltip(trueCostOfLiving)}
                   colorClass={getRatingColor(trueCostOfLiving.taxBurdenRating, "tax")}
                 />
                 <MetricItem
@@ -837,7 +938,7 @@ export function CityMetricsGrid({ metrics, cityName, zhviHistory, costPreference
                     : (trueCostOfLiving.afterTaxIncome !== null 
                       ? formatCurrency(trueCostOfLiving.afterTaxIncome) 
                       : null)}
-                  tooltip={`Income after taxes based on your work situation (${trueCostOfLiving.workSituation})`}
+                  tooltip={getAfterTaxIncomeTooltip(trueCostOfLiving)}
                 />
                 <MetricItem
                   icon={<Home className="h-4 w-4" />}

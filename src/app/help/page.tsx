@@ -267,15 +267,19 @@ export default function HelpPage() {
                 </p>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
                   Monthly Mortgage = calculate(Home Price × 0.80, 7%, 30 years){"\n"}
-                  Housing Index = (Monthly Mortgage ÷ $2,128) × 100{"\n"}
+                  Raw Housing Index = (Monthly Mortgage ÷ $2,128) × 100{"\n"}
                   {"\n"}
-                  Adjusted RPP = (0.40 × Housing Index){"\n"}
+                  // Logarithmic compression for expensive markets:{"\n"}
+                  If Raw Index &gt; 150: Housing Index = 150 + log₁₀(1 + excess/50) × 50{"\n"}
+                  {"\n"}
+                  Adjusted RPP = (0.35 × Housing Index){"\n"}
                   {"             "}+ (0.35 × Goods Index){"\n"}
-                  {"             "}+ (0.25 × Services Index)
+                  {"             "}+ (0.30 × Services Index)
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  💡 $2,128 is the national average monthly mortgage payment (2026 estimate based on 
-                  ~$400K median home at 7%). Uses Zillow median home prices for each city.
+                  💡 The logarithmic compression prevents extremely expensive cities (SF, NYC) from 
+                  getting scores of 0. A city with 3× national average mortgage gets a housing index 
+                  of ~180 instead of 300, acknowledging it&apos;s expensive without being absurdly punitive.
                 </p>
 
                 <h4>What&apos;s Included Where</h4>
@@ -330,34 +334,82 @@ export default function HelpPage() {
                 </table>
                 <p className="text-xs text-muted-foreground">
                   💡 <strong>Local Earner</strong> (default) uses local income levels, so expensive cities 
-                  with high salaries score better. <strong>Standard</strong> is pure affordability — 
-                  uses the same income for all cities, so SF and NYC score poorly.
+                  with high salaries score better. <strong>Standard</strong> and <strong>Retiree</strong> use 
+                  state-specific tax calculations so no-income-tax states (TX, FL, WA) score higher.
                 </p>
+
+                <h4>State-Specific Tax Calculation</h4>
+                <p className="text-xs">
+                  For <strong>Standard</strong> and <strong>Retiree</strong> personas, we calculate actual 
+                  after-tax income using state-specific rates:
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  After-Tax Income = Gross Income × (1 − Effective Tax Rate){"\n"}
+                  {"\n"}
+                  Effective Tax Rate = Federal Rate + State Rate{"\n"}
+                  {"\n"}
+                  Example ($50K Retiree):{"\n"}
+                  {"  "}Texas (0% state): ~$42,500 after tax{"\n"}
+                  {"  "}California (9.3% state): ~$37,000 after tax{"\n"}
+                  {"  "}→ Texas retiree keeps ~$5,500 more per year
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  💡 No-income-tax states: Alaska, Florida, Nevada, New Hampshire, South Dakota, 
+                  Tennessee, Texas, Washington, Wyoming. These score significantly better for 
+                  retirees and those with fixed incomes.
+                </p>
+
+                <h4>Property Tax (Homeowners Only)</h4>
+                <p className="text-xs">
+                  For <strong>existing homeowners</strong>, we subtract estimated annual property tax from 
+                  after-tax income. This reflects the ongoing cost burden of homeownership.
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs">
+                  Property Tax = Estimated Home Value × Local Property Tax Rate{"\n"}
+                  {"\n"}
+                  // Home value estimated at 60% of current median{"\n"}
+                  // (accounts for historical purchase price, Prop 13-style caps){"\n"}
+                  {"\n"}
+                  Disposable = After-Tax Income − Annual Property Tax
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  💡 <strong>Prospective buyers</strong> don&apos;t have property tax deducted separately 
+                  because it&apos;s already reflected in the mortgage-adjusted RPP calculation.
+                </p>
+
                 <div className="bg-muted p-3 rounded font-mono text-xs">
                   Formula by Persona:{"\n"}
                   {"\n"}
                   Local Earner: Local Disposable Income ÷ (local RPP ÷ 100){"\n"}
                   {"  "}→ How well local workers fare (default){"\n"}
                   {"\n"}
-                  Standard: $58K (fixed) ÷ (local RPP ÷ 100){"\n"}
-                  {"  "}→ Pure cost comparison, same income everywhere{"\n"}
+                  Standard: (Fixed Income − State Tax − Property Tax*) ÷ RPP{"\n"}
+                  {"  "}→ Pure cost comparison with real tax impact{"\n"}
                   {"\n"}
-                  Retiree: Your Fixed Income × 0.85 ÷ (local RPP ÷ 100){"\n"}
-                  {"  "}→ How far your retirement income goes
+                  Retiree: (Your Income − State Tax − Property Tax*) ÷ RPP{"\n"}
+                  {"  "}→ How far your retirement income goes{"\n"}
+                  {"\n"}
+                  * Property tax only for homeowners, not renters/buyers
                 </div>
 
                 <h4>Final Scoring</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs">
-                  Purchasing Power Index = (True PP ÷ $56,014) × 100{"\n"}
-                  {"  "}where $56,014 = national avg disposable income{"\n"}
+                  Purchasing Power Index = (Your Purchasing Power ÷ Baseline) × 100{"\n"}
                   {"\n"}
-                  Cost Score = ((Index − 70) ÷ 60) × 100{"\n"}
-                  {"  "}Index 70 → Score 0 (very poor){"\n"}
-                  {"  "}Index 100 → Score 50 (average){"\n"}
-                  {"  "}Index 130 → Score 100 (excellent)
+                  Baseline varies by persona:{"\n"}
+                  {"  "}Local Earner: $56,014 (national avg disposable){"\n"}
+                  {"  "}Standard/Retiree: Same income with avg state taxes{"\n"}
+                  {"\n"}
+                  Cost Score = 50 + (Index − 100) × 0.75{"\n"}
+                  {"  "}Index 60 → Score 20 (very expensive){"\n"}
+                  {"  "}Index 80 → Score 35 (expensive){"\n"}
+                  {"  "}Index 100 → Score 50 (national average){"\n"}
+                  {"  "}Index 120 → Score 65 (affordable){"\n"}
+                  {"  "}Index 140 → Score 80 (very affordable)
                 </div>
                 <p className="text-muted-foreground text-xs">
-                  Data sources: BEA Regional Price Parities (MARPP), Personal Income (SAINC50), Zillow ZHVI.
+                  Data sources: BEA Regional Price Parities (MARPP), Personal Income (SAINC50), 
+                  Zillow ZHVI, State income tax rates (2024).
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -824,10 +876,11 @@ export default function HelpPage() {
             <div className="bg-muted/50 p-3 rounded">
               <p className="font-medium text-green-600 dark:text-green-400 mb-2">Cost of Living</p>
               <ul className="space-y-1 text-xs">
-                <li><strong>Low-cost cities</strong>: 70-85 (high purchasing power)</li>
-                <li><strong>NYC/SF (standard earner)</strong>: 15-25</li>
-                <li><strong>NYC/SF (local earner)</strong>: 50-65</li>
-                <li className="text-muted-foreground">Persona selection dramatically affects scores</li>
+                <li><strong>Houston (buyer)</strong>: ~60 (no state tax + affordable)</li>
+                <li><strong>Austin (buyer)</strong>: ~50 (no state tax but pricey housing)</li>
+                <li><strong>SF (homeowner)</strong>: ~35 (high tax + high cost)</li>
+                <li><strong>SF (buyer)</strong>: ~25 (expensive housing compressed)</li>
+                <li className="text-muted-foreground">State taxes + housing situation matter greatly</li>
               </ul>
             </div>
           </div>

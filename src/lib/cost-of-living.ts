@@ -57,6 +57,10 @@ export interface CostOfLivingOptions {
   medianHouseholdIncome?: number | null;
   // Fixed income for retiree persona
   retireeFixedIncome?: number;
+  // State name for accurate tax calculation (required for retiree/standard personas)
+  state?: string;
+  // Property tax rate (decimal, e.g., 0.012 = 1.2%) for homeowner calculations
+  propertyTaxRate?: number | null;
 }
 
 export interface BEAMetrics {
@@ -117,6 +121,17 @@ export interface TrueCostOfLiving {
   taxBurdenRating: "low" | "moderate" | "high" | "very-high" | null;
   costOfLivingRating: "very-low" | "low" | "moderate" | "high" | "very-high" | null;
   overallValueRating: "excellent" | "good" | "moderate" | "poor" | "very-poor" | null;
+  
+  // Tax calculation breakdown (for tooltips)
+  taxBreakdown: {
+    stateName: string | null;
+    federalTax: number | null;
+    stateTax: number | null;
+    propertyTax: number | null;
+    totalTax: number | null;
+    calculatedEffectiveRate: number | null;
+    method: "bea" | "calculated";  // BEA = pre-calculated, calculated = our formula
+  } | null;
 }
 
 // US National average per capita disposable income (2022)
@@ -137,6 +152,135 @@ const MORTGAGE_TERM_YEARS = 30;
 
 // Default retiree fixed income
 const DEFAULT_RETIREE_INCOME = 50000;
+
+// Federal tax rates (2024 brackets, married filing jointly simplified)
+// These are effective rates, not marginal rates
+const FEDERAL_EFFECTIVE_TAX_RATES: { threshold: number; rate: number }[] = [
+  { threshold: 23200, rate: 0.10 },   // 10% bracket
+  { threshold: 94300, rate: 0.12 },   // 12% effective for ~$50K
+  { threshold: 201050, rate: 0.18 },  // ~18% effective for ~$100K
+  { threshold: 383900, rate: 0.22 },  // ~22% effective for ~$200K
+  { threshold: Infinity, rate: 0.28 }, // Higher incomes
+];
+
+// State income tax rates (2024) - top marginal rate for reference
+// For simplicity, we use a blended effective rate that's lower than top marginal
+// States without income tax: AK, FL, NV, NH (dividends only), SD, TN (dividends only), TX, WA, WY
+const STATE_INCOME_TAX_RATES: Record<string, number> = {
+  // No income tax states
+  "Alaska": 0,
+  "Florida": 0,
+  "Nevada": 0,
+  "New Hampshire": 0,    // No tax on wages (only dividends/interest)
+  "South Dakota": 0,
+  "Tennessee": 0,        // No tax on wages (only dividends/interest until 2021)
+  "Texas": 0,
+  "Washington": 0,
+  "Wyoming": 0,
+  
+  // Low tax states (effective rate ~2-3% for median income)
+  "Arizona": 0.025,
+  "Colorado": 0.044,
+  "Illinois": 0.0495,    // Flat rate
+  "Indiana": 0.0315,     // Flat rate
+  "Kentucky": 0.04,      // Flat rate
+  "Michigan": 0.0425,    // Flat rate
+  "North Carolina": 0.0475, // Flat rate
+  "North Dakota": 0.0195,
+  "Pennsylvania": 0.0307, // Flat rate
+  "Utah": 0.0465,        // Flat rate
+  
+  // Moderate tax states (effective rate ~4-5% for median income)
+  "Alabama": 0.04,
+  "Georgia": 0.055,
+  "Idaho": 0.058,
+  "Iowa": 0.044,
+  "Kansas": 0.057,
+  "Louisiana": 0.0425,
+  "Maine": 0.0715,
+  "Maryland": 0.0575,
+  "Massachusetts": 0.05,  // Flat rate (plus 4% surtax on >$1M)
+  "Mississippi": 0.05,
+  "Missouri": 0.048,
+  "Montana": 0.059,
+  "Nebraska": 0.0584,
+  "New Mexico": 0.049,
+  "Ohio": 0.035,
+  "Oklahoma": 0.0475,
+  "Rhode Island": 0.0599,
+  "South Carolina": 0.064,
+  "Virginia": 0.0575,
+  "West Virginia": 0.055,
+  "Wisconsin": 0.0765,
+  
+  // High tax states (effective rate ~6-8% for median income)
+  "Arkansas": 0.047,
+  "Connecticut": 0.0699,
+  "Delaware": 0.066,
+  "District of Columbia": 0.085,
+  "Hawaii": 0.0825,
+  "Minnesota": 0.0785,
+  "New Jersey": 0.0637,
+  "New York": 0.0685,    // Plus NYC local tax ~3.9% for NYC residents
+  "Oregon": 0.099,
+  "Vermont": 0.0875,
+  
+  // Very high tax states (effective rate ~8-10% for median income)
+  "California": 0.093,   // Up to 13.3% for high earners
+};
+
+/**
+ * Calculate effective state income tax for a given income and state
+ * Uses simplified progressive calculation
+ */
+function calculateStateTax(income: number, state: string): number {
+  const rate = STATE_INCOME_TAX_RATES[state];
+  if (rate === undefined || rate === 0) {
+    return 0;
+  }
+  
+  // For states with flat rates, apply directly
+  // For progressive states, the rates above are approximate effective rates
+  // at median income levels - actual calculation would need full bracket tables
+  
+  // Apply a scaling factor based on income level (lower income = lower effective rate)
+  // This is a simplification of progressive taxation
+  const medianIncome = 75000;
+  const scaleFactor = Math.min(1, Math.sqrt(income / medianIncome));
+  
+  return income * rate * scaleFactor;
+}
+
+/**
+ * Calculate effective federal income tax for a given income
+ * Simplified calculation using effective rate brackets
+ */
+function calculateFederalTax(income: number): number {
+  // Standard deduction for married filing jointly (2024)
+  const standardDeduction = 29200;
+  const taxableIncome = Math.max(0, income - standardDeduction);
+  
+  // Find effective rate based on income level
+  for (const bracket of FEDERAL_EFFECTIVE_TAX_RATES) {
+    if (taxableIncome <= bracket.threshold) {
+      return taxableIncome * bracket.rate;
+    }
+  }
+  
+  return taxableIncome * 0.28; // Fallback for very high incomes
+}
+
+/**
+ * Calculate total effective tax rate for a given income and state
+ * Combines federal + state taxes (excludes property tax)
+ */
+function calculateEffectiveTaxRate(income: number, state: string): number {
+  const federalTax = calculateFederalTax(income);
+  const stateTax = calculateStateTax(income, state);
+  const totalTax = federalTax + stateTax;
+  
+  return totalTax / income;
+}
 
 // Default options for backward compatibility
 const DEFAULT_OPTIONS: CostOfLivingOptions = {
@@ -236,14 +380,30 @@ function calculateAdjustedRPP(
         const nationalAvgMortgage = 2128;
         
         // Create a housing index based on mortgage payment
-        const housingIndex = (monthlyMortgage / nationalAvgMortgage) * 100;
+        // Use logarithmic compression for extreme values to avoid
+        // completely crushing expensive cities' scores
+        // Linear up to 150 (1.5x national), then compressed above
+        const rawHousingIndex = (monthlyMortgage / nationalAvgMortgage) * 100;
         
-        // Blend: 40% housing (mortgage), 35% goods, 25% services
-        // This weights housing heavily since it's the biggest concern for buyers
+        let housingIndex: number;
+        if (rawHousingIndex <= 150) {
+          // Linear for normal range (up to 1.5x national average)
+          housingIndex = rawHousingIndex;
+        } else {
+          // Logarithmic compression for expensive markets
+          // Maps: 200 -> 175, 300 -> 200, 400 -> 220
+          // This acknowledges expensive cities without completely destroying scores
+          const excess = rawHousingIndex - 150;
+          const compressed = 50 * Math.log10(1 + excess / 50);
+          housingIndex = 150 + compressed;
+        }
+        
+        // Blend: 35% housing (mortgage), 35% goods, 30% services
+        // Slightly reduced housing weight since we're already penalizing via compression
         const goods = rpp.goods ?? 100;
         const services = rpp.otherServices ?? 100;
         
-        const adjusted = (housingIndex * 0.40) + (goods * 0.35) + (services * 0.25);
+        const adjusted = (housingIndex * 0.35) + (goods * 0.35) + (services * 0.30);
         
         return { adjustedRPP: adjusted, monthlyMortgage };
       }
@@ -257,6 +417,73 @@ function calculateAdjustedRPP(
   }
 }
 
+// National average property tax rate (2024)
+// Used as baseline for property tax calculations
+const NATIONAL_AVG_PROPERTY_TAX_RATE = 0.011; // ~1.1%
+
+// National median home price (2024) for baseline calculations
+const NATIONAL_MEDIAN_HOME_PRICE = 420000;
+
+/**
+ * Calculate annual property tax burden
+ * 
+ * IMPORTANT: Only applies to existing HOMEOWNERS, not prospective buyers.
+ * For prospective buyers, housing costs (including property tax burden) are already
+ * captured in the mortgage-adjusted RPP calculation, so we don't double-count.
+ * 
+ * For homeowners, we assume they bought at ~60% of current median (historical purchase)
+ * since long-time owners have lower assessed values due to Prop 13-style protections
+ * in many states and general home price appreciation since purchase.
+ */
+function calculateAnnualPropertyTax(
+  options: CostOfLivingOptions
+): { localPropertyTax: number; nationalPropertyTax: number } {
+  const { housingSituation, propertyTaxRate, medianHomePrice } = options;
+  
+  // Renters: No property tax
+  // Prospective buyers: Housing costs already in RPP (via mortgage-adjusted index)
+  if (housingSituation === "renter" || housingSituation === "prospective-buyer") {
+    return { localPropertyTax: 0, nationalPropertyTax: 0 };
+  }
+  
+  // Existing homeowners: Apply property tax on estimated purchase price
+  // Assume purchase at ~60% of current median to account for:
+  // - Historical lower prices when they bought
+  // - Assessment caps (Prop 13 in CA, similar in other states)
+  const HISTORICAL_PURCHASE_FACTOR = 0.60;
+  
+  const currentMedian = medianHomePrice ?? NATIONAL_MEDIAN_HOME_PRICE;
+  const estimatedPurchasePrice = currentMedian * HISTORICAL_PURCHASE_FACTOR;
+  const taxRate = propertyTaxRate ?? NATIONAL_AVG_PROPERTY_TAX_RATE;
+  
+  // Local property tax = local rate × estimated purchase price
+  const localPropertyTax = Math.round(estimatedPurchasePrice * taxRate);
+  
+  // National baseline = same factor applied nationally
+  const nationalEstimatedPrice = NATIONAL_MEDIAN_HOME_PRICE * HISTORICAL_PURCHASE_FACTOR;
+  const nationalPropertyTax = Math.round(nationalEstimatedPrice * NATIONAL_AVG_PROPERTY_TAX_RATE);
+  
+  return { localPropertyTax, nationalPropertyTax };
+}
+
+// Type for tax breakdown returned by calculateSelectedIncome
+interface TaxBreakdown {
+  stateName: string | null;
+  federalTax: number | null;
+  stateTax: number | null;
+  propertyTax: number | null;
+  totalTax: number | null;
+  calculatedEffectiveRate: number | null;
+  method: "bea" | "calculated";
+}
+
+interface SelectedIncomeResult {
+  selectedIncome: number | null;
+  selectedAfterTaxIncome: number | null;
+  nationalBaseline: number;
+  taxBreakdown: TaxBreakdown | null;
+}
+
 /**
  * Calculate selected income based on work situation persona
  * 
@@ -265,38 +492,90 @@ function calculateAdjustedRPP(
  * STANDARD: Uses FIXED national median income - answers "where can I afford to live?"
  *           This is pure affordability - same income in all cities, just compare costs.
  * RETIREE: Uses user-defined fixed income
+ * 
+ * For homeowners/prospective-buyers, also subtracts property tax from disposable income.
  */
 function calculateSelectedIncome(
   bea: BEAMetrics,
   options: CostOfLivingOptions
-): { selectedIncome: number | null; selectedAfterTaxIncome: number | null; nationalBaseline: number } {
+): SelectedIncomeResult {
   const workSituation = options.workSituation ?? "local-earner";
   const beaTaxRate = bea.taxes?.effectiveTaxRate ?? null;
+  
+  // Calculate property tax impact (0 for renters)
+  const { localPropertyTax, nationalPropertyTax } = calculateAnnualPropertyTax(options);
   
   switch (workSituation) {
     case "local-earner": {
       // Use BEA per capita income - reflects local earning potential
       // This includes the income boost from local job markets
       const income = bea.taxes?.perCapitaIncome ?? null;
-      const afterTax = bea.taxes?.perCapitaDisposable ?? null;
+      let afterTax = bea.taxes?.perCapitaDisposable ?? null;
+      
+      // Subtract property tax for homeowners
+      if (afterTax !== null) {
+        afterTax = afterTax - localPropertyTax;
+      }
+      
+      // Adjust baseline for property tax too
+      const nationalBaseline = NATIONAL_PER_CAPITA_DISPOSABLE - nationalPropertyTax;
+      
+      // For local-earner, we use BEA pre-calculated taxes
+      const taxBreakdown: TaxBreakdown = {
+        stateName: bea.taxes?.state ?? null,
+        federalTax: null, // BEA combines them
+        stateTax: null,
+        propertyTax: localPropertyTax > 0 ? localPropertyTax : null,
+        totalTax: income !== null && afterTax !== null 
+          ? income - afterTax - localPropertyTax + localPropertyTax  // Gross - net before prop tax
+          : null,
+        calculatedEffectiveRate: beaTaxRate,
+        method: "bea"
+      };
+      
       return { 
         selectedIncome: income, 
         selectedAfterTaxIncome: afterTax,
-        nationalBaseline: NATIONAL_PER_CAPITA_DISPOSABLE
+        nationalBaseline: nationalBaseline,
+        taxBreakdown
       };
     }
     
     case "retiree": {
-      // Use user-defined fixed income
+      // Use user-defined fixed income with state-specific tax calculation
       const income = options.retireeFixedIncome ?? DEFAULT_RETIREE_INCOME;
-      // Retirees typically have lower effective tax rates (~15%)
-      const retireeEffectiveTaxRate = 0.15;
-      const afterTax = Math.round(income * (1 - retireeEffectiveTaxRate));
-      // Baseline is same fixed income - comparing how far it goes in each city
+      const state = options.state ?? bea.taxes?.state ?? "";
+      
+      // Calculate individual tax components
+      const federalTax = calculateFederalTax(income);
+      const stateTax = calculateStateTax(income, state);
+      const totalIncomeTax = federalTax + stateTax;
+      const effectiveRate = totalIncomeTax / income;
+      
+      // After income tax, subtract property tax for homeowners
+      const afterIncomeTax = Math.round(income - totalIncomeTax);
+      const afterTax = afterIncomeTax - localPropertyTax;
+      
+      // Calculate national baseline with average tax burden for comparison
+      const nationalAvgRate = calculateEffectiveTaxRate(income, "Colorado"); // Use CO as "average" state
+      const nationalAfterIncomeTax = Math.round(income * (1 - nationalAvgRate));
+      const nationalBaseline = nationalAfterIncomeTax - nationalPropertyTax;
+      
+      const taxBreakdown: TaxBreakdown = {
+        stateName: state || null,
+        federalTax: Math.round(federalTax),
+        stateTax: Math.round(stateTax),
+        propertyTax: localPropertyTax > 0 ? localPropertyTax : null,
+        totalTax: Math.round(totalIncomeTax) + localPropertyTax,
+        calculatedEffectiveRate: Math.round(effectiveRate * 1000) / 10, // One decimal
+        method: "calculated"
+      };
+      
       return {
         selectedIncome: income,
         selectedAfterTaxIncome: afterTax,
-        nationalBaseline: afterTax  // Same amount - index shows pure cost impact
+        nationalBaseline: nationalBaseline,
+        taxBreakdown
       };
     }
     
@@ -304,26 +583,45 @@ function calculateSelectedIncome(
     default: {
       // PURE AFFORDABILITY: Use fixed national median income for ALL cities
       // This answers: "If I have average income, where can I afford to live?"
-      // 
-      // We use a fixed income amount and only vary the local tax rate and RPP
-      // This makes expensive cities (SF, NYC) score POORLY as they should
       const income = NATIONAL_MEDIAN_HOUSEHOLD_INCOME;
+      const state = options.state ?? bea.taxes?.state ?? "";
       
-      // Apply local tax rate to see what you'd actually keep
-      // (higher tax states reduce your after-tax income)
-      const effectiveRate = beaTaxRate !== null 
-        ? Math.min(beaTaxRate / 100, 0.25)  // Cap at 25% to be realistic for median earners
-        : AVERAGE_TAX_RATE;
+      // Calculate individual tax components
+      const federalTax = calculateFederalTax(income);
+      const stateTax = calculateStateTax(income, state);
+      const totalIncomeTax = federalTax + stateTax;
       
-      const afterTax = Math.round(income * (1 - effectiveRate));
+      // Check if we're using calculated or fallback
+      const useCalculated = state && state.length > 0;
+      const effectiveRate = useCalculated 
+        ? totalIncomeTax / income
+        : (beaTaxRate !== null 
+            ? Math.min(beaTaxRate / 100, 0.25)
+            : AVERAGE_TAX_RATE);
       
-      // Baseline is national median after average taxes
-      const nationalMedianAfterTax = Math.round(NATIONAL_MEDIAN_HOUSEHOLD_INCOME * (1 - AVERAGE_TAX_RATE));
+      // After income tax, subtract property tax for homeowners
+      const afterIncomeTax = Math.round(income * (1 - effectiveRate));
+      const afterTax = afterIncomeTax - localPropertyTax;
+      
+      // Baseline is national median after average taxes, minus property tax
+      const nationalMedianAfterIncomeTax = Math.round(NATIONAL_MEDIAN_HOUSEHOLD_INCOME * (1 - AVERAGE_TAX_RATE));
+      const nationalBaseline = nationalMedianAfterIncomeTax - nationalPropertyTax;
+      
+      const taxBreakdown: TaxBreakdown = {
+        stateName: state || null,
+        federalTax: useCalculated ? Math.round(federalTax) : null,
+        stateTax: useCalculated ? Math.round(stateTax) : null,
+        propertyTax: localPropertyTax > 0 ? localPropertyTax : null,
+        totalTax: Math.round(income * effectiveRate) + localPropertyTax,
+        calculatedEffectiveRate: Math.round(effectiveRate * 1000) / 10,
+        method: useCalculated ? "calculated" : "bea"
+      };
       
       return {
         selectedIncome: income,
         selectedAfterTaxIncome: afterTax,
-        nationalBaseline: nationalMedianAfterTax
+        nationalBaseline: nationalBaseline,
+        taxBreakdown
       };
     }
   }
@@ -354,8 +652,8 @@ export function calculateTrueCostOfLiving(
   // Get housing persona-adjusted RPP (cost denominator)
   const { adjustedRPP, monthlyMortgage } = calculateAdjustedRPP(bea, options);
   
-  // Get work persona-adjusted income (income numerator)
-  const { selectedIncome, selectedAfterTaxIncome, nationalBaseline } = calculateSelectedIncome(bea, options);
+  // Get work persona-adjusted income (income numerator) and tax breakdown
+  const { selectedIncome, selectedAfterTaxIncome, nationalBaseline, taxBreakdown } = calculateSelectedIncome(bea, options);
 
   // Calculate true purchasing power using work-adjusted income and housing-adjusted RPP
   // Formula: Selected After-Tax Income / (Adjusted RPP / 100)
@@ -390,6 +688,7 @@ export function calculateTrueCostOfLiving(
     taxBurdenRating: getTaxBurdenRating(effectiveTaxRate),
     costOfLivingRating: getCostOfLivingRating(adjustedRPP),
     overallValueRating: getOverallValueRating(truePurchasingPowerIndex),
+    taxBreakdown,
   };
 }
 
@@ -452,6 +751,7 @@ function createEmptyResult(
     taxBurdenRating: null,
     costOfLivingRating: null,
     overallValueRating: null,
+    taxBreakdown: null,
   };
 }
 

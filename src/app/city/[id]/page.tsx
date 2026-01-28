@@ -156,6 +156,7 @@ export default function CityPage({ params }: CityPageProps) {
           <CityMetricsGrid 
             metrics={city.metrics} 
             cityName={city.name}
+            stateName={city.state}
             zhviHistory={city.zhviHistory || null}
             costPreferences={isHydrated ? {
               housingSituation: preferences.advanced.costOfLiving.housingSituation,

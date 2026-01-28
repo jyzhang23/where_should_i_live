@@ -197,6 +197,80 @@ The slider weights become intuitive multipliers on comparable satisfaction scale
 
 ---
 
+## Cost of Living Enhancements (Completed 2026-01-28)
+
+### Problem: Overly Punitive Scoring for Expensive Cities
+California cities were getting scores of 0-15 even for high-income earners. The issues:
+1. **State tax calculations** used flat 15% for retirees, ignoring no-income-tax states
+2. **Property tax** wasn't factored in for homeowners
+3. **Housing index** for buyers was unbounded (SF at 280% crushed scores)
+4. **Scoring formula** was too narrow (70-130 range)
+
+### Solutions Implemented
+
+#### 1. State-Specific Income Tax (`cost-of-living.ts`)
+Added comprehensive state income tax table (50 states + DC):
+- No-tax states: AK, FL, NV, NH, SD, TN, TX, WA, WY → 0%
+- Low-tax states: AZ, CO, IN, NC, PA → 2-5%
+- High-tax states: CA, NY, NJ, OR → 6-10%
+
+For **Retiree** and **Standard** personas:
+```typescript
+effectiveTaxRate = calculateFederalTax(income) + calculateStateTax(income, state)
+// TX retiree on $50K keeps ~$5,500 more than CA retiree
+```
+
+#### 2. Property Tax for Homeowners
+Added property tax calculation for existing homeowners:
+- Uses 60% of current median (historical purchase price assumption)
+- Not applied to renters (no property tax)
+- Not applied to buyers (already in mortgage-adjusted RPP)
+
+```typescript
+propertyTax = medianHomePrice × 0.60 × localPropertyTaxRate
+// SF homeowner: ~$7,800/year on ~$700K assessed value
+```
+
+#### 3. Housing Index Compression for Buyers
+Logarithmic compression for extreme housing costs:
+```typescript
+if (rawIndex > 150) {
+  housingIndex = 150 + 50 × log₁₀(1 + excess/50)
+}
+// SF raw 281 → compressed 178
+```
+
+Changed RPP blend from 40/35/25 to **35/35/30** (housing/goods/services).
+
+#### 4. Improved Scoring Formula
+Wider range centered on national average:
+```typescript
+// Old: ((index - 70) / 60) × 100  // 70-130 range
+// New: 50 + (index - 100) × 0.75   // Centered at 50
+```
+
+| Index | Old Score | New Score |
+|-------|-----------|-----------|
+| 60 | -17 → 0 | 20 |
+| 80 | 17 | 35 |
+| 100 | 50 | 50 |
+| 120 | 83 | 65 |
+| 140 | 100 | 80 |
+
+### Results
+
+| City (Buyer, $500K) | Before | After |
+|---------------------|--------|-------|
+| San Francisco | 13 | **25** |
+| Los Angeles | ~15 | **27** |
+| Austin | ~45 | **50** |
+| Houston | ~60 | **59** |
+| Columbus | ~65 | **61** |
+
+California cities now score poorly (as they should) but not absurdly so.
+
+---
+
 ## Implementation Summary (Completed 2026-01-28)
 
 ### Backend Changes (`src/lib/scoring.ts`)
