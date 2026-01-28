@@ -19,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RefreshCw, Shield, CheckCircle, XCircle, Loader2, Download, CloudSun } from "lucide-react";
+import { RefreshCw, Shield, CheckCircle, XCircle, Loader2, Download, CloudSun, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RefreshResult {
@@ -38,6 +38,7 @@ interface RefreshResult {
     normalPeriod?: string;
     acisUpdated?: number;
     openMeteoUpdated?: number;
+    acsYear?: number;
     errors?: string[];
   };
   message?: string;
@@ -148,7 +149,33 @@ async function pullClimateData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-type ActionType = "reinitialize" | "zillow" | "bea" | "climate";
+async function pullCensusData(password: string): Promise<RefreshResult> {
+  const response = await fetch("/api/admin/census-pull", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+
+  const text = await response.text();
+  if (!text) {
+    throw new Error("Server returned empty response. Check server logs.");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid server response: ${text.slice(0, 100)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || "Census pull failed");
+  }
+
+  return data;
+}
+
+type ActionType = "reinitialize" | "zillow" | "bea" | "climate" | "census";
 
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -213,7 +240,21 @@ export function AdminPanel() {
     },
   });
 
-  const isPending = reinitMutation.isPending || zillowMutation.isPending || beaMutation.isPending || climateMutation.isPending;
+  const censusMutation = useMutation({
+    mutationFn: pullCensusData,
+    onSuccess: (data) => {
+      setResult(data);
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+    },
+    onError: (error: Error) => {
+      setResult({ success: false, error: error.message });
+    },
+    onSettled: () => {
+      setActiveAction(null);
+    },
+  });
+
+  const isPending = reinitMutation.isPending || zillowMutation.isPending || beaMutation.isPending || climateMutation.isPending || censusMutation.isPending;
 
   const handleReinitialize = () => {
     if (!password) return;
@@ -241,6 +282,13 @@ export function AdminPanel() {
     setResult(null);
     setActiveAction("climate");
     climateMutation.mutate(password);
+  };
+
+  const handleCensusPull = () => {
+    if (!password) return;
+    setResult(null);
+    setActiveAction("census");
+    censusMutation.mutate(password);
   };
 
   const handleClose = () => {
@@ -381,6 +429,29 @@ export function AdminPanel() {
                 </Button>
               </div>
             </div>
+
+            <div className="p-3 rounded-lg border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">Pull Census Data</p>
+                  <p className="text-xs text-muted-foreground">
+                    Demographics: age, race, education, income
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCensusPull}
+                  disabled={!password || isPending}
+                >
+                  {activeAction === "census" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Users className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Result Display */}
@@ -443,6 +514,9 @@ export function AdminPanel() {
                           {result.stats.normalPeriod !== undefined && (
                             <li>Normal period: {result.stats.normalPeriod}</li>
                           )}
+                          {result.stats.acsYear !== undefined && (
+                            <li>ACS Year: {result.stats.acsYear}</li>
+                          )}
                           {result.stats.errors && result.stats.errors.length > 0 && (
                             <li className="text-amber-600 dark:text-amber-400">
                               Errors: {result.stats.errors.length} cities failed
@@ -472,6 +546,8 @@ export function AdminPanel() {
                   ? "Fetching BEA price data..."
                   : activeAction === "climate"
                   ? "Fetching climate data from NOAA + Open-Meteo... This may take a few minutes."
+                  : activeAction === "census"
+                  ? "Fetching Census demographics... This may take a minute."
                   : "Reinitializing data..."}
               </span>
             </div>

@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { BEAMetrics } from "@/lib/cost-of-living";
-import { NOAAClimateData } from "@/types/city";
+import { NOAAClimateData, CensusDemographics } from "@/types/city";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +18,10 @@ function cityNameToSlug(name: string): string {
 interface MetricsJsonData {
   bea?: BEAMetrics;
   noaa?: NOAAClimateData;
+  census?: CensusDemographics;
 }
 
-// Load supplementary data from metrics.json (BEA, NOAA, etc.)
+// Load supplementary data from metrics.json (BEA, NOAA, Census, etc.)
 function loadMetricsData(): Record<string, MetricsJsonData> {
   const possiblePaths = [
     join(process.cwd(), "data", "metrics.json"),
@@ -38,6 +39,7 @@ function loadMetricsData(): Record<string, MetricsJsonData> {
           const metrics = cityMetrics as { 
             bea?: BEAMetrics;
             climate?: { noaa?: NOAAClimateData };
+            census?: CensusDemographics;
           };
           
           metricsData[cityId] = {};
@@ -49,6 +51,11 @@ function loadMetricsData(): Record<string, MetricsJsonData> {
           // NOAA data is nested under climate.noaa
           if (metrics.climate?.noaa) {
             metricsData[cityId].noaa = metrics.climate.noaa;
+          }
+          
+          // Census demographics data
+          if (metrics.census) {
+            metricsData[cityId].census = metrics.census;
           }
         }
         
@@ -89,6 +96,7 @@ export async function GET() {
             ...city.metrics,
             ...(supplementary.bea && { bea: supplementary.bea }),
             ...(supplementary.noaa && { noaa: supplementary.noaa }),
+            ...(supplementary.census && { census: supplementary.census }),
           },
         };
       }

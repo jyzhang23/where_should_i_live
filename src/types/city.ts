@@ -1,6 +1,67 @@
 // City and metrics types that match the Prisma schema
 import { BEAMetrics } from "@/lib/cost-of-living";
 
+// Census Bureau ACS Demographics Data
+export interface CensusDemographics {
+  source: string;              // "Census ACS 5-Year"
+  year: number;                // e.g., 2022
+  lastUpdated: string;         // ISO date
+  
+  // Population
+  totalPopulation: number | null;
+  
+  // Age Demographics
+  medianAge: number | null;
+  under18Percent: number | null;
+  age18to34Percent: number | null;
+  age35to54Percent: number | null;
+  age55PlusPercent: number | null;
+  
+  // Race/Ethnicity (percentages, sum to ~100%)
+  whitePercent: number | null;          // White alone, not Hispanic
+  blackPercent: number | null;          // Black/African American alone
+  hispanicPercent: number | null;       // Hispanic/Latino (any race)
+  asianPercent: number | null;          // Asian alone
+  pacificIslanderPercent: number | null; // Native Hawaiian/Pacific Islander
+  nativeAmericanPercent: number | null; // American Indian/Alaska Native
+  twoOrMoreRacesPercent: number | null; // Two or more races
+  otherRacePercent: number | null;      // Some other race
+  
+  // Asian Subgroups (of total population)
+  chinesePercent: number | null;
+  indianPercent: number | null;
+  filipinoPercent: number | null;
+  vietnamesePercent: number | null;
+  koreanPercent: number | null;
+  japanesePercent: number | null;
+  
+  // Diversity Index (calculated)
+  diversityIndex: number | null;        // 0-100, probability two random people differ
+  
+  // Education (25+ population)
+  highSchoolOrHigherPercent: number | null;
+  bachelorsOrHigherPercent: number | null;
+  graduateDegreePercent: number | null;
+  
+  // Income
+  medianHouseholdIncome: number | null;
+  perCapitaIncome: number | null;
+  povertyRate: number | null;
+  
+  // Foreign-Born / Immigration
+  foreignBornPercent: number | null;
+  
+  // Household Composition
+  familyHouseholdsPercent: number | null;
+  marriedCouplePercent: number | null;
+  singlePersonPercent: number | null;
+  
+  // Language
+  englishOnlyPercent: number | null;
+  spanishAtHomePercent: number | null;
+  asianLanguageAtHomePercent: number | null;
+}
+
 // Climate data from NOAA ACIS + Open-Meteo
 export interface NOAAClimateData {
   source: string;              // "ACIS+Open-Meteo"
@@ -100,6 +161,9 @@ export interface CityMetrics {
 
   // NOAA climate data (merged from metrics.json, not in database)
   noaa?: NOAAClimateData;
+  
+  // Census demographics (merged from metrics.json, not in database)
+  census?: CensusDemographics;
 
   // Quality of Life aggregate score
   qualityOfLifeScore?: number | null;
