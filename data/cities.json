@@ -7,15 +7,13 @@
       "name": "San Francisco",
       "state": "CA",
       "noaaStation": "KSFO",
+      "latitude": 37.6213,
+      "longitude": -122.379,
       "zillowRegionId": 395057,
       "zillowRegionName": "San Francisco, CA",
       "sports": {
-        "nfl": [
-          "49ers"
-        ],
-        "nba": [
-          "Warriors"
-        ]
+        "nfl": ["49ers"],
+        "nba": ["Warriors"]
       },
       "beaGeoFips": "41860"
     },
@@ -24,12 +22,12 @@
       "name": "Seattle",
       "state": "WA",
       "noaaStation": "KSEA",
+      "latitude": 47.4502,
+      "longitude": -122.3088,
       "zillowRegionId": 395078,
       "zillowRegionName": "Seattle, WA",
       "sports": {
-        "nfl": [
-          "Seahawks"
-        ],
+        "nfl": ["Seahawks"],
         "nba": []
       },
       "beaGeoFips": "42660"
@@ -39,17 +37,13 @@
       "name": "New York City",
       "state": "NY/NJ",
       "noaaStation": "KJFK",
+      "latitude": 40.6413,
+      "longitude": -73.7781,
       "zillowRegionId": 394913,
       "zillowRegionName": "New York City, NY",
       "sports": {
-        "nfl": [
-          "Giants",
-          "Jets"
-        ],
-        "nba": [
-          "Knicks",
-          "Nets"
-        ]
+        "nfl": ["Giants", "Jets"],
+        "nba": ["Knicks", "Nets"]
       },
       "beaGeoFips": "35620"
     },
@@ -58,17 +52,13 @@
       "name": "Los Angeles",
       "state": "CA",
       "noaaStation": "KLAX",
+      "latitude": 33.9425,
+      "longitude": -118.408,
       "zillowRegionId": 753899,
       "zillowRegionName": "Los Angeles, CA",
       "sports": {
-        "nfl": [
-          "Rams",
-          "Chargers"
-        ],
-        "nba": [
-          "Lakers",
-          "Clippers"
-        ]
+        "nfl": ["Rams", "Chargers"],
+        "nba": ["Lakers", "Clippers"]
       },
       "beaGeoFips": "31080"
     },
@@ -77,13 +67,13 @@
       "name": "Sacramento",
       "state": "CA",
       "noaaStation": "KSMF",
+      "latitude": 38.6954,
+      "longitude": -121.5908,
       "zillowRegionId": 395045,
       "zillowRegionName": "Sacramento, CA",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Kings"
-        ]
+        "nba": ["Kings"]
       },
       "beaGeoFips": "40900"
     },
@@ -92,15 +82,13 @@
       "name": "Boston",
       "state": "MA",
       "noaaStation": "KBOS",
+      "latitude": 42.3656,
+      "longitude": -71.0096,
       "zillowRegionId": 394404,
       "zillowRegionName": "Boston, MA",
       "sports": {
-        "nfl": [
-          "Patriots"
-        ],
-        "nba": [
-          "Celtics"
-        ]
+        "nfl": ["Patriots"],
+        "nba": ["Celtics"]
       },
       "beaGeoFips": "14460"
     },
@@ -109,13 +97,13 @@
       "name": "Portland",
       "state": "OR",
       "noaaStation": "KPDX",
+      "latitude": 45.5898,
+      "longitude": -122.5951,
       "zillowRegionId": 394998,
       "zillowRegionName": "Portland, OR",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Trail Blazers"
-        ]
+        "nba": ["Trail Blazers"]
       },
       "beaGeoFips": "38900"
     },
@@ -124,12 +112,12 @@
       "name": "Las Vegas",
       "state": "NV",
       "noaaStation": "KLAS",
+      "latitude": 36.08,
+      "longitude": -115.1523,
       "zillowRegionId": 394775,
       "zillowRegionName": "Las Vegas, NV",
       "sports": {
-        "nfl": [
-          "Raiders"
-        ],
+        "nfl": ["Raiders"],
         "nba": []
       },
       "beaGeoFips": "29820"
@@ -139,15 +127,13 @@
       "name": "Chicago",
       "state": "IL",
       "noaaStation": "KORD",
+      "latitude": 41.9742,
+      "longitude": -87.9073,
       "zillowRegionId": 394463,
       "zillowRegionName": "Chicago, IL",
       "sports": {
-        "nfl": [
-          "Bears"
-        ],
-        "nba": [
-          "Bulls"
-        ]
+        "nfl": ["Bears"],
+        "nba": ["Bulls"]
       },
       "beaGeoFips": "16980"
     },
@@ -156,16 +142,14 @@
       "name": "Washington D.C.",
       "state": "DC/VA/MD",
       "noaaStation": "KDCA",
+      "latitude": 38.8512,
+      "longitude": -77.0402,
       "zillowRegionId": 395209,
       "zillowRegionName": "Washington, DC",
       "zillowGeography": "msa",
       "sports": {
-        "nfl": [
-          "Commanders"
-        ],
-        "nba": [
-          "Wizards"
-        ]
+        "nfl": ["Commanders"],
+        "nba": ["Wizards"]
       },
       "beaGeoFips": "47900"
     },
@@ -174,15 +158,13 @@
       "name": "Houston",
       "state": "TX",
       "noaaStation": "KIAH",
+      "latitude": 29.9902,
+      "longitude": -95.3368,
       "zillowRegionId": 394692,
       "zillowRegionName": "Houston, TX",
       "sports": {
-        "nfl": [
-          "Texans"
-        ],
-        "nba": [
-          "Rockets"
-        ]
+        "nfl": ["Texans"],
+        "nba": ["Rockets"]
       },
       "beaGeoFips": "26420"
     },
@@ -191,15 +173,13 @@
       "name": "Atlanta",
       "state": "GA",
       "noaaStation": "KATL",
+      "latitude": 33.6407,
+      "longitude": -84.4277,
       "zillowRegionId": 394347,
       "zillowRegionName": "Atlanta, GA",
       "sports": {
-        "nfl": [
-          "Falcons"
-        ],
-        "nba": [
-          "Hawks"
-        ]
+        "nfl": ["Falcons"],
+        "nba": ["Hawks"]
       },
       "beaGeoFips": "12060"
     },
@@ -208,15 +188,13 @@
       "name": "Minneapolis",
       "state": "MN",
       "noaaStation": "KMSP",
+      "latitude": 44.8848,
+      "longitude": -93.2223,
       "zillowRegionId": 394865,
       "zillowRegionName": "Minneapolis, MN",
       "sports": {
-        "nfl": [
-          "Vikings"
-        ],
-        "nba": [
-          "Timberwolves"
-        ]
+        "nfl": ["Vikings"],
+        "nba": ["Timberwolves"]
       },
       "beaGeoFips": "33460"
     },
@@ -225,15 +203,13 @@
       "name": "Philadelphia",
       "state": "PA",
       "noaaStation": "KPHL",
+      "latitude": 39.8744,
+      "longitude": -75.2424,
       "zillowRegionId": 394974,
       "zillowRegionName": "Philadelphia, PA",
       "sports": {
-        "nfl": [
-          "Eagles"
-        ],
-        "nba": [
-          "76ers"
-        ]
+        "nfl": ["Eagles"],
+        "nba": ["76ers"]
       },
       "beaGeoFips": "37980"
     },
@@ -242,15 +218,13 @@
       "name": "Dallas",
       "state": "TX",
       "noaaStation": "KDFW",
+      "latitude": 32.8998,
+      "longitude": -97.0403,
       "zillowRegionId": 394514,
       "zillowRegionName": "Dallas, TX",
       "sports": {
-        "nfl": [
-          "Cowboys"
-        ],
-        "nba": [
-          "Mavericks"
-        ]
+        "nfl": ["Cowboys"],
+        "nba": ["Mavericks"]
       },
       "beaGeoFips": "19100"
     },
@@ -259,13 +233,13 @@
       "name": "Tampa Bay",
       "state": "FL",
       "noaaStation": "KTPA",
+      "latitude": 27.9756,
+      "longitude": -82.5333,
       "zillowRegionId": 395148,
       "zillowRegionName": "Tampa, FL",
       "zillowGeography": "msa",
       "sports": {
-        "nfl": [
-          "Buccaneers"
-        ],
+        "nfl": ["Buccaneers"],
         "nba": []
       },
       "beaGeoFips": "45300"
@@ -275,15 +249,13 @@
       "name": "Denver",
       "state": "CO",
       "noaaStation": "KDEN",
+      "latitude": 39.8561,
+      "longitude": -104.6737,
       "zillowRegionId": 394530,
       "zillowRegionName": "Denver, CO",
       "sports": {
-        "nfl": [
-          "Broncos"
-        ],
-        "nba": [
-          "Nuggets"
-        ]
+        "nfl": ["Broncos"],
+        "nba": ["Nuggets"]
       },
       "beaGeoFips": "19740"
     },
@@ -292,15 +264,13 @@
       "name": "Charlotte",
       "state": "NC",
       "noaaStation": "KCLT",
+      "latitude": 35.214,
+      "longitude": -80.9431,
       "zillowRegionId": 394458,
       "zillowRegionName": "Charlotte, NC",
       "sports": {
-        "nfl": [
-          "Panthers"
-        ],
-        "nba": [
-          "Hornets"
-        ]
+        "nfl": ["Panthers"],
+        "nba": ["Hornets"]
       },
       "beaGeoFips": "16740"
     },
@@ -309,13 +279,13 @@
       "name": "Oklahoma City",
       "state": "OK",
       "noaaStation": "KOKC",
+      "latitude": 35.3931,
+      "longitude": -97.6007,
       "zillowRegionId": 394935,
       "zillowRegionName": "Oklahoma City, OK",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Thunder"
-        ]
+        "nba": ["Thunder"]
       },
       "beaGeoFips": "36420"
     },
@@ -324,15 +294,13 @@
       "name": "Phoenix",
       "state": "AZ",
       "noaaStation": "KPHX",
+      "latitude": 33.4373,
+      "longitude": -112.0078,
       "zillowRegionId": 394976,
       "zillowRegionName": "Phoenix, AZ",
       "sports": {
-        "nfl": [
-          "Cardinals"
-        ],
-        "nba": [
-          "Suns"
-        ]
+        "nfl": ["Cardinals"],
+        "nba": ["Suns"]
       },
       "beaGeoFips": "38060"
     },
@@ -341,12 +309,12 @@
       "name": "Baltimore",
       "state": "MD",
       "noaaStation": "KBWI",
+      "latitude": 39.1774,
+      "longitude": -76.6684,
       "zillowRegionId": 394358,
       "zillowRegionName": "Baltimore, MD",
       "sports": {
-        "nfl": [
-          "Ravens"
-        ],
+        "nfl": ["Ravens"],
         "nba": []
       },
       "beaGeoFips": "12580"
@@ -356,13 +324,13 @@
       "name": "Orlando",
       "state": "FL",
       "noaaStation": "KMCO",
+      "latitude": 28.4312,
+      "longitude": -81.3081,
       "zillowRegionId": 394943,
       "zillowRegionName": "Orlando, FL",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Magic"
-        ]
+        "nba": ["Magic"]
       },
       "beaGeoFips": "36740"
     },
@@ -371,15 +339,13 @@
       "name": "Indianapolis",
       "state": "IN",
       "noaaStation": "KIND",
+      "latitude": 39.7173,
+      "longitude": -86.2944,
       "zillowRegionId": 394705,
       "zillowRegionName": "Indianapolis, IN",
       "sports": {
-        "nfl": [
-          "Colts"
-        ],
-        "nba": [
-          "Pacers"
-        ]
+        "nfl": ["Colts"],
+        "nba": ["Pacers"]
       },
       "beaGeoFips": "26900"
     },
@@ -388,12 +354,12 @@
       "name": "Nashville",
       "state": "TN",
       "noaaStation": "KBNA",
+      "latitude": 36.1263,
+      "longitude": -86.6774,
       "zillowRegionId": 394902,
       "zillowRegionName": "Nashville, TN",
       "sports": {
-        "nfl": [
-          "Titans"
-        ],
+        "nfl": ["Titans"],
         "nba": []
       },
       "beaGeoFips": "34980"
@@ -403,13 +369,13 @@
       "name": "Milwaukee",
       "state": "WI",
       "noaaStation": "KMKE",
+      "latitude": 42.9472,
+      "longitude": -87.8966,
       "zillowRegionId": 394862,
       "zillowRegionName": "Milwaukee, WI",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Bucks"
-        ]
+        "nba": ["Bucks"]
       },
       "beaGeoFips": "33340"
     },
@@ -418,13 +384,13 @@
       "name": "Salt Lake City",
       "state": "UT",
       "noaaStation": "KSLC",
+      "latitude": 40.7884,
+      "longitude": -111.9778,
       "zillowRegionId": 395053,
       "zillowRegionName": "Salt Lake City, UT",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Jazz"
-        ]
+        "nba": ["Jazz"]
       },
       "beaGeoFips": "41620"
     },
@@ -433,15 +399,13 @@
       "name": "Detroit",
       "state": "MI",
       "noaaStation": "KDTW",
+      "latitude": 42.2162,
+      "longitude": -83.3554,
       "zillowRegionId": 394532,
       "zillowRegionName": "Detroit, MI",
       "sports": {
-        "nfl": [
-          "Lions"
-        ],
-        "nba": [
-          "Pistons"
-        ]
+        "nfl": ["Lions"],
+        "nba": ["Pistons"]
       },
       "beaGeoFips": "19820"
     },
@@ -450,6 +414,8 @@
       "name": "St. Louis",
       "state": "MO",
       "noaaStation": "KSTL",
+      "latitude": 38.7487,
+      "longitude": -90.3700,
       "zillowRegionId": 395121,
       "zillowRegionName": "St. Louis, MO",
       "sports": {
@@ -463,13 +429,13 @@
       "name": "San Antonio",
       "state": "TX",
       "noaaStation": "KSAT",
+      "latitude": 29.5312,
+      "longitude": -98.4695,
       "zillowRegionId": 395055,
       "zillowRegionName": "San Antonio, TX",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Spurs"
-        ]
+        "nba": ["Spurs"]
       },
       "beaGeoFips": "41700"
     },
@@ -478,12 +444,12 @@
       "name": "Jacksonville",
       "state": "FL",
       "noaaStation": "KJAX",
+      "latitude": 30.4941,
+      "longitude": -81.6879,
       "zillowRegionId": 394714,
       "zillowRegionName": "Jacksonville, FL",
       "sports": {
-        "nfl": [
-          "Jaguars"
-        ],
+        "nfl": ["Jaguars"],
         "nba": []
       },
       "beaGeoFips": "27260"
@@ -493,15 +459,13 @@
       "name": "New Orleans",
       "state": "LA",
       "noaaStation": "KMSY",
+      "latitude": 29.9934,
+      "longitude": -90.258,
       "zillowRegionId": 394910,
       "zillowRegionName": "New Orleans, LA",
       "sports": {
-        "nfl": [
-          "Saints"
-        ],
-        "nba": [
-          "Pelicans"
-        ]
+        "nfl": ["Saints"],
+        "nba": ["Pelicans"]
       },
       "beaGeoFips": "35380"
     },
@@ -510,12 +474,12 @@
       "name": "Kansas City",
       "state": "MO",
       "noaaStation": "KMCI",
+      "latitude": 39.2976,
+      "longitude": -94.7139,
       "zillowRegionId": 394735,
       "zillowRegionName": "Kansas City, MO",
       "sports": {
-        "nfl": [
-          "Chiefs"
-        ],
+        "nfl": ["Chiefs"],
         "nba": []
       },
       "beaGeoFips": "28140"
@@ -525,12 +489,12 @@
       "name": "Cincinnati",
       "state": "OH",
       "noaaStation": "KCVG",
+      "latitude": 39.0488,
+      "longitude": -84.6678,
       "zillowRegionId": 394466,
       "zillowRegionName": "Cincinnati, OH",
       "sports": {
-        "nfl": [
-          "Bengals"
-        ],
+        "nfl": ["Bengals"],
         "nba": []
       },
       "beaGeoFips": "17140"
@@ -540,15 +504,13 @@
       "name": "Cleveland",
       "state": "OH",
       "noaaStation": "KCLE",
+      "latitude": 41.4117,
+      "longitude": -81.8498,
       "zillowRegionId": 394475,
       "zillowRegionName": "Cleveland, OH",
       "sports": {
-        "nfl": [
-          "Browns"
-        ],
-        "nba": [
-          "Cavaliers"
-        ]
+        "nfl": ["Browns"],
+        "nba": ["Cavaliers"]
       },
       "beaGeoFips": "17460"
     },
@@ -557,12 +519,12 @@
       "name": "Buffalo",
       "state": "NY",
       "noaaStation": "KBUF",
+      "latitude": 42.9405,
+      "longitude": -78.7322,
       "zillowRegionId": 394425,
       "zillowRegionName": "Buffalo, NY",
       "sports": {
-        "nfl": [
-          "Bills"
-        ],
+        "nfl": ["Bills"],
         "nba": []
       },
       "beaGeoFips": "15380"
@@ -572,12 +534,12 @@
       "name": "Pittsburgh",
       "state": "PA",
       "noaaStation": "KPIT",
+      "latitude": 40.4915,
+      "longitude": -80.2329,
       "zillowRegionId": 394982,
       "zillowRegionName": "Pittsburgh, PA",
       "sports": {
-        "nfl": [
-          "Steelers"
-        ],
+        "nfl": ["Steelers"],
         "nba": []
       },
       "beaGeoFips": "38300"
@@ -587,15 +549,13 @@
       "name": "Miami",
       "state": "FL",
       "noaaStation": "KMIA",
+      "latitude": 25.7932,
+      "longitude": -80.2906,
       "zillowRegionId": 394856,
       "zillowRegionName": "Miami, FL",
       "sports": {
-        "nfl": [
-          "Dolphins"
-        ],
-        "nba": [
-          "Heat"
-        ]
+        "nfl": ["Dolphins"],
+        "nba": ["Heat"]
       },
       "beaGeoFips": "33100"
     },
@@ -604,12 +564,12 @@
       "name": "Green Bay",
       "state": "WI",
       "noaaStation": "KGRB",
+      "latitude": 44.4851,
+      "longitude": -88.1296,
       "zillowRegionId": 394646,
       "zillowRegionName": "Green Bay, WI",
       "sports": {
-        "nfl": [
-          "Packers"
-        ],
+        "nfl": ["Packers"],
         "nba": []
       },
       "beaGeoFips": "24580"
@@ -619,13 +579,13 @@
       "name": "Memphis",
       "state": "TN",
       "noaaStation": "KMEM",
+      "latitude": 35.0424,
+      "longitude": -89.9767,
       "zillowRegionId": 394849,
       "zillowRegionName": "Memphis, TN",
       "sports": {
         "nfl": [],
-        "nba": [
-          "Grizzlies"
-        ]
+        "nba": ["Grizzlies"]
       },
       "beaGeoFips": "32820"
     },
@@ -634,6 +594,8 @@
       "name": "San Diego",
       "state": "CA",
       "noaaStation": "KSAN",
+      "latitude": 32.7336,
+      "longitude": -117.1897,
       "zillowRegionId": 395056,
       "zillowRegionName": "San Diego, CA",
       "sports": {
@@ -647,6 +609,8 @@
       "name": "Santa Barbara",
       "state": "CA",
       "noaaStation": "KSBA",
+      "latitude": 34.4262,
+      "longitude": -119.8401,
       "zillowRegionId": 13712,
       "zillowRegionName": "Santa Barbara",
       "zillowGeography": "city",
@@ -661,6 +625,8 @@
       "name": "Raleigh",
       "state": "NC",
       "noaaStation": "KRDU",
+      "latitude": 35.8776,
+      "longitude": -78.7875,
       "zillowRegionId": 395012,
       "zillowRegionName": "Raleigh, NC",
       "sports": {
@@ -674,6 +640,8 @@
       "name": "Gainesville",
       "state": "FL",
       "noaaStation": "KGNV",
+      "latitude": 29.6900,
+      "longitude": -82.2717,
       "zillowRegionId": 394622,
       "zillowRegionName": "Gainesville, FL",
       "sports": {

@@ -312,87 +312,116 @@ async function fetchACISData(stationId: string): Promise<Partial<ClimateData> | 
 
 /**
  * Fetch cloud cover and humidity data from Open-Meteo
+ * 
+ * Note: The Historical Archive API only has cloud_cover, dew_point_2m, and 
+ * relative_humidity_2m as HOURLY variables, not daily. We need to fetch hourly
+ * data and aggregate it ourselves.
+ * 
+ * To keep the request size reasonable, we only fetch 3 recent years (2021-2023)
+ * and use daily aggregation via the API where available.
  */
 async function fetchOpenMeteoData(
   latitude: number,
   longitude: number
 ): Promise<Partial<ClimateData> | null> {
   try {
-    // Open-Meteo historical API for cloud cover and humidity
-    // Get daily data for 10 years (2014-2023) and calculate averages
+    // Use a shorter date range to keep data manageable (3 years)
+    // and request hourly data for cloud cover, dewpoint, humidity
+    const startDate = "2021-01-01";
+    const endDate = "2023-12-31";
+    
     const url = new URL(OPEN_METEO_URL);
     url.searchParams.set("latitude", latitude.toString());
     url.searchParams.set("longitude", longitude.toString());
-    url.searchParams.set("start_date", METEO_START);
-    url.searchParams.set("end_date", METEO_END);
-    url.searchParams.set("daily", "cloud_cover_mean,dew_point_2m_mean,relative_humidity_2m_mean");
+    url.searchParams.set("start_date", startDate);
+    url.searchParams.set("end_date", endDate);
+    // Request hourly data - these variables ARE available hourly
+    url.searchParams.set("hourly", "cloud_cover,dew_point_2m,relative_humidity_2m");
     url.searchParams.set("temperature_unit", "fahrenheit");
-    url.searchParams.set("timezone", "auto");
+    url.searchParams.set("timezone", "UTC");
 
+    console.log(`    Open-Meteo URL: ${url.toString().substring(0, 100)}...`);
+    
     const response = await fetch(url.toString());
     if (!response.ok) {
-      console.error(`Open-Meteo returned ${response.status}`);
+      const errorText = await response.text();
+      console.error(`Open-Meteo returned ${response.status}: ${errorText.substring(0, 200)}`);
       return null;
     }
 
     const data = await response.json();
     
-    if (!data.daily || !data.daily.time) {
-      console.error("Open-Meteo returned no daily data");
+    if (!data.hourly || !data.hourly.time) {
+      console.error("Open-Meteo returned no hourly data");
       return null;
     }
 
-    const times: string[] = data.daily.time;
-    const cloudCovers: (number | null)[] = data.daily.cloud_cover_mean || [];
-    const dewpoints: (number | null)[] = data.daily.dew_point_2m_mean || [];
-    const humidities: (number | null)[] = data.daily.relative_humidity_2m_mean || [];
+    const times: string[] = data.hourly.time;
+    const cloudCovers: (number | null)[] = data.hourly.cloud_cover || [];
+    const dewpoints: (number | null)[] = data.hourly.dew_point_2m || [];
+    const humidities: (number | null)[] = data.hourly.relative_humidity_2m || [];
 
-    // Calculate cloudy days (cloud cover > 75%)
-    let cloudyDays = 0;
-    let cloudSum = 0;
-    let cloudCount = 0;
-    
-    for (const cover of cloudCovers) {
-      if (cover !== null) {
-        if (cover > 75) cloudyDays++;
-        cloudSum += cover;
-        cloudCount++;
-      }
-    }
-    
-    // Average cloudy days per year
-    const yearsOfData = 10;
-    cloudyDays = Math.round(cloudyDays / yearsOfData);
-    const avgCloudCover = cloudCount > 0 ? Math.round(cloudSum / cloudCount) : null;
-
-    // Calculate July dewpoint (average for July months)
-    let julyDewpointSum = 0;
-    let julyDewpointCount = 0;
-    let summerHumiditySum = 0;
-    let summerHumidityCount = 0;
+    // Group by day and calculate daily averages
+    const dailyData: Map<string, { cloudSum: number; cloudCount: number; maxCloud: number }> = new Map();
+    const julyData: { dewpointSum: number; dewpointCount: number } = { dewpointSum: 0, dewpointCount: 0 };
+    const summerHumidity: { sum: number; count: number } = { sum: 0, count: 0 };
 
     for (let i = 0; i < times.length; i++) {
-      const month = new Date(times[i]).getMonth(); // 0-indexed, July = 6
+      const dateTime = new Date(times[i]);
+      const dateKey = times[i].substring(0, 10); // YYYY-MM-DD
+      const month = dateTime.getMonth(); // 0-indexed
       
-      // July dewpoint
-      if (month === 6 && dewpoints[i] !== null) {
-        julyDewpointSum += dewpoints[i]!;
-        julyDewpointCount++;
+      // Track daily cloud cover
+      if (cloudCovers[i] !== null) {
+        if (!dailyData.has(dateKey)) {
+          dailyData.set(dateKey, { cloudSum: 0, cloudCount: 0, maxCloud: 0 });
+        }
+        const day = dailyData.get(dateKey)!;
+        day.cloudSum += cloudCovers[i]!;
+        day.cloudCount++;
+        day.maxCloud = Math.max(day.maxCloud, cloudCovers[i]!);
       }
       
-      // July-August humidity for summer stickiness
+      // July dewpoint (for humidity/stickiness indicator)
+      if (month === 6 && dewpoints[i] !== null) {
+        julyData.dewpointSum += dewpoints[i]!;
+        julyData.dewpointCount++;
+      }
+      
+      // July-August humidity
       if ((month === 6 || month === 7) && humidities[i] !== null) {
-        summerHumiditySum += humidities[i]!;
-        summerHumidityCount++;
+        summerHumidity.sum += humidities[i]!;
+        summerHumidity.count++;
       }
     }
 
-    const julyDewpoint = julyDewpointCount > 0 
-      ? Math.round(julyDewpointSum / julyDewpointCount * 10) / 10 
+    // Calculate cloudy days (days where avg cloud cover > 75%)
+    let cloudyDays = 0;
+    let totalCloudSum = 0;
+    let totalCloudDays = 0;
+    
+    for (const [, day] of dailyData) {
+      if (day.cloudCount > 0) {
+        const avgCloud = day.cloudSum / day.cloudCount;
+        totalCloudSum += avgCloud;
+        totalCloudDays++;
+        if (avgCloud > 75) {
+          cloudyDays++;
+        }
+      }
+    }
+    
+    // Average cloudy days per year (we have 3 years of data)
+    const yearsOfData = 3;
+    cloudyDays = Math.round(cloudyDays / yearsOfData);
+    const avgCloudCover = totalCloudDays > 0 ? Math.round(totalCloudSum / totalCloudDays) : null;
+
+    const julyDewpoint = julyData.dewpointCount > 0 
+      ? Math.round(julyData.dewpointSum / julyData.dewpointCount * 10) / 10 
       : null;
     
-    const summerHumidityIndex = summerHumidityCount > 0
-      ? Math.round(summerHumiditySum / summerHumidityCount)
+    const summerHumidityIndex = summerHumidity.count > 0
+      ? Math.round(summerHumidity.sum / summerHumidity.count)
       : null;
 
     return {
