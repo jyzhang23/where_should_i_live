@@ -22,7 +22,7 @@ export interface UserPreferences {
   // === ADVANCED OPTIONS (collapsible) ===
 
   advanced: {
-    // Climate sub-preferences (NOAA-based)
+    // Climate sub-preferences (NOAA ACIS + Open-Meteo based)
     climate: {
       // === COMFORT ===
       // T-Shirt Weather: How important are comfortable outdoor days?
@@ -41,6 +41,18 @@ export interface UserPreferences {
       // === PRECIPITATION ===
       weightRainDays: number;           // 0-100, default 50
       maxRainDays: number;              // Default 100
+
+      // === SNOW ===
+      weightSnowDays: number;           // 0-100, default 25
+      maxSnowDays: number;              // Days with >1in snow, default 15
+
+      // === GLOOM / SUNSHINE ===
+      weightCloudyDays: number;         // 0-100, default 40
+      maxCloudyDays: number;            // Days with >75% cloud cover, default 150
+
+      // === HUMIDITY / STICKINESS ===
+      weightHumidity: number;           // 0-100, default 40
+      maxJulyDewpoint: number;          // °F, default 65 (65+ = muggy, 72+ = oppressive)
 
       // === UTILITY COSTS ===
       weightUtilityCosts: number;       // 0-100, default 50
@@ -116,7 +128,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   },
   advanced: {
     climate: {
-      // NOAA-based preferences
+      // NOAA ACIS + Open-Meteo based preferences
       weightComfortDays: 50,
       minComfortDays: 150,
       weightExtremeHeat: 50,
@@ -125,6 +137,12 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       maxFreezeDays: 30,
       weightRainDays: 50,
       maxRainDays: 100,
+      weightSnowDays: 25,
+      maxSnowDays: 15,
+      weightCloudyDays: 40,
+      maxCloudyDays: 150,
+      weightHumidity: 40,
+      maxJulyDewpoint: 65,
       weightUtilityCosts: 50,
       weightGrowingSeason: 0,  // Off by default
       minGrowingSeasonDays: 180,
@@ -203,6 +221,18 @@ export const TOOLTIPS: Record<string, string> = {
     "How important is avoiding rainy days? Seattle: 152 days, Phoenix: 36 days.",
   "advanced.climate.maxRainDays":
     "Maximum acceptable rainy days per year. Cities exceeding this get penalized.",
+  "advanced.climate.weightSnowDays":
+    "How important is avoiding snowy days? Minneapolis: 40+ days, Miami: 0 days.",
+  "advanced.climate.maxSnowDays":
+    "Maximum acceptable snow days (>1 inch) per year. Cities exceeding this get penalized.",
+  "advanced.climate.weightCloudyDays":
+    "How important is avoiding cloudy/gloomy weather? Seattle: 200+ cloudy days, Phoenix: 80 days.",
+  "advanced.climate.maxCloudyDays":
+    "Maximum acceptable cloudy days (>75% cloud cover) per year. Higher = more tolerance for gloom.",
+  "advanced.climate.weightHumidity":
+    "How important is avoiding summer humidity/stickiness? Miami: very humid, Denver: very dry.",
+  "advanced.climate.maxJulyDewpoint":
+    "Maximum acceptable July dewpoint (°F). 65°F+ = muggy, 72°F+ = oppressive. Phoenix: 55°F, Miami: 75°F.",
   "advanced.climate.weightUtilityCosts":
     "How important are utility costs? Based on Heating + Cooling Degree Days. San Diego: low, Minneapolis: high.",
   "advanced.climate.weightGrowingSeason":

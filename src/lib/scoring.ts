@@ -171,6 +171,33 @@ function calculateClimateScore(
       totalWeight += prefs.weightRainDays;
     }
 
+    // Snow Days (inverse - fewer is better)
+    if (prefs.weightSnowDays > 0 && noaa.snowDays !== null) {
+      const snowScore = prefs.maxSnowDays > 0
+        ? Math.max(0, 100 - (Math.max(0, noaa.snowDays - prefs.maxSnowDays) / prefs.maxSnowDays) * 100)
+        : (noaa.snowDays === 0 ? 100 : 50);
+      totalScore += snowScore * prefs.weightSnowDays;
+      totalWeight += prefs.weightSnowDays;
+    }
+
+    // Cloudy Days / Gloom Factor (inverse - fewer is better)
+    if (prefs.weightCloudyDays > 0 && noaa.cloudyDays !== null) {
+      const cloudyScore = Math.max(0, 100 - (Math.max(0, noaa.cloudyDays - prefs.maxCloudyDays) / prefs.maxCloudyDays) * 100);
+      totalScore += cloudyScore * prefs.weightCloudyDays;
+      totalWeight += prefs.weightCloudyDays;
+    }
+
+    // Humidity / Stickiness (inverse - lower dewpoint is better)
+    if (prefs.weightHumidity > 0 && noaa.julyDewpoint !== null) {
+      // Dewpoint range: ~50°F (dry) to ~75°F (oppressive)
+      // Score 100 at/below max, decreases as it goes above
+      const humidityScore = noaa.julyDewpoint <= prefs.maxJulyDewpoint
+        ? 100
+        : Math.max(0, 100 - ((noaa.julyDewpoint - prefs.maxJulyDewpoint) / 15) * 100);
+      totalScore += humidityScore * prefs.weightHumidity;
+      totalWeight += prefs.weightHumidity;
+    }
+
     // Utility Costs (inverse - lower CDD+HDD is better)
     if (prefs.weightUtilityCosts > 0 && 
         noaa.coolingDegreeDays !== null && 

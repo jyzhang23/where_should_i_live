@@ -1,23 +1,30 @@
 /**
- * Admin API to pull climate data from NOAA ACIS
+ * Admin API to pull climate data from NOAA ACIS + Open-Meteo
  * 
- * POST /api/admin/noaa-pull
+ * POST /api/admin/climate-pull
  * Body: { password: string }
  * 
- * Pulls 30-year climate normals (1991-2020) from ACIS for each city's airport station.
+ * Data sources:
+ * - NOAA ACIS (30-year normals 1991-2020): Temperature, precipitation, degree days, snowfall
+ * - Open-Meteo (historical averages): Cloud cover, dewpoint/humidity
  * 
  * Metrics fetched:
- * - Comfort days (65°F <= max temp <= 80°F)
- * - Extreme heat days (max temp > 95°F)
- * - Freeze days (min temp < 32°F)
- * - Rain days (precipitation > 0.01 in)
- * - Cooling Degree Days (CDD, base 65)
- * - Heating Degree Days (HDD, base 65)
- * - Growing season (last spring freeze to first fall freeze)
- * - Diurnal swing (avg daily temp range)
- * - Seasonal stability (std dev of monthly avg temps)
+ * - Comfort days (65°F <= max temp <= 80°F) [ACIS]
+ * - Extreme heat days (max temp > 95°F) [ACIS]
+ * - Freeze days (min temp < 32°F) [ACIS]
+ * - Rain days (precipitation > 0.01 in) [ACIS]
+ * - Snow days (snowfall > 1 in) [ACIS]
+ * - Annual snowfall (total inches) [ACIS]
+ * - Cooling/Heating Degree Days [ACIS]
+ * - Growing season [ACIS]
+ * - Diurnal swing (avg daily temp range) [ACIS]
+ * - Seasonal stability (std dev of monthly temps) [ACIS]
+ * - Cloudy days (cloud cover > 75%) [Open-Meteo]
+ * - July dewpoint (humidity/stickiness) [Open-Meteo]
  * 
- * API: https://www.rcc-acis.org/docs_webservices.html
+ * APIs:
+ * - ACIS: https://www.rcc-acis.org/docs_webservices.html
+ * - Open-Meteo: https://open-meteo.com/en/docs/historical-weather-api
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -27,16 +34,23 @@ import prisma from "@/lib/db";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const ACIS_API_URL = "https://data.rcc-acis.org/StnData";
+const OPEN_METEO_URL = "https://archive-api.open-meteo.com/v1/archive";
 
-// 30-year normal period
+// 30-year normal period for ACIS
 const NORMAL_START = "1991-01-01";
 const NORMAL_END = "2020-12-31";
+
+// Recent years for Open-Meteo (they have data from 1940-present)
+const METEO_START = "2014-01-01";
+const METEO_END = "2023-12-31";
 
 interface CityData {
   id: string;
   name: string;
   state: string;
   noaaStation?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface ACISResponse {
@@ -51,29 +65,39 @@ interface ACISResponse {
   error?: string;
 }
 
-interface NOAAClimateData {
+interface ClimateData {
   source: string;
   station: string;
   normalPeriod: string;
   lastUpdated: string;
-  comfortDays: number | null;      // Days with 65 <= maxt <= 80
-  extremeHeatDays: number | null;   // Days with maxt > 95
-  freezeDays: number | null;        // Days with mint < 32
-  rainDays: number | null;          // Days with pcpn > 0.01
+  
+  // From ACIS
+  comfortDays: number | null;
+  extremeHeatDays: number | null;
+  freezeDays: number | null;
+  rainDays: number | null;
   annualPrecipitation: number | null;
+  snowDays: number | null;           // NEW: Days with snow > 1 inch
+  annualSnowfall: number | null;     // NEW: Total annual snowfall (inches)
   coolingDegreeDays: number | null;
   heatingDegreeDays: number | null;
   growingSeasonDays: number | null;
-  lastSpringFreeze: string | null;  // MM-DD format
-  firstFallFreeze: string | null;   // MM-DD format
-  diurnalSwing: number | null;      // Avg daily temp range (°F)
-  seasonalStability: number | null; // StdDev of monthly avg temps
+  lastSpringFreeze: string | null;
+  firstFallFreeze: string | null;
+  diurnalSwing: number | null;
+  seasonalStability: number | null;
+  
+  // From Open-Meteo
+  cloudyDays: number | null;         // NEW: Days with cloud cover > 75%
+  avgCloudCover: number | null;      // NEW: Annual avg cloud cover %
+  julyDewpoint: number | null;       // NEW: July avg dewpoint (°F) for humidity
+  summerHumidityIndex: number | null; // NEW: Avg July-Aug relative humidity %
 }
 
 /**
  * Fetch climate data from ACIS for a single station
  */
-async function fetchACISData(stationId: string): Promise<NOAAClimateData | null> {
+async function fetchACISData(stationId: string): Promise<Partial<ClimateData> | null> {
   try {
     // Query 1: Annual counts and degree days with 30-year averages
     const countsParams = {
@@ -97,8 +121,12 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
         { name: "cdd", interval: "yly", duration: "yly", reduce: "sum", smry: "mean" },
         // Heating degree days  
         { name: "hdd", interval: "yly", duration: "yly", reduce: "sum", smry: "mean" },
+        // Snow days > 1 inch
+        { name: "snow", interval: "yly", duration: "yly", reduce: "cnt_ge_1", smry: "mean" },
+        // Total annual snowfall
+        { name: "snow", interval: "yly", duration: "yly", reduce: "sum", smry: "mean" },
       ],
-      meta: ["name", "state"],
+      meta: ["name", "state", "ll"],
     };
 
     // Query 2: Growing season (last spring freeze, first fall freeze)
@@ -107,7 +135,6 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
       sdate: NORMAL_START,
       edate: NORMAL_END,
       elems: [
-        // Last spring freeze (last day <= 32 before July 1)
         { 
           name: "mint", 
           interval: [1, 0, 0], 
@@ -117,7 +144,6 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
           smry: "mean",
           smry_only: 1
         },
-        // First fall freeze (first day <= 32 after July 1)
         { 
           name: "mint", 
           interval: [1, 0, 0], 
@@ -136,7 +162,6 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
       sdate: NORMAL_START,
       edate: NORMAL_END,
       elems: [
-        // Monthly average temperature
         { name: "avgt", interval: "mly", duration: 1, reduce: "mean", smry: "mean", smry_only: 1 },
       ],
       meta: [],
@@ -148,8 +173,6 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
       sdate: NORMAL_START,
       edate: NORMAL_END,
       elems: [
-        // We need to calculate (maxt - mint) average
-        // Get yearly mean of maxt and mint separately, then calculate
         { name: "maxt", interval: "yly", duration: "yly", reduce: "mean", smry: "mean" },
         { name: "mint", interval: "yly", duration: "yly", reduce: "mean", smry: "mean" },
       ],
@@ -200,13 +223,15 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
     const countsSummary = countsData.smry || [];
     const daysGe65 = parseFloat(String(countsSummary[0])) || 0;
     const daysGe80 = parseFloat(String(countsSummary[1])) || 0;
-    const comfortDays = Math.round(daysGe65 - daysGe80); // Days between 65-80
+    const comfortDays = Math.round(daysGe65 - daysGe80);
     const extremeHeatDays = Math.round(parseFloat(String(countsSummary[2])) || 0);
     const freezeDays = Math.round(parseFloat(String(countsSummary[3])) || 0);
     const rainDays = Math.round(parseFloat(String(countsSummary[4])) || 0);
     const annualPrecipitation = Math.round((parseFloat(String(countsSummary[5])) || 0) * 10) / 10;
     const coolingDegreeDays = Math.round(parseFloat(String(countsSummary[6])) || 0);
     const heatingDegreeDays = Math.round(parseFloat(String(countsSummary[7])) || 0);
+    const snowDays = Math.round(parseFloat(String(countsSummary[8])) || 0);
+    const annualSnowfall = Math.round((parseFloat(String(countsSummary[9])) || 0) * 10) / 10;
 
     // Extract growing season dates
     const growingSummary = growingData.smry || [];
@@ -218,9 +243,8 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
     let firstFallFreeze: string | null = null;
     
     if (lastSpringDOY !== null && firstFallDOY !== null) {
-      // Convert day of year to MM-DD format (approximate, ignoring leap years)
       const doyToMMDD = (doy: number): string => {
-        const date = new Date(2020, 0, 1); // Use a leap year for calculation
+        const date = new Date(2020, 0, 1);
         date.setDate(date.getDate() + Math.round(doy) - 1);
         return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
       };
@@ -228,17 +252,14 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
       lastSpringFreeze = doyToMMDD(lastSpringDOY);
       firstFallFreeze = doyToMMDD(firstFallDOY);
       
-      // Growing season is days between last spring and first fall freeze
-      // Handle wrap-around for very mild climates
       if (firstFallDOY > lastSpringDOY) {
         growingSeasonDays = Math.round(firstFallDOY - lastSpringDOY);
       } else {
-        // If first fall freeze DOY is earlier, it means almost year-round growing
         growingSeasonDays = Math.round(365 - lastSpringDOY + firstFallDOY);
       }
     }
 
-    // Calculate seasonal stability (std dev of monthly means)
+    // Calculate seasonal stability
     const monthlySummary = monthlyData.smry || [];
     let seasonalStability: number | null = null;
     
@@ -249,7 +270,7 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
       seasonalStability = Math.round(Math.sqrt(variance) * 10) / 10;
     }
 
-    // Calculate diurnal swing (avg daily temp range)
+    // Calculate diurnal swing
     const diurnalSummary = diurnalData.smry || [];
     let diurnalSwing: number | null = null;
     
@@ -259,16 +280,20 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
       diurnalSwing = Math.round((avgMaxt - avgMint) * 10) / 10;
     }
 
+    // Get coordinates from ACIS response if available
+    const coordinates = countsData.meta?.ll;
+
     return {
       source: "ACIS",
       station: stationId,
       normalPeriod: "1991-2020",
-      lastUpdated: new Date().toISOString().split("T")[0],
       comfortDays,
       extremeHeatDays,
       freezeDays,
       rainDays,
       annualPrecipitation,
+      snowDays,
+      annualSnowfall,
       coolingDegreeDays,
       heatingDegreeDays,
       growingSeasonDays,
@@ -276,9 +301,108 @@ async function fetchACISData(stationId: string): Promise<NOAAClimateData | null>
       firstFallFreeze,
       diurnalSwing,
       seasonalStability,
+      // Include coordinates for Open-Meteo lookup
+      ...(coordinates && { _lat: coordinates[1], _lon: coordinates[0] }),
     };
   } catch (error) {
     console.error(`Error fetching ACIS data for ${stationId}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Fetch cloud cover and humidity data from Open-Meteo
+ */
+async function fetchOpenMeteoData(
+  latitude: number,
+  longitude: number
+): Promise<Partial<ClimateData> | null> {
+  try {
+    // Open-Meteo historical API for cloud cover and humidity
+    // Get daily data for 10 years (2014-2023) and calculate averages
+    const url = new URL(OPEN_METEO_URL);
+    url.searchParams.set("latitude", latitude.toString());
+    url.searchParams.set("longitude", longitude.toString());
+    url.searchParams.set("start_date", METEO_START);
+    url.searchParams.set("end_date", METEO_END);
+    url.searchParams.set("daily", "cloud_cover_mean,dew_point_2m_mean,relative_humidity_2m_mean");
+    url.searchParams.set("temperature_unit", "fahrenheit");
+    url.searchParams.set("timezone", "auto");
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      console.error(`Open-Meteo returned ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json();
+    
+    if (!data.daily || !data.daily.time) {
+      console.error("Open-Meteo returned no daily data");
+      return null;
+    }
+
+    const times: string[] = data.daily.time;
+    const cloudCovers: (number | null)[] = data.daily.cloud_cover_mean || [];
+    const dewpoints: (number | null)[] = data.daily.dew_point_2m_mean || [];
+    const humidities: (number | null)[] = data.daily.relative_humidity_2m_mean || [];
+
+    // Calculate cloudy days (cloud cover > 75%)
+    let cloudyDays = 0;
+    let cloudSum = 0;
+    let cloudCount = 0;
+    
+    for (const cover of cloudCovers) {
+      if (cover !== null) {
+        if (cover > 75) cloudyDays++;
+        cloudSum += cover;
+        cloudCount++;
+      }
+    }
+    
+    // Average cloudy days per year
+    const yearsOfData = 10;
+    cloudyDays = Math.round(cloudyDays / yearsOfData);
+    const avgCloudCover = cloudCount > 0 ? Math.round(cloudSum / cloudCount) : null;
+
+    // Calculate July dewpoint (average for July months)
+    let julyDewpointSum = 0;
+    let julyDewpointCount = 0;
+    let summerHumiditySum = 0;
+    let summerHumidityCount = 0;
+
+    for (let i = 0; i < times.length; i++) {
+      const month = new Date(times[i]).getMonth(); // 0-indexed, July = 6
+      
+      // July dewpoint
+      if (month === 6 && dewpoints[i] !== null) {
+        julyDewpointSum += dewpoints[i]!;
+        julyDewpointCount++;
+      }
+      
+      // July-August humidity for summer stickiness
+      if ((month === 6 || month === 7) && humidities[i] !== null) {
+        summerHumiditySum += humidities[i]!;
+        summerHumidityCount++;
+      }
+    }
+
+    const julyDewpoint = julyDewpointCount > 0 
+      ? Math.round(julyDewpointSum / julyDewpointCount * 10) / 10 
+      : null;
+    
+    const summerHumidityIndex = summerHumidityCount > 0
+      ? Math.round(summerHumiditySum / summerHumidityCount)
+      : null;
+
+    return {
+      cloudyDays,
+      avgCloudCover,
+      julyDewpoint,
+      summerHumidityIndex,
+    };
+  } catch (error) {
+    console.error(`Error fetching Open-Meteo data:`, error);
     return null;
   }
 }
@@ -345,51 +469,106 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`Fetching NOAA ACIS data for ${citiesWithStations.length} cities...`);
+    console.log(`Fetching climate data for ${citiesWithStations.length} cities...`);
 
-    let successCount = 0;
+    let acisSuccessCount = 0;
+    let openMeteoSuccessCount = 0;
     let skipCount = 0;
     const errors: string[] = [];
 
-    // Process cities sequentially to avoid overwhelming the API
-    // (ACIS is a free government API, be respectful)
+    // Process cities sequentially to avoid overwhelming the APIs
     for (const city of citiesWithStations) {
       console.log(`  Fetching ${city.name} (${city.noaaStation})...`);
       
-      const climateData = await fetchACISData(city.noaaStation!);
+      // Fetch ACIS data
+      const acisData = await fetchACISData(city.noaaStation!);
       
-      if (climateData) {
-        // Ensure city entry exists in metrics
-        if (!metricsFile.cities[city.id]) {
-          metricsFile.cities[city.id] = {};
-        }
-        if (!metricsFile.cities[city.id].climate) {
-          metricsFile.cities[city.id].climate = {};
-        }
-
-        // Add NOAA data to climate section
-        metricsFile.cities[city.id].climate.noaa = climateData;
-
-        successCount++;
-        console.log(
-          `    ✓ Comfort: ${climateData.comfortDays} days, Heat: ${climateData.extremeHeatDays} days, ` +
-          `Freeze: ${climateData.freezeDays} days, CDD: ${climateData.coolingDegreeDays}, HDD: ${climateData.heatingDegreeDays}`
-        );
-      } else {
+      if (!acisData) {
         skipCount++;
-        errors.push(`${city.name} (${city.noaaStation})`);
-        console.log(`    ✗ No data available`);
+        errors.push(`${city.name}: ACIS failed`);
+        console.log(`    ✗ ACIS: No data available`);
+        continue;
       }
 
-      // Small delay between requests to be respectful to the API
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      acisSuccessCount++;
+      console.log(
+        `    ✓ ACIS: Comfort=${acisData.comfortDays}, Snow=${acisData.snowDays}days/${acisData.annualSnowfall}in`
+      );
+
+      // Get coordinates for Open-Meteo
+      // First try from ACIS response, then from city data
+      const lat = (acisData as { _lat?: number })._lat || city.latitude;
+      const lon = (acisData as { _lon?: number })._lon || city.longitude;
+      
+      let openMeteoData: Partial<ClimateData> | null = null;
+      
+      if (lat && lon) {
+        openMeteoData = await fetchOpenMeteoData(lat, lon);
+        
+        if (openMeteoData) {
+          openMeteoSuccessCount++;
+          console.log(
+            `    ✓ Open-Meteo: Cloudy=${openMeteoData.cloudyDays}days, JulyDewpoint=${openMeteoData.julyDewpoint}°F`
+          );
+        } else {
+          console.log(`    ⚠ Open-Meteo: Failed to fetch`);
+        }
+      } else {
+        console.log(`    ⚠ Open-Meteo: No coordinates available`);
+      }
+
+      // Ensure city entry exists in metrics
+      if (!metricsFile.cities[city.id]) {
+        metricsFile.cities[city.id] = {};
+      }
+      if (!metricsFile.cities[city.id].climate) {
+        metricsFile.cities[city.id].climate = {};
+      }
+
+      // Clean up internal fields
+      delete (acisData as { _lat?: number })._lat;
+      delete (acisData as { _lon?: number })._lon;
+
+      // Merge ACIS and Open-Meteo data
+      const climateData: ClimateData = {
+        source: "ACIS+Open-Meteo",
+        station: city.noaaStation!,
+        normalPeriod: "1991-2020",
+        lastUpdated: new Date().toISOString().split("T")[0],
+        // ACIS data
+        comfortDays: acisData.comfortDays ?? null,
+        extremeHeatDays: acisData.extremeHeatDays ?? null,
+        freezeDays: acisData.freezeDays ?? null,
+        rainDays: acisData.rainDays ?? null,
+        annualPrecipitation: acisData.annualPrecipitation ?? null,
+        snowDays: acisData.snowDays ?? null,
+        annualSnowfall: acisData.annualSnowfall ?? null,
+        coolingDegreeDays: acisData.coolingDegreeDays ?? null,
+        heatingDegreeDays: acisData.heatingDegreeDays ?? null,
+        growingSeasonDays: acisData.growingSeasonDays ?? null,
+        lastSpringFreeze: acisData.lastSpringFreeze ?? null,
+        firstFallFreeze: acisData.firstFallFreeze ?? null,
+        diurnalSwing: acisData.diurnalSwing ?? null,
+        seasonalStability: acisData.seasonalStability ?? null,
+        // Open-Meteo data
+        cloudyDays: openMeteoData?.cloudyDays ?? null,
+        avgCloudCover: openMeteoData?.avgCloudCover ?? null,
+        julyDewpoint: openMeteoData?.julyDewpoint ?? null,
+        summerHumidityIndex: openMeteoData?.summerHumidityIndex ?? null,
+      };
+
+      // Store in metrics.json
+      metricsFile.cities[city.id].climate.noaa = climateData;
+
+      // Small delay between requests to be respectful to APIs
+      await new Promise((resolve) => setTimeout(resolve, 300));
     }
 
     // Update metrics source info
     if (!metricsFile.sources) {
       metricsFile.sources = {};
     }
-    metricsFile.sources.noaa = "NOAA ACIS (30-year Climate Normals)";
+    metricsFile.sources.climate = "NOAA ACIS (30-year normals) + Open-Meteo (2014-2023 averages)";
     metricsFile.lastUpdated = new Date().toISOString().split("T")[0];
 
     // Save metrics.json
@@ -402,9 +581,9 @@ export async function POST(request: NextRequest) {
     try {
       await prisma.dataRefreshLog.create({
         data: {
-          source: "noaa-acis",
-          status: successCount > 0 ? "success" : "error",
-          recordsUpdated: successCount,
+          source: "climate-data",
+          status: acisSuccessCount > 0 ? "success" : "error",
+          recordsUpdated: acisSuccessCount,
           errorMessage: errors.length > 0 ? `Failed: ${errors.join(", ")}` : undefined,
         },
       });
@@ -414,21 +593,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "NOAA ACIS climate data pulled successfully",
+      message: "Climate data pulled successfully",
       stats: {
-        citiesUpdated: successCount,
+        acisUpdated: acisSuccessCount,
+        openMeteoUpdated: openMeteoSuccessCount,
         citiesSkipped: skipCount,
         normalPeriod: "1991-2020",
         errors: errors.length > 0 ? errors : undefined,
       },
     });
   } catch (error) {
-    console.error("NOAA pull error:", error);
+    console.error("Climate pull error:", error);
 
     try {
       await prisma.dataRefreshLog.create({
         data: {
-          source: "noaa-acis",
+          source: "climate-data",
           status: "error",
           errorMessage: error instanceof Error ? error.message : String(error),
         },
@@ -439,7 +619,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error: "NOAA pull failed",
+        error: "Climate pull failed",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }

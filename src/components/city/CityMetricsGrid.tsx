@@ -29,6 +29,7 @@ import {
   Snowflake,
   Zap,
   Leaf,
+  Cloud,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -195,6 +196,30 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
                     unit="/yr"
                     tooltip="Days with precipitation > 0.01 inches"
                     colorClass={getScoreColor(noaa.rainDays ? 100 - noaa.rainDays / 1.5 : null)}
+                  />
+                  <MetricItem
+                    icon={<Snowflake className="h-4 w-4 text-cyan-400" />}
+                    label="Snow Days"
+                    value={noaa.snowDays}
+                    unit=" days"
+                    tooltip={`Days with >1 inch snowfall. Annual total: ${noaa.annualSnowfall ?? "N/A"} inches`}
+                    colorClass={noaa.snowDays && noaa.snowDays > 20 ? "text-cyan-500" : ""}
+                  />
+                  <MetricItem
+                    icon={<Cloud className="h-4 w-4 text-gray-400" />}
+                    label="Cloudy Days"
+                    value={noaa.cloudyDays}
+                    unit="/yr"
+                    tooltip={`Days with >75% cloud cover. Avg cloud cover: ${noaa.avgCloudCover ?? "N/A"}%`}
+                    colorClass={noaa.cloudyDays && noaa.cloudyDays > 150 ? "text-gray-500" : "text-score-high"}
+                  />
+                  <MetricItem
+                    icon={<Droplets className="h-4 w-4 text-teal-500" />}
+                    label="July Dewpoint"
+                    value={noaa.julyDewpoint?.toFixed(0)}
+                    unit="°F"
+                    tooltip={`Summer humidity indicator. >65°F = Muggy, >72°F = Oppressive. Summer RH: ${noaa.summerHumidityIndex ?? "N/A"}%`}
+                    colorClass={noaa.julyDewpoint && noaa.julyDewpoint > 70 ? "text-teal-600" : "text-score-high"}
                   />
                 </div>
               </div>

@@ -1,34 +1,46 @@
 // City and metrics types that match the Prisma schema
 import { BEAMetrics } from "@/lib/cost-of-living";
 
-// NOAA ACIS climate data (30-year normals)
+// Climate data from NOAA ACIS + Open-Meteo
 export interface NOAAClimateData {
-  source: string;              // "ACIS"
+  source: string;              // "ACIS+Open-Meteo"
   station: string;             // ICAO code, e.g., "KSFO"
   normalPeriod: string;        // "1991-2020"
   lastUpdated: string;         // ISO date
 
-  // Comfort metrics
+  // Comfort metrics (ACIS)
   comfortDays: number | null;        // Days with 65°F <= max temp <= 80°F
   extremeHeatDays: number | null;    // Days with max temp > 95°F
   freezeDays: number | null;         // Days with min temp < 32°F
 
-  // Precipitation
+  // Precipitation (ACIS)
   rainDays: number | null;           // Days with precipitation > 0.01 in
   annualPrecipitation: number | null; // Total annual precipitation (inches)
 
-  // Utility cost proxy
+  // Snowfall (ACIS)
+  snowDays: number | null;           // Days with snowfall > 1 inch
+  annualSnowfall: number | null;     // Total annual snowfall (inches)
+
+  // Utility cost proxy (ACIS)
   coolingDegreeDays: number | null;  // CDD base 65°F
   heatingDegreeDays: number | null;  // HDD base 65°F
 
-  // Growing season
+  // Growing season (ACIS)
   growingSeasonDays: number | null;  // Days between last spring and first fall freeze
   lastSpringFreeze: string | null;   // MM-DD format
   firstFallFreeze: string | null;    // MM-DD format
 
-  // Temperature stability
+  // Temperature stability (ACIS)
   diurnalSwing: number | null;       // Avg daily temp range (°F)
   seasonalStability: number | null;  // StdDev of monthly avg temps (lower = more stable)
+
+  // Cloud cover / Gloom factor (Open-Meteo)
+  cloudyDays: number | null;         // Days with cloud cover > 75%
+  avgCloudCover: number | null;      // Annual average cloud cover %
+
+  // Humidity / Stickiness (Open-Meteo)
+  julyDewpoint: number | null;       // July avg dewpoint (°F) - >65 = muggy, >72 = oppressive
+  summerHumidityIndex: number | null; // July-Aug avg relative humidity %
 }
 
 export interface City {

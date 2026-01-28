@@ -36,6 +36,8 @@ interface RefreshResult {
     dataPoints?: number;
     dataYear?: string;
     normalPeriod?: string;
+    acisUpdated?: number;
+    openMeteoUpdated?: number;
     errors?: string[];
   };
   message?: string;
@@ -120,8 +122,8 @@ async function pullBEAData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-async function pullNOAAData(password: string): Promise<RefreshResult> {
-  const response = await fetch("/api/admin/noaa-pull", {
+async function pullClimateData(password: string): Promise<RefreshResult> {
+  const response = await fetch("/api/admin/climate-pull", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ password }),
@@ -140,13 +142,13 @@ async function pullNOAAData(password: string): Promise<RefreshResult> {
   }
 
   if (!response.ok) {
-    throw new Error(data.error || "NOAA pull failed");
+    throw new Error(data.error || "Climate pull failed");
   }
 
   return data;
 }
 
-type ActionType = "reinitialize" | "zillow" | "bea" | "noaa";
+type ActionType = "reinitialize" | "zillow" | "bea" | "climate";
 
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -197,8 +199,8 @@ export function AdminPanel() {
     },
   });
 
-  const noaaMutation = useMutation({
-    mutationFn: pullNOAAData,
+  const climateMutation = useMutation({
+    mutationFn: pullClimateData,
     onSuccess: (data) => {
       setResult(data);
       queryClient.invalidateQueries({ queryKey: ["cities"] });
@@ -211,7 +213,7 @@ export function AdminPanel() {
     },
   });
 
-  const isPending = reinitMutation.isPending || zillowMutation.isPending || beaMutation.isPending || noaaMutation.isPending;
+  const isPending = reinitMutation.isPending || zillowMutation.isPending || beaMutation.isPending || climateMutation.isPending;
 
   const handleReinitialize = () => {
     if (!password) return;
@@ -234,11 +236,11 @@ export function AdminPanel() {
     beaMutation.mutate(password);
   };
 
-  const handleNOAAPull = () => {
+  const handleClimatePull = () => {
     if (!password) return;
     setResult(null);
-    setActiveAction("noaa");
-    noaaMutation.mutate(password);
+    setActiveAction("climate");
+    climateMutation.mutate(password);
   };
 
   const handleClose = () => {
@@ -360,18 +362,18 @@ export function AdminPanel() {
             <div className="p-3 rounded-lg border bg-muted/30">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-sm">Pull NOAA Climate Data</p>
+                  <p className="font-medium text-sm">Pull Climate Data</p>
                   <p className="text-xs text-muted-foreground">
-                    30-year normals: comfort days, heat/freeze, HDD/CDD
+                    NOAA + Open-Meteo: temp, rain, snow, clouds, humidity
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleNOAAPull}
+                  onClick={handleClimatePull}
                   disabled={!password || isPending}
                 >
-                  {activeAction === "noaa" ? (
+                  {activeAction === "climate" ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <CloudSun className="h-4 w-4" />
@@ -426,6 +428,12 @@ export function AdminPanel() {
                           {result.stats.zhviPointsCreated !== undefined && (
                             <li>ZHVI points: {result.stats.zhviPointsCreated.toLocaleString()}</li>
                           )}
+                          {result.stats.acisUpdated !== undefined && (
+                            <li>ACIS (NOAA): {result.stats.acisUpdated} cities</li>
+                          )}
+                          {result.stats.openMeteoUpdated !== undefined && (
+                            <li>Open-Meteo: {result.stats.openMeteoUpdated} cities</li>
+                          )}
                           {result.stats.citiesSkipped !== undefined && result.stats.citiesSkipped > 0 && (
                             <li>Cities skipped: {result.stats.citiesSkipped}</li>
                           )}
@@ -462,8 +470,8 @@ export function AdminPanel() {
                   ? "Downloading Zillow data... This may take a moment."
                   : activeAction === "bea"
                   ? "Fetching BEA price data..."
-                  : activeAction === "noaa"
-                  ? "Fetching NOAA climate data... This may take a few minutes."
+                  : activeAction === "climate"
+                  ? "Fetching climate data from NOAA + Open-Meteo... This may take a few minutes."
                   : "Reinitializing data..."}
               </span>
             </div>

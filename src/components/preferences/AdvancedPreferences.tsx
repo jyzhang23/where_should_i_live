@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/tooltip";
 import { 
   ChevronRight, Info, Thermometer, Users, Heart, Vote, DollarSign, 
-  Home, Key, ShoppingCart, Sun, Snowflake, CloudRain, Zap, Leaf, Activity 
+  Home, Key, ShoppingCart, Sun, Snowflake, CloudRain, Zap, Leaf, Activity,
+  Cloud, Droplets
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -166,6 +167,85 @@ export function AdvancedPreferences() {
               formatValue={(v) => `${v} days`}
             />
             <p className="text-xs text-muted-foreground">Seattle: 152 days | Phoenix: 36 days</p>
+          </div>
+
+          {/* Snow */}
+          <div className="space-y-3 p-3 rounded-lg bg-muted/30">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Snowflake className="h-4 w-4 text-cyan-400" />
+              Snow Days (&gt;1 inch)
+            </div>
+            <PreferenceSlider
+              label="Importance"
+              value={preferences.advanced.climate.weightSnowDays}
+              onChange={(v) => updateAdvanced("climate", "weightSnowDays", v)}
+              tooltip={TOOLTIPS["advanced.climate.weightSnowDays"]}
+              formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+            />
+            <PreferenceSlider
+              label="Max Days Tolerable"
+              value={preferences.advanced.climate.maxSnowDays}
+              onChange={(v) => updateAdvanced("climate", "maxSnowDays", v)}
+              min={0}
+              max={60}
+              step={5}
+              tooltip={TOOLTIPS["advanced.climate.maxSnowDays"]}
+              formatValue={(v) => `${v} days`}
+            />
+            <p className="text-xs text-muted-foreground">Minneapolis: 40+ days | Miami: 0 days</p>
+          </div>
+
+          {/* Cloudy/Gloom */}
+          <div className="space-y-3 p-3 rounded-lg bg-muted/30">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Cloud className="h-4 w-4 text-gray-400" />
+              Cloudy Days (Gloom Factor)
+            </div>
+            <PreferenceSlider
+              label="Importance"
+              value={preferences.advanced.climate.weightCloudyDays}
+              onChange={(v) => updateAdvanced("climate", "weightCloudyDays", v)}
+              tooltip={TOOLTIPS["advanced.climate.weightCloudyDays"]}
+              formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+            />
+            <PreferenceSlider
+              label="Max Days Tolerable"
+              value={preferences.advanced.climate.maxCloudyDays}
+              onChange={(v) => updateAdvanced("climate", "maxCloudyDays", v)}
+              min={50}
+              max={250}
+              step={10}
+              tooltip={TOOLTIPS["advanced.climate.maxCloudyDays"]}
+              formatValue={(v) => `${v} days`}
+            />
+            <p className="text-xs text-muted-foreground">Seattle: 200+ days | Phoenix: 80 days</p>
+          </div>
+
+          {/* Humidity/Stickiness */}
+          <div className="space-y-3 p-3 rounded-lg bg-muted/30">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Droplets className="h-4 w-4 text-teal-500" />
+              Summer Humidity (Stickiness)
+            </div>
+            <PreferenceSlider
+              label="Importance"
+              value={preferences.advanced.climate.weightHumidity}
+              onChange={(v) => updateAdvanced("climate", "weightHumidity", v)}
+              tooltip={TOOLTIPS["advanced.climate.weightHumidity"]}
+              formatValue={(v) => v === 0 ? "Off" : `${v}%`}
+            />
+            <PreferenceSlider
+              label="Max July Dewpoint"
+              value={preferences.advanced.climate.maxJulyDewpoint}
+              onChange={(v) => updateAdvanced("climate", "maxJulyDewpoint", v)}
+              min={50}
+              max={75}
+              tooltip={TOOLTIPS["advanced.climate.maxJulyDewpoint"]}
+              formatValue={(v) => `${v}°F`}
+            />
+            <p className="text-xs text-muted-foreground">
+              65°F+ = Muggy, 72°F+ = Oppressive. Miami: 75°F | Denver: 55°F
+            </p>
           </div>
 
           {/* Utility Costs */}

@@ -97,9 +97,9 @@ export default function HelpPage() {
               </AccordionTrigger>
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
                 <p>
-                  Uses <strong>NOAA ACIS 30-year climate normals</strong> (1991-2020) with 
-                  weighted scoring across 7 factors. Each factor has an importance weight 
-                  (0-100%) that you control.
+                  Uses data from <strong>NOAA ACIS</strong> (30-year normals 1991-2020) and 
+                  <strong> Open-Meteo</strong> (2014-2023 averages) with weighted scoring across 
+                  11 factors. Each factor has an importance weight (0-100%) that you control.
                 </p>
 
                 <h4>How Weighted Scoring Works</h4>
@@ -115,50 +115,65 @@ export default function HelpPage() {
                   <thead>
                     <tr>
                       <th className="text-left">Factor</th>
+                      <th className="text-left">Source</th>
                       <th className="text-left">What It Measures</th>
-                      <th className="text-left">Score Logic</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td><strong>Comfort Days</strong></td>
-                      <td>Days with max temp 65-80°F</td>
-                      <td>Score = min(100, actual / desired × 100)</td>
+                      <td>ACIS</td>
+                      <td>Days with max temp 65-80°F (&quot;T-shirt weather&quot;)</td>
                     </tr>
                     <tr>
                       <td><strong>Extreme Heat</strong></td>
+                      <td>ACIS</td>
                       <td>Days with max temp &gt;95°F</td>
-                      <td>100 if ≤ max, decreases if over</td>
                     </tr>
                     <tr>
                       <td><strong>Freeze Days</strong></td>
+                      <td>ACIS</td>
                       <td>Days with min temp &lt;32°F</td>
-                      <td>100 if ≤ max, decreases if over</td>
                     </tr>
                     <tr>
                       <td><strong>Rain Days</strong></td>
-                      <td>Days with precipitation</td>
-                      <td>100 if ≤ max, decreases if over</td>
+                      <td>ACIS</td>
+                      <td>Days with any precipitation</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Snow Days</strong></td>
+                      <td>ACIS</td>
+                      <td>Days with snowfall &gt;1 inch</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Cloudy Days</strong></td>
+                      <td>Open-Meteo</td>
+                      <td>Days with &gt;75% cloud cover (gloom factor)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Humidity</strong></td>
+                      <td>Open-Meteo</td>
+                      <td>July dewpoint (65°F+ = muggy, 72°F+ = oppressive)</td>
                     </tr>
                     <tr>
                       <td><strong>Utility Costs</strong></td>
-                      <td>CDD + HDD (degree days)</td>
-                      <td>100 at 2000, 0 at 9000</td>
+                      <td>ACIS</td>
+                      <td>CDD + HDD (heating/cooling degree days)</td>
                     </tr>
                     <tr>
                       <td><strong>Growing Season</strong></td>
-                      <td>Days between freezes</td>
-                      <td>Score = min(100, actual / desired × 100)</td>
+                      <td>ACIS</td>
+                      <td>Days between last spring and first fall freeze</td>
                     </tr>
                     <tr>
                       <td><strong>Seasonal Stability</strong></td>
-                      <td>StdDev of monthly temps</td>
-                      <td>100 at σ=5°F, 0 at σ=25°F</td>
+                      <td>ACIS</td>
+                      <td>StdDev of monthly temps (lower = &quot;perpetual spring&quot;)</td>
                     </tr>
                     <tr>
                       <td><strong>Daily Swing</strong></td>
+                      <td>ACIS</td>
                       <td>Avg day/night temp range</td>
-                      <td>100 if ≤ max, decreases if over</td>
                     </tr>
                   </tbody>
                 </table>
@@ -169,22 +184,23 @@ export default function HelpPage() {
                     <tr>
                       <th className="text-left">City</th>
                       <th className="text-right">Comfort</th>
-                      <th className="text-right">Heat</th>
-                      <th className="text-right">Freeze</th>
-                      <th className="text-right">CDD+HDD</th>
+                      <th className="text-right">Snow</th>
+                      <th className="text-right">Cloudy</th>
+                      <th className="text-right">July Dewpt</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>San Diego</td><td className="text-right">267</td><td className="text-right">3</td><td className="text-right">5</td><td className="text-right">~2000</td></tr>
-                    <tr><td>Phoenix</td><td className="text-right">89</td><td className="text-right">107</td><td className="text-right">10</td><td className="text-right">~4500</td></tr>
-                    <tr><td>Seattle</td><td className="text-right">95</td><td className="text-right">3</td><td className="text-right">25</td><td className="text-right">~4700</td></tr>
-                    <tr><td>Minneapolis</td><td className="text-right">89</td><td className="text-right">12</td><td className="text-right">156</td><td className="text-right">~8000</td></tr>
-                    <tr><td>Miami</td><td className="text-right">120</td><td className="text-right">35</td><td className="text-right">0</td><td className="text-right">~3800</td></tr>
+                    <tr><td>San Diego</td><td className="text-right">267</td><td className="text-right">0</td><td className="text-right">~80</td><td className="text-right">~62°F</td></tr>
+                    <tr><td>Phoenix</td><td className="text-right">89</td><td className="text-right">0</td><td className="text-right">~80</td><td className="text-right">~55°F</td></tr>
+                    <tr><td>Seattle</td><td className="text-right">95</td><td className="text-right">5</td><td className="text-right">~200</td><td className="text-right">~55°F</td></tr>
+                    <tr><td>Minneapolis</td><td className="text-right">89</td><td className="text-right">40+</td><td className="text-right">~160</td><td className="text-right">~65°F</td></tr>
+                    <tr><td>Miami</td><td className="text-right">120</td><td className="text-right">0</td><td className="text-right">~120</td><td className="text-right">~75°F</td></tr>
                   </tbody>
                 </table>
 
                 <p className="text-muted-foreground text-xs">
-                  Data source: NOAA ACIS (data.rcc-acis.org) using major airport weather stations.
+                  Data sources: NOAA ACIS (data.rcc-acis.org) for temperature, precipitation, snow, 
+                  and degree days. Open-Meteo (open-meteo.com) for cloud cover and dewpoint.
                 </p>
               </AccordionContent>
             </AccordionItem>
