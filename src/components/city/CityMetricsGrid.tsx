@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { CityMetrics, NOAAClimateData } from "@/types/city";
+import { CityMetrics, NOAAClimateData, CensusDemographics } from "@/types/city";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Tooltip,
@@ -443,6 +443,8 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
   const bea = metrics.bea;
   // NOAA climate data (30-year normals)
   const noaa = metrics.noaa;
+  // Census demographics data
+  const census = metrics.census;
   const formatTemp = (temp: number | null) => temp !== null ? `${temp.toFixed(0)}°F` : null;
   const formatPercent = (val: number | null) => val !== null ? `${(val * 100).toFixed(1)}%` : null;
   const formatPrice = (price: number | null) => {
@@ -827,34 +829,258 @@ export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
         </CardContent>
       </Card>
 
-      {/* Demographics Section */}
-      <Card>
+      {/* Demographics Section - Full Width with Census Data */}
+      <Card className="md:col-span-2">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Users className="h-4 w-4 text-violet-500" />
-            Demographics
+          <CardTitle className="text-base flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-violet-500" />
+              Demographics
+            </div>
+            {census && (
+              <span className="text-xs font-normal text-muted-foreground">
+                Census ACS {census.year}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2">
-          <MetricItem
-            icon={<Users className="h-4 w-4" />}
-            label="Metro Population"
-            value={formatPopulation(metrics.population)}
-            tooltip="Metropolitan statistical area population"
-          />
-          <MetricItem
-            icon={<Users className="h-4 w-4" />}
-            label="Diversity Index"
-            value={metrics.diversityIndex?.toFixed(1)}
-            tooltip="Diversity index (0-100, higher = more diverse)"
-            colorClass={getScoreColor(metrics.diversityIndex)}
-          />
-          <MetricItem
-            icon={<Users className="h-4 w-4" />}
-            label="East Asian %"
-            value={formatPercent(metrics.eastAsianPercent)}
-            tooltip="Percentage of population identifying as East Asian"
-          />
+        <CardContent className="space-y-4">
+          {census ? (
+            <>
+              {/* Population & Age */}
+              <div>
+                <h4 className="text-xs font-semibold text-muted-foreground mb-2">Population & Age</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Population"
+                    value={census.totalPopulation?.toLocaleString()}
+                    tooltip="City population (Census ACS)"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Median Age"
+                    value={census.medianAge?.toFixed(1)}
+                    tooltip="Median age of residents"
+                    colorClass={census.medianAge && census.medianAge < 35 ? "text-green-600" : census.medianAge && census.medianAge > 45 ? "text-amber-600" : ""}
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Young Adults (18-34)"
+                    value={census.age18to34Percent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Percentage aged 18-34 (young professionals, students)"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Seniors (55+)"
+                    value={census.age55PlusPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Percentage aged 55+ (retirement age)"
+                  />
+                </div>
+              </div>
+
+              {/* Race & Ethnicity */}
+              <div className="pt-2 border-t">
+                <h4 className="text-xs font-semibold text-muted-foreground mb-2">Race & Ethnicity</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Diversity Index"
+                    value={census.diversityIndex}
+                    tooltip="0-100, probability two random people differ by race (higher = more diverse)"
+                    colorClass={getScoreColor(census.diversityIndex)}
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="White"
+                    value={census.whitePercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="White alone, not Hispanic or Latino"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Hispanic/Latino"
+                    value={census.hispanicPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Hispanic or Latino (any race)"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Black"
+                    value={census.blackPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Black or African American alone"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Asian"
+                    value={census.asianPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Asian alone"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Two+ Races"
+                    value={census.twoOrMoreRacesPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Two or more races"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Foreign-Born"
+                    value={census.foreignBornPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Born outside the United States (proxy for international culture)"
+                  />
+                </div>
+              </div>
+
+              {/* Asian Subgroups (if significant) */}
+              {census.asianPercent && census.asianPercent > 3 && (
+                <div className="pt-2 border-t">
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2">Asian Subgroups (% of city)</h4>
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Chinese"
+                      value={census.chinesePercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Chinese population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Indian"
+                      value={census.indianPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Asian Indian population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Filipino"
+                      value={census.filipinoPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Filipino population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Vietnamese"
+                      value={census.vietnamesePercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Vietnamese population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Korean"
+                      value={census.koreanPercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Korean population"
+                    />
+                    <MetricItem
+                      icon={<Users className="h-4 w-4" />}
+                      label="Japanese"
+                      value={census.japanesePercent?.toFixed(2)}
+                      unit="%"
+                      tooltip="Japanese population"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Education & Income */}
+              <div className="pt-2 border-t">
+                <h4 className="text-xs font-semibold text-muted-foreground mb-2">Education & Income</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Bachelor's+"
+                    value={census.bachelorsOrHigherPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Population 25+ with Bachelor's degree or higher"
+                    colorClass={census.bachelorsOrHigherPercent && census.bachelorsOrHigherPercent > 40 ? "text-score-high" : ""}
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Graduate Degree"
+                    value={census.graduateDegreePercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Population with graduate or professional degree"
+                  />
+                  <MetricItem
+                    icon={<DollarSign className="h-4 w-4" />}
+                    label="Median HH Income"
+                    value={census.medianHouseholdIncome ? `$${(census.medianHouseholdIncome / 1000).toFixed(0)}K` : null}
+                    tooltip="Median household income"
+                    colorClass={census.medianHouseholdIncome && census.medianHouseholdIncome > 80000 ? "text-score-high" : ""}
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Poverty Rate"
+                    value={census.povertyRate?.toFixed(1)}
+                    unit="%"
+                    tooltip="Population below poverty line"
+                    colorClass={census.povertyRate && census.povertyRate > 15 ? "text-red-600" : "text-score-high"}
+                  />
+                </div>
+              </div>
+
+              {/* Household & Language */}
+              <div className="pt-2 border-t">
+                <h4 className="text-xs font-semibold text-muted-foreground mb-2">Household & Language</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Family Households"
+                    value={census.familyHouseholdsPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Households with families"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Married Couples"
+                    value={census.marriedCouplePercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Married-couple households"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Living Alone"
+                    value={census.singlePersonPercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Single-person households"
+                  />
+                  <MetricItem
+                    icon={<Users className="h-4 w-4" />}
+                    label="Spanish at Home"
+                    value={census.spanishAtHomePercent?.toFixed(1)}
+                    unit="%"
+                    tooltip="Households speaking Spanish at home"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            // Fallback to old metrics if Census data not available
+            <div className="grid grid-cols-2 gap-2">
+              <MetricItem
+                icon={<Users className="h-4 w-4" />}
+                label="Metro Population"
+                value={formatPopulation(metrics.population)}
+                tooltip="Metropolitan statistical area population"
+              />
+              <MetricItem
+                icon={<Users className="h-4 w-4" />}
+                label="Diversity Index"
+                value={metrics.diversityIndex?.toFixed(1)}
+                tooltip="Diversity index (0-100, higher = more diverse)"
+                colorClass={getScoreColor(metrics.diversityIndex)}
+              />
+              <div className="col-span-2 text-center py-4 text-muted-foreground text-sm">
+                <p>Pull Census data from the Admin panel for detailed demographics.</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
