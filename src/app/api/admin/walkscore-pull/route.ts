@@ -128,8 +128,9 @@ async function fetchEPAWalkabilityData(
 ): Promise<WalkabilityData | null> {
   try {
     // Query EPA ArcGIS for walkability data at the given point
-    // Use a small buffer around the point to find nearby census block groups
-    const buffer = 0.01; // ~1km buffer
+    // Use a larger buffer to get a more representative sample of the metro area
+    // (not just downtown which has transit even in car-dependent cities)
+    const buffer = 0.05; // ~5km buffer for better metro-level sampling
     const geometry = JSON.stringify({
       xmin: longitude - buffer,
       ymin: latitude - buffer,
@@ -143,7 +144,11 @@ async function fetchEPAWalkabilityData(
       geometryType: "esriGeometryEnvelope",
       inSR: "4326",
       spatialRel: "esriSpatialRelIntersects",
-      outFields: "NatWalkInd,D3B,D4A,TotPop,Ac_Total",
+      // NatWalkInd: National Walkability Index (1-20)
+      // D3B: Street intersection density (for bikeability)
+      // TotPop: Population weight for averaging
+      // Note: Transit fields (D4A, D4C, D5BR) excluded - too noisy at metro scale
+      outFields: "NatWalkInd,D3B,TotPop,Ac_Total",
       returnGeometry: "false",
       f: "json"
     });
@@ -170,7 +175,7 @@ async function fetchEPAWalkabilityData(
     // Average walkability across all matching census block groups, weighted by population
     let totalWeight = 0;
     let weightedWalkIndex = 0;
-    let weightedTransitAccess = 0;
+    let weightedD3B = 0; // Street intersection density
 
     for (const feature of data.features) {
       const attrs = feature.attributes;
@@ -182,9 +187,8 @@ async function fetchEPAWalkabilityData(
       }
       
       // D3B = Street intersection density (proxy for bikeability)
-      // D4A = Transit access (jobs accessible by transit)
-      if (attrs.D4A !== null && attrs.D4A !== undefined) {
-        weightedTransitAccess += attrs.D4A * pop;
+      if (attrs.D3B !== null && attrs.D3B !== undefined) {
+        weightedD3B += attrs.D3B * pop;
       }
     }
 
@@ -193,21 +197,25 @@ async function fetchEPAWalkabilityData(
     }
 
     const avgWalkIndex = weightedWalkIndex / totalWeight;
-    const avgTransitAccess = weightedTransitAccess / totalWeight;
+    const avgD3B = weightedD3B / totalWeight;
 
     // Convert to Walk Score scale (0-100)
     const walkScore = Math.max(0, Math.min(100, convertIndexToScore(avgWalkIndex)));
     
-    // Bike score: estimate based on walk score and intersection density
-    // Cities with high walkability tend to have decent bikeability
-    const bikeScore = Math.max(0, Math.min(100, Math.round(walkScore * 0.85)));
+    // Bike score: based on walk score and intersection density
+    // D3B typical range is 0-200, higher = more bikeable
+    const intersectionBonus = Math.min(10, avgD3B / 20);
+    const bikeScore = Math.max(0, Math.min(100, Math.round(walkScore * 0.85 + intersectionBonus)));
     
-    // Note: EPA D4A (jobs accessible by transit) doesn't translate well to transit score
-    // Return null for transit - we'll use fallback data for transit scores
+    // Note: EPA Smart Location Database transit metrics (D4A, D4C, D5BR) are too noisy
+    // at metro scale - suburban areas dilute city-center scores significantly.
+    // Transit scores will be sourced from verified Walk Score fallback data instead.
+    // The EPA data is best for walkability (NatWalkInd) which we do use above.
+    
     return {
       walkScore,
       bikeScore,
-      transitScore: null, // Will be filled from fallback data
+      transitScore: null, // Will be filled from Walk Score fallback data
       description: getWalkabilityDescription(walkScore),
       updatedAt: new Date().toISOString(),
     };
