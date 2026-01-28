@@ -132,8 +132,13 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching cities:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to fetch cities" },
+      { 
+        error: "Failed to fetch cities",
+        details: errorMessage,
+        hint: "Check DATABASE_URL environment variable in Vercel"
+      },
       { status: 500 }
     );
   }
