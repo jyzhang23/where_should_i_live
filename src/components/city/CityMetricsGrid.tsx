@@ -37,7 +37,6 @@ import {
 
 interface CityMetricsGridProps {
   metrics: CityMetrics;
-  bea?: BEAMetrics;
 }
 
 interface MetricItemProps {
@@ -75,7 +74,9 @@ function MetricItem({ icon, label, value, unit, tooltip, colorClass }: MetricIte
   );
 }
 
-export function CityMetricsGrid({ metrics, bea }: CityMetricsGridProps) {
+export function CityMetricsGrid({ metrics }: CityMetricsGridProps) {
+  // BEA data is now included in metrics (merged from metrics.json)
+  const bea = metrics.bea;
   const formatTemp = (temp: number | null) => temp !== null ? `${temp.toFixed(0)}°F` : null;
   const formatPercent = (val: number | null) => val !== null ? `${(val * 100).toFixed(1)}%` : null;
   const formatPrice = (price: number | null) => {

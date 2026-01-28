@@ -185,8 +185,7 @@ function calculateCostScore(
   const metrics = city.metrics!;
   const { housingSituation, includeUtilities } = preferences.advanced.costOfLiving;
 
-  // Try to use BEA True Purchasing Power data
-  // @ts-expect-error - bea field may exist on metrics from API
+  // Try to use BEA True Purchasing Power data (merged from metrics.json)
   const beaData = metrics.bea;
   
   if (beaData) {

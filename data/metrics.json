@@ -1,13 +1,14 @@
 {
   "version": "1.0",
   "description": "Current city metrics (updateable via APIs)",
-  "lastUpdated": "2026-01-27",
+  "lastUpdated": "2026-01-28",
   "sources": {
     "climate": "NOAA / Weather data",
     "cost": "BLS / Zillow",
     "demographics": "US Census",
     "quality": "WalkScore, Numbeo, ACSM, etc.",
-    "political": "2024 Election Results"
+    "political": "2024 Election Results",
+    "bea": "Bureau of Economic Analysis (Regional Price Parities)"
   },
   "cities": {
     "san-francisco": {
@@ -45,6 +46,31 @@
       "political": {
         "cityDemocratPercent": 0.845,
         "stateDemocratPercent": 0.585
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 412265.5,
+          "realPerCapitaIncome": 90051
+        },
+        "regionalPriceParity": {
+          "allItems": 118.047,
+          "goods": 114.446,
+          "housing": 206.315,
+          "utilities": 170.224,
+          "otherServices": 106.002
+        },
+        "taxes": {
+          "state": "CA",
+          "effectiveTaxRate": 17.53,
+          "perCapitaIncome": 77196,
+          "perCapitaDisposable": 63662,
+          "federalTaxes": 389141547,
+          "stateTaxes": 136911769,
+          "localTaxes": 1055552,
+          "totalTaxes": 529745966
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "seattle": {
@@ -82,6 +108,31 @@
       "political": {
         "cityDemocratPercent": 0.705,
         "stateDemocratPercent": 0.523
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 281656.5,
+          "realPerCapitaIncome": 69851
+        },
+        "regionalPriceParity": {
+          "allItems": 114.048,
+          "goods": 116.358,
+          "housing": 154.729,
+          "utilities": 86.67,
+          "otherServices": 104.953
+        },
+        "taxes": {
+          "state": "WA",
+          "effectiveTaxRate": 13.23,
+          "perCapitaIncome": 76049,
+          "perCapitaDisposable": 65984,
+          "federalTaxes": 76696642,
+          "stateTaxes": 1284328,
+          "localTaxes": 302302,
+          "totalTaxes": 78443924
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "new-york-city": {
@@ -119,6 +170,31 @@
       "political": {
         "cityDemocratPercent": 0.72,
         "stateDemocratPercent": 0.586
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 1289986.4,
+          "realPerCapitaIncome": 65734
+        },
+        "regionalPriceParity": {
+          "allItems": 113.007,
+          "goods": 107.754,
+          "housing": 153.913,
+          "utilities": 119.776,
+          "otherServices": 107.277
+        },
+        "taxes": {
+          "state": "NY",
+          "effectiveTaxRate": 19.54,
+          "perCapitaIncome": 77461,
+          "perCapitaDisposable": 62326,
+          "federalTaxes": 210391819,
+          "stateTaxes": 69994488,
+          "localTaxes": 17847571,
+          "totalTaxes": 298233878
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "los-angeles": {
@@ -156,6 +232,31 @@
       "political": {
         "cityDemocratPercent": 0.682,
         "stateDemocratPercent": 0.585
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 752787.1,
+          "realPerCapitaIncome": 58491
+        },
+        "regionalPriceParity": {
+          "allItems": 113.278,
+          "goods": 106.533,
+          "housing": 176.892,
+          "utilities": 149.242,
+          "otherServices": 103.615
+        },
+        "taxes": {
+          "state": "CA",
+          "effectiveTaxRate": 17.53,
+          "perCapitaIncome": 77196,
+          "perCapitaDisposable": 63662,
+          "federalTaxes": 389141547,
+          "stateTaxes": 136911769,
+          "localTaxes": 1055552,
+          "totalTaxes": 529745966
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "sacramento": {
@@ -193,6 +294,31 @@
       "political": {
         "cityDemocratPercent": 0.548,
         "stateDemocratPercent": 0.585
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 126574.9,
+          "realPerCapitaIncome": 52363
+        },
+        "regionalPriceParity": {
+          "allItems": 109.857,
+          "goods": 108.954,
+          "housing": 131.469,
+          "utilities": 144.408,
+          "otherServices": 103.84
+        },
+        "taxes": {
+          "state": "CA",
+          "effectiveTaxRate": 17.53,
+          "perCapitaIncome": 77196,
+          "perCapitaDisposable": 63662,
+          "federalTaxes": 389141547,
+          "stateTaxes": 136911769,
+          "localTaxes": 1055552,
+          "totalTaxes": 529745966
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "boston": {
@@ -230,6 +356,31 @@
       "political": {
         "cityDemocratPercent": 0.8,
         "stateDemocratPercent": 0.619
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 361743.1,
+          "realPerCapitaIncome": 73780
+        },
+        "regionalPriceParity": {
+          "allItems": 112.228,
+          "goods": 110.014,
+          "housing": 150.152,
+          "utilities": 154.566,
+          "otherServices": 104.544
+        },
+        "taxes": {
+          "state": "MA",
+          "effectiveTaxRate": 18.27,
+          "perCapitaIncome": 85441,
+          "perCapitaDisposable": 69829,
+          "federalTaxes": 85953892,
+          "stateTaxes": 23114990,
+          "localTaxes": 133228,
+          "totalTaxes": 109637582
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "portland": {
@@ -267,6 +418,31 @@
       "political": {
         "cityDemocratPercent": 0.76,
         "stateDemocratPercent": 0.538
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 141389.5,
+          "realPerCapitaIncome": 56355
+        },
+        "regionalPriceParity": {
+          "allItems": 108.808,
+          "goods": 109.171,
+          "housing": 128.414,
+          "utilities": 91.155,
+          "otherServices": 104.294
+        },
+        "taxes": {
+          "state": "OR",
+          "effectiveTaxRate": 15.37,
+          "perCapitaIncome": 63669,
+          "perCapitaDisposable": 53885,
+          "federalTaxes": 27449235,
+          "stateTaxes": 13816792,
+          "localTaxes": 290640,
+          "totalTaxes": 41556667
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "las-vegas": {
@@ -304,6 +480,31 @@
       "political": {
         "cityDemocratPercent": 0.49,
         "stateDemocratPercent": 0.484
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 124863.8,
+          "realPerCapitaIncome": 53762
+        },
+        "regionalPriceParity": {
+          "allItems": 96.467,
+          "goods": 97.076,
+          "housing": 112.647,
+          "utilities": 84.101,
+          "otherServices": 91.955
+        },
+        "taxes": {
+          "state": "NV",
+          "effectiveTaxRate": 13.59,
+          "perCapitaIncome": 62726,
+          "perCapitaDisposable": 54199,
+          "federalTaxes": 26553459,
+          "stateTaxes": 176614,
+          "localTaxes": 84792,
+          "totalTaxes": 27084099
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "chicago": {
@@ -341,6 +542,31 @@
       "political": {
         "cityDemocratPercent": 0.695,
         "stateDemocratPercent": 0.55
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 565674.6,
+          "realPerCapitaIncome": 59878
+        },
+        "regionalPriceParity": {
+          "allItems": 105.691,
+          "goods": 106.592,
+          "housing": 110.867,
+          "utilities": 85.684,
+          "otherServices": 104.887
+        },
+        "taxes": {
+          "state": "IL",
+          "effectiveTaxRate": 15.33,
+          "perCapitaIncome": 68044,
+          "perCapitaDisposable": 57612,
+          "federalTaxes": 105031467,
+          "stateTaxes": 26444299,
+          "localTaxes": 204221,
+          "totalTaxes": 131679987
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "washington-dc": {
@@ -378,6 +604,31 @@
       "political": {
         "cityDemocratPercent": 0.9,
         "stateDemocratPercent": 0.55
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 418228.5,
+          "realPerCapitaIncome": 65610
+        },
+        "regionalPriceParity": {
+          "allItems": 111.193,
+          "goods": 106.934,
+          "housing": 156.246,
+          "utilities": 101.526,
+          "otherServices": 104.547
+        },
+        "taxes": {
+          "state": "DC",
+          "effectiveTaxRate": 19.92,
+          "perCapitaIncome": 100849,
+          "perCapitaDisposable": 80764,
+          "federalTaxes": 10414969,
+          "stateTaxes": 0,
+          "localTaxes": 3177000,
+          "totalTaxes": 13591969
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "houston": {
@@ -415,6 +666,31 @@
       "political": {
         "cityDemocratPercent": 0.525,
         "stateDemocratPercent": 0.461
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 441276,
+          "realPerCapitaIncome": 60102
+        },
+        "regionalPriceParity": {
+          "allItems": 98.822,
+          "goods": 98.067,
+          "housing": 107.99,
+          "utilities": 92.264,
+          "otherServices": 97.029
+        },
+        "taxes": {
+          "state": "TX",
+          "effectiveTaxRate": 11.86,
+          "perCapitaIncome": 63767,
+          "perCapitaDisposable": 56204,
+          "federalTaxes": 224856224,
+          "stateTaxes": 1843246,
+          "localTaxes": 405996,
+          "totalTaxes": 227752297
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "atlanta": {
@@ -452,6 +728,31 @@
       "political": {
         "cityDemocratPercent": 0.68,
         "stateDemocratPercent": 0.477
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 352925.1,
+          "realPerCapitaIncome": 56709
+        },
+        "regionalPriceParity": {
+          "allItems": 98.695,
+          "goods": 99.126,
+          "housing": 107.305,
+          "utilities": 102.061,
+          "otherServices": 95.699
+        },
+        "taxes": {
+          "state": "GA",
+          "effectiveTaxRate": 14.02,
+          "perCapitaIncome": 57396,
+          "perCapitaDisposable": 49347,
+          "federalTaxes": 67774823,
+          "stateTaxes": 19465687,
+          "localTaxes": 83679,
+          "totalTaxes": 87988402
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "minneapolis": {
@@ -489,6 +790,31 @@
       "political": {
         "cityDemocratPercent": 0.668,
         "stateDemocratPercent": 0.512
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 236433.5,
+          "realPerCapitaIncome": 64045
+        },
+        "regionalPriceParity": {
+          "allItems": 102.639,
+          "goods": 102.522,
+          "housing": 119.045,
+          "utilities": 85.896,
+          "otherServices": 99.402
+        },
+        "taxes": {
+          "state": "MN",
+          "effectiveTaxRate": 15.02,
+          "perCapitaIncome": 69539,
+          "perCapitaDisposable": 59095,
+          "federalTaxes": 43443932,
+          "stateTaxes": 15903762,
+          "localTaxes": 79168,
+          "totalTaxes": 59760972
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "philadelphia": {
@@ -526,6 +852,31 @@
       "political": {
         "cityDemocratPercent": 0.784,
         "stateDemocratPercent": 0.477
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 398821.3,
+          "realPerCapitaIncome": 63886
+        },
+        "regionalPriceParity": {
+          "allItems": 100.64,
+          "goods": 95.225,
+          "housing": 115.77,
+          "utilities": 107.928,
+          "otherServices": 100.323
+        },
+        "taxes": {
+          "state": "PA",
+          "effectiveTaxRate": 13.91,
+          "perCapitaIncome": 65078,
+          "perCapitaDisposable": 56028,
+          "federalTaxes": 91605863,
+          "stateTaxes": 19653366,
+          "localTaxes": 6147755,
+          "totalTaxes": 117509077
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "dallas": {
@@ -563,6 +914,31 @@
       "political": {
         "cityDemocratPercent": 0.611,
         "stateDemocratPercent": 0.461
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 469493.6,
+          "realPerCapitaIncome": 59075
+        },
+        "regionalPriceParity": {
+          "allItems": 103.577,
+          "goods": 102.086,
+          "housing": 116.267,
+          "utilities": 88.124,
+          "otherServices": 102.108
+        },
+        "taxes": {
+          "state": "TX",
+          "effectiveTaxRate": 11.86,
+          "perCapitaIncome": 63767,
+          "perCapitaDisposable": 56204,
+          "federalTaxes": 224856224,
+          "stateTaxes": 1843246,
+          "localTaxes": 405996,
+          "totalTaxes": 227752297
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "tampa-bay": {
@@ -600,6 +976,31 @@
       "political": {
         "cityDemocratPercent": 0.495,
         "stateDemocratPercent": 0.467
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 170560.8,
+          "realPerCapitaIncome": 51821
+        },
+        "regionalPriceParity": {
+          "allItems": 99.878,
+          "goods": 97.629,
+          "housing": 118.555,
+          "utilities": 92.731,
+          "otherServices": 96.334
+        },
+        "taxes": {
+          "state": "FL",
+          "effectiveTaxRate": 15.17,
+          "perCapitaIncome": 65429,
+          "perCapitaDisposable": 55503,
+          "federalTaxes": 220227755,
+          "stateTaxes": 1157177,
+          "localTaxes": 416492,
+          "totalTaxes": 222128818
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "denver": {
@@ -637,6 +1038,31 @@
       "political": {
         "cityDemocratPercent": 0.751,
         "stateDemocratPercent": 0.545
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 206844.9,
+          "realPerCapitaIncome": 69267
+        },
+        "regionalPriceParity": {
+          "allItems": 107.345,
+          "goods": 105.179,
+          "housing": 145.608,
+          "utilities": 95.081,
+          "otherServices": 99.994
+        },
+        "taxes": {
+          "state": "CO",
+          "effectiveTaxRate": 14.62,
+          "perCapitaIncome": 76685,
+          "perCapitaDisposable": 65470,
+          "federalTaxes": 53241897,
+          "stateTaxes": 11878644,
+          "localTaxes": 146234,
+          "totalTaxes": 65618901
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "charlotte": {
@@ -674,6 +1100,31 @@
       "political": {
         "cityDemocratPercent": 0.585,
         "stateDemocratPercent": 0.479
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 162716.9,
+          "realPerCapitaIncome": 59070
+        },
+        "regionalPriceParity": {
+          "allItems": 96.771,
+          "goods": 95.399,
+          "housing": 93.88,
+          "utilities": 84.402,
+          "otherServices": 99.622
+        },
+        "taxes": {
+          "state": "NC",
+          "effectiveTaxRate": 13.68,
+          "perCapitaIncome": 59092,
+          "perCapitaDisposable": 51011,
+          "federalTaxes": 66403959,
+          "stateTaxes": 19500815,
+          "localTaxes": 141706,
+          "totalTaxes": 86556945
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "oklahoma-city": {
@@ -711,6 +1162,31 @@
       "political": {
         "cityDemocratPercent": 0.452,
         "stateDemocratPercent": 0.312
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 85814.2,
+          "realPerCapitaIncome": 58779
+        },
+        "regionalPriceParity": {
+          "allItems": 91.334,
+          "goods": 93.6,
+          "housing": 74.475,
+          "utilities": 83.407,
+          "otherServices": 96.337
+        },
+        "taxes": {
+          "state": "OK",
+          "effectiveTaxRate": 10.09,
+          "perCapitaIncome": 57916,
+          "perCapitaDisposable": 52070,
+          "federalTaxes": 18212584,
+          "stateTaxes": 5251008,
+          "localTaxes": 18751,
+          "totalTaxes": 23534752
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "phoenix": {
@@ -748,6 +1224,31 @@
       "political": {
         "cityDemocratPercent": 0.475,
         "stateDemocratPercent": 0.465
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 261075.9,
+          "realPerCapitaIncome": 51998
+        },
+        "regionalPriceParity": {
+          "allItems": 103.843,
+          "goods": 98.252,
+          "housing": 122.829,
+          "utilities": 88.228,
+          "otherServices": 103.267
+        },
+        "taxes": {
+          "state": "AZ",
+          "effectiveTaxRate": 12.52,
+          "perCapitaIncome": 59060,
+          "perCapitaDisposable": 51663,
+          "federalTaxes": 46753085,
+          "stateTaxes": 7209557,
+          "localTaxes": 144368,
+          "totalTaxes": 54568438
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "baltimore": {
@@ -785,6 +1286,31 @@
       "political": {
         "cityDemocratPercent": 0.83,
         "stateDemocratPercent": 0.634
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 173331.6,
+          "realPerCapitaIncome": 61144
+        },
+        "regionalPriceParity": {
+          "allItems": 102.463,
+          "goods": 100.732,
+          "housing": 120.536,
+          "utilities": 101.73,
+          "otherServices": 98.395
+        },
+        "taxes": {
+          "state": "MD",
+          "effectiveTaxRate": 16.06,
+          "perCapitaIncome": 70781,
+          "perCapitaDisposable": 59415,
+          "federalTaxes": 51010009,
+          "stateTaxes": 11804874,
+          "localTaxes": 7568051,
+          "totalTaxes": 70382934
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "orlando": {
@@ -822,6 +1348,31 @@
       "political": {
         "cityDemocratPercent": 0.579,
         "stateDemocratPercent": 0.467
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 129589.1,
+          "realPerCapitaIncome": 46901
+        },
+        "regionalPriceParity": {
+          "allItems": 100.515,
+          "goods": 95.041,
+          "housing": 118.511,
+          "utilities": 90.437,
+          "otherServices": 99.907
+        },
+        "taxes": {
+          "state": "FL",
+          "effectiveTaxRate": 15.17,
+          "perCapitaIncome": 65429,
+          "perCapitaDisposable": 55503,
+          "federalTaxes": 220227755,
+          "stateTaxes": 1157177,
+          "localTaxes": 416492,
+          "totalTaxes": 222128818
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "indianapolis": {
@@ -859,6 +1410,31 @@
       "political": {
         "cityDemocratPercent": 0.55,
         "stateDemocratPercent": 0.405
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 137114.1,
+          "realPerCapitaIncome": 63993
+        },
+        "regionalPriceParity": {
+          "allItems": 93.807,
+          "goods": 93.087,
+          "housing": 84.587,
+          "utilities": 87.626,
+          "otherServices": 97.528
+        },
+        "taxes": {
+          "state": "IN",
+          "effectiveTaxRate": 11.68,
+          "perCapitaIncome": 58671,
+          "perCapitaDisposable": 51819,
+          "federalTaxes": 36466346,
+          "stateTaxes": 8835078,
+          "localTaxes": 1311570,
+          "totalTaxes": 46896399
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "nashville": {
@@ -896,6 +1472,31 @@
       "political": {
         "cityDemocratPercent": 0.604,
         "stateDemocratPercent": 0.379
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 137954.6,
+          "realPerCapitaIncome": 67442
+        },
+        "regionalPriceParity": {
+          "allItems": 96.602,
+          "goods": 94.476,
+          "housing": 105.767,
+          "utilities": 77.159,
+          "otherServices": 96.551
+        },
+        "taxes": {
+          "state": "TN",
+          "effectiveTaxRate": 10.56,
+          "perCapitaIncome": 59107,
+          "perCapitaDisposable": 52866,
+          "federalTaxes": 43634775,
+          "stateTaxes": 304804,
+          "localTaxes": 130213,
+          "totalTaxes": 44069792
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "milwaukee": {
@@ -933,6 +1534,31 @@
       "political": {
         "cityDemocratPercent": 0.655,
         "stateDemocratPercent": 0.48
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 97230.9,
+          "realPerCapitaIncome": 62362
+        },
+        "regionalPriceParity": {
+          "allItems": 95.139,
+          "goods": 91.952,
+          "housing": 95.641,
+          "utilities": 91.67,
+          "otherServices": 97.676
+        },
+        "taxes": {
+          "state": "WI",
+          "effectiveTaxRate": 13.35,
+          "perCapitaIncome": 61831,
+          "perCapitaDisposable": 53575,
+          "federalTaxes": 38220481,
+          "stateTaxes": 10451658,
+          "localTaxes": 72625,
+          "totalTaxes": 48744764
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "salt-lake-city": {
@@ -970,6 +1596,31 @@
       "political": {
         "cityDemocratPercent": 0.515,
         "stateDemocratPercent": 0.34
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 75871.5,
+          "realPerCapitaIncome": 59905
+        },
+        "regionalPriceParity": {
+          "allItems": 95.83,
+          "goods": 94.973,
+          "housing": 116.541,
+          "utilities": 71.685,
+          "otherServices": 92.229
+        },
+        "taxes": {
+          "state": "UT",
+          "effectiveTaxRate": 14.43,
+          "perCapitaIncome": 60765,
+          "perCapitaDisposable": 51995,
+          "federalTaxes": 22532064,
+          "stateTaxes": 7099832,
+          "localTaxes": 51604,
+          "totalTaxes": 29741383
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "detroit": {
@@ -1007,6 +1658,31 @@
       "political": {
         "cityDemocratPercent": 0.649,
         "stateDemocratPercent": 0.479
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 243808.7,
+          "realPerCapitaIncome": 56066
+        },
+        "regionalPriceParity": {
+          "allItems": 96.295,
+          "goods": 94.701,
+          "housing": 94.174,
+          "utilities": 101.804,
+          "otherServices": 97.712
+        },
+        "taxes": {
+          "state": "MI",
+          "effectiveTaxRate": 12.77,
+          "perCapitaIncome": 58012,
+          "perCapitaDisposable": 50602,
+          "federalTaxes": 58542130,
+          "stateTaxes": 14788731,
+          "localTaxes": 755420,
+          "totalTaxes": 74479530
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "st-louis": {
@@ -1044,6 +1720,31 @@
       "political": {
         "cityDemocratPercent": 0.754,
         "stateDemocratPercent": 0.412
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 177138.7,
+          "realPerCapitaIncome": 63258
+        },
+        "regionalPriceParity": {
+          "allItems": 96.659,
+          "goods": 101.714,
+          "housing": 79.819,
+          "utilities": 75.803,
+          "otherServices": 99.683
+        },
+        "taxes": {
+          "state": "MO",
+          "effectiveTaxRate": 12.65,
+          "perCapitaIncome": 58525,
+          "perCapitaDisposable": 51121,
+          "federalTaxes": 34733533,
+          "stateTaxes": 9819976,
+          "localTaxes": 635593,
+          "totalTaxes": 45753530
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "san-antonio": {
@@ -1081,6 +1782,31 @@
       "political": {
         "cityDemocratPercent": 0.554,
         "stateDemocratPercent": 0.461
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 136600.9,
+          "realPerCapitaIncome": 51432
+        },
+        "regionalPriceParity": {
+          "allItems": 94.977,
+          "goods": 93.705,
+          "housing": 94.593,
+          "utilities": 86.851,
+          "otherServices": 96.671
+        },
+        "taxes": {
+          "state": "TX",
+          "effectiveTaxRate": 11.86,
+          "perCapitaIncome": 63767,
+          "perCapitaDisposable": 56204,
+          "federalTaxes": 224856224,
+          "stateTaxes": 1843246,
+          "localTaxes": 405996,
+          "totalTaxes": 227752297
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "jacksonville": {
@@ -1118,6 +1844,31 @@
       "political": {
         "cityDemocratPercent": 0.465,
         "stateDemocratPercent": 0.467
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 91251.5,
+          "realPerCapitaIncome": 54435
+        },
+        "regionalPriceParity": {
+          "allItems": 98.483,
+          "goods": 95.041,
+          "housing": 103.317,
+          "utilities": 90.934,
+          "otherServices": 99.907
+        },
+        "taxes": {
+          "state": "FL",
+          "effectiveTaxRate": 15.17,
+          "perCapitaIncome": 65429,
+          "perCapitaDisposable": 55503,
+          "federalTaxes": 220227755,
+          "stateTaxes": 1157177,
+          "localTaxes": 416492,
+          "totalTaxes": 222128818
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "new-orleans": {
@@ -1155,6 +1906,31 @@
       "political": {
         "cityDemocratPercent": 0.785,
         "stateDemocratPercent": 0.391
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 72300.7,
+          "realPerCapitaIncome": 57997
+        },
+        "regionalPriceParity": {
+          "allItems": 93.587,
+          "goods": 93.925,
+          "housing": 83.669,
+          "utilities": 83.843,
+          "otherServices": 97.309
+        },
+        "taxes": {
+          "state": "LA",
+          "effectiveTaxRate": 10.48,
+          "perCapitaIncome": 55384,
+          "perCapitaDisposable": 49579,
+          "federalTaxes": 21577613,
+          "stateTaxes": 5047244,
+          "localTaxes": 40268,
+          "totalTaxes": 26665125
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "kansas-city": {
@@ -1192,6 +1968,31 @@
       "political": {
         "cityDemocratPercent": 0.64,
         "stateDemocratPercent": 0.412
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 137316.1,
+          "realPerCapitaIncome": 62168
+        },
+        "regionalPriceParity": {
+          "allItems": 92.016,
+          "goods": 93.64,
+          "housing": 85.588,
+          "utilities": 97.704,
+          "otherServices": 92.393
+        },
+        "taxes": {
+          "state": "MO",
+          "effectiveTaxRate": 12.65,
+          "perCapitaIncome": 58525,
+          "perCapitaDisposable": 51121,
+          "federalTaxes": 34733533,
+          "stateTaxes": 9819976,
+          "localTaxes": 635593,
+          "totalTaxes": 45753530
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "cincinnati": {
@@ -1229,6 +2030,31 @@
       "political": {
         "cityDemocratPercent": 0.535,
         "stateDemocratPercent": 0.422
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 136394.8,
+          "realPerCapitaIncome": 60203
+        },
+        "regionalPriceParity": {
+          "allItems": 93.579,
+          "goods": 92.545,
+          "housing": 83.694,
+          "utilities": 87.437,
+          "otherServices": 97.805
+        },
+        "taxes": {
+          "state": "OH",
+          "effectiveTaxRate": 12.6,
+          "perCapitaIncome": 58236,
+          "perCapitaDisposable": 50896,
+          "federalTaxes": 66924892,
+          "stateTaxes": 12698693,
+          "localTaxes": 6816079,
+          "totalTaxes": 86439664
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "cleveland": {
@@ -1266,6 +2092,31 @@
       "political": {
         "cityDemocratPercent": 0.601,
         "stateDemocratPercent": 0.422
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 122078.7,
+          "realPerCapitaIncome": 59154
+        },
+        "regionalPriceParity": {
+          "allItems": 93.141,
+          "goods": 92.297,
+          "housing": 82.707,
+          "utilities": 87.245,
+          "otherServices": 97.702
+        },
+        "taxes": {
+          "state": "OH",
+          "effectiveTaxRate": 12.6,
+          "perCapitaIncome": 58236,
+          "perCapitaDisposable": 50896,
+          "federalTaxes": 66924892,
+          "stateTaxes": 12698693,
+          "localTaxes": 6816079,
+          "totalTaxes": 86439664
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "buffalo": {
@@ -1303,6 +2154,31 @@
       "political": {
         "cityDemocratPercent": 0.551,
         "stateDemocratPercent": 0.586
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 61242.3,
+          "realPerCapitaIncome": 52846
+        },
+        "regionalPriceParity": {
+          "allItems": 93.926,
+          "goods": 96.368,
+          "housing": 78.575,
+          "utilities": 127.432,
+          "otherServices": 96.577
+        },
+        "taxes": {
+          "state": "NY",
+          "effectiveTaxRate": 19.54,
+          "perCapitaIncome": 77461,
+          "perCapitaDisposable": 62326,
+          "federalTaxes": 210391819,
+          "stateTaxes": 69994488,
+          "localTaxes": 17847571,
+          "totalTaxes": 298233878
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "pittsburgh": {
@@ -1340,6 +2216,31 @@
       "political": {
         "cityDemocratPercent": 0.539,
         "stateDemocratPercent": 0.477
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 144206.9,
+          "realPerCapitaIncome": 61424
+        },
+        "regionalPriceParity": {
+          "allItems": 93.803,
+          "goods": 97.598,
+          "housing": 74.823,
+          "utilities": 110.89,
+          "otherServices": 96.478
+        },
+        "taxes": {
+          "state": "PA",
+          "effectiveTaxRate": 13.91,
+          "perCapitaIncome": 65078,
+          "perCapitaDisposable": 56028,
+          "federalTaxes": 91605863,
+          "stateTaxes": 19653366,
+          "localTaxes": 6147755,
+          "totalTaxes": 117509077
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "miami": {
@@ -1377,6 +2278,31 @@
       "political": {
         "cityDemocratPercent": 0.485,
         "stateDemocratPercent": 0.467
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 372653,
+          "realPerCapitaIncome": 60695
+        },
+        "regionalPriceParity": {
+          "allItems": 111.797,
+          "goods": 104.793,
+          "housing": 147.232,
+          "utilities": 106.017,
+          "otherServices": 106.493
+        },
+        "taxes": {
+          "state": "FL",
+          "effectiveTaxRate": 15.17,
+          "perCapitaIncome": 65429,
+          "perCapitaDisposable": 55503,
+          "federalTaxes": 220227755,
+          "stateTaxes": 1157177,
+          "localTaxes": 416492,
+          "totalTaxes": 222128818
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "green-bay": {
@@ -1414,6 +2340,31 @@
       "political": {
         "cityDemocratPercent": 0.405,
         "stateDemocratPercent": 0.48
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 19180,
+          "realPerCapitaIncome": 58048
+        },
+        "regionalPriceParity": {
+          "allItems": 90.529,
+          "goods": 91.952,
+          "housing": 68.837,
+          "utilities": 90.196,
+          "otherServices": 97.676
+        },
+        "taxes": {
+          "state": "WI",
+          "effectiveTaxRate": 13.35,
+          "perCapitaIncome": 61831,
+          "perCapitaDisposable": 53575,
+          "federalTaxes": 38220481,
+          "stateTaxes": 10451658,
+          "localTaxes": 72625,
+          "totalTaxes": 48744764
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "memphis": {
@@ -1451,6 +2402,31 @@
       "political": {
         "cityDemocratPercent": 0.602,
         "stateDemocratPercent": 0.379
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 71546.7,
+          "realPerCapitaIncome": 53750
+        },
+        "regionalPriceParity": {
+          "allItems": 91.848,
+          "goods": 94.387,
+          "housing": 76.618,
+          "utilities": 78.972,
+          "otherServices": 96.678
+        },
+        "taxes": {
+          "state": "TN",
+          "effectiveTaxRate": 10.56,
+          "perCapitaIncome": 59107,
+          "perCapitaDisposable": 52866,
+          "federalTaxes": 43634775,
+          "stateTaxes": 304804,
+          "localTaxes": 130213,
+          "totalTaxes": 44069792
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "san-diego": {
@@ -1488,6 +2464,31 @@
       "political": {
         "cityDemocratPercent": 0.7,
         "stateDemocratPercent": 0.585
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 183865.8,
+          "realPerCapitaIncome": 56105
+        },
+        "regionalPriceParity": {
+          "allItems": 114.582,
+          "goods": 108.051,
+          "housing": 183.855,
+          "utilities": 166.07,
+          "otherServices": 102.925
+        },
+        "taxes": {
+          "state": "CA",
+          "effectiveTaxRate": 17.53,
+          "perCapitaIncome": 77196,
+          "perCapitaDisposable": 63662,
+          "federalTaxes": 389141547,
+          "stateTaxes": 136911769,
+          "localTaxes": 1055552,
+          "totalTaxes": 529745966
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "santa-barbara": {
@@ -1525,6 +2526,31 @@
       "political": {
         "cityDemocratPercent": 0.75,
         "stateDemocratPercent": 0.585
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 26034.8,
+          "realPerCapitaIncome": 58648
+        },
+        "regionalPriceParity": {
+          "allItems": 113.945,
+          "goods": 108.954,
+          "housing": 172.193,
+          "utilities": 141.49,
+          "otherServices": 103.84
+        },
+        "taxes": {
+          "state": "CA",
+          "effectiveTaxRate": 17.53,
+          "perCapitaIncome": 77196,
+          "perCapitaDisposable": 63662,
+          "federalTaxes": 389141547,
+          "stateTaxes": 136911769,
+          "localTaxes": 1055552,
+          "totalTaxes": 529745966
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "raleigh": {
@@ -1562,6 +2588,31 @@
       "political": {
         "cityDemocratPercent": 0.6,
         "stateDemocratPercent": 0.5
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 92745.2,
+          "realPerCapitaIncome": 62662
+        },
+        "regionalPriceParity": {
+          "allItems": 98.306,
+          "goods": 95.557,
+          "housing": 104.415,
+          "utilities": 82.997,
+          "otherServices": 99.661
+        },
+        "taxes": {
+          "state": "NC",
+          "effectiveTaxRate": 13.68,
+          "perCapitaIncome": 59092,
+          "perCapitaDisposable": 51011,
+          "federalTaxes": 66403959,
+          "stateTaxes": 19500815,
+          "localTaxes": 141706,
+          "totalTaxes": 86556945
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     },
     "gainesville": {
@@ -1599,6 +2650,31 @@
       "political": {
         "cityDemocratPercent": 0.65,
         "stateDemocratPercent": 0.45
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 15878.7,
+          "realPerCapitaIncome": 45590
+        },
+        "regionalPriceParity": {
+          "allItems": 96.272,
+          "goods": 95.041,
+          "housing": 89.482,
+          "utilities": 92.327,
+          "otherServices": 99.907
+        },
+        "taxes": {
+          "state": "FL",
+          "effectiveTaxRate": 15.17,
+          "perCapitaIncome": 65429,
+          "perCapitaDisposable": 55503,
+          "federalTaxes": 220227755,
+          "stateTaxes": 1157177,
+          "localTaxes": 416492,
+          "totalTaxes": 222128818
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-28"
       }
     }
   }

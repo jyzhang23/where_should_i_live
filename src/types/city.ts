@@ -1,4 +1,5 @@
 // City and metrics types that match the Prisma schema
+import { BEAMetrics } from "@/lib/cost-of-living";
 
 export interface City {
   id: string;
@@ -51,6 +52,9 @@ export interface CityMetrics {
   // Sports/Amenities
   nflTeams: string | null;
   nbaTeams: string | null;
+
+  // BEA data (merged from metrics.json, not in database)
+  bea?: BEAMetrics;
 
   dataAsOf: Date;
   updatedAt: Date;
