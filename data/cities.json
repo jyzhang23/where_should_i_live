@@ -15,8 +15,7 @@
         "nba": [
           "Warriors"
         ]
-      },
-      "teleportSlug": "san-francisco-bay-area"
+      }
     },
     {
       "id": "seattle",
@@ -29,8 +28,7 @@
           "Seahawks"
         ],
         "nba": []
-      },
-      "teleportSlug": "seattle"
+      }
     },
     {
       "id": "new-york-city",
@@ -47,8 +45,7 @@
           "Knicks",
           "Nets"
         ]
-      },
-      "teleportSlug": "new-york"
+      }
     },
     {
       "id": "los-angeles",
@@ -65,8 +62,7 @@
           "Lakers",
           "Clippers"
         ]
-      },
-      "teleportSlug": "los-angeles"
+      }
     },
     {
       "id": "sacramento",
@@ -79,8 +75,7 @@
         "nba": [
           "Kings"
         ]
-      },
-      "teleportSlug": "sacramento"
+      }
     },
     {
       "id": "boston",
@@ -95,8 +90,7 @@
         "nba": [
           "Celtics"
         ]
-      },
-      "teleportSlug": "boston"
+      }
     },
     {
       "id": "portland",
@@ -109,8 +103,7 @@
         "nba": [
           "Trail Blazers"
         ]
-      },
-      "teleportSlug": "portland-or"
+      }
     },
     {
       "id": "las-vegas",
@@ -123,8 +116,7 @@
           "Raiders"
         ],
         "nba": []
-      },
-      "teleportSlug": "las-vegas"
+      }
     },
     {
       "id": "chicago",
@@ -139,8 +131,7 @@
         "nba": [
           "Bulls"
         ]
-      },
-      "teleportSlug": "chicago"
+      }
     },
     {
       "id": "washington-dc",
@@ -156,8 +147,7 @@
         "nba": [
           "Wizards"
         ]
-      },
-      "teleportSlug": "washington-dc"
+      }
     },
     {
       "id": "houston",
@@ -172,8 +162,7 @@
         "nba": [
           "Rockets"
         ]
-      },
-      "teleportSlug": "houston"
+      }
     },
     {
       "id": "atlanta",
@@ -188,8 +177,7 @@
         "nba": [
           "Hawks"
         ]
-      },
-      "teleportSlug": "atlanta"
+      }
     },
     {
       "id": "minneapolis",
@@ -204,8 +192,7 @@
         "nba": [
           "Timberwolves"
         ]
-      },
-      "teleportSlug": "minneapolis-saint-paul"
+      }
     },
     {
       "id": "philadelphia",
@@ -220,8 +207,7 @@
         "nba": [
           "76ers"
         ]
-      },
-      "teleportSlug": "philadelphia"
+      }
     },
     {
       "id": "dallas",
@@ -236,8 +222,7 @@
         "nba": [
           "Mavericks"
         ]
-      },
-      "teleportSlug": "dallas-fort-worth"
+      }
     },
     {
       "id": "tampa-bay",
@@ -251,8 +236,7 @@
           "Buccaneers"
         ],
         "nba": []
-      },
-      "teleportSlug": "tampa-bay-area"
+      }
     },
     {
       "id": "denver",
@@ -267,8 +251,7 @@
         "nba": [
           "Nuggets"
         ]
-      },
-      "teleportSlug": "denver"
+      }
     },
     {
       "id": "charlotte",
@@ -283,8 +266,7 @@
         "nba": [
           "Hornets"
         ]
-      },
-      "teleportSlug": "charlotte"
+      }
     },
     {
       "id": "oklahoma-city",
@@ -297,8 +279,7 @@
         "nba": [
           "Thunder"
         ]
-      },
-      "teleportSlug": "oklahoma-city"
+      }
     },
     {
       "id": "phoenix",
@@ -313,8 +294,7 @@
         "nba": [
           "Suns"
         ]
-      },
-      "teleportSlug": "phoenix"
+      }
     },
     {
       "id": "baltimore",
@@ -327,8 +307,7 @@
           "Ravens"
         ],
         "nba": []
-      },
-      "teleportSlug": "baltimore"
+      }
     },
     {
       "id": "orlando",
@@ -341,8 +320,7 @@
         "nba": [
           "Magic"
         ]
-      },
-      "teleportSlug": "orlando"
+      }
     },
     {
       "id": "indianapolis",
@@ -357,8 +335,7 @@
         "nba": [
           "Pacers"
         ]
-      },
-      "teleportSlug": "indianapolis"
+      }
     },
     {
       "id": "nashville",
@@ -371,8 +348,7 @@
           "Titans"
         ],
         "nba": []
-      },
-      "teleportSlug": "nashville"
+      }
     },
     {
       "id": "milwaukee",
@@ -385,8 +361,7 @@
         "nba": [
           "Bucks"
         ]
-      },
-      "teleportSlug": "milwaukee"
+      }
     },
     {
       "id": "salt-lake-city",
@@ -399,8 +374,7 @@
         "nba": [
           "Jazz"
         ]
-      },
-      "teleportSlug": "salt-lake-city"
+      }
     },
     {
       "id": "detroit",
@@ -415,8 +389,7 @@
         "nba": [
           "Pistons"
         ]
-      },
-      "teleportSlug": "detroit"
+      }
     },
     {
       "id": "st-louis",
@@ -427,8 +400,7 @@
       "sports": {
         "nfl": [],
         "nba": []
-      },
-      "teleportSlug": "st-louis"
+      }
     },
     {
       "id": "san-antonio",
@@ -441,8 +413,7 @@
         "nba": [
           "Spurs"
         ]
-      },
-      "teleportSlug": "san-antonio"
+      }
     },
     {
       "id": "jacksonville",
@@ -455,8 +426,7 @@
           "Jaguars"
         ],
         "nba": []
-      },
-      "teleportSlug": "jacksonville"
+      }
     },
     {
       "id": "new-orleans",
@@ -471,8 +441,7 @@
         "nba": [
           "Pelicans"
         ]
-      },
-      "teleportSlug": "new-orleans"
+      }
     },
     {
       "id": "kansas-city",
@@ -485,8 +454,7 @@
           "Chiefs"
         ],
         "nba": []
-      },
-      "teleportSlug": "kansas-city"
+      }
     },
     {
       "id": "cincinnati",
@@ -499,8 +467,7 @@
           "Bengals"
         ],
         "nba": []
-      },
-      "teleportSlug": "cincinnati"
+      }
     },
     {
       "id": "cleveland",
@@ -515,8 +482,7 @@
         "nba": [
           "Cavaliers"
         ]
-      },
-      "teleportSlug": "cleveland"
+      }
     },
     {
       "id": "buffalo",
@@ -529,8 +495,7 @@
           "Bills"
         ],
         "nba": []
-      },
-      "teleportSlug": "buffalo"
+      }
     },
     {
       "id": "pittsburgh",
@@ -543,8 +508,7 @@
           "Steelers"
         ],
         "nba": []
-      },
-      "teleportSlug": "pittsburgh"
+      }
     },
     {
       "id": "miami",
@@ -559,8 +523,7 @@
         "nba": [
           "Heat"
         ]
-      },
-      "teleportSlug": "miami"
+      }
     },
     {
       "id": "green-bay",
@@ -573,8 +536,7 @@
           "Packers"
         ],
         "nba": []
-      },
-      "teleportSlug": null
+      }
     },
     {
       "id": "memphis",
@@ -587,8 +549,7 @@
         "nba": [
           "Grizzlies"
         ]
-      },
-      "teleportSlug": "memphis"
+      }
     },
     {
       "id": "san-diego",
@@ -599,8 +560,7 @@
       "sports": {
         "nfl": [],
         "nba": []
-      },
-      "teleportSlug": "san-diego"
+      }
     },
     {
       "id": "santa-barbara",
@@ -612,8 +572,7 @@
       "sports": {
         "nfl": [],
         "nba": []
-      },
-      "teleportSlug": null
+      }
     },
     {
       "id": "raleigh",
@@ -624,8 +583,7 @@
       "sports": {
         "nfl": [],
         "nba": []
-      },
-      "teleportSlug": "raleigh"
+      }
     },
     {
       "id": "gainesville",
@@ -636,8 +594,7 @@
       "sports": {
         "nfl": [],
         "nba": []
-      },
-      "teleportSlug": null
+      }
     }
   ]
 }

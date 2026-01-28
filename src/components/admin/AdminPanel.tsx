@@ -33,8 +33,6 @@ interface RefreshResult {
     msaCitiesMatched?: number;
     cityCitiesMatched?: number;
     dataPoints?: number;
-    citiesSkipped?: number;
-    citiesErrored?: number;
   };
   message?: string;
   error?: string;
@@ -92,33 +90,7 @@ async function pullZillowData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-async function pullTeleportData(password: string): Promise<RefreshResult> {
-  const response = await fetch("/api/admin/teleport-pull", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password }),
-  });
-
-  const text = await response.text();
-  if (!text) {
-    throw new Error("Server returned empty response. Check server logs.");
-  }
-
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error(`Invalid server response: ${text.slice(0, 100)}`);
-  }
-
-  if (!response.ok) {
-    throw new Error(data.error || "Teleport pull failed");
-  }
-
-  return data;
-}
-
-type ActionType = "reinitialize" | "zillow" | "teleport";
+type ActionType = "reinitialize" | "zillow";
 
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -155,21 +127,7 @@ export function AdminPanel() {
     },
   });
 
-  const teleportMutation = useMutation({
-    mutationFn: pullTeleportData,
-    onSuccess: (data) => {
-      setResult(data);
-      queryClient.invalidateQueries({ queryKey: ["cities"] });
-    },
-    onError: (error: Error) => {
-      setResult({ success: false, error: error.message });
-    },
-    onSettled: () => {
-      setActiveAction(null);
-    },
-  });
-
-  const isPending = reinitMutation.isPending || zillowMutation.isPending || teleportMutation.isPending;
+  const isPending = reinitMutation.isPending || zillowMutation.isPending;
 
   const handleReinitialize = () => {
     if (!password) return;
@@ -183,13 +141,6 @@ export function AdminPanel() {
     setResult(null);
     setActiveAction("zillow");
     zillowMutation.mutate(password);
-  };
-
-  const handleTeleportPull = () => {
-    if (!password) return;
-    setResult(null);
-    setActiveAction("teleport");
-    teleportMutation.mutate(password);
   };
 
   const handleClose = () => {
@@ -284,29 +235,6 @@ export function AdminPanel() {
                 </Button>
               </div>
             </div>
-
-            <div className="p-3 rounded-lg border bg-muted/30">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm">Pull Teleport Data</p>
-                  <p className="text-xs text-muted-foreground">
-                    Housing, Cost of Living, Taxation scores
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleTeleportPull}
-                  disabled={!password || isPending}
-                >
-                  {activeAction === "teleport" ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
           </div>
 
           {/* Result Display */}
@@ -354,12 +282,6 @@ export function AdminPanel() {
                           {result.stats.zhviPointsCreated !== undefined && (
                             <li>ZHVI points: {result.stats.zhviPointsCreated.toLocaleString()}</li>
                           )}
-                          {result.stats.citiesSkipped !== undefined && (
-                            <li>Cities skipped: {result.stats.citiesSkipped}</li>
-                          )}
-                          {result.stats.citiesErrored !== undefined && result.stats.citiesErrored > 0 && (
-                            <li className="text-orange-600">Cities with errors: {result.stats.citiesErrored}</li>
-                          )}
                         </ul>
                       )}
                     </>
@@ -380,8 +302,6 @@ export function AdminPanel() {
               <span>
                 {activeAction === "zillow"
                   ? "Downloading Zillow data... This may take a moment."
-                  : activeAction === "teleport"
-                  ? "Fetching Teleport scores... This may take a moment."
                   : "Reinitializing data..."}
               </span>
             </div>
