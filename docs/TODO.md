@@ -7,7 +7,7 @@
 See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 
 **Cleanup Tasks (from review):**
-- [ ] Delete orphaned files: `scripts/add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`
+- [x] Delete orphaned files: `scripts/add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`
 - [ ] Remove deprecated fields from Prisma schema
 - [ ] Consolidate `seed.ts` and `refresh/route.ts`
 - [ ] Add city slug to PostgreSQL for consistent ID

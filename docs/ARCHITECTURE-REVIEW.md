@@ -199,7 +199,7 @@ In `src/types/preferences.ts`:
 
 ### High Priority
 1. [ ] Remove deprecated fields from Prisma schema after confirming no usage
-2. [ ] Clean up orphaned files (`add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`)
+2. [x] Clean up orphaned files (`add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`)
 3. [ ] Document the correct data refresh workflow
 
 ### Medium Priority
