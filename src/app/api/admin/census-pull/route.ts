@@ -24,9 +24,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { CensusDemographics } from "@/types/city";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("census-pull");
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const CENSUS_API_KEY = process.env.CENSUS_API_KEY || "";
 const ACS_YEAR = 2022; // Most recent 5-year ACS
 
@@ -378,6 +378,10 @@ async function fetchCensusData(
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     // Parse request body
     let body: { password?: string };
@@ -391,9 +395,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    if (body.password !== ADMIN_PASSWORD) {
+    const auth = validateAdminPassword(body.password);
+    if (!auth.valid) {
       return NextResponse.json(
-        { error: "Invalid password" },
+        { error: auth.error },
         { status: 401 }
       );
     }

@@ -21,9 +21,9 @@ import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { getFallbackData } from "@/lib/cityAliases";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("epa-air-pull");
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const EPA_EMAIL = process.env.EPA_EMAIL || "";
 const EPA_API_KEY = process.env.EPA_API_KEY || "";
 
@@ -348,6 +348,10 @@ async function fetchAirNowHistorical(
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     // Parse request body
     let body;
@@ -358,8 +362,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate password
-    if (body.password !== ADMIN_PASSWORD) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = validateAdminPassword(body.password);
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 });
     }
 
     // Check for API credentials

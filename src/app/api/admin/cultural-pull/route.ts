@@ -18,10 +18,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { CulturalMetrics } from "@/types/city";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("cultural-pull");
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 interface CityData {
   id: string;
@@ -184,12 +183,17 @@ function transformToCulturalMetrics(sourceData: CulturalSourceData): CulturalMet
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     const body = await request.json();
     const { password } = body;
 
-    if (password !== ADMIN_PASSWORD) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = validateAdminPassword(password);
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 });
     }
 
     // Determine data directory

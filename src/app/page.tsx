@@ -105,7 +105,7 @@ export default function Home() {
               </TooltipTrigger>
               <TooltipContent>How Rankings Work</TooltipContent>
             </Tooltip>
-            <AdminPanel />
+            {process.env.NODE_ENV === "development" && <AdminPanel />}
             <ThemeToggle />
           </div>
           {data?.lastUpdated && (

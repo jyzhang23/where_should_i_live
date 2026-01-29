@@ -19,13 +19,20 @@ See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 - [x] Add admin logger utility (`src/lib/admin-logger.ts`)
 - [x] Migrate all admin routes to use logger (14 routes, 0 console.logs remaining)
 
-### Security (future)
-- Consider hiding the data access interface from regular users
-- Security review (attack surface, DOS, data leaks, etc)
+### Security ✅ DONE
+See `docs/ADMIN.md` for admin data management documentation.
+
+**Completed:**
+- [x] Admin routes blocked in production (403 Forbidden)
+- [x] AdminPanel UI hidden in production builds
+- [x] Removed default password - ADMIN_PASSWORD env var now required
+- [x] Created CLI scripts for data updates (`scripts/admin.ts`)
+- [x] Centralized password validation in `src/lib/admin/helpers.ts`
 
 ### Documentation
 - [x] Architecture documentation (see ARCHITECTURE-REVIEW.md)
 - [x] Changelog (see CHANGELOG.md)
+- [x] Admin documentation (see ADMIN.md)
 
 ## Bugs
 

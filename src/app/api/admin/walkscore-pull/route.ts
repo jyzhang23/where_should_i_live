@@ -23,9 +23,9 @@ import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { getFallbackData } from "@/lib/cityAliases";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("walkscore-pull");
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // EPA National Walkability Index ArcGIS endpoint
 const EPA_WALKABILITY_URL = "https://geodata.epa.gov/arcgis/rest/services/OA/WalkabilityIndex/MapServer/0/query";
@@ -230,6 +230,10 @@ async function fetchEPAWalkabilityData(
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     // Parse request body
     let body;
@@ -240,8 +244,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate password
-    if (body.password !== ADMIN_PASSWORD) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = validateAdminPassword(body.password);
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 });
     }
 
     // Find data directory

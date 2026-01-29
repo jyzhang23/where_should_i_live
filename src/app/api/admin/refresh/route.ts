@@ -15,9 +15,9 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("refresh");
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // Convert city name to URL-friendly slug (e.g., "San Francisco" -> "san-francisco")
 function cityNameToSlug(name: string): string {
@@ -59,6 +59,10 @@ interface ZHVIData {
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     // Parse request body
     let body: { password?: string };
@@ -72,9 +76,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    if (body.password !== ADMIN_PASSWORD) {
+    const auth = validateAdminPassword(body.password);
+    if (!auth.valid) {
       return NextResponse.json(
-        { error: "Invalid password" },
+        { error: auth.error },
         { status: 401 }
       );
     }

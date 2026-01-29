@@ -20,9 +20,9 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("zillow-pull");
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // Zillow public CSV URLs for ZHVI Single-Family Homes, Mid-Tier
 const ZILLOW_MSA_URL = "https://files.zillowstatic.com/research/public_csvs/zhvi/Metro_zhvi_uc_sfr_tier_0.33_0.67_sm_sa_month.csv";
@@ -106,6 +106,10 @@ function getDateColumns(row: Record<string, string>): string[] {
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     // Parse request body
     let body: { password?: string };
@@ -119,9 +123,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    if (body.password !== ADMIN_PASSWORD) {
+    const auth = validateAdminPassword(body.password);
+    if (!auth.valid) {
       return NextResponse.json(
-        { error: "Invalid password" },
+        { error: auth.error },
         { status: 401 }
       );
     }

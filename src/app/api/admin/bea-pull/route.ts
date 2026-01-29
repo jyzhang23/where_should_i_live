@@ -28,10 +28,9 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("bea-pull");
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const BEA_API_KEY = process.env.BEA_API_KEY;
 
 const BEA_API_URL = "https://apps.bea.gov/api/data/";
@@ -130,6 +129,10 @@ function getPrimaryState(stateField: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     // Check for API key
     if (!BEA_API_KEY) {
@@ -151,9 +154,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    if (body.password !== ADMIN_PASSWORD) {
+    const auth = validateAdminPassword(body.password);
+    if (!auth.valid) {
       return NextResponse.json(
-        { error: "Invalid password" },
+        { error: auth.error },
         { status: 401 }
       );
     }

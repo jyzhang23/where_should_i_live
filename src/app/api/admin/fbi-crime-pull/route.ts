@@ -19,9 +19,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { createAdminLogger } from "@/lib/admin-logger";
+import { getProductionGuardResponse, validateAdminPassword } from "@/lib/admin/helpers";
 
 const logger = createAdminLogger("fbi-crime-pull");
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const FBI_API_KEY = process.env.FBI_API_KEY || "";
 
 // FBI Crime Data Explorer API base URL
@@ -268,6 +268,10 @@ function getStateAbbr(state: string, censusFips?: { state: string; place: string
 }
 
 export async function POST(request: NextRequest) {
+  // Block in production
+  const guardResponse = getProductionGuardResponse();
+  if (guardResponse) return guardResponse;
+
   try {
     // Parse request body
     let body;
@@ -278,8 +282,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate password
-    if (body.password !== ADMIN_PASSWORD) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = validateAdminPassword(body.password);
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 });
     }
 
     // Find data directory
