@@ -572,7 +572,8 @@ async function main(): Promise<void> {
       
       case "qol":
         report.warn("QoL pulls require external API calls. Use the dev server API for now.");
-        report.info("Available QoL endpoints: fbi-crime-pull, epa-air-pull, fcc-broadband-pull, nces-education-pull, hrsa-health-pull, walkscore-pull");
+        report.info("Available QoL endpoints: fbi-crime-pull, epa-air-pull, fcc-broadband-pull, nces-education-pull, hrsa-health-pull");
+        report.info("For walkability data, use: npx tsx scripts/fetch-walkscore.ts");
         break;
       
       case "all":

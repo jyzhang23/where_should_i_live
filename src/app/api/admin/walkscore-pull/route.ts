@@ -1,19 +1,20 @@
 /**
- * Admin API to pull walkability data from EPA National Walkability Index
+ * @deprecated This endpoint is deprecated. Use scripts/fetch-walkscore.ts instead.
+ * 
+ * The new script fetches data directly from walkscore.com which provides
+ * more accurate Walk/Transit/Bike scores.
+ * 
+ * Usage: npx tsx scripts/fetch-walkscore.ts --city=city-id
+ * 
+ * ---
+ * 
+ * LEGACY: Admin API to pull walkability data from EPA National Walkability Index
  * 
  * POST /api/admin/walkscore-pull
  * Body: { password: string }
  * 
  * Data source: EPA National Walkability Index (ArcGIS Open Data)
  * API: https://geodata.epa.gov/arcgis/rest/services/OA/WalkabilityIndex/MapServer
- * 
- * Metrics fetched:
- * - National Walkability Index (1-20, converted to 0-100 scale)
- * - Transit accessibility component
- * - Employment mix component
- * - Description based on index
- * 
- * Note: Free public API, no registration required
  */
 
 import { NextRequest, NextResponse } from "next/server";

@@ -784,24 +784,20 @@ export function AdminPanel() {
                   </div>
                 </div>
 
-                <div className="p-2 rounded-lg border bg-muted/30">
+                <div className="p-2 rounded-lg border bg-muted/30 opacity-50">
                   <div className="flex items-center justify-between">
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-xs truncate">Walk Score</p>
-                      <p className="text-[10px] text-muted-foreground truncate">Walkability</p>
+                      <p className="font-medium text-xs truncate line-through">Walk Score</p>
+                      <p className="text-[10px] text-muted-foreground truncate">Use CLI script</p>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0"
-                      onClick={handleWalkScorePull}
-                      disabled={!password || isPending}
+                      disabled={true}
+                      title="Deprecated: Use npx tsx scripts/fetch-walkscore.ts"
                     >
-                      {activeAction === "walkscore" ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Footprints className="h-3.5 w-3.5" />
-                      )}
+                      <Footprints className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </div>

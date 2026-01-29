@@ -182,7 +182,6 @@ Use the Admin Panel (`/admin`) or API endpoints to pull data:
 | Census ACS | `/api/admin/census-pull` | Demographics, income, education, race/ethnicity |
 | BEA | `/api/admin/bea-pull` | Regional Price Parity, purchasing power, taxes |
 | NOAA Climate | `/api/admin/climate-pull` | Temperature, precipitation, comfort days |
-| Walk Score | `/api/admin/walkscore-pull` | Walk/Transit/Bike scores |
 | EPA Air Quality | `/api/admin/epa-air-pull` | Air quality metrics |
 | FBI Crime | `/api/admin/fbi-crime-pull` | Crime rates |
 | FCC Broadband | `/api/admin/fcc-broadband-pull` | Internet coverage |
@@ -194,11 +193,14 @@ Use the Admin Panel (`/admin`) or API endpoints to pull data:
 
 ### Data Collection Scripts
 
-Some data requires running collection scripts first:
+Some data requires running collection scripts:
 
 ```bash
 # Collect lifestyle/recreation data from OpenStreetMap
 npx tsx scripts/collect-lifestyle-data.ts
+
+# Fetch Walk Score data from walkscore.com
+npx tsx scripts/fetch-walkscore.ts --city=city-id
 
 # Then run the admin pulls to import into metrics.json
 ```
@@ -303,7 +305,7 @@ Also check the app to ensure:
 | Demographics | Census ACS 5-Year | Annual | ✅ Yes |
 | Economics | BEA | Annual | ✅ Yes |
 | Housing | Zillow ZHVI | Monthly | ✅ Yes |
-| Walkability | Walk Score | On-demand | ✅ Yes (limited) |
+| Walkability | walkscore.com | On-demand | ✅ Via script |
 | Crime | FBI UCR | Annual | ✅ Yes |
 | Air Quality | EPA AQS | Annual | ✅ Yes |
 | Broadband | FCC | Annual | ✅ Yes |
