@@ -112,12 +112,11 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
                 name="National Avg"
                 dataKey="nationalAvg"
                 stroke="#888888"
-                fill="transparent"
-                fillOpacity={0}
+                fill="none"
                 strokeWidth={2}
                 strokeDasharray="6 4"
-                strokeOpacity={0.7}
                 dot={false}
+                isAnimationActive={false}
               />
               <Radar
                 name={cityScore.cityName}
