@@ -18,6 +18,9 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { UrbanLifestyleMetrics } from "@/types/city";
+import { createAdminLogger } from "@/lib/admin-logger";
+
+const logger = createAdminLogger("urbanlife-pull");
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
@@ -135,7 +138,7 @@ export async function POST(request: NextRequest) {
 
     const cities: CityData[] = citiesFile.cities;
 
-    console.log(`Processing urban lifestyle data for ${cities.length} cities...`);
+    logger.info("Processing urban lifestyle data", { cityCount: cities.length });
 
     let successCount = 0;
     let skipCount = 0;
@@ -147,7 +150,7 @@ export async function POST(request: NextRequest) {
       if (!sourceData) {
         skipCount++;
         errors.push(`${city.name}: No urban lifestyle data found`);
-        console.log(`  ✗ ${city.name}: No data`);
+        logger.warn("No urban lifestyle data", { city: city.name });
         continue;
       }
 
@@ -167,13 +170,13 @@ export async function POST(request: NextRequest) {
       metricsFile.cities[city.id].cultural.urbanLifestyle = urbanLifestyleMetrics;
 
       successCount++;
-      console.log(
-        `  ✓ ${city.name}: ` +
-        `Bars=${urbanLifestyleMetrics.nightlife?.barsAndClubsPer10K ?? 'N/A'}/10K, ` +
-        `Museums=${urbanLifestyleMetrics.arts?.museums ?? 'N/A'}, ` +
-        `Restaurants=${urbanLifestyleMetrics.dining?.restaurantsPer10K ?? 'N/A'}/10K, ` +
-        `Cuisines=${urbanLifestyleMetrics.dining?.cuisineDiversity ?? 'N/A'}`
-      );
+      logger.debug("Updated city", {
+        city: city.name,
+        bars: urbanLifestyleMetrics.nightlife?.barsAndClubsPer10K,
+        museums: urbanLifestyleMetrics.arts?.museums,
+        restaurants: urbanLifestyleMetrics.dining?.restaurantsPer10K,
+        cuisines: urbanLifestyleMetrics.dining?.cuisineDiversity,
+      });
     }
 
     // Update metrics source info
@@ -204,7 +207,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -219,7 +222,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Urban lifestyle data pull error:", error);
+    logger.error("Urban lifestyle data pull failed", { error: error instanceof Error ? error.message : String(error) });
 
     try {
       await prisma.dataRefreshLog.create({

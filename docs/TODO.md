@@ -15,9 +15,9 @@ See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 ### Code Review & Refactor
 - [x] Remove deprecated CityMetrics fields (done with Prisma schema cleanup)
 - [x] `checkFilters` function - already removed from codebase
-- [ ] Clean up legacy preference fields
+- [x] Legacy preference fields - kept for backward compatibility (fallback scoring)
 - [x] Add admin logger utility (`src/lib/admin-logger.ts`)
-- [ ] Migrate remaining admin routes to use logger (11 routes left)
+- [ ] Migrate remaining admin routes to use logger (9 routes left)
 
 ### Security (future)
 - Consider hiding the data access interface from regular users

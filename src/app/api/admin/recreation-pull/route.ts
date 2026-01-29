@@ -17,6 +17,9 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { RecreationMetrics } from "@/types/city";
+import { createAdminLogger } from "@/lib/admin-logger";
+
+const logger = createAdminLogger("recreation-pull");
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
@@ -124,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     const cities: CityData[] = citiesFile.cities;
 
-    console.log(`Processing recreation data for ${cities.length} cities...`);
+    logger.info("Processing recreation data", { cityCount: cities.length });
 
     let successCount = 0;
     let skipCount = 0;
@@ -136,7 +139,7 @@ export async function POST(request: NextRequest) {
       if (!sourceData) {
         skipCount++;
         errors.push(`${city.name}: No recreation data found`);
-        console.log(`  ✗ ${city.name}: No data`);
+        logger.warn("No recreation data", { city: city.name });
         continue;
       }
 
@@ -156,13 +159,13 @@ export async function POST(request: NextRequest) {
       metricsFile.cities[city.id].qol.recreation = recreationMetrics;
 
       successCount++;
-      console.log(
-        `  ✓ ${city.name}: ` +
-        `Trails=${recreationMetrics.nature?.trailMilesWithin10Mi ?? 'N/A'}mi, ` +
-        `Parks=${recreationMetrics.nature?.parkAcresPer1K ?? 'N/A'}/1K, ` +
-        `Coast=${recreationMetrics.geography?.coastlineWithin15Mi ? 'Yes' : 'No'}, ` +
-        `Elevation=${recreationMetrics.geography?.maxElevationDelta ?? 'N/A'}ft`
-      );
+      logger.debug("Updated city", {
+        city: city.name,
+        trails: recreationMetrics.nature?.trailMilesWithin10Mi,
+        parks: recreationMetrics.nature?.parkAcresPer1K,
+        coast: recreationMetrics.geography?.coastlineWithin15Mi,
+        elevation: recreationMetrics.geography?.maxElevationDelta,
+      });
     }
 
     // Update metrics source info
@@ -192,7 +195,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -207,7 +210,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Recreation data pull error:", error);
+    logger.error("Recreation data pull failed", { error: error instanceof Error ? error.message : String(error) });
 
     try {
       await prisma.dataRefreshLog.create({
