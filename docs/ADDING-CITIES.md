@@ -2,6 +2,12 @@
 
 This guide documents the complete process for adding a new city to the Cities App, including all required identifiers and data sources.
 
+> **Quick Start:** Use the automated script to add a city with minimal manual work:
+> ```bash
+> npx tsx scripts/add-city.ts "City Name" "ST"
+> ```
+> The script will look up most identifiers automatically. See [Using the Add City Script](#using-the-add-city-script) below.
+
 ## Overview
 
 Adding a city involves:
@@ -75,6 +81,29 @@ Add a new entry to the `cities` array with these required fields:
 #### Sports Teams
 - Research which NFL, NBA, MLB, NHL, and MLS teams are in the metro area
 - Include team names (not city names) in arrays
+
+## Using the Add City Script
+
+The `scripts/add-city.ts` script automates most of the identifier lookup:
+
+```bash
+npx tsx scripts/add-city.ts "Austin" "TX"
+```
+
+**What it does:**
+- Looks up coordinates via OpenStreetMap Nominatim
+- Finds Census FIPS codes via Census Geocoder
+- Searches for Zillow region ID
+- Looks up BEA MSA code
+- Finds the nearest NOAA weather station
+- Adds the city to `cities.json`
+
+**What you still need to manually add:**
+- Sports teams (edit `cities.json` after running)
+- Verify the identifiers are correct
+- Run data pulls
+
+The script will prompt you to confirm before saving.
 
 ## Step 2: Run Database Seed
 

@@ -1,40 +1,8 @@
 ## Features
 
-
-## Robustness
-
-### Architecture Review ✅ DONE
-See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
-
-**Cleanup Tasks (from review):**
-- [x] Delete orphaned files: `scripts/add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`
-- [x] Remove deprecated fields from Prisma schema (14 columns dropped)
-- [x] Sync `seed.ts` with new schema (now matches `refresh/route.ts`)
-- [x] Add city slug to PostgreSQL schema (run refresh to populate)
-
-### Code Review & Refactor
-- [x] Remove deprecated CityMetrics fields (done with Prisma schema cleanup)
-- [x] `checkFilters` function - already removed from codebase
-- [x] Legacy preference fields - kept for backward compatibility (fallback scoring)
-- [x] Add admin logger utility (`src/lib/admin-logger.ts`)
-- [x] Migrate all admin routes to use logger (14 routes, 0 console.logs remaining)
-
-### Security ✅ DONE
-See `docs/ADMIN.md` for admin data management documentation.
-
-**Completed:**
-- [x] Admin routes blocked in production (403 Forbidden)
-- [x] AdminPanel UI hidden in production builds
-- [x] Removed default password - ADMIN_PASSWORD env var now required
-- [x] Created CLI scripts for data updates (`scripts/admin.ts`)
-- [x] Centralized password validation in `src/lib/admin/helpers.ts`
-
-### Documentation
-- [x] Architecture documentation (see ARCHITECTURE-REVIEW.md)
-- [x] Changelog (see CHANGELOG.md)
-- [x] Admin documentation (see ADMIN.md)
-
 ## Bugs
+
+## Maintenance
 
 ## Future City Backlog
 City	Tier
