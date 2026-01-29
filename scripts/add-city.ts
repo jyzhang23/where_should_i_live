@@ -293,17 +293,21 @@ async function main() {
       await runAdminPull(pull, adminPassword);
     }
     
-    // Step 6: Refresh database
-    console.log("\n🔄 Step 6: Refreshing database...");
+    // Step 6: Fetch walkability data from walkscore.com
+    console.log("\n🚶 Step 6: Fetching walkability data from walkscore.com...");
+    runCommand(`npx tsx scripts/fetch-walkscore.ts --city=${config.id}`, "Walk Score fetch");
+    
+    // Step 7: Refresh database
+    console.log("\n🔄 Step 7: Refreshing database...");
     await runAdminPull("refresh", adminPassword);
     
-    // Step 7: Re-seed to sync all data
-    console.log("\n💾 Step 7: Final database sync...");
+    // Step 8: Re-seed to sync all data
+    console.log("\n💾 Step 8: Final database sync...");
     runCommand("npx tsx scripts/seed.ts", "Final seed");
   }
   
-  // Step 8: Validate
-  console.log("\n✅ Step 8: Validating city data...");
+  // Step 9: Validate
+  console.log("\n✅ Step 9: Validating city data...");
   runCommand(`npx tsx scripts/verify-city-data.ts ${config.id}`, "City data verification");
   
   console.log("\n" + "=".repeat(60));
