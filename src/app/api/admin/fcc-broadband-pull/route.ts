@@ -19,7 +19,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { getFallbackData } from "@/lib/cityAliases";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("fcc-broadband-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // FCC Broadband Map API endpoints
@@ -143,7 +145,7 @@ async function fetchBroadbandData(
         }
       }
     } catch (error) {
-      console.log(`    FCC API failed, using fallback data`);
+      logger.debug("FCC API failed, using fallback data");
     }
   }
 
@@ -214,10 +216,10 @@ export async function POST(request: NextRequest) {
     const errors: string[] = [];
     const fallbackCities: string[] = [];
 
-    console.log(`Processing ${cities.length} cities for FCC broadband data...`);
+    logger.info("Processing cities for FCC broadband data", { cityCount: cities.length });
 
     for (const city of cities) {
-      console.log(`  Processing ${city.name}, ${city.state}...`);
+      logger.debug("Processing city", { city: city.name, state: city.state });
       
       try {
         // Fetch broadband data
@@ -228,7 +230,7 @@ export async function POST(request: NextRequest) {
         );
 
         if (!broadbandData) {
-          console.log(`    No broadband data available for ${city.id}`);
+          logger.warn("No broadband data available", { city: city.id });
           skipCount++;
           continue;
         }
@@ -237,7 +239,7 @@ export async function POST(request: NextRequest) {
         if (usedFallback) {
           fallbackCount++;
           fallbackCities.push(city.name);
-          console.log(`    Using fallback data for ${city.name}`);
+          logger.debug("Using fallback data", { city: city.name });
         }
 
         // Initialize city metrics if not exists
@@ -265,12 +267,12 @@ export async function POST(request: NextRequest) {
         };
 
         successCount++;
-        console.log(`    Fiber: ${broadbandData.fiberCoveragePercent}%, Providers: ${broadbandData.providerCount}`);
+        logger.debug("Updated city", { city: city.name, fiber: broadbandData.fiberCoveragePercent, providers: broadbandData.providerCount });
 
         // Small delay to be nice to APIs
         await new Promise(resolve => setTimeout(resolve, 50));
       } catch (error) {
-        console.error(`    Error processing ${city.name}:`, error);
+        logger.error("Error processing city", { city: city.name, error: error instanceof Error ? error.message : String(error) });
         errors.push(`${city.name}: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
@@ -302,7 +304,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -318,7 +320,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("FCC broadband pull error:", error);
+    logger.error("FCC broadband pull failed", { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       {
         error: "Failed to pull FCC broadband data",
