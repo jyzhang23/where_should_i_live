@@ -464,7 +464,7 @@ function analyzeQoL(
       }
     }
     if (hpsa !== null && hpsa > 10) {
-      if (status !== "bad") status = "warning";
+      if (status === "neutral" || status === "good") status = "warning";
       explanation += ` HPSA score of ${hpsa} indicates some provider shortage.`;
     }
     if (!explanation) explanation = "Healthcare access is average.";
