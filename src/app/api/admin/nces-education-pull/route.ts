@@ -19,7 +19,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { getFallbackData } from "@/lib/cityAliases";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("nces-education-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // NCES ArcGIS REST API endpoint
@@ -155,7 +157,7 @@ async function fetchEducationData(
         }
       }
     } catch (error) {
-      console.log(`    NCES API failed, using fallback data`);
+      logger.debug("NCES API failed, using fallback data");
     }
   }
 
@@ -226,10 +228,10 @@ export async function POST(request: NextRequest) {
     const errors: string[] = [];
     const fallbackCities: string[] = [];
 
-    console.log(`Processing ${cities.length} cities for NCES education data...`);
+    logger.info("Processing cities for NCES education data", { cityCount: cities.length });
 
     for (const city of cities) {
-      console.log(`  Processing ${city.name}, ${city.state}...`);
+      logger.debug("Processing city", { city: city.name, state: city.state });
       
       try {
         // Fetch education data
@@ -240,7 +242,7 @@ export async function POST(request: NextRequest) {
         );
 
         if (!educationData) {
-          console.log(`    No education data available for ${city.id}`);
+          logger.warn("No education data available", { city: city.id });
           skipCount++;
           continue;
         }
@@ -276,12 +278,12 @@ export async function POST(request: NextRequest) {
         };
 
         successCount++;
-        console.log(`    S/T Ratio: ${educationData.studentTeacherRatio}:1, Grad Rate: ${educationData.graduationRate}%${usedFallback ? " (fallback)" : ""}`);
+        logger.debug("Updated city", { city: city.name, stRatio: educationData.studentTeacherRatio, gradRate: educationData.graduationRate, fallback: usedFallback });
 
         // Small delay
         await new Promise(resolve => setTimeout(resolve, 50));
       } catch (error) {
-        console.error(`    Error processing ${city.name}:`, error);
+        logger.error("Error processing city", { city: city.name, error: error instanceof Error ? error.message : String(error) });
         errors.push(`${city.name}: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
@@ -313,7 +315,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -329,7 +331,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("NCES education pull error:", error);
+    logger.error("NCES education pull failed", { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       {
         error: "Failed to pull NCES education data",

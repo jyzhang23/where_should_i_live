@@ -273,7 +273,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -288,7 +288,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("HRSA health pull error:", error);
+    logger.error("HRSA health pull failed", { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       {
         error: "Failed to pull HRSA health data",
