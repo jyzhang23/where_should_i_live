@@ -1970,28 +1970,6 @@ Lower is more affordable`}
         </CardContent>
       </Card>
 
-      {/* City Amenities Section - Full Width */}
-      <Card className="md:col-span-2">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            🏙️ City Amenities
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* International Airport */}
-            <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
-              <span className="text-2xl">✈️</span>
-              <div>
-                <span className="text-xs text-muted-foreground">International Airport</span>
-                <p className={`font-semibold ${metrics.hasInternationalAirport ? "text-score-high" : "text-muted-foreground"}`}>
-                  {metrics.hasInternationalAirport ? "Yes" : "No"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

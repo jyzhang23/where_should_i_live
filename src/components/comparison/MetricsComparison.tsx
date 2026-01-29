@@ -445,12 +445,6 @@ export function MetricsComparison({
             value2={m2?.qol?.health?.primaryCarePhysiciansPer100k ?? null}
             format={(v) => v !== null && typeof v === "number" ? `${v}/100K` : "—"}
           />
-          <ComparisonRow
-            label="Int'l Airport"
-            value1={m1?.hasInternationalAirport ? "Yes" : "No"}
-            value2={m2?.hasInternationalAirport ? "Yes" : "No"}
-            showDiff={false}
-          />
         </div>
 
         {/* Cultural Section */}
