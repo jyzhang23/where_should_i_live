@@ -544,12 +544,12 @@ function analyzeClimate(
   preferences: UserPreferences
 ): { factors: FactorAnalysis[]; summary: string } {
   const factors: FactorAnalysis[] = [];
-  const climate = city.metrics?.climate;
-  const noaa = climate?.noaa;
+  const metrics = city.metrics;
+  const noaa = metrics?.noaa;
   const prefs = preferences.advanced.climate;
 
   // Comfort Days
-  if (noaa?.comfortDays !== null) {
+  if (noaa?.comfortDays !== null && noaa?.comfortDays !== undefined) {
     const days = noaa.comfortDays;
     let status: FactorAnalysis["status"] = "neutral";
     let explanation = "";
@@ -576,7 +576,7 @@ function analyzeClimate(
   }
 
   // Extreme Heat
-  if (noaa?.extremeHeatDays !== null) {
+  if (noaa?.extremeHeatDays !== null && noaa?.extremeHeatDays !== undefined) {
     const days = noaa.extremeHeatDays;
     const maxHeat = prefs.maxHeatDays;
     let status: FactorAnalysis["status"] = "neutral";
@@ -602,8 +602,8 @@ function analyzeClimate(
   }
 
   // Sunshine
-  if (climate?.daysOfSunshine !== null) {
-    const days = climate.daysOfSunshine;
+  if (metrics?.daysOfSunshine !== null && metrics?.daysOfSunshine !== undefined) {
+    const days = metrics.daysOfSunshine;
     const minSun = prefs.minSunshine;
     let status: FactorAnalysis["status"] = "neutral";
 
@@ -628,7 +628,7 @@ function analyzeClimate(
   }
 
   // Summer Humidity
-  if (noaa?.summerHumidityIndex !== null) {
+  if (noaa?.summerHumidityIndex !== null && noaa?.summerHumidityIndex !== undefined) {
     const humidity = noaa.summerHumidityIndex;
     const maxHumid = prefs.maxHumidity;
     let status: FactorAnalysis["status"] = "neutral";
