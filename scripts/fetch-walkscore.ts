@@ -34,29 +34,27 @@ interface WalkScoreData {
   cityAvgWalkScore: number | null;
 }
 
-// Map city names to their Walk Score URL slugs (when different from standard)
+// Map city IDs to their Walk Score URL paths (when different from standard)
+// Format: "state/City_Name" (state uppercase, city with underscores)
 const CITY_URL_OVERRIDES: Record<string, string> = {
-  "new-york-city": "new-york-city-ny",
-  "washington-dc": "washington-d.c.",
-  "st-louis": "saint-louis-mo",
-  "tampa-bay": "tampa-fl",
-  "green-bay": "green-bay-wi",
+  // Cities where the Walk Score URL differs from our naming
+  "washington-dc": "DC/Washington",
+  "st-louis": "MO/Saint_Louis",
+  "tampa-bay": "FL/Tampa",  // Walk Score uses "Tampa" not "Tampa Bay"
 };
 
 function getWalkScoreUrl(city: CityData): string {
   const override = CITY_URL_OVERRIDES[city.id];
   if (override) {
-    return `https://www.walkscore.com/score/${override}`;
+    return `https://www.walkscore.com/${override}`;
   }
   
-  // Standard format: city-state (lowercase, hyphens)
-  const citySlug = city.name.toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/--+/g, "-");
-  const stateSlug = city.state.toLowerCase().split("/")[0]; // Handle "NY/NJ" -> "ny"
+  // Standard format: /STATE/City_Name (state uppercase, underscores for spaces)
+  // Example: Los Angeles, CA → /CA/Los_Angeles
+  const stateCode = city.state.toUpperCase().split("/")[0]; // Handle "NY/NJ" -> "NY"
+  const citySlug = city.name.replace(/\s+/g, "_");
   
-  return `https://www.walkscore.com/score/${citySlug}-${stateSlug}`;
+  return `https://www.walkscore.com/${stateCode}/${citySlug}`;
 }
 
 function getWalkScoreDescription(score: number | null): string {
@@ -77,6 +75,7 @@ async function fetchWalkScore(city: CityData): Promise<WalkScoreData | null> {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept": "text/html,application/xhtml+xml",
       },
+      redirect: "follow",
     });
     
     if (!response.ok) {
@@ -86,32 +85,43 @@ async function fetchWalkScore(city: CityData): Promise<WalkScoreData | null> {
     
     const html = await response.text();
     
-    // Extract scores using regex patterns
-    // Walk Score: look for the main score display
-    const walkScoreMatch = html.match(/(\d+)\s*Walk Score/i) || 
-                           html.match(/Walk Score[^0-9]*(\d+)/i) ||
-                           html.match(/"walkscore"[^0-9]*(\d+)/i);
+    // Check if we got redirected to an address page (indicates wrong URL pattern)
+    if (html.includes("/score/") && html.includes("Redirecting")) {
+      console.log(`    ⚠️  Redirected to address page - wrong URL`);
+      return null;
+    }
     
-    // Transit Score
-    const transitScoreMatch = html.match(/(\d+)\s*Transit Score/i) ||
-                              html.match(/Transit Score[^0-9]*(\d+)/i) ||
-                              html.match(/"transitscore"[^0-9]*(\d+)/i);
+    // Extract scores from city page format
+    // City pages show scores in badge images: /badge/walk/score/69.svg
+    // And in text like "69 Walk Score of Los Angeles, CA"
     
-    // Bike Score
-    const bikeScoreMatch = html.match(/(\d+)\s*Bike Score/i) ||
-                           html.match(/Bike Score[^0-9]*(\d+)/i) ||
-                           html.match(/"bikescore"[^0-9]*(\d+)/i);
+    // Method 1: Extract from badge image URLs (most reliable)
+    const walkBadgeMatch = html.match(/badge\/walk\/score\/(\d+)/i);
+    const transitBadgeMatch = html.match(/badge\/transit\/score\/(\d+)/i);
+    const bikeBadgeMatch = html.match(/badge\/bike\/score\/(\d+)/i);
     
-    // City average Walk Score (more reliable for city-wide comparison)
-    // Pattern: "CityName has an average Walk Score of XX"
+    // Method 2: Extract from alt text like "69 Walk Score of Los Angeles, CA"
+    const walkAltMatch = html.match(/(\d+)\s*Walk Score of/i);
+    const transitAltMatch = html.match(/(\d+)\s*Transit Score of/i);
+    const bikeAltMatch = html.match(/(\d+)\s*Bike Score of/i);
+    
+    // Method 3: Extract from "has an average Walk Score of XX"
     const cityAvgMatch = html.match(/has an average Walk Score of (\d+)/i);
     
-    const walkScore = walkScoreMatch ? parseInt(walkScoreMatch[1]) : null;
-    const transitScore = transitScoreMatch ? parseInt(transitScoreMatch[1]) : null;
-    const bikeScore = bikeScoreMatch ? parseInt(bikeScoreMatch[1]) : null;
+    // Prefer badge URLs, then alt text, then city average
+    const walkScore = walkBadgeMatch ? parseInt(walkBadgeMatch[1]) :
+                      walkAltMatch ? parseInt(walkAltMatch[1]) :
+                      cityAvgMatch ? parseInt(cityAvgMatch[1]) : null;
+    
+    const transitScore = transitBadgeMatch ? parseInt(transitBadgeMatch[1]) :
+                         transitAltMatch ? parseInt(transitAltMatch[1]) : null;
+    
+    const bikeScore = bikeBadgeMatch ? parseInt(bikeBadgeMatch[1]) :
+                      bikeAltMatch ? parseInt(bikeAltMatch[1]) : null;
+    
     const cityAvgWalkScore = cityAvgMatch ? parseInt(cityAvgMatch[1]) : null;
     
-    // Use city average if available, otherwise use the location score
+    // Use city average if it differs from main score (city avg is more representative)
     const effectiveWalkScore = cityAvgWalkScore ?? walkScore;
     
     return {

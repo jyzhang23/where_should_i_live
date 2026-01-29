@@ -186,8 +186,8 @@
       "qol": {
         "walkability": {
           "walkScore": 89,
-          "transitScore": 100,
-          "bikeScore": 99,
+          "transitScore": 77,
+          "bikeScore": 72,
           "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -406,8 +406,8 @@
       "qol": {
         "walkability": {
           "walkScore": 74,
-          "transitScore": 100,
-          "bikeScore": 63,
+          "transitScore": 60,
+          "bikeScore": 71,
           "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -846,8 +846,8 @@
       "qol": {
         "walkability": {
           "walkScore": 69,
-          "transitScore": 100,
-          "bikeScore": 74,
+          "transitScore": 53,
+          "bikeScore": 59,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -1066,8 +1066,8 @@
       "qol": {
         "walkability": {
           "walkScore": 49,
-          "transitScore": 65,
-          "bikeScore": 99,
+          "transitScore": 34,
+          "bikeScore": 67,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -1286,8 +1286,8 @@
       "qol": {
         "walkability": {
           "walkScore": 83,
-          "transitScore": 100,
-          "bikeScore": 86,
+          "transitScore": 72,
+          "bikeScore": 69,
           "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -1506,8 +1506,8 @@
       "qol": {
         "walkability": {
           "walkScore": 67,
-          "transitScore": 85,
-          "bikeScore": 92,
+          "transitScore": 49,
+          "bikeScore": 83,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -1726,8 +1726,8 @@
       "qol": {
         "walkability": {
           "walkScore": 42,
-          "transitScore": 66,
-          "bikeScore": 64,
+          "transitScore": 36,
+          "bikeScore": 46,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -1945,10 +1945,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 100,
-          "transitScore": 100,
-          "bikeScore": 81,
-          "description": "Walker's Paradise",
+          "walkScore": 77,
+          "transitScore": 65,
+          "bikeScore": 72,
+          "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -2165,10 +2165,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 98,
+          "walkScore": 77,
           "transitScore": 100,
           "bikeScore": 92,
-          "description": "Walker's Paradise",
+          "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -2386,8 +2386,8 @@
       "qol": {
         "walkability": {
           "walkScore": 47,
-          "transitScore": 87,
-          "bikeScore": 77,
+          "transitScore": 36,
+          "bikeScore": 49,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -2605,10 +2605,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 92,
-          "transitScore": 81,
-          "bikeScore": 49,
-          "description": "Walker's Paradise",
+          "walkScore": 48,
+          "transitScore": 44,
+          "bikeScore": 42,
+          "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -2825,10 +2825,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 93,
-          "transitScore": 88,
-          "bikeScore": 86,
-          "description": "Walker's Paradise",
+          "walkScore": 71,
+          "transitScore": 55,
+          "bikeScore": 83,
+          "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -3045,10 +3045,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 100,
-          "transitScore": 100,
-          "bikeScore": 77,
-          "description": "Walker's Paradise",
+          "walkScore": 75,
+          "transitScore": 67,
+          "bikeScore": 67,
+          "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -3266,8 +3266,8 @@
       "qol": {
         "walkability": {
           "walkScore": 46,
-          "transitScore": 84,
-          "bikeScore": 74,
+          "transitScore": 39,
+          "bikeScore": 49,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -3486,8 +3486,8 @@
       "qol": {
         "walkability": {
           "walkScore": 50,
-          "transitScore": 60,
-          "bikeScore": 69,
+          "transitScore": 31,
+          "bikeScore": 55,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -3706,8 +3706,8 @@
       "qol": {
         "walkability": {
           "walkScore": 61,
-          "transitScore": 80,
-          "bikeScore": 96,
+          "transitScore": 45,
+          "bikeScore": 72,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -3925,10 +3925,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 97,
-          "transitScore": 78,
-          "bikeScore": 52,
-          "description": "Walker's Paradise",
+          "walkScore": 26,
+          "transitScore": 27,
+          "bikeScore": 31,
+          "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -4146,8 +4146,8 @@
       "qol": {
         "walkability": {
           "walkScore": 34,
-          "transitScore": 72,
-          "bikeScore": 74,
+          "transitScore": 17,
+          "bikeScore": 40,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -4366,8 +4366,8 @@
       "qol": {
         "walkability": {
           "walkScore": 41,
-          "transitScore": 65,
-          "bikeScore": 57,
+          "transitScore": 36,
+          "bikeScore": 56,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -4586,8 +4586,8 @@
       "qol": {
         "walkability": {
           "walkScore": 64,
-          "transitScore": 100,
-          "bikeScore": 77,
+          "transitScore": 53,
+          "bikeScore": 53,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -4805,10 +4805,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 96,
-          "transitScore": 67,
-          "bikeScore": 79,
-          "description": "Walker's Paradise",
+          "walkScore": 41,
+          "transitScore": 33,
+          "bikeScore": 57,
+          "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -5026,8 +5026,8 @@
       "qol": {
         "walkability": {
           "walkScore": 31,
-          "transitScore": 66,
-          "bikeScore": 99,
+          "transitScore": 25,
+          "bikeScore": 43,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -5246,8 +5246,8 @@
       "qol": {
         "walkability": {
           "walkScore": 29,
-          "transitScore": 75,
-          "bikeScore": 72,
+          "transitScore": 22,
+          "bikeScore": 30,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -5466,8 +5466,8 @@
       "qol": {
         "walkability": {
           "walkScore": 62,
-          "transitScore": 69,
-          "bikeScore": 85,
+          "transitScore": 49,
+          "bikeScore": 58,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -5686,8 +5686,8 @@
       "qol": {
         "walkability": {
           "walkScore": 59,
-          "transitScore": 71,
-          "bikeScore": 91,
+          "transitScore": 44,
+          "bikeScore": 74,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -5906,8 +5906,8 @@
       "qol": {
         "walkability": {
           "walkScore": 51,
-          "transitScore": 85,
-          "bikeScore": 64,
+          "transitScore": 36,
+          "bikeScore": 52,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -6346,8 +6346,8 @@
       "qol": {
         "walkability": {
           "walkScore": 37,
-          "transitScore": 80,
-          "bikeScore": 65,
+          "transitScore": 31,
+          "bikeScore": 45,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -6566,8 +6566,8 @@
       "qol": {
         "walkability": {
           "walkScore": 26,
-          "transitScore": 61,
-          "bikeScore": 52,
+          "transitScore": 21,
+          "bikeScore": 41,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -6785,10 +6785,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 96,
-          "transitScore": 84,
-          "bikeScore": 91,
-          "description": "Walker's Paradise",
+          "walkScore": 58,
+          "transitScore": 44,
+          "bikeScore": 66,
+          "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -7005,10 +7005,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 93,
-          "transitScore": 68,
-          "bikeScore": 67,
-          "description": "Walker's Paradise",
+          "walkScore": 35,
+          "transitScore": 25,
+          "bikeScore": 35,
+          "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -7225,10 +7225,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 98,
-          "transitScore": 81,
-          "bikeScore": 60,
-          "description": "Walker's Paradise",
+          "walkScore": 49,
+          "transitScore": 44,
+          "bikeScore": 36,
+          "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -7446,8 +7446,8 @@
       "qol": {
         "walkability": {
           "walkScore": 57,
-          "transitScore": 81,
-          "bikeScore": 44,
+          "transitScore": 44,
+          "bikeScore": 52,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -7666,8 +7666,8 @@
       "qol": {
         "walkability": {
           "walkScore": 67,
-          "transitScore": 64,
-          "bikeScore": 87,
+          "transitScore": 47,
+          "bikeScore": 63,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -7886,8 +7886,8 @@
       "qol": {
         "walkability": {
           "walkScore": 62,
-          "transitScore": 92,
-          "bikeScore": 78,
+          "transitScore": 55,
+          "bikeScore": 55,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -8106,8 +8106,8 @@
       "qol": {
         "walkability": {
           "walkScore": 77,
-          "transitScore": 88,
-          "bikeScore": 78,
+          "transitScore": 57,
+          "bikeScore": 64,
           "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -8326,8 +8326,8 @@
       "qol": {
         "walkability": {
           "walkScore": 42,
-          "transitScore": 36,
-          "bikeScore": 93,
+          "transitScore": 28,
+          "bikeScore": 47,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -8546,8 +8546,8 @@
       "qol": {
         "walkability": {
           "walkScore": 35,
-          "transitScore": 54,
-          "bikeScore": 85,
+          "transitScore": 22,
+          "bikeScore": 41,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -8765,10 +8765,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 99,
-          "transitScore": 82,
-          "bikeScore": 88,
-          "description": "Walker's Paradise",
+          "walkScore": 53,
+          "transitScore": 37,
+          "bikeScore": 43,
+          "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -8986,8 +8986,8 @@
       "qol": {
         "walkability": {
           "walkScore": 61,
-          "transitScore": 54,
-          "bikeScore": 99,
+          "transitScore": null,
+          "bikeScore": 68,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -9206,8 +9206,8 @@
       "qol": {
         "walkability": {
           "walkScore": 31,
-          "transitScore": 73,
-          "bikeScore": 76,
+          "transitScore": 29,
+          "bikeScore": 39,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -9427,7 +9427,7 @@
         "walkability": {
           "walkScore": 37,
           "transitScore": null,
-          "bikeScore": 100,
+          "bikeScore": 69,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -9664,8 +9664,8 @@
         },
         "walkability": {
           "walkScore": 42,
-          "transitScore": 69,
-          "bikeScore": 96,
+          "transitScore": 35,
+          "bikeScore": 54,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
@@ -9817,8 +9817,8 @@
       "qol": {
         "walkability": {
           "walkScore": 38,
-          "transitScore": 47,
-          "bikeScore": 70,
+          "transitScore": 23,
+          "bikeScore": 62,
           "description": "Car-Dependent",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
