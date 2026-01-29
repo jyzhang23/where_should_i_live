@@ -606,6 +606,20 @@
       "zillowRegionName": "Gainesville, FL",
       "sports": { "nfl": [], "nba": [], "mlb": [], "nhl": [], "mls": [] },
       "beaGeoFips": "23540"
+    },
+    {
+      "id": "austin",
+      "name": "Austin",
+      "state": "TX",
+      "noaaStation": "KAUS",
+      "latitude": 30.1940,
+      "longitude": -97.6700,
+      "urbanCenter": { "latitude": 30.2672, "longitude": -97.7431 },
+      "censusFips": { "state": "48", "place": "05000" },
+      "zillowRegionId": 10221,
+      "zillowRegionName": "Austin, TX",
+      "sports": { "nfl": [], "nba": [], "mlb": [], "nhl": [], "mls": ["Austin FC"] },
+      "beaGeoFips": "12420"
     }
   ]
 }

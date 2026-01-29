@@ -1,27 +1,29 @@
 ## Features
 - Add Austin, TX and test the adding cities pipeline
 
-### Why does my city suck ✅ DONE
-- Click on any score card in the city detail page to see a breakdown of:
-  - Each factor's weight and actual value
-  - Thresholds vs actual values
-  - Issues (red), concerns (yellow), and strengths (green)
-  - Tips to adjust preferences
-
 ## Robustness
-- Architecture reivew
-    - Look for poor architecuture and broken branches from legacy code/designs
-- Code review & refactor
-    - Look for poor programming patterns
-    - Look for places where implemented quick fixes or patches but added technical debt
-    - Look for deprecated code and orphaned branches
-- Security (future)
-    - Consider hiding the data access interface from regular users
-    - Security review (attack surface, DOS, data leaks, etc)
-- Documentation
-    - Architecture documentation with focus on understandability of how everything works
-        - Should allow someone to understand how all the different data is pulled, compiled, and integrated into the scoring
-        - Should allow developers to easily understand the structure and maintain the code
-    - Changelog
+
+### Architecture Review ✅ DONE
+See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
+
+**Cleanup Tasks (from review):**
+- [ ] Delete orphaned files: `scripts/add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`
+- [ ] Remove deprecated fields from Prisma schema
+- [ ] Consolidate `seed.ts` and `refresh/route.ts`
+- [ ] Add city slug to PostgreSQL for consistent ID
+
+### Code Review & Refactor
+- [ ] Remove/migrate 11 deprecated CityMetrics fields
+- [ ] Clean up legacy preference fields
+- [ ] Replace console.log in admin routes with proper logging
+- [ ] Implement or remove empty `checkFilters` function
+
+### Security (future)
+- Consider hiding the data access interface from regular users
+- Security review (attack surface, DOS, data leaks, etc)
+
+### Documentation
+- [x] Architecture documentation (see ARCHITECTURE-REVIEW.md)
+- [ ] Changelog
 
 ## Bugs
