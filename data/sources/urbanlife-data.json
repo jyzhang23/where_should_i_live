@@ -677,7 +677,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 5.5,
         "totalVenues": 210,
-        "lateNightVenues": null
+        "lateNightVenues": 19
       },
       "arts": {
         "museums": 42,
@@ -688,7 +688,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 20,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 97,
         "breweries": 0,
         "coffeeshops": 134
       },
@@ -699,7 +699,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 2.5,
         "totalVenues": 127,
-        "lateNightVenues": null
+        "lateNightVenues": 9
       },
       "arts": {
         "museums": 41,
@@ -710,7 +710,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 10.8,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 77,
         "breweries": 0,
         "coffeeshops": 83
       },
@@ -721,7 +721,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 5,
         "totalVenues": 154,
-        "lateNightVenues": null
+        "lateNightVenues": 3
       },
       "arts": {
         "museums": 34,
@@ -732,7 +732,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 21.5,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 94,
         "breweries": 1,
         "coffeeshops": 89
       },
@@ -743,7 +743,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 5.9,
         "totalVenues": 217,
-        "lateNightVenues": null
+        "lateNightVenues": 9
       },
       "arts": {
         "museums": 32,
@@ -754,7 +754,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 15.7,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 72,
         "breweries": 0,
         "coffeeshops": 119
       },
@@ -765,7 +765,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 3.3,
         "totalVenues": 92,
-        "lateNightVenues": null
+        "lateNightVenues": 1
       },
       "arts": {
         "museums": 29,
@@ -776,7 +776,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 11.4,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 75,
         "breweries": 0,
         "coffeeshops": 61
       },
@@ -787,7 +787,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 5.8,
         "totalVenues": 175,
-        "lateNightVenues": null
+        "lateNightVenues": 5
       },
       "arts": {
         "museums": 39,
@@ -798,7 +798,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 30.8,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 106,
         "breweries": 0,
         "coffeeshops": 152
       },
@@ -809,7 +809,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 2,
         "totalVenues": 87,
-        "lateNightVenues": null
+        "lateNightVenues": 22
       },
       "arts": {
         "museums": 30,
@@ -820,7 +820,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 17.5,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 108,
         "breweries": 0,
         "coffeeshops": 119
       },
@@ -831,7 +831,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 4.7,
         "totalVenues": 50,
-        "lateNightVenues": null
+        "lateNightVenues": 1
       },
       "arts": {
         "museums": 8,
@@ -842,7 +842,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 27.1,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 28,
         "breweries": 0,
         "coffeeshops": 34
       },
@@ -853,7 +853,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 0.6,
         "totalVenues": 36,
-        "lateNightVenues": null
+        "lateNightVenues": 4
       },
       "arts": {
         "museums": 24,
@@ -864,7 +864,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 2.9,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 45,
         "breweries": 0,
         "coffeeshops": 17
       },
@@ -875,7 +875,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 1.6,
         "totalVenues": 228,
-        "lateNightVenues": null
+        "lateNightVenues": 14
       },
       "arts": {
         "museums": 60,
@@ -886,7 +886,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 7.9,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 103,
         "breweries": 0,
         "coffeeshops": 196
       },
@@ -897,7 +897,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 4.1,
         "totalVenues": 36,
-        "lateNightVenues": null
+        "lateNightVenues": 1
       },
       "arts": {
         "museums": 22,
@@ -908,7 +908,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 32,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 56,
         "breweries": 0,
         "coffeeshops": 58
       },
@@ -919,7 +919,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 1.6,
         "totalVenues": 75,
-        "lateNightVenues": null
+        "lateNightVenues": 12
       },
       "arts": {
         "museums": 13,
@@ -930,7 +930,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 10.5,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 76,
         "breweries": 0,
         "coffeeshops": 57
       },
@@ -941,7 +941,7 @@
       "nightlife": {
         "barsAndClubsPer10K": 1.6,
         "totalVenues": 23,
-        "lateNightVenues": null
+        "lateNightVenues": 3
       },
       "arts": {
         "museums": 8,
@@ -952,7 +952,7 @@
       "dining": {
         "fineDiningCount": null,
         "restaurantsPer10K": 17,
-        "cuisineDiversity": null,
+        "cuisineDiversity": 42,
         "breweries": 0,
         "coffeeshops": 28
       },

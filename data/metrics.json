@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "Current city metrics (updateable via APIs)",
-  "lastUpdated": "2026-01-28",
+  "lastUpdated": "2026-01-29",
   "sources": {
     "climate": "NOAA ACIS (30-year normals) + Open-Meteo (2014-2023 averages)",
     "quality": "WalkScore, Numbeo, ACSM, etc.",
@@ -53,6 +53,15 @@
     "cultural": {
       "political": "MIT Election Lab County Presidential Election Returns 2024, Voter turnout from US Elections Project",
       "religious": "ARDA U.S. Religion Census 2020 (Religious Congregations & Membership Study)"
+    },
+    "urbanLifestyle": {
+      "nightlife": "OpenStreetMap Overpass API",
+      "arts": "OpenStreetMap Overpass API",
+      "dining": "OpenStreetMap Overpass API"
+    },
+    "recreation": {
+      "nature": "OpenStreetMap Overpass API",
+      "geography": "USGS National Map API, NOAA Coastline"
     }
   },
   "cities": {
@@ -209,6 +218,24 @@
           "primaryCarePhysiciansPer100k": 145,
           "hospitalBeds100k": 320,
           "hpsaScore": 0
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 4.6,
+            "trailMilesWithin10Mi": 1038,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 478
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 11,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 1568,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.567Z"
         }
       },
       "cultural": {
@@ -231,6 +258,29 @@
           "diversityIndex": 60,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 6.2,
+            "totalVenues": 528,
+            "lateNightVenues": 47
+          },
+          "arts": {
+            "museums": 85,
+            "theaters": 131,
+            "artGalleries": 658,
+            "musicVenues": 7
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 36.6,
+            "cuisineDiversity": 189,
+            "breweries": 1,
+            "coffeeshops": 778
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.696Z"
         }
       }
     },
@@ -387,6 +437,24 @@
           "primaryCarePhysiciansPer100k": 120,
           "hospitalBeds100k": 250,
           "hpsaScore": 2
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 6.5,
+            "trailMilesWithin10Mi": 959,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 381
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 11,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 3721,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.567Z"
         }
       },
       "cultural": {
@@ -409,6 +477,29 @@
           "diversityIndex": 58,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 6.1,
+            "totalVenues": 450,
+            "lateNightVenues": 31
+          },
+          "arts": {
+            "museums": 40,
+            "theaters": 95,
+            "artGalleries": 856,
+            "musicVenues": 2
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 29.6,
+            "cuisineDiversity": 152,
+            "breweries": 0,
+            "coffeeshops": 636
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.696Z"
         }
       }
     },
@@ -565,6 +656,24 @@
           "primaryCarePhysiciansPer100k": 180,
           "hospitalBeds100k": 340,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 0.6,
+            "trailMilesWithin10Mi": 3468,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 313
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 13,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 608,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.567Z"
         }
       },
       "cultural": {
@@ -587,6 +696,29 @@
           "diversityIndex": 70,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.6,
+            "totalVenues": 1363,
+            "lateNightVenues": 105
+          },
+          "arts": {
+            "museums": 162,
+            "theaters": 343,
+            "artGalleries": 766,
+            "musicVenues": 9
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 10.3,
+            "cuisineDiversity": 288,
+            "breweries": 1,
+            "coffeeshops": 1744
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.696Z"
         }
       }
     },
@@ -743,6 +875,24 @@
           "primaryCarePhysiciansPer100k": 95,
           "hospitalBeds100k": 220,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 2.3,
+            "trailMilesWithin10Mi": 2615,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 321
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 12,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 4645,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.567Z"
         }
       },
       "cultural": {
@@ -765,6 +915,29 @@
           "diversityIndex": 66,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.4,
+            "totalVenues": 140,
+            "lateNightVenues": 47
+          },
+          "arts": {
+            "museums": 113,
+            "theaters": 207,
+            "artGalleries": 198,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 4.3,
+            "cuisineDiversity": 151,
+            "breweries": 0,
+            "coffeeshops": 266
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.696Z"
         }
       }
     },
@@ -921,6 +1094,24 @@
           "primaryCarePhysiciansPer100k": 110,
           "hospitalBeds100k": 280,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.9,
+            "trailMilesWithin10Mi": 554,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 83
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 78,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 1548,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.567Z"
         }
       },
       "cultural": {
@@ -943,6 +1134,29 @@
           "diversityIndex": 63,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.3,
+            "totalVenues": 69,
+            "lateNightVenues": 11
+          },
+          "arts": {
+            "museums": 17,
+            "theaters": 30,
+            "artGalleries": 34,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 14,
+            "cuisineDiversity": 77,
+            "breweries": 0,
+            "coffeeshops": 141
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.696Z"
         }
       }
     },
@@ -1099,6 +1313,24 @@
           "primaryCarePhysiciansPer100k": 210,
           "hospitalBeds100k": 420,
           "hpsaScore": 0
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 25.5,
+            "trailMilesWithin10Mi": 2176,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 5748
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 3,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 270,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.567Z"
         }
       },
       "cultural": {
@@ -1121,6 +1353,29 @@
           "diversityIndex": 65,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 3.7,
+            "totalVenues": 245,
+            "lateNightVenues": 20
+          },
+          "arts": {
+            "museums": 100,
+            "theaters": 112,
+            "artGalleries": 396,
+            "musicVenues": 5
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 34.8,
+            "cuisineDiversity": 150,
+            "breweries": 0,
+            "coffeeshops": 424
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.698Z"
         }
       }
     },
@@ -1277,6 +1532,24 @@
           "primaryCarePhysiciansPer100k": 105,
           "hospitalBeds100k": 200,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 10.2,
+            "trailMilesWithin10Mi": 1149,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 159
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 6,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 3695,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.568Z"
         }
       },
       "cultural": {
@@ -1299,6 +1572,29 @@
           "diversityIndex": 50,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 7.7,
+            "totalVenues": 495,
+            "lateNightVenues": 20
+          },
+          "arts": {
+            "museums": 30,
+            "theaters": 110,
+            "artGalleries": 279,
+            "musicVenues": 2
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 29,
+            "cuisineDiversity": 125,
+            "breweries": 0,
+            "coffeeshops": 418
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.698Z"
         }
       }
     },
@@ -1455,6 +1751,24 @@
           "primaryCarePhysiciansPer100k": 55,
           "hospitalBeds100k": 180,
           "hpsaScore": 18
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 12.8,
+            "trailMilesWithin10Mi": 2855,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 41
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 224,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 3420,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.568Z"
         }
       },
       "cultural": {
@@ -1477,6 +1791,29 @@
           "diversityIndex": 64,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 2.7,
+            "totalVenues": 174,
+            "lateNightVenues": 28
+          },
+          "arts": {
+            "museums": 23,
+            "theaters": 67,
+            "artGalleries": 87,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 16.4,
+            "cuisineDiversity": 91,
+            "breweries": 0,
+            "coffeeshops": 110
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.698Z"
         }
       }
     },
@@ -1633,6 +1970,24 @@
           "primaryCarePhysiciansPer100k": 110,
           "hospitalBeds100k": 300,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.9,
+            "trailMilesWithin10Mi": 2887,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 305
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 16,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 157,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.568Z"
         }
       },
       "cultural": {
@@ -1655,6 +2010,29 @@
           "diversityIndex": 68,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 2.2,
+            "totalVenues": 601,
+            "lateNightVenues": 23
+          },
+          "arts": {
+            "museums": 67,
+            "theaters": 129,
+            "artGalleries": 473,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 9.8,
+            "cuisineDiversity": 154,
+            "breweries": 0,
+            "coffeeshops": 484
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.698Z"
         }
       }
     },
@@ -1811,6 +2189,24 @@
           "primaryCarePhysiciansPer100k": 175,
           "hospitalBeds100k": 400,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 58.2,
+            "trailMilesWithin10Mi": 2804,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 1053
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 4,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 478,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.569Z"
         }
       },
       "cultural": {
@@ -1833,6 +2229,29 @@
           "diversityIndex": 71,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 5.5,
+            "totalVenues": 369,
+            "lateNightVenues": 32
+          },
+          "arts": {
+            "museums": 100,
+            "theaters": 127,
+            "artGalleries": 557,
+            "musicVenues": 2
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 38.5,
+            "cuisineDiversity": 175,
+            "breweries": 0,
+            "coffeeshops": 452
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.699Z"
         }
       }
     },
@@ -1989,6 +2408,24 @@
           "primaryCarePhysiciansPer100k": 95,
           "hospitalBeds100k": 280,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 0.2,
+            "trailMilesWithin10Mi": 374,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 19
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 16,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 209,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.569Z"
         }
       },
       "cultural": {
@@ -2011,6 +2448,29 @@
           "diversityIndex": 74,
           "dominantTradition": "Evangelical Protestant",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.9,
+            "totalVenues": 204,
+            "lateNightVenues": 30
+          },
+          "arts": {
+            "museums": 34,
+            "theaters": 41,
+            "artGalleries": 263,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 4.2,
+            "cuisineDiversity": 93,
+            "breweries": 0,
+            "coffeeshops": 132
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.699Z"
         }
       }
     },
@@ -2167,6 +2627,24 @@
           "primaryCarePhysiciansPer100k": 100,
           "hospitalBeds100k": 290,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 3,
+            "trailMilesWithin10Mi": 862,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 39
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 267,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 329,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.570Z"
         }
       },
       "cultural": {
@@ -2189,6 +2667,29 @@
           "diversityIndex": 69,
           "dominantTradition": "Evangelical Protestant",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 2.8,
+            "totalVenues": 140,
+            "lateNightVenues": 13
+          },
+          "arts": {
+            "museums": 45,
+            "theaters": 61,
+            "artGalleries": 168,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 18.8,
+            "cuisineDiversity": 98,
+            "breweries": 0,
+            "coffeeshops": 117
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.699Z"
         }
       }
     },
@@ -2345,6 +2846,24 @@
           "primaryCarePhysiciansPer100k": 130,
           "hospitalBeds100k": 320,
           "hpsaScore": 3
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 10.7,
+            "trailMilesWithin10Mi": 3739,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 133
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 349,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 324,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.570Z"
         }
       },
       "cultural": {
@@ -2367,6 +2886,29 @@
           "diversityIndex": 75,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 3.3,
+            "totalVenues": 142,
+            "lateNightVenues": 8
+          },
+          "arts": {
+            "museums": 42,
+            "theaters": 99,
+            "artGalleries": 252,
+            "musicVenues": 4
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 23.6,
+            "cuisineDiversity": 128,
+            "breweries": 1,
+            "coffeeshops": 210
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.699Z"
         }
       }
     },
@@ -2523,6 +3065,24 @@
           "primaryCarePhysiciansPer100k": 140,
           "hospitalBeds100k": 380,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.9,
+            "trailMilesWithin10Mi": 1213,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 349
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 7,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 427,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.570Z"
         }
       },
       "cultural": {
@@ -2545,6 +3105,29 @@
           "diversityIndex": 70,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.5,
+            "totalVenues": 242,
+            "lateNightVenues": 14
+          },
+          "arts": {
+            "museums": 113,
+            "theaters": 95,
+            "artGalleries": 330,
+            "musicVenues": 5
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 9.4,
+            "cuisineDiversity": 120,
+            "breweries": 0,
+            "coffeeshops": 246
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.699Z"
         }
       }
     },
@@ -2701,6 +3284,24 @@
           "primaryCarePhysiciansPer100k": 85,
           "hospitalBeds100k": 240,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.6,
+            "trailMilesWithin10Mi": 821,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 22
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 16,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 355,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.570Z"
         }
       },
       "cultural": {
@@ -2723,6 +3324,29 @@
           "diversityIndex": 73,
           "dominantTradition": "Evangelical Protestant",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1,
+            "totalVenues": 136,
+            "lateNightVenues": 21
+          },
+          "arts": {
+            "museums": 21,
+            "theaters": 33,
+            "artGalleries": 136,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 5.8,
+            "cuisineDiversity": 82,
+            "breweries": 0,
+            "coffeeshops": 82
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.700Z"
         }
       }
     },
@@ -2879,6 +3503,24 @@
           "primaryCarePhysiciansPer100k": 90,
           "hospitalBeds100k": 270,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 23.8,
+            "trailMilesWithin10Mi": 768,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 160
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 5,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 117,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.570Z"
         }
       },
       "cultural": {
@@ -2901,6 +3543,29 @@
           "diversityIndex": 69,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.7,
+            "totalVenues": 68,
+            "lateNightVenues": 2
+          },
+          "arts": {
+            "museums": 17,
+            "theaters": 34,
+            "artGalleries": 29,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 13.2,
+            "cuisineDiversity": 61,
+            "breweries": 0,
+            "coffeeshops": 66
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.700Z"
         }
       }
     },
@@ -3057,6 +3722,24 @@
           "primaryCarePhysiciansPer100k": 115,
           "hospitalBeds100k": 260,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 0.3,
+            "trailMilesWithin10Mi": 269,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 197
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": null,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 1131,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.570Z"
         }
       },
       "cultural": {
@@ -3079,6 +3762,29 @@
           "diversityIndex": 66,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 4.9,
+            "totalVenues": 347,
+            "lateNightVenues": 28
+          },
+          "arts": {
+            "museums": 36,
+            "theaters": 98,
+            "artGalleries": 380,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 24,
+            "cuisineDiversity": 131,
+            "breweries": 0,
+            "coffeeshops": 292
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.700Z"
         }
       }
     },
@@ -3235,6 +3941,24 @@
           "primaryCarePhysiciansPer100k": 95,
           "hospitalBeds100k": 260,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 2.1,
+            "trailMilesWithin10Mi": 1722,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 100
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 178,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 308,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.570Z"
         }
       },
       "cultural": {
@@ -3257,6 +3981,29 @@
           "diversityIndex": 69,
           "dominantTradition": "Evangelical Protestant",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.6,
+            "totalVenues": 139,
+            "lateNightVenues": 13
+          },
+          "arts": {
+            "museums": 15,
+            "theaters": 32,
+            "artGalleries": 292,
+            "musicVenues": 2
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 8,
+            "cuisineDiversity": 78,
+            "breweries": 0,
+            "coffeeshops": 93
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.700Z"
         }
       }
     },
@@ -3413,6 +4160,24 @@
           "primaryCarePhysiciansPer100k": 80,
           "hospitalBeds100k": 280,
           "hpsaScore": 12
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.3,
+            "trailMilesWithin10Mi": 451,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 25
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 187,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 312,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.571Z"
         }
       },
       "cultural": {
@@ -3435,6 +4200,29 @@
           "diversityIndex": 66,
           "dominantTradition": "Evangelical Protestant",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.8,
+            "totalVenues": 56,
+            "lateNightVenues": 8
+          },
+          "arts": {
+            "museums": 24,
+            "theaters": 34,
+            "artGalleries": 35,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 5.5,
+            "cuisineDiversity": 52,
+            "breweries": 0,
+            "coffeeshops": 39
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.700Z"
         }
       }
     },
@@ -3591,6 +4379,24 @@
           "primaryCarePhysiciansPer100k": 65,
           "hospitalBeds100k": 190,
           "hpsaScore": 15
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 3.3,
+            "trailMilesWithin10Mi": 3591,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 63
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 302,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 1671,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.571Z"
         }
       },
       "cultural": {
@@ -3613,6 +4419,29 @@
           "diversityIndex": 69,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.7,
+            "totalVenues": 114,
+            "lateNightVenues": 19
+          },
+          "arts": {
+            "museums": 27,
+            "theaters": 49,
+            "artGalleries": 69,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 4.4,
+            "cuisineDiversity": 72,
+            "breweries": 0,
+            "coffeeshops": 104
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.700Z"
         }
       }
     },
@@ -3769,6 +4598,24 @@
           "primaryCarePhysiciansPer100k": 145,
           "hospitalBeds100k": 400,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 6.3,
+            "trailMilesWithin10Mi": 1350,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 1090
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 8,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 452,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.571Z"
         }
       },
       "cultural": {
@@ -3791,6 +4638,29 @@
           "diversityIndex": 72,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 4.2,
+            "totalVenues": 243,
+            "lateNightVenues": 21
+          },
+          "arts": {
+            "museums": 58,
+            "theaters": 60,
+            "artGalleries": 396,
+            "musicVenues": 5
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 17.5,
+            "cuisineDiversity": 114,
+            "breweries": 0,
+            "coffeeshops": 116
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.701Z"
         }
       }
     },
@@ -3947,6 +4817,24 @@
           "primaryCarePhysiciansPer100k": 85,
           "hospitalBeds100k": 250,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 4.4,
+            "trailMilesWithin10Mi": 922,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 327
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 77,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 81,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.571Z"
         }
       },
       "cultural": {
@@ -3969,6 +4857,29 @@
           "diversityIndex": 69,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.7,
+            "totalVenues": 52,
+            "lateNightVenues": 12
+          },
+          "arts": {
+            "museums": 14,
+            "theaters": 38,
+            "artGalleries": 43,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 14.9,
+            "cuisineDiversity": 70,
+            "breweries": 0,
+            "coffeeshops": 67
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.701Z"
         }
       }
     },
@@ -4125,6 +5036,24 @@
           "primaryCarePhysiciansPer100k": 95,
           "hospitalBeds100k": 280,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.1,
+            "trailMilesWithin10Mi": 1110,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 26
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 165,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 177,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.571Z"
         }
       },
       "cultural": {
@@ -4147,6 +5076,29 @@
           "diversityIndex": 73,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.8,
+            "totalVenues": 73,
+            "lateNightVenues": 12
+          },
+          "arts": {
+            "museums": 22,
+            "theaters": 39,
+            "artGalleries": 99,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 5,
+            "cuisineDiversity": 56,
+            "breweries": 0,
+            "coffeeshops": 58
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.701Z"
         }
       }
     },
@@ -4303,6 +5255,24 @@
           "primaryCarePhysiciansPer100k": 125,
           "hospitalBeds100k": 350,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 2.3,
+            "trailMilesWithin10Mi": 1745,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 32
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 382,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 707,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.571Z"
         }
       },
       "cultural": {
@@ -4325,6 +5295,29 @@
           "diversityIndex": 67,
           "dominantTradition": "Evangelical Protestant",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.8,
+            "totalVenues": 124,
+            "lateNightVenues": 6
+          },
+          "arts": {
+            "museums": 23,
+            "theaters": 30,
+            "artGalleries": 70,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 8.7,
+            "cuisineDiversity": 74,
+            "breweries": 0,
+            "coffeeshops": 90
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.701Z"
         }
       }
     },
@@ -4481,6 +5474,24 @@
           "primaryCarePhysiciansPer100k": 100,
           "hospitalBeds100k": 280,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 7,
+            "trailMilesWithin10Mi": 2395,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 28
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 75,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 388,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.572Z"
         }
       },
       "cultural": {
@@ -4503,6 +5514,29 @@
           "diversityIndex": 75,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 5.4,
+            "totalVenues": 309,
+            "lateNightVenues": 12
+          },
+          "arts": {
+            "museums": 26,
+            "theaters": 82,
+            "artGalleries": 373,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 13.2,
+            "cuisineDiversity": 81,
+            "breweries": 0,
+            "coffeeshops": 136
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.701Z"
         }
       }
     },
@@ -4659,6 +5693,24 @@
           "primaryCarePhysiciansPer100k": 95,
           "hospitalBeds100k": 220,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 34.7,
+            "trailMilesWithin10Mi": 1294,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 89
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": null,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 4690,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.572Z"
         }
       },
       "cultural": {
@@ -4681,6 +5733,29 @@
           "diversityIndex": 63,
           "dominantTradition": "LDS/Mormon",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 6.3,
+            "totalVenues": 127,
+            "lateNightVenues": 8
+          },
+          "arts": {
+            "museums": 20,
+            "theaters": 48,
+            "artGalleries": 178,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 42.6,
+            "cuisineDiversity": 110,
+            "breweries": 0,
+            "coffeeshops": 156
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.701Z"
         }
       }
     },
@@ -4837,6 +5912,24 @@
           "primaryCarePhysiciansPer100k": 85,
           "hospitalBeds100k": 280,
           "hpsaScore": 15
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.4,
+            "trailMilesWithin10Mi": 3125,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 119
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 18,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 372,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.572Z"
         }
       },
       "cultural": {
@@ -4859,6 +5952,29 @@
           "diversityIndex": 75,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 2.3,
+            "totalVenues": 149,
+            "lateNightVenues": 20
+          },
+          "arts": {
+            "museums": 30,
+            "theaters": 54,
+            "artGalleries": 306,
+            "musicVenues": 4
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 12.2,
+            "cuisineDiversity": 75,
+            "breweries": 0,
+            "coffeeshops": 114
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.702Z"
         }
       }
     },
@@ -5015,6 +6131,24 @@
           "primaryCarePhysiciansPer100k": 120,
           "hospitalBeds100k": 360,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 6.2,
+            "trailMilesWithin10Mi": 994,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 98
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 260,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 170,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.572Z"
         }
       },
       "cultural": {
@@ -5037,6 +6171,29 @@
           "diversityIndex": 75,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 5,
+            "totalVenues": 149,
+            "lateNightVenues": 22
+          },
+          "arts": {
+            "museums": 42,
+            "theaters": 47,
+            "artGalleries": 244,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 17.5,
+            "cuisineDiversity": 69,
+            "breweries": 0,
+            "coffeeshops": 61
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.702Z"
         }
       }
     },
@@ -5193,6 +6350,24 @@
           "primaryCarePhysiciansPer100k": 75,
           "hospitalBeds100k": 230,
           "hpsaScore": 12
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.1,
+            "trailMilesWithin10Mi": 1603,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 14
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 187,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 691,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.572Z"
         }
       },
       "cultural": {
@@ -5215,6 +6390,29 @@
           "diversityIndex": 70,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.5,
+            "totalVenues": 78,
+            "lateNightVenues": 12
+          },
+          "arts": {
+            "museums": 57,
+            "theaters": 50,
+            "artGalleries": 67,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 3.1,
+            "cuisineDiversity": 62,
+            "breweries": 0,
+            "coffeeshops": 46
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.702Z"
         }
       }
     },
@@ -5371,6 +6569,24 @@
           "primaryCarePhysiciansPer100k": 85,
           "hospitalBeds100k": 280,
           "hpsaScore": 12
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 0.4,
+            "trailMilesWithin10Mi": 715,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 82
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 11,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 117,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.572Z"
         }
       },
       "cultural": {
@@ -5393,6 +6609,29 @@
           "diversityIndex": 68,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.5,
+            "totalVenues": 43,
+            "lateNightVenues": 6
+          },
+          "arts": {
+            "museums": 11,
+            "theaters": 22,
+            "artGalleries": 36,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 2.7,
+            "cuisineDiversity": 48,
+            "breweries": 0,
+            "coffeeshops": 23
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.702Z"
         }
       }
     },
@@ -5549,6 +6788,24 @@
           "primaryCarePhysiciansPer100k": 110,
           "hospitalBeds100k": 320,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.6,
+            "trailMilesWithin10Mi": 194,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 29
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 12,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 42,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.573Z"
         }
       },
       "cultural": {
@@ -5571,6 +6828,29 @@
           "diversityIndex": 70,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 5.5,
+            "totalVenues": 210,
+            "lateNightVenues": 19
+          },
+          "arts": {
+            "museums": 42,
+            "theaters": 26,
+            "artGalleries": 89,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 20,
+            "cuisineDiversity": 97,
+            "breweries": 0,
+            "coffeeshops": 134
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.702Z"
         }
       }
     },
@@ -5727,6 +7007,24 @@
           "primaryCarePhysiciansPer100k": 100,
           "hospitalBeds100k": 290,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 0.9,
+            "trailMilesWithin10Mi": 492,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 75
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 412,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 246,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.573Z"
         }
       },
       "cultural": {
@@ -5749,6 +7047,29 @@
           "diversityIndex": 75,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 2.5,
+            "totalVenues": 127,
+            "lateNightVenues": 9
+          },
+          "arts": {
+            "museums": 41,
+            "theaters": 57,
+            "artGalleries": 198,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 10.8,
+            "cuisineDiversity": 77,
+            "breweries": 0,
+            "coffeeshops": 83
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.702Z"
         }
       }
     },
@@ -5905,6 +7226,24 @@
           "primaryCarePhysiciansPer100k": 115,
           "hospitalBeds100k": 340,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 3.7,
+            "trailMilesWithin10Mi": 538,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 180
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 231,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 397,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.573Z"
         }
       },
       "cultural": {
@@ -5927,6 +7266,29 @@
           "diversityIndex": 75,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 5,
+            "totalVenues": 154,
+            "lateNightVenues": 3
+          },
+          "arts": {
+            "museums": 34,
+            "theaters": 62,
+            "artGalleries": 144,
+            "musicVenues": 2
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 21.5,
+            "cuisineDiversity": 94,
+            "breweries": 1,
+            "coffeeshops": 89
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.703Z"
         }
       }
     },
@@ -6083,6 +7445,24 @@
           "primaryCarePhysiciansPer100k": 125,
           "hospitalBeds100k": 380,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 8.7,
+            "trailMilesWithin10Mi": 3982,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 42
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 10,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 479,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.573Z"
         }
       },
       "cultural": {
@@ -6105,6 +7485,29 @@
           "diversityIndex": 74,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 5.9,
+            "totalVenues": 217,
+            "lateNightVenues": 9
+          },
+          "arts": {
+            "museums": 32,
+            "theaters": 52,
+            "artGalleries": 190,
+            "musicVenues": 6
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 15.7,
+            "cuisineDiversity": 72,
+            "breweries": 0,
+            "coffeeshops": 119
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.703Z"
         }
       }
     },
@@ -6261,6 +7664,24 @@
           "primaryCarePhysiciansPer100k": 120,
           "hospitalBeds100k": 350,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 8.7,
+            "trailMilesWithin10Mi": 1317,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 104
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 8,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 1292,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.573Z"
         }
       },
       "cultural": {
@@ -6283,6 +7704,29 @@
           "diversityIndex": 67,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 3.3,
+            "totalVenues": 92,
+            "lateNightVenues": 1
+          },
+          "arts": {
+            "museums": 29,
+            "theaters": 38,
+            "artGalleries": 82,
+            "musicVenues": 3
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 11.4,
+            "cuisineDiversity": 75,
+            "breweries": 0,
+            "coffeeshops": 61
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.703Z"
         }
       }
     },
@@ -6439,6 +7883,24 @@
           "primaryCarePhysiciansPer100k": 135,
           "hospitalBeds100k": 400,
           "hpsaScore": 3
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 10.1,
+            "trailMilesWithin10Mi": 435,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 78
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 103,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 454,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.573Z"
         }
       },
       "cultural": {
@@ -6461,6 +7923,29 @@
           "diversityIndex": 71,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 5.8,
+            "totalVenues": 175,
+            "lateNightVenues": 5
+          },
+          "arts": {
+            "museums": 39,
+            "theaters": 57,
+            "artGalleries": 71,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 30.8,
+            "cuisineDiversity": 106,
+            "breweries": 0,
+            "coffeeshops": 152
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.703Z"
         }
       }
     },
@@ -6617,6 +8102,24 @@
           "primaryCarePhysiciansPer100k": 130,
           "hospitalBeds100k": 350,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 7.8,
+            "trailMilesWithin10Mi": 952,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 30
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 7,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 9,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.574Z"
         }
       },
       "cultural": {
@@ -6639,6 +8142,29 @@
           "diversityIndex": 71,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 2,
+            "totalVenues": 87,
+            "lateNightVenues": 22
+          },
+          "arts": {
+            "museums": 30,
+            "theaters": 52,
+            "artGalleries": 138,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 17.5,
+            "cuisineDiversity": 108,
+            "breweries": 0,
+            "coffeeshops": 119
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.703Z"
         }
       }
     },
@@ -6795,6 +8321,24 @@
           "primaryCarePhysiciansPer100k": 95,
           "hospitalBeds100k": 240,
           "hpsaScore": 8
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 21,
+            "trailMilesWithin10Mi": 483,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 7
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 182,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 235,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.574Z"
         }
       },
       "cultural": {
@@ -6817,6 +8361,29 @@
           "diversityIndex": 70,
           "dominantTradition": "Catholic",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 4.7,
+            "totalVenues": 50,
+            "lateNightVenues": 1
+          },
+          "arts": {
+            "museums": 8,
+            "theaters": 19,
+            "artGalleries": 21,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 27.1,
+            "cuisineDiversity": 28,
+            "breweries": 0,
+            "coffeeshops": 34
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.703Z"
         }
       }
     },
@@ -6973,6 +8540,24 @@
           "primaryCarePhysiciansPer100k": 105,
           "hospitalBeds100k": 340,
           "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 1.4,
+            "trailMilesWithin10Mi": 496,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 99
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 323,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 111,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.574Z"
         }
       },
       "cultural": {
@@ -6995,6 +8580,29 @@
           "diversityIndex": 62,
           "dominantTradition": "Evangelical Protestant",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 0.6,
+            "totalVenues": 36,
+            "lateNightVenues": 4
+          },
+          "arts": {
+            "museums": 24,
+            "theaters": 27,
+            "artGalleries": 15,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 2.9,
+            "cuisineDiversity": 45,
+            "breweries": 0,
+            "coffeeshops": 17
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.704Z"
         }
       }
     },
@@ -7151,6 +8759,24 @@
           "primaryCarePhysiciansPer100k": 100,
           "hospitalBeds100k": 230,
           "hpsaScore": 6
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 16.2,
+            "trailMilesWithin10Mi": 902,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 61
+          },
+          "geography": {
+            "coastlineWithin15Mi": true,
+            "coastlineDistanceMi": 2,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 3367,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.574Z"
         }
       },
       "cultural": {
@@ -7173,6 +8799,29 @@
           "diversityIndex": 66,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.6,
+            "totalVenues": 228,
+            "lateNightVenues": 14
+          },
+          "arts": {
+            "museums": 60,
+            "theaters": 75,
+            "artGalleries": 94,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 7.9,
+            "cuisineDiversity": 103,
+            "breweries": 0,
+            "coffeeshops": 196
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.704Z"
         }
       }
     },
@@ -7329,6 +8978,24 @@
           "primaryCarePhysiciansPer100k": 130,
           "hospitalBeds100k": 280,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 126.4,
+            "trailMilesWithin10Mi": 342,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 44
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 95,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 4768,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.574Z"
         }
       },
       "cultural": {
@@ -7351,6 +9018,29 @@
           "diversityIndex": 61,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 4.1,
+            "totalVenues": 36,
+            "lateNightVenues": 1
+          },
+          "arts": {
+            "museums": 22,
+            "theaters": 25,
+            "artGalleries": 32,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 32,
+            "cuisineDiversity": 56,
+            "breweries": 0,
+            "coffeeshops": 58
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.704Z"
         }
       }
     },
@@ -7507,6 +9197,24 @@
           "primaryCarePhysiciansPer100k": 105,
           "hospitalBeds100k": 240,
           "hpsaScore": 5
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 3.9,
+            "trailMilesWithin10Mi": 866,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 280
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 224,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 305,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.574Z"
         }
       },
       "cultural": {
@@ -7529,6 +9237,29 @@
           "diversityIndex": 69,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.6,
+            "totalVenues": 75,
+            "lateNightVenues": 12
+          },
+          "arts": {
+            "museums": 13,
+            "theaters": 35,
+            "artGalleries": 71,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 10.5,
+            "cuisineDiversity": 76,
+            "breweries": 0,
+            "coffeeshops": 57
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.704Z"
         }
       }
     },
@@ -7685,6 +9416,24 @@
           "primaryCarePhysiciansPer100k": 160,
           "hospitalBeds100k": 450,
           "hpsaScore": 0
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 8.1,
+            "trailMilesWithin10Mi": 372,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 99
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 58,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 116,
+            "nearestMountainDistMi": null,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:36.575Z"
         }
       },
       "cultural": {
@@ -7707,6 +9456,29 @@
           "diversityIndex": 66,
           "dominantTradition": "Unaffiliated/Secular",
           "dataYear": 2020
+        },
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.6,
+            "totalVenues": 23,
+            "lateNightVenues": 3
+          },
+          "arts": {
+            "museums": 8,
+            "theaters": 13,
+            "artGalleries": 29,
+            "musicVenues": 0
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 17,
+            "cuisineDiversity": 42,
+            "breweries": 0,
+            "coffeeshops": 28
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T19:19:26.704Z"
         }
       }
     }
