@@ -22,7 +22,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { getFallbackData } from "@/lib/cityAliases";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("walkscore-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // EPA National Walkability Index ArcGIS endpoint
@@ -156,21 +158,21 @@ async function fetchEPAWalkabilityData(
     });
 
     const url = `${EPA_WALKABILITY_URL}?${params.toString()}`;
-    console.log(`    Fetching EPA Walkability Index...`);
+    logger.debug("Fetching EPA Walkability Index");
     
     const response = await fetch(url, {
       headers: { "Accept": "application/json" },
     });
 
     if (!response.ok) {
-      console.log(`    EPA Walkability API error: ${response.status}`);
+      logger.warn("EPA Walkability API error", { status: response.status });
       return null;
     }
 
     const data = await response.json();
 
     if (!data.features || data.features.length === 0) {
-      console.log(`    No EPA walkability data found`);
+      logger.debug("No EPA walkability data found");
       return null;
     }
 
@@ -222,7 +224,7 @@ async function fetchEPAWalkabilityData(
       updatedAt: new Date().toISOString(),
     };
   } catch (error) {
-    console.error("EPA Walkability API error:", error);
+    logger.error("EPA Walkability API error", { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -290,10 +292,10 @@ export async function POST(request: NextRequest) {
     const errors: string[] = [];
     const fallbackCities: string[] = [];
 
-    console.log(`Processing ${cities.length} cities for EPA Walkability Index data...`);
+    logger.info("Processing cities for EPA Walkability Index data", { cityCount: cities.length });
 
     for (const city of cities) {
-      console.log(`  Processing ${city.name}, ${city.state}...`);
+      logger.debug("Processing city", { city: city.name, state: city.state });
       
       try {
         let walkabilityData: WalkabilityData | null = null;
@@ -325,7 +327,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (!walkabilityData) {
-          console.log(`    No walkability data available for ${city.id}`);
+          logger.warn("No walkability data available", { city: city.id });
           skipCount++;
           continue;
         }
@@ -367,9 +369,9 @@ export async function POST(request: NextRequest) {
         };
 
         successCount++;
-        console.log(`    Walk: ${walkabilityData.walkScore}, Bike: ${walkabilityData.bikeScore}, Transit: ${walkabilityData.transitScore}${usedFallback ? " (fallback)" : ""}`);
+        logger.debug("Updated city", { city: city.name, walk: walkabilityData.walkScore, bike: walkabilityData.bikeScore, transit: walkabilityData.transitScore, fallback: usedFallback });
       } catch (error) {
-        console.error(`    Error processing ${city.name}:`, error);
+        logger.error("Error processing city", { city: city.name, error: error instanceof Error ? error.message : String(error) });
         errors.push(`${city.name}: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
@@ -401,7 +403,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -417,7 +419,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("EPA Walkability pull error:", error);
+    logger.error("EPA Walkability pull failed", { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       {
         error: "Failed to pull EPA Walkability data",
