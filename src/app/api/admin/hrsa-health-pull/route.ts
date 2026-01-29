@@ -19,7 +19,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { getFallbackData } from "@/lib/cityAliases";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("hrsa-health-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // HRSA Data API endpoints
@@ -183,10 +185,10 @@ export async function POST(request: NextRequest) {
     const errors: string[] = [];
     const fallbackCities: string[] = [];
 
-    console.log(`Processing ${cities.length} cities for HRSA health data...`);
+    logger.info("Processing cities for HRSA health data", { cityCount: cities.length });
 
     for (const city of cities) {
-      console.log(`  Processing ${city.name}, ${city.state}...`);
+      logger.debug("Processing city", { city: city.name, state: city.state });
       
       try {
         // Fetch health data
@@ -198,7 +200,7 @@ export async function POST(request: NextRequest) {
         );
 
         if (!healthData) {
-          console.log(`    No health data available for ${city.id}`);
+          logger.warn("No health data available", { city: city.id });
           skipCount++;
           continue;
         }
@@ -234,12 +236,12 @@ export async function POST(request: NextRequest) {
         };
 
         successCount++;
-        console.log(`    Physicians: ${healthData.primaryCarePhysiciansPer100k}/100K, HPSA: ${healthData.hpsaScore}`);
+        logger.debug("Updated city", { city: city.name, physicians: healthData.primaryCarePhysiciansPer100k, hpsa: healthData.hpsaScore });
 
         // Small delay
         await new Promise(resolve => setTimeout(resolve, 50));
       } catch (error) {
-        console.error(`    Error processing ${city.name}:`, error);
+        logger.error("Error processing city", { city: city.name, error: error instanceof Error ? error.message : String(error) });
         errors.push(`${city.name}: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
