@@ -25,7 +25,7 @@ See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 
 ### Documentation
 - [x] Architecture documentation (see ARCHITECTURE-REVIEW.md)
-- [ ] Changelog
+- [x] Changelog (see CHANGELOG.md)
 
 ## Bugs
 
