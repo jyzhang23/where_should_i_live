@@ -17,7 +17,7 @@ See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 - [x] `checkFilters` function - already removed from codebase
 - [x] Legacy preference fields - kept for backward compatibility (fallback scoring)
 - [x] Add admin logger utility (`src/lib/admin-logger.ts`)
-- [ ] Migrate remaining admin routes to use logger (9 routes left)
+- [ ] Migrate remaining admin routes to use logger (9 routes with 104 console.logs)
 
 ### Security (future)
 - Consider hiding the data access interface from regular users

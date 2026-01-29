@@ -14,7 +14,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("refresh");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // Convert city name to URL-friendly slug (e.g., "San Francisco" -> "san-francisco")
@@ -122,7 +124,7 @@ export async function POST(request: NextRequest) {
     for (const city of cities) {
       const cityMetrics = metrics[city.id];
       if (!cityMetrics) {
-        console.warn(`No metrics found for ${city.name}, skipping...`);
+        logger.warn("No metrics found", { city: city.name });
         continue;
       }
 
@@ -224,7 +226,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -240,7 +242,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Refresh error:", error);
+    logger.error("Refresh failed", { error: error instanceof Error ? error.message : String(error) });
 
     // Log the failure
     try {

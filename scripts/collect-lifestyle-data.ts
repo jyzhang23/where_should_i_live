@@ -730,25 +730,28 @@ async function main() {
     console.log(`Filtered to ${cities.length} cities matching "${cityFilter}"`);
   }
   
-  // Load existing data if fill-gaps mode
+  // Always load existing data to preserve other cities when using --city filter
   let existingRecreation: Record<string, RecreationSourceData> = {};
   let existingUrbanlife: Record<string, UrbanLifestyleSourceData> = {};
   
-  if (fillGaps) {
-    const recPath = join(sourcesDir, "recreation-data.json");
-    const urbPath = join(sourcesDir, "urbanlife-data.json");
-    
-    if (existsSync(recPath)) {
-      existingRecreation = JSON.parse(readFileSync(recPath, "utf-8")).cities || {};
-    }
-    if (existsSync(urbPath)) {
-      existingUrbanlife = JSON.parse(readFileSync(urbPath, "utf-8")).cities || {};
-    }
-    
-    console.log(`\n🔧 FILL-GAPS MODE: Will only retry null/zero values`);
-    console.log(`  Existing recreation data: ${Object.keys(existingRecreation).length} cities`);
-    console.log(`  Existing urban life data: ${Object.keys(existingUrbanlife).length} cities`);
+  const recPath = join(sourcesDir, "recreation-data.json");
+  const urbPath = join(sourcesDir, "urbanlife-data.json");
+  
+  if (existsSync(recPath)) {
+    existingRecreation = JSON.parse(readFileSync(recPath, "utf-8")).cities || {};
   }
+  if (existsSync(urbPath)) {
+    existingUrbanlife = JSON.parse(readFileSync(urbPath, "utf-8")).cities || {};
+  }
+  
+  if (fillGaps) {
+    console.log(`\n🔧 FILL-GAPS MODE: Will only retry null/zero values`);
+  }
+  if (cityFilter) {
+    console.log(`\n📍 SINGLE-CITY MODE: Will preserve existing data for other cities`);
+  }
+  console.log(`  Existing recreation data: ${Object.keys(existingRecreation).length} cities`);
+  console.log(`  Existing urban life data: ${Object.keys(existingUrbanlife).length} cities`);
   
   // Initialize output data structures
   const recreationData: {
@@ -777,7 +780,8 @@ async function main() {
       coastlineAccessPercent: 30,
       avgElevationDelta: 800,
     },
-    cities: fillGaps ? { ...existingRecreation } : {},
+    // Always preserve existing data (important for --city single-city mode)
+    cities: { ...existingRecreation },
   };
   
   const urbanlifeData: {
@@ -805,7 +809,8 @@ async function main() {
       restaurantsPer10K: 40,
       cuisineDiversity: 25,
     },
-    cities: fillGaps ? { ...existingUrbanlife } : {},
+    // Always preserve existing data (important for --city single-city mode)
+    cities: { ...existingUrbanlife },
   };
   
   console.log(`\nCollecting data for ${cities.length} cities...\n`);
@@ -817,9 +822,17 @@ async function main() {
   for (const city of cities) {
     processed++;
     
-    // Get population from metrics
+    // Get population from metrics (required for accurate per-capita calculations)
     const cityMetrics = metricsFile.cities[city.id];
-    const population = cityMetrics?.census?.totalPopulation || cityMetrics?.population || 100000;
+    const population = cityMetrics?.census?.totalPopulation || cityMetrics?.demographics?.population || null;
+    
+    if (!population) {
+      console.log(`[${processed}/${cities.length}] ${city.name}, ${city.state}`);
+      console.log(`    ⚠️  SKIPPED: No population data found in metrics.json`);
+      console.log(`    Run census-pull first: curl -X POST http://localhost:3000/api/admin/census-pull -d '{"password":"..."}'`);
+      skipped++;
+      continue;
+    }
     
     if (dryRun) {
       console.log(`[${processed}/${cities.length}] ${city.name}, ${city.state} [DRY RUN]`);
