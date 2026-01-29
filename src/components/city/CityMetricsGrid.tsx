@@ -1281,24 +1281,32 @@ Lower is more affordable`}
               <div className="p-3 rounded-lg border bg-muted/30">
                 <div className="flex items-center gap-2 mb-2">
                   <Footprints className="h-4 w-4 text-blue-500" />
-                  <span className="font-medium text-sm">Walkability</span>
+                  <a 
+                    href="https://www.walkscore.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="font-medium text-sm hover:underline"
+                    title="Walk Score® - walkscore.com"
+                  >
+                    Walk Score®
+                  </a>
                 </div>
                 {metrics.qol.walkability ? (
                   <div className="space-y-1">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Walk Score</span>
+                      <span className="text-muted-foreground">Walk</span>
                       <span className={getScoreColor(metrics.qol.walkability.walkScore)}>
                         {metrics.qol.walkability.walkScore ?? "N/A"}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Transit Score</span>
+                      <span className="text-muted-foreground">Transit</span>
                       <span className={getScoreColor(metrics.qol.walkability.transitScore)}>
                         {metrics.qol.walkability.transitScore ?? "N/A"}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Bike Score</span>
+                      <span className="text-muted-foreground">Bike</span>
                       <span className={getScoreColor(metrics.qol.walkability.bikeScore)}>
                         {metrics.qol.walkability.bikeScore ?? "N/A"}
                       </span>
@@ -1308,7 +1316,7 @@ Lower is more affordable`}
                     )}
                   </div>
                 ) : (
-                  <p className="text-xs text-muted-foreground">Pull Walk Score data</p>
+                  <p className="text-xs text-muted-foreground">No data available</p>
                 )}
               </div>
 

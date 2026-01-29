@@ -444,9 +444,9 @@ export const TOOLTIPS: Record<string, string> = {
 
   // Quality of life advanced
   "advanced.qualityOfLife.minWalkScore":
-    "Minimum Walk Score (0-100). NYC is ~88, most suburbs are 20-40.",
+    "Minimum Walk Score® (0-100). NYC is ~88, most suburbs are 20-40. Data from walkscore.com.",
   "advanced.qualityOfLife.minTransitScore":
-    "Minimum Transit Score (0-100). NYC is ~89, car-dependent cities are 20-40.",
+    "Minimum Transit Score® (0-100). NYC is ~89, car-dependent cities are 20-40. Data from walkscore.com.",
   "advanced.qualityOfLife.maxViolentCrimeRate":
     "Maximum violent crime rate per 100K population. National average is ~380.",
   "advanced.qualityOfLife.preferFallingCrime":
@@ -462,7 +462,7 @@ export const TOOLTIPS: Record<string, string> = {
   "advanced.qualityOfLife.minPhysiciansPer100k":
     "Minimum primary care physicians per 100K residents. National avg is ~75.",
   "advanced.qualityOfLife.weights.walkability":
-    "Weight for walkability/transit scores in QoL calculation.",
+    "Weight for Walk Score®/Transit Score® in QoL calculation. Data from walkscore.com.",
   "advanced.qualityOfLife.weights.safety":
     "Weight for crime/safety scores in QoL calculation.",
   "advanced.qualityOfLife.weights.airQuality":

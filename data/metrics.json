@@ -4,7 +4,7 @@
   "lastUpdated": "2026-01-29",
   "sources": {
     "climate": "NOAA ACIS (30-year normals) + Open-Meteo (2014-2023 averages)",
-    "quality": "WalkScore, Numbeo, ACSM, etc.",
+    "quality": "Walk Score® (walkscore.com), FBI Crime Data, EPA AQS, FCC Broadband, NCES, HRSA",
     "political": "2024 Election Results",
     "bea": "Bureau of Economic Analysis (Regional Price Parities)",
     "demographics": "US Census Bureau ACS 5-Year Estimates (2022)",
@@ -44,11 +44,11 @@
       "lastUpdated": "2026-01-29T23:04:27.097Z"
     },
     "walkability": {
-      "name": "EPA National Walkability Index",
-      "url": "https://www.epa.gov/smartgrowth/smart-location-mapping#walkability",
-      "description": "Walkability scores based on intersection density, transit access, and employment mix",
-      "dataSource": "EPA ArcGIS API",
-      "lastUpdated": "2026-01-28T18:24:05.644Z"
+      "name": "Walk Score®",
+      "url": "https://www.walkscore.com/",
+      "description": "Walk Score®, Transit Score®, and Bike Score® are registered trademarks of Walk Score, a Redfin company.",
+      "dataSource": "walkscore.com",
+      "lastUpdated": "2026-01-29"
     },
     "cultural": {
       "political": "MIT Election Lab County Presidential Election Returns 2024, Voter turnout from US Elections Project",

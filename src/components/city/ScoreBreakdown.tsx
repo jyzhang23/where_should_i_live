@@ -264,24 +264,24 @@ function analyzeQoL(
     if (walkScore !== null) {
       if (walkScore < prefs.minWalkScore) {
         status = "bad";
-        explanation = `Walk Score ${walkScore} is below your minimum of ${prefs.minWalkScore}. `;
+        explanation = `Walk Score® ${walkScore} is below your minimum of ${prefs.minWalkScore}. `;
       } else if (walkScore >= 70) {
         status = "good";
-        explanation = `Walk Score ${walkScore} indicates a very walkable area. `;
+        explanation = `Walk Score® ${walkScore} indicates a very walkable area. `;
       }
     }
     if (transitScore !== null && transitScore < 40) {
       if (status !== "bad") status = "warning";
-      explanation += `Transit Score ${transitScore} is weak - limited public transportation.`;
+      explanation += `Transit Score® ${transitScore} is weak - limited public transportation.`;
     }
-    if (!explanation) explanation = "Walkability is average for your preferences.";
+    if (!explanation) explanation = "Walk Score® is average for your preferences.";
 
     factors.push({
-      name: "Walkability & Transit",
+      name: "Walk Score®",
       weight: Math.round((weights.walkability / totalWeight) * 100),
       value: walkScore,
       unit: "",
-      threshold: prefs.minWalkScore > 0 ? { value: prefs.minWalkScore, type: "min", label: "Min Walk Score" } : undefined,
+      threshold: prefs.minWalkScore > 0 ? { value: prefs.minWalkScore, type: "min", label: "Min Walk Score®" } : undefined,
       score: avgScore,
       status,
       explanation,

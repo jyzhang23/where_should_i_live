@@ -389,13 +389,13 @@ export function MetricsComparison({
             city2Name={city2.name}
           />
           <ComparisonRow
-            label="Walk Score"
+            label="Walk Score®"
             value1={m1?.qol?.walkability?.walkScore ?? m1?.walkScore ?? null}
             value2={m2?.qol?.walkability?.walkScore ?? m2?.walkScore ?? null}
             format={formatInt}
           />
           <ComparisonRow
-            label="Transit Score"
+            label="Transit Score®"
             value1={m1?.transitScore ?? null}
             value2={m2?.transitScore ?? null}
             format={formatInt}

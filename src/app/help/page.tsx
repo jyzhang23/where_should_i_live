@@ -536,7 +536,7 @@ export default function HelpPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>Walkability</td><td>EPA Walkability Index + Walk Score (manual)</td><td>20%</td></tr>
+                    <tr><td>Walkability</td><td><a href="https://www.walkscore.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Walk Score®</a></td><td>20%</td></tr>
                     <tr><td>Safety</td><td>FBI Crime Data Explorer</td><td>25%</td></tr>
                     <tr><td>Air Quality</td><td>EPA AQS</td><td>15%</td></tr>
                     <tr><td>Internet</td><td>FCC Broadband Map</td><td>10%</td></tr>
@@ -545,16 +545,35 @@ export default function HelpPage() {
                   </tbody>
                 </table>
 
-                <h4>Walkability &amp; Transit Scores</h4>
-                <div className="bg-muted p-3 rounded font-mono text-xs">
-                  Walk Score: EPA NatWalkInd (1-20) → 0-100 scale{"\n"}
-                  Bike Score: EPA street density (D3B) normalized{"\n"}
-                  Transit Score: Manual data from walkscore.com (Jan 2025)
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  <strong>Walk/Bike:</strong> From EPA National Walkability Index API (based on intersection density, land use mix).{" "}
-                  <strong>Transit:</strong> Manually researched from walkscore.com — EPA transit metrics (D4A, D4C, D5BR) 
-                  proved too noisy at metro scale for reliable national comparisons.
+                <h4>Walk Score®, Transit Score®, Bike Score®</h4>
+                <p className="text-xs">
+                  Walkability data is provided by{" "}
+                  <a href="https://www.walkscore.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    Walk Score®
+                  </a>, a Redfin company. Scores range from 0-100:
+                </p>
+                <table className="w-full text-xs mt-2">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Score</th>
+                      <th className="text-left">Walk Score®</th>
+                      <th className="text-left">Transit Score®</th>
+                      <th className="text-left">Bike Score®</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>90-100</td><td>Walker&apos;s Paradise</td><td>Rider&apos;s Paradise</td><td>Biker&apos;s Paradise</td></tr>
+                    <tr><td>70-89</td><td>Very Walkable</td><td>Excellent Transit</td><td>Very Bikeable</td></tr>
+                    <tr><td>50-69</td><td>Somewhat Walkable</td><td>Good Transit</td><td>Bikeable</td></tr>
+                    <tr><td>25-49</td><td>Car-Dependent</td><td>Some Transit</td><td>Somewhat Bikeable</td></tr>
+                    <tr><td>0-24</td><td>Almost All Errands Require a Car</td><td>Minimal Transit</td><td>—</td></tr>
+                  </tbody>
+                </table>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Learn more about the{" "}
+                  <a href="https://www.walkscore.com/methodology.shtml" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    Walk Score methodology
+                  </a>.
                 </p>
 
                 <h4>Safety (FBI Crime Data)</h4>
@@ -619,29 +638,18 @@ export default function HelpPage() {
 
                 <h4 className="mt-4">Data Sources Note</h4>
                 <p className="text-xs text-muted-foreground">
-                  QoL data is pulled from official government APIs when available. For cities where
-                  API queries fail or return incomplete data, verified fallback data from the following
-                  sources is used:
+                  QoL data is pulled from official sources:
                 </p>
                 <ul className="text-xs text-muted-foreground list-disc pl-4 mt-2 space-y-1">
-                  <li><strong>Walk/Bike Score:</strong> EPA National Walkability Index (ArcGIS) — walk score from NatWalkInd, bike score from street density (D3B)</li>
-                  <li><strong>Transit Score:</strong> Manually researched from walkscore.com (January 2025) — EPA transit metrics proved unreliable at metro scale</li>
-                  <li><strong>Crime:</strong> FBI Uniform Crime Reports (UCR) 2022 state-level data</li>
+                  <li><strong>Walk Score®, Transit Score®, Bike Score®:</strong> <a href="https://www.walkscore.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">walkscore.com</a> (a Redfin company)</li>
+                  <li><strong>Crime:</strong> FBI Uniform Crime Reports (UCR) via Crime Data Explorer</li>
                   <li><strong>Air Quality:</strong> EPA Air Quality System (AQS) annual summaries</li>
-                  <li><strong>Broadband:</strong> FCC National Broadband Map / BroadbandMap.com 2024 - verified city-level fiber coverage and provider counts</li>
-                  <li><strong>Education:</strong> NCES Common Core of Data estimates</li>
-                  <li><strong>Healthcare:</strong> HRSA Area Health Resources Files, America&apos;s Health Rankings state data, and regional hospital infrastructure analysis</li>
+                  <li><strong>Broadband:</strong> FCC National Broadband Map</li>
+                  <li><strong>Education:</strong> NCES Common Core of Data</li>
+                  <li><strong>Healthcare:</strong> HRSA Area Health Resources Files</li>
                 </ul>
                 <p className="text-xs text-muted-foreground mt-2">
-                  <em>Note:</em> For some smaller metros where city-specific data is unavailable, healthcare and broadband
-                  metrics are estimated from state-level averages adjusted for local factors (presence of major
-                  medical centers, known shortage area designations, regional ISP coverage reports).
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  <em>Transit Score Methodology:</em> We attempted to calculate transit scores from EPA Smart Location Database 
-                  metrics (D4A proximity, D4C frequency, D5BR job accessibility), but metro-level aggregation produced inaccurate 
-                  results due to suburban census blocks diluting city-center scores. The AllTransit API from CNT would be ideal 
-                  but requires paid access.
+                  Walk Score®, Transit Score®, and Bike Score® are registered trademarks of Walk Score, a Redfin company.
                 </p>
               </AccordionContent>
             </AccordionItem>

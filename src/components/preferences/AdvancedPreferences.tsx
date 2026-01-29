@@ -887,7 +887,7 @@ export function AdvancedPreferences() {
         <div className="space-y-3 pb-4 border-b">
           <h4 className="text-xs font-semibold text-muted-foreground uppercase">Category Weights</h4>
           <PreferenceSlider
-            label="Walkability"
+            label="Walk Score®"
             value={preferences.advanced.qualityOfLife.weights.walkability}
             onChange={(v) => updateQoLWeight("walkability", v)}
             min={0}
@@ -942,11 +942,21 @@ export function AdvancedPreferences() {
           />
         </div>
 
-        {/* Walkability Thresholds */}
+        {/* Walk Score® Thresholds */}
         <div className="space-y-3 pt-4 pb-4 border-b">
-          <h4 className="text-xs font-semibold text-muted-foreground uppercase">Walkability</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2">
+            <a 
+              href="https://www.walkscore.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:underline"
+              title="Data from walkscore.com"
+            >
+              Walk Score®
+            </a>
+          </h4>
           <PreferenceSlider
-            label="Min Walk Score"
+            label="Min Walk Score®"
             value={preferences.advanced.qualityOfLife.minWalkScore}
             onChange={(v) => updateAdvanced("qualityOfLife", "minWalkScore", v)}
             min={0}
@@ -955,7 +965,7 @@ export function AdvancedPreferences() {
             formatValue={(v) => v === 0 ? "Any" : `${v}+`}
           />
           <PreferenceSlider
-            label="Min Transit Score"
+            label="Min Transit Score®"
             value={preferences.advanced.qualityOfLife.minTransitScore}
             onChange={(v) => updateAdvanced("qualityOfLife", "minTransitScore", v)}
             min={0}
