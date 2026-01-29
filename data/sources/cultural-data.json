@@ -752,6 +752,23 @@
         "unaffiliated": 415,
         "dataYear": 2020
       }
+    },
+    "austin": {
+      "political": {
+        "democratPercent": 68.7,
+        "republicanPercent": 29.4,
+        "voterTurnout": 72.0,
+        "dataYear": 2024
+      },
+      "religious": {
+        "catholic": 180,
+        "evangelicalProtestant": 100,
+        "mainlineProtestant": 50,
+        "jewish": 20,
+        "muslim": 15,
+        "unaffiliated": 450,
+        "dataYear": 2020
+      }
     }
   }
 }
