@@ -625,10 +625,10 @@
       },
       "qol": {
         "walkability": {
-          "walkScore": 100,
-          "transitScore": 100,
-          "bikeScore": 85,
-          "description": "Walker's Paradise",
+          "walkScore": 88,
+          "transitScore": 89,
+          "bikeScore": 69,
+          "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
         },
@@ -2166,8 +2166,8 @@
       "qol": {
         "walkability": {
           "walkScore": 77,
-          "transitScore": 100,
-          "bikeScore": 92,
+          "transitScore": 69,
+          "bikeScore": 70,
           "description": "Very Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"
