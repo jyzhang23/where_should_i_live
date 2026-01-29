@@ -13,6 +13,7 @@ datasource db {
 
 model City {
   id        String   @id @default(cuid())
+  slug      String?  @unique  // URL-friendly identifier (e.g., "san-francisco") - TODO: make required after migration
   name      String   @unique
   state     String
   regionId  Int?     // Zillow region ID for joining ZHVI data

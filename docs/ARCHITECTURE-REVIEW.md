@@ -146,15 +146,15 @@ The codebase has evolved organically, creating some redundancy and technical deb
 
 **Recommendation:** Consolidate into single pipeline, document which to use when.
 
-### 2.3 City ID Inconsistency
+### 2.3 City ID Inconsistency ✅ RESOLVED
 
 | System | ID Format | Example |
 |--------|-----------|---------|
-| PostgreSQL | CUID | `cmkx629oy0000tuw6qazg5tmy` |
+| PostgreSQL | CUID + Slug | `cmkx629oy...` / `san-francisco` |
 | JSON files | Slug | `san-francisco` |
-| API routes | Both | Converts using `cityNameToSlug()` |
+| API routes | Both | Uses slug for JSON joins |
 
-**Recommendation:** Standardize on slug for all systems, or add slug field to database.
+**Solution:** Added `slug` field to City table in PostgreSQL, matching JSON file IDs.
 
 ### 2.4 Deprecated Fields ✅ CLEANED UP
 
@@ -207,7 +207,7 @@ In `src/types/preferences.ts`:
 
 ### Medium Priority
 4. [x] Sync `seed.ts` with `refresh/route.ts` (both now use same simplified schema)
-5. [ ] Add city slug to PostgreSQL schema for consistent identification
+5. [x] Add city slug to PostgreSQL schema (consistent with JSON file IDs)
 6. [ ] Replace console.log with proper logging library in admin routes
 
 ### Low Priority

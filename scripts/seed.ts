@@ -13,6 +13,14 @@ import { join } from "path";
 
 const prisma = new PrismaClient();
 
+// Convert city name to URL-friendly slug (e.g., "San Francisco" -> "san-francisco")
+function cityNameToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
 interface CityData {
   id: string;
   name: string;
@@ -78,6 +86,7 @@ async function main() {
 
     // Prepare city data
     const cityData = {
+      slug: cityNameToSlug(city.name),
       name: city.name,
       state: city.state,
       regionId: city.zillowRegionId, // Prisma schema uses 'regionId'

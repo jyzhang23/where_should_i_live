@@ -10,7 +10,7 @@ See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 - [x] Delete orphaned files: `scripts/add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`
 - [x] Remove deprecated fields from Prisma schema (14 columns dropped)
 - [x] Sync `seed.ts` with new schema (now matches `refresh/route.ts`)
-- [ ] Add city slug to PostgreSQL for consistent ID
+- [x] Add city slug to PostgreSQL schema (run refresh to populate)
 
 ### Code Review & Refactor
 - [x] Remove deprecated CityMetrics fields (done with Prisma schema cleanup)
