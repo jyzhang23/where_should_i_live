@@ -9764,7 +9764,14 @@
         }
       },
       "qol": {
-        "walkability": null,
+        "walkability": {
+          "walkScore": 38,
+          "transitScore": 47,
+          "bikeScore": 70,
+          "description": "Car-Dependent",
+          "source": "walkscore.com",
+          "updatedAt": "2026-01-29"
+        },
         "crime": {
           "violentCrimeRate": 242,
           "propertyCrimeRate": 1336,
