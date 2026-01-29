@@ -2,11 +2,15 @@
 
 This guide documents the complete process for adding a new city to the Cities App, including all required identifiers and data sources.
 
-> **Quick Start:** Use the automated script to add a city with minimal manual work:
+> **Quick Start:** Use the automated script to add a city:
 > ```bash
-> npx tsx scripts/add-city.ts "City Name" "ST"
+> # Interactive mode (prompts for each field)
+> npx tsx scripts/add-city.ts --interactive
+> 
+> # Or with a config file
+> npx tsx scripts/add-city.ts --config=my-city.json
 > ```
-> The script will look up most identifiers automatically. See [Using the Add City Script](#using-the-add-city-script) below.
+> See [Using the Add City Script](#using-the-add-city-script) below for details.
 
 ## Overview
 
@@ -84,26 +88,77 @@ Add a new entry to the `cities` array with these required fields:
 
 ## Using the Add City Script
 
-The `scripts/add-city.ts` script automates most of the identifier lookup:
+The `scripts/add-city.ts` script automates the city addition process.
 
-```bash
-npx tsx scripts/add-city.ts "Austin" "TX"
+### Option 1: Config File (Recommended)
+
+Create a JSON config file with the city details:
+
+```json
+{
+  "id": "boise",
+  "name": "Boise",
+  "state": "ID",
+  "noaaStation": "KBOI",
+  "latitude": 43.6166,
+  "longitude": -116.2009,
+  "urbanCenter": { "latitude": 43.6150, "longitude": -116.2023 },
+  "censusFips": { "state": "16", "place": "08830" },
+  "zillowRegionId": 394399,
+  "zillowRegionName": "Boise City, ID",
+  "sports": { "nfl": [], "nba": [], "mlb": [], "nhl": [], "mls": [] },
+  "beaGeoFips": "14260"
+}
 ```
 
-**What it does:**
-- Looks up coordinates via OpenStreetMap Nominatim
-- Finds Census FIPS codes via Census Geocoder
-- Searches for Zillow region ID
-- Looks up BEA MSA code
-- Finds the nearest NOAA weather station
-- Adds the city to `cities.json`
+Then run:
 
-**What you still need to manually add:**
-- Sports teams (edit `cities.json` after running)
-- Verify the identifiers are correct
-- Run data pulls
+```bash
+npx tsx scripts/add-city.ts --config=boise.json
+```
 
-The script will prompt you to confirm before saving.
+### Option 2: Interactive Mode
+
+```bash
+npx tsx scripts/add-city.ts --interactive
+```
+
+The script will prompt for each field.
+
+### What the Script Does
+
+1. Adds the city to `cities.json`
+2. Seeds the database
+3. Pulls census data (required for lifestyle metrics)
+4. Collects lifestyle data from OpenStreetMap
+5. Runs all admin data pulls (BEA, climate, Zillow, etc.)
+6. Refreshes the database
+7. Runs data verification
+
+### Skip Data Pulls
+
+To only add to JSON without running data pulls:
+
+```bash
+npx tsx scripts/add-city.ts --config=city.json --skip-data-pull
+```
+
+### Requirements
+
+- Dev server must be running (`npm run dev`) for data pulls
+- `ADMIN_PASSWORD` must be set in `.env`
+
+### Finding Identifiers
+
+Use these resources to find required identifiers:
+
+| Field | How to Find |
+|-------|-------------|
+| Coordinates | OpenStreetMap Nominatim: `https://nominatim.openstreetmap.org/search?q=City,ST,USA&format=json` |
+| Census FIPS | Census Geocoder: `https://geocoding.geo.census.gov/geocoder/geographies/coordinates?x=LON&y=LAT&benchmark=Public_AR_Current&vintage=Current_Current&format=json` |
+| Zillow Region ID | Search in Zillow ZHVI CSV: `curl -s "https://files.zillowstatic.com/research/public_csvs/zhvi/Metro_zhvi_uc_sfr_tier_0.33_0.67_sm_sa_month.csv" \| grep -i "cityname"` |
+| BEA GeoFIPS | BEA MSA list: https://apps.bea.gov/regional/docs/msalist.cfm |
+| NOAA Station | Usually `K` + airport code (e.g., `KBOI` for Boise)
 
 ## Step 2: Run Database Seed
 
@@ -203,13 +258,38 @@ npx tsx scripts/seed.ts
 
 ## Step 6: Validation
 
-Run the validation script to check for missing data:
+Run the city verification script to check for missing data:
 
 ```bash
-npx tsx scripts/validate-data.ts
+# Verify a specific city
+npx tsx scripts/verify-city-data.ts boise
+
+# Verify all cities
+npx tsx scripts/verify-city-data.ts --all
 ```
 
-Check the app to ensure:
+The script checks:
+- Required fields in `cities.json`
+- Required metrics in `metrics.json` (census, BEA, climate, QoL, etc.)
+- ZHVI price history data
+- Reports errors (required fields) and warnings (optional fields)
+
+Example output:
+```
+============================================================
+City: boise (Boise, ID)
+============================================================
+✅ All checks passed!
+
+📊 Summary:
+   zhviDataPoints: 297
+   latestZHVI: $479,944 (2025-12-31)
+   population: 234,192
+   costOfLiving: 94.2 (100=avg)
+   comfortDays: 71
+```
+
+Also check the app to ensure:
 - [ ] City appears in the list
 - [ ] Scoring works correctly
 - [ ] City detail page shows all metrics
@@ -256,15 +336,14 @@ Check the app to ensure:
 
 ## Quick Checklist
 
-- [ ] Added to `data/cities.json` with all required fields
+- [ ] Created config file with all required fields
 - [ ] Found correct NOAA station code
 - [ ] Set both airport and urbanCenter coordinates
 - [ ] Found Census FIPS codes (state + place)
-- [ ] Found Zillow region ID
+- [ ] Found Zillow region ID (from ZHVI CSV)
 - [ ] Found BEA GeoFIPS (MSA code)
 - [ ] Added sports teams
-- [ ] Ran `npx tsx scripts/seed.ts`
-- [ ] Ran automated data pulls
-- [ ] Added manual data (political, etc.)
-- [ ] Ran validation script
-- [ ] Tested in app
+- [ ] Ran `npx tsx scripts/add-city.ts --config=city.json`
+- [ ] Verified data: `npx tsx scripts/verify-city-data.ts city-id`
+- [ ] Added manual data (political, etc.) if needed
+- [ ] Tested in app at http://localhost:3000

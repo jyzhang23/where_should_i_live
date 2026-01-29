@@ -266,14 +266,17 @@ async function main() {
   runCommand("npx tsx scripts/seed.ts", "Database seed");
   
   if (!skipDataPull) {
-    // Step 3: Collect lifestyle data
-    console.log("\n🌳 Step 3: Collecting lifestyle data (this may take a few minutes)...");
+    // Step 3: Pull census data first (needed for lifestyle data collection)
+    console.log("\n📊 Step 3: Pulling census data (required for lifestyle metrics)...");
+    await runAdminPull("census-pull", adminPassword);
+    
+    // Step 4: Collect lifestyle data (requires census population data)
+    console.log("\n🌳 Step 4: Collecting lifestyle data (this may take a few minutes)...");
     runCommand(`npx tsx scripts/collect-lifestyle-data.ts --city="${config.name}"`, "Lifestyle data collection");
     
-    // Step 4: Run admin data pulls
-    console.log("\n📊 Step 4: Running automated data pulls...");
+    // Step 5: Run remaining admin data pulls
+    console.log("\n📊 Step 5: Running automated data pulls...");
     const pulls = [
-      "census-pull",
       "bea-pull", 
       "climate-pull",
       "zillow-pull",
@@ -290,18 +293,18 @@ async function main() {
       await runAdminPull(pull, adminPassword);
     }
     
-    // Step 5: Refresh database
-    console.log("\n🔄 Step 5: Refreshing database...");
+    // Step 6: Refresh database
+    console.log("\n🔄 Step 6: Refreshing database...");
     await runAdminPull("refresh", adminPassword);
     
-    // Step 6: Re-seed to sync all data
-    console.log("\n💾 Step 6: Final database sync...");
+    // Step 7: Re-seed to sync all data
+    console.log("\n💾 Step 7: Final database sync...");
     runCommand("npx tsx scripts/seed.ts", "Final seed");
   }
   
-  // Step 7: Validate
-  console.log("\n✅ Step 7: Validating data...");
-  runCommand("npx tsx scripts/validate-data.ts", "Data validation");
+  // Step 8: Validate
+  console.log("\n✅ Step 8: Validating city data...");
+  runCommand(`npx tsx scripts/verify-city-data.ts ${config.id}`, "City data verification");
   
   console.log("\n" + "=".repeat(60));
   console.log(`🎉 City "${config.name}" has been added!`);
