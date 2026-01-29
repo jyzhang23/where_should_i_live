@@ -1,12 +1,18 @@
 ## Features
 
+- [ ] Walkability: Replace EPA walkability API with simple walkscore.com lookup
+  - Current walkscore-pull uses EPA National Walkability Index (complex, often missing data)
+  - walkscore.com has direct Walk/Transit/Bike scores available at `https://www.walkscore.com/score/{city}-{state}`
+  - Could use web search or simple scraping as fallback
+  - Example: Boise data sourced from [walkscore.com](https://www.walkscore.com/score/boise-id)
+
 ## Bugs
 
 ## Maintenance
 
 ## Future City Backlog
 City	Tier
-Boise, ID   1
+~~Boise, ID~~   1 (added 2026-01-29)
 Ann Arbor, MI	1
 Pensacola, FL	1
 Tucson, AZ	1
