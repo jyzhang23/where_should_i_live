@@ -6126,8 +6126,8 @@
       "qol": {
         "walkability": {
           "walkScore": 66,
-          "transitScore": 68,
-          "bikeScore": 60,
+          "transitScore": 43,
+          "bikeScore": 58,
           "description": "Somewhat Walkable",
           "source": "walkscore.com",
           "updatedAt": "2026-01-29"

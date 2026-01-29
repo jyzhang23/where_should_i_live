@@ -47,10 +47,10 @@ interface WalkScoreData {
 // IMPORTANT: Verify URLs manually - Walk Score may use different city names
 const CITY_URL_OVERRIDES: Record<string, string> = {
   // Cities where the Walk Score URL differs from our naming
-  "new-york-city": "NY/New_York",       // Walk Score uses "New_York" not "New_York_City"
+  "new-york-city": "NY/New_York",         // Walk Score uses "New_York" not "New_York_City"
   "washington-dc": "DC/Washington%2C_DC", // Walk Score uses "Washington,_DC" with comma
-  "st-louis": "MO/Saint_Louis",
-  "tampa-bay": "FL/Tampa",              // Walk Score uses "Tampa" not "Tampa Bay"
+  "st-louis": "MO/St._Louis",             // Walk Score uses "St._Louis" with period
+  "tampa-bay": "FL/Tampa",                // Walk Score uses "Tampa" not "Tampa Bay"
 };
 
 function getWalkScoreUrl(city: CityData): string {
