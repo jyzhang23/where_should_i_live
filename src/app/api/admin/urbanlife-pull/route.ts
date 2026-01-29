@@ -92,6 +92,7 @@ function transformToUrbanLifestyleMetrics(sourceData: UrbanLifestyleSourceData):
       breweries: sourceData.dining.breweries,
       coffeeshops: sourceData.dining.coffeeshops,
     },
+    sports: null, // Sports data comes from a separate source
     dataYear: sourceData.dataYear,
     lastUpdated: new Date().toISOString(),
   };

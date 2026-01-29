@@ -380,6 +380,7 @@ const qolSafetyOnlyPrefs: UserPreferences = {
         internet: 0,
         schools: 0,
         healthcare: 0,
+        recreation: 0,
       },
     },
   },

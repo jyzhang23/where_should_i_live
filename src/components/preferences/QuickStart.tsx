@@ -132,7 +132,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
       updateQoLWeight("healthcare", 100);
       updateQoLWeight("schools", 0);
       updateQoLWeight("internet", 40);
-      updateAdvanced("demographics", "preferredAgeGroup", "retirement");
+      updateAdvanced("demographics", "preferredAgeGroup", "mature");
       updateAdvanced("demographics", "weightAge", 40);
     } else if (lifestyle === "community") {
       // Prioritize diversity, ethnic community presence
@@ -149,7 +149,6 @@ export function QuickStart({ onComplete }: QuickStartProps) {
       updateQoLWeight("internet", 50);
       updateAdvanced("qualityOfLife", "minWalkScore", 70);
       updateAdvanced("qualityOfLife", "minTransitScore", 60);
-      updateAdvanced("demographics", "weightPopulationSize", 60);
       updateAdvanced("demographics", "minPopulation", 500000);
     }
     // "balanced" = leave defaults
