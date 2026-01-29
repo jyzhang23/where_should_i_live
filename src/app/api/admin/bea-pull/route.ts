@@ -27,6 +27,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
+import { createAdminLogger } from "@/lib/admin-logger";
+
+const logger = createAdminLogger("bea-pull");
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const BEA_API_KEY = process.env.BEA_API_KEY;
@@ -208,7 +211,7 @@ export async function POST(request: NextRequest) {
     // Use most recent year available (2022 is typically the latest)
     const year = "2022";
 
-    console.log(`Fetching BEA data for ${geoFipsList.length} metros and ${stateFipsList.length} states...`);
+    logger.info("Fetching BEA data", { metros: geoFipsList.length, states: stateFipsList.length });
 
     // Fetch all data types in parallel
     const [
@@ -249,7 +252,7 @@ export async function POST(request: NextRequest) {
       fetchBEAData(stateFipsList, "180", year, "SAINC50"), // Local government taxes (thousands)
     ]);
 
-    console.log(`Received MSA data for ${allItems.size} metros, state tax data for ${statePersonalTaxes.size} states`);
+    logger.info("Received data", { msaCount: allItems.size, stateCount: statePersonalTaxes.size });
 
     let successCount = 0;
     let skipCount = 0;
@@ -274,7 +277,7 @@ export async function POST(request: NextRequest) {
 
       // Check if we got any data
       if (rppData.allItems === null) {
-        console.log(`No BEA data for ${city.name} (GeoFips: ${city.beaGeoFips})`);
+        logger.warn("No BEA data found", { city: city.name, geoFips: city.beaGeoFips });
         skipCount++;
         continue;
       }
@@ -328,9 +331,12 @@ export async function POST(request: NextRequest) {
       };
 
       successCount++;
-      console.log(
-        `  ✓ ${city.name}: CoL=${rppData.allItems?.toFixed(1)}, Housing=${rppData.rents?.toFixed(1)}, TaxRate=${effectiveTaxRate?.toFixed(1)}%`
-      );
+      logger.debug("Updated city", {
+        city: city.name,
+        costOfLiving: rppData.allItems,
+        housing: rppData.rents,
+        taxRate: effectiveTaxRate,
+      });
     }
 
     // Update metrics source info
@@ -356,7 +362,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -369,7 +375,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("BEA pull error:", error);
+    logger.error("BEA pull failed", { error: error instanceof Error ? error.message : String(error) });
 
     try {
       await prisma.dataRefreshLog.create({
