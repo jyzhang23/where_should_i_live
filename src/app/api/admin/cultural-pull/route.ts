@@ -240,8 +240,17 @@ export async function POST(request: NextRequest) {
         metricsFile.cities[city.id] = {};
       }
 
-      // Store cultural data
-      metricsFile.cities[city.id].cultural = culturalMetrics;
+      // Ensure cultural entry exists (preserve existing data like urbanLifestyle)
+      if (!metricsFile.cities[city.id].cultural) {
+        metricsFile.cities[city.id].cultural = {};
+      }
+
+      // Merge cultural data (preserves urbanLifestyle if it exists)
+      metricsFile.cities[city.id].cultural = {
+        ...metricsFile.cities[city.id].cultural,
+        political: culturalMetrics.political,
+        religious: culturalMetrics.religious,
+      };
 
       successCount++;
       console.log(
