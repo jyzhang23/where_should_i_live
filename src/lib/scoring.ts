@@ -1645,15 +1645,15 @@ export function getScoreBgColor(score: number): string {
 }
 
 /**
- * Get interpretation label for a score (relative to national average of 50)
+ * Get interpretation label for a score (aligned with letter grades)
  */
 export function getScoreLabel(score: number): string {
-  if (score >= 90) return "Exceptional";
-  if (score >= 75) return "Above Average";
-  if (score >= 55) return "Average";
-  if (score >= 45) return "Average";
-  if (score >= 25) return "Below Average";
-  return "Poor";
+  if (score >= 90) return "Exceptional";  // A+
+  if (score >= 80) return "Excellent";    // A/A-
+  if (score >= 70) return "Good";         // B+/B/B-
+  if (score >= 60) return "Average";      // C+/C/C-
+  if (score >= 50) return "Below Average"; // D
+  return "Poor";                          // F
 }
 
 /**
