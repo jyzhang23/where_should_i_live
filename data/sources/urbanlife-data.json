@@ -980,6 +980,28 @@
       },
       "population": 958202,
       "dataYear": 2026
+    },
+    "boise": {
+      "nightlife": {
+        "barsAndClubsPer10K": 1.5,
+        "totalVenues": 36,
+        "lateNightVenues": 1
+      },
+      "arts": {
+        "museums": 13,
+        "theaters": 15,
+        "artGalleries": 68,
+        "musicVenues": 1
+      },
+      "dining": {
+        "fineDiningCount": null,
+        "restaurantsPer10K": 19.1,
+        "cuisineDiversity": 50,
+        "breweries": 0,
+        "coffeeshops": 69
+      },
+      "population": 234192,
+      "dataYear": 2026
     }
   }
 }

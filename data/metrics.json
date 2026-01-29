@@ -13,35 +13,35 @@
       "url": "https://crime-data-explorer.fr.cloud.gov/",
       "description": "Violent and property crime rates from FBI Uniform Crime Reports",
       "dataYear": 2022,
-      "lastUpdated": "2026-01-29T21:16:37.580Z"
+      "lastUpdated": "2026-01-29T23:04:07.465Z"
     },
     "fccBroadband": {
       "name": "FCC National Broadband Map",
       "url": "https://broadbandmap.fcc.gov/",
       "description": "Broadband availability and provider counts from FCC data",
       "dataYear": 2024,
-      "lastUpdated": "2026-01-29T21:16:52.310Z"
+      "lastUpdated": "2026-01-29T23:04:13.816Z"
     },
     "hrsaHealth": {
       "name": "HRSA (Health Resources and Services Administration)",
       "url": "https://data.hrsa.gov/",
       "description": "Healthcare provider density and shortage area designations",
       "dataYear": 2023,
-      "lastUpdated": "2026-01-28T03:42:37.263Z"
+      "lastUpdated": "2026-01-29T23:04:16.288Z"
     },
     "epaAirQuality": {
       "name": "EPA Air Quality System",
       "url": "https://aqs.epa.gov/",
       "description": "Annual AQI statistics from EPA monitoring stations",
       "dataYear": 2023,
-      "lastUpdated": "2026-01-29T21:17:18.369Z"
+      "lastUpdated": "2026-01-29T23:04:49.131Z"
     },
     "ncesEducation": {
       "name": "NCES (National Center for Education Statistics)",
       "url": "https://nces.ed.gov/",
       "description": "School district characteristics including student-teacher ratios and graduation rates",
       "dataYear": "2022-23",
-      "lastUpdated": "2026-01-28T03:46:40.130Z"
+      "lastUpdated": "2026-01-29T23:04:27.097Z"
     },
     "walkability": {
       "name": "EPA National Walkability Index",
@@ -235,7 +235,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.901Z"
+          "lastUpdated": "2026-01-29T23:08:52.521Z"
         }
       },
       "cultural": {
@@ -280,7 +280,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.862Z"
+          "lastUpdated": "2026-01-29T23:08:52.602Z"
         }
       }
     },
@@ -454,7 +454,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.902Z"
+          "lastUpdated": "2026-01-29T23:08:52.522Z"
         }
       },
       "cultural": {
@@ -499,7 +499,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.862Z"
+          "lastUpdated": "2026-01-29T23:08:52.602Z"
         }
       }
     },
@@ -673,7 +673,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.903Z"
+          "lastUpdated": "2026-01-29T23:08:52.522Z"
         }
       },
       "cultural": {
@@ -718,7 +718,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.862Z"
+          "lastUpdated": "2026-01-29T23:08:52.603Z"
         }
       }
     },
@@ -892,7 +892,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.903Z"
+          "lastUpdated": "2026-01-29T23:08:52.522Z"
         }
       },
       "cultural": {
@@ -937,7 +937,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.863Z"
+          "lastUpdated": "2026-01-29T23:08:52.603Z"
         }
       }
     },
@@ -1111,7 +1111,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.903Z"
+          "lastUpdated": "2026-01-29T23:08:52.522Z"
         }
       },
       "cultural": {
@@ -1156,7 +1156,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.863Z"
+          "lastUpdated": "2026-01-29T23:08:52.603Z"
         }
       }
     },
@@ -1330,7 +1330,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.904Z"
+          "lastUpdated": "2026-01-29T23:08:52.523Z"
         }
       },
       "cultural": {
@@ -1375,7 +1375,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.863Z"
+          "lastUpdated": "2026-01-29T23:08:52.603Z"
         }
       }
     },
@@ -1549,7 +1549,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.904Z"
+          "lastUpdated": "2026-01-29T23:08:52.523Z"
         }
       },
       "cultural": {
@@ -1594,7 +1594,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.863Z"
+          "lastUpdated": "2026-01-29T23:08:52.603Z"
         }
       }
     },
@@ -1768,7 +1768,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.904Z"
+          "lastUpdated": "2026-01-29T23:08:52.523Z"
         }
       },
       "cultural": {
@@ -1813,7 +1813,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.864Z"
+          "lastUpdated": "2026-01-29T23:08:52.603Z"
         }
       }
     },
@@ -1987,7 +1987,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.905Z"
+          "lastUpdated": "2026-01-29T23:08:52.523Z"
         }
       },
       "cultural": {
@@ -2032,7 +2032,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.864Z"
+          "lastUpdated": "2026-01-29T23:08:52.604Z"
         }
       }
     },
@@ -2206,7 +2206,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.905Z"
+          "lastUpdated": "2026-01-29T23:08:52.523Z"
         }
       },
       "cultural": {
@@ -2251,7 +2251,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.864Z"
+          "lastUpdated": "2026-01-29T23:08:52.604Z"
         }
       }
     },
@@ -2425,7 +2425,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.905Z"
+          "lastUpdated": "2026-01-29T23:08:52.523Z"
         }
       },
       "cultural": {
@@ -2470,7 +2470,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.864Z"
+          "lastUpdated": "2026-01-29T23:08:52.604Z"
         }
       }
     },
@@ -2644,7 +2644,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.905Z"
+          "lastUpdated": "2026-01-29T23:08:52.524Z"
         }
       },
       "cultural": {
@@ -2689,7 +2689,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.864Z"
+          "lastUpdated": "2026-01-29T23:08:52.604Z"
         }
       }
     },
@@ -2863,7 +2863,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.906Z"
+          "lastUpdated": "2026-01-29T23:08:52.524Z"
         }
       },
       "cultural": {
@@ -2908,7 +2908,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.865Z"
+          "lastUpdated": "2026-01-29T23:08:52.604Z"
         }
       }
     },
@@ -3082,7 +3082,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.906Z"
+          "lastUpdated": "2026-01-29T23:08:52.524Z"
         }
       },
       "cultural": {
@@ -3127,7 +3127,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.865Z"
+          "lastUpdated": "2026-01-29T23:08:52.604Z"
         }
       }
     },
@@ -3301,7 +3301,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.906Z"
+          "lastUpdated": "2026-01-29T23:08:52.524Z"
         }
       },
       "cultural": {
@@ -3346,7 +3346,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.865Z"
+          "lastUpdated": "2026-01-29T23:08:52.605Z"
         }
       }
     },
@@ -3520,7 +3520,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.907Z"
+          "lastUpdated": "2026-01-29T23:08:52.525Z"
         }
       },
       "cultural": {
@@ -3565,7 +3565,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.865Z"
+          "lastUpdated": "2026-01-29T23:08:52.605Z"
         }
       }
     },
@@ -3739,7 +3739,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.907Z"
+          "lastUpdated": "2026-01-29T23:08:52.525Z"
         }
       },
       "cultural": {
@@ -3784,7 +3784,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.865Z"
+          "lastUpdated": "2026-01-29T23:08:52.605Z"
         }
       }
     },
@@ -3958,7 +3958,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.907Z"
+          "lastUpdated": "2026-01-29T23:08:52.525Z"
         }
       },
       "cultural": {
@@ -4003,7 +4003,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.865Z"
+          "lastUpdated": "2026-01-29T23:08:52.605Z"
         }
       }
     },
@@ -4177,7 +4177,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.907Z"
+          "lastUpdated": "2026-01-29T23:08:52.525Z"
         }
       },
       "cultural": {
@@ -4222,7 +4222,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.866Z"
+          "lastUpdated": "2026-01-29T23:08:52.605Z"
         }
       }
     },
@@ -4396,7 +4396,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.908Z"
+          "lastUpdated": "2026-01-29T23:08:52.525Z"
         }
       },
       "cultural": {
@@ -4441,7 +4441,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.866Z"
+          "lastUpdated": "2026-01-29T23:08:52.605Z"
         }
       }
     },
@@ -4615,7 +4615,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.908Z"
+          "lastUpdated": "2026-01-29T23:08:52.526Z"
         }
       },
       "cultural": {
@@ -4660,7 +4660,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.866Z"
+          "lastUpdated": "2026-01-29T23:08:52.606Z"
         }
       }
     },
@@ -4834,7 +4834,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.908Z"
+          "lastUpdated": "2026-01-29T23:08:52.526Z"
         }
       },
       "cultural": {
@@ -4879,7 +4879,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.866Z"
+          "lastUpdated": "2026-01-29T23:08:52.606Z"
         }
       }
     },
@@ -5053,7 +5053,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.909Z"
+          "lastUpdated": "2026-01-29T23:08:52.526Z"
         }
       },
       "cultural": {
@@ -5098,7 +5098,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.866Z"
+          "lastUpdated": "2026-01-29T23:08:52.606Z"
         }
       }
     },
@@ -5272,7 +5272,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.909Z"
+          "lastUpdated": "2026-01-29T23:08:52.526Z"
         }
       },
       "cultural": {
@@ -5317,7 +5317,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.867Z"
+          "lastUpdated": "2026-01-29T23:08:52.606Z"
         }
       }
     },
@@ -5491,7 +5491,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.909Z"
+          "lastUpdated": "2026-01-29T23:08:52.527Z"
         }
       },
       "cultural": {
@@ -5536,7 +5536,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.867Z"
+          "lastUpdated": "2026-01-29T23:08:52.607Z"
         }
       }
     },
@@ -5710,7 +5710,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.909Z"
+          "lastUpdated": "2026-01-29T23:08:52.527Z"
         }
       },
       "cultural": {
@@ -5755,7 +5755,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.867Z"
+          "lastUpdated": "2026-01-29T23:08:52.607Z"
         }
       }
     },
@@ -5929,7 +5929,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.909Z"
+          "lastUpdated": "2026-01-29T23:08:52.527Z"
         }
       },
       "cultural": {
@@ -5974,7 +5974,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.867Z"
+          "lastUpdated": "2026-01-29T23:08:52.607Z"
         }
       }
     },
@@ -6148,7 +6148,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.910Z"
+          "lastUpdated": "2026-01-29T23:08:52.527Z"
         }
       },
       "cultural": {
@@ -6193,7 +6193,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.867Z"
+          "lastUpdated": "2026-01-29T23:08:52.607Z"
         }
       }
     },
@@ -6367,7 +6367,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.910Z"
+          "lastUpdated": "2026-01-29T23:08:52.527Z"
         }
       },
       "cultural": {
@@ -6412,7 +6412,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.867Z"
+          "lastUpdated": "2026-01-29T23:08:52.607Z"
         }
       }
     },
@@ -6586,7 +6586,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.910Z"
+          "lastUpdated": "2026-01-29T23:08:52.528Z"
         }
       },
       "cultural": {
@@ -6631,7 +6631,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.868Z"
+          "lastUpdated": "2026-01-29T23:08:52.607Z"
         }
       }
     },
@@ -6805,7 +6805,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.910Z"
+          "lastUpdated": "2026-01-29T23:08:52.528Z"
         }
       },
       "cultural": {
@@ -6850,7 +6850,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.868Z"
+          "lastUpdated": "2026-01-29T23:08:52.608Z"
         }
       }
     },
@@ -7024,7 +7024,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.910Z"
+          "lastUpdated": "2026-01-29T23:08:52.528Z"
         }
       },
       "cultural": {
@@ -7069,7 +7069,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.868Z"
+          "lastUpdated": "2026-01-29T23:08:52.608Z"
         }
       }
     },
@@ -7243,7 +7243,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.911Z"
+          "lastUpdated": "2026-01-29T23:08:52.528Z"
         }
       },
       "cultural": {
@@ -7288,7 +7288,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.868Z"
+          "lastUpdated": "2026-01-29T23:08:52.608Z"
         }
       }
     },
@@ -7462,7 +7462,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.911Z"
+          "lastUpdated": "2026-01-29T23:08:52.528Z"
         }
       },
       "cultural": {
@@ -7507,7 +7507,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.868Z"
+          "lastUpdated": "2026-01-29T23:08:52.608Z"
         }
       }
     },
@@ -7681,7 +7681,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.911Z"
+          "lastUpdated": "2026-01-29T23:08:52.528Z"
         }
       },
       "cultural": {
@@ -7726,7 +7726,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.868Z"
+          "lastUpdated": "2026-01-29T23:08:52.608Z"
         }
       }
     },
@@ -7900,7 +7900,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.911Z"
+          "lastUpdated": "2026-01-29T23:08:52.529Z"
         }
       },
       "cultural": {
@@ -7945,7 +7945,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.869Z"
+          "lastUpdated": "2026-01-29T23:08:52.608Z"
         }
       }
     },
@@ -8119,7 +8119,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.911Z"
+          "lastUpdated": "2026-01-29T23:08:52.529Z"
         }
       },
       "cultural": {
@@ -8164,7 +8164,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.870Z"
+          "lastUpdated": "2026-01-29T23:08:52.608Z"
         }
       }
     },
@@ -8338,7 +8338,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.911Z"
+          "lastUpdated": "2026-01-29T23:08:52.529Z"
         }
       },
       "cultural": {
@@ -8383,7 +8383,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.870Z"
+          "lastUpdated": "2026-01-29T23:08:52.609Z"
         }
       }
     },
@@ -8557,7 +8557,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.912Z"
+          "lastUpdated": "2026-01-29T23:08:52.529Z"
         }
       },
       "cultural": {
@@ -8602,7 +8602,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.870Z"
+          "lastUpdated": "2026-01-29T23:08:52.609Z"
         }
       }
     },
@@ -8776,7 +8776,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.912Z"
+          "lastUpdated": "2026-01-29T23:08:52.529Z"
         }
       },
       "cultural": {
@@ -8821,7 +8821,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.870Z"
+          "lastUpdated": "2026-01-29T23:08:52.609Z"
         }
       }
     },
@@ -8995,7 +8995,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.912Z"
+          "lastUpdated": "2026-01-29T23:08:52.530Z"
         }
       },
       "cultural": {
@@ -9040,7 +9040,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.870Z"
+          "lastUpdated": "2026-01-29T23:08:52.609Z"
         }
       }
     },
@@ -9214,7 +9214,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.912Z"
+          "lastUpdated": "2026-01-29T23:08:52.530Z"
         }
       },
       "cultural": {
@@ -9259,7 +9259,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.871Z"
+          "lastUpdated": "2026-01-29T23:08:52.609Z"
         }
       }
     },
@@ -9433,7 +9433,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.912Z"
+          "lastUpdated": "2026-01-29T23:08:52.530Z"
         }
       },
       "cultural": {
@@ -9478,7 +9478,7 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.871Z"
+          "lastUpdated": "2026-01-29T23:08:52.609Z"
         }
       }
     },
@@ -9596,7 +9596,7 @@
             "nearestSkiResortMi": null
           },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:07:52.912Z"
+          "lastUpdated": "2026-01-29T23:08:52.531Z"
         },
         "crime": {
           "violentCrimeRate": 446,
@@ -9608,6 +9608,16 @@
           "fiberCoveragePercent": 90,
           "providerCount": 7,
           "maxDownloadSpeed": 5000
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 90,
+          "hospitalBeds100k": 210,
+          "hpsaScore": 8
+        },
+        "education": {
+          "studentTeacherRatio": 14,
+          "graduationRate": 89,
+          "schoolCount": 130
         }
       },
       "cultural": {
@@ -9652,7 +9662,179 @@
           },
           "sports": null,
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T22:08:44.871Z"
+          "lastUpdated": "2026-01-29T23:08:52.610Z"
+        }
+      }
+    },
+    "boise": {
+      "census": {
+        "source": "Census ACS 5-Year (2022)",
+        "year": 2022,
+        "lastUpdated": "2026-01-29",
+        "totalPopulation": 234192,
+        "medianAge": 37.9,
+        "under18Percent": 18.9,
+        "age18to34Percent": 27,
+        "age35to54Percent": 26.5,
+        "age55PlusPercent": 27.6,
+        "whitePercent": 81.2,
+        "blackPercent": 1.4,
+        "hispanicPercent": 9.1,
+        "asianPercent": 3.4,
+        "pacificIslanderPercent": 0.3,
+        "nativeAmericanPercent": 0.3,
+        "otherRacePercent": 0.4,
+        "twoOrMoreRacesPercent": 4,
+        "chinesePercent": 0.65,
+        "indianPercent": 0.02,
+        "filipinoPercent": null,
+        "vietnamesePercent": null,
+        "koreanPercent": null,
+        "japanesePercent": 0.27,
+        "mexicanPercent": 6.46,
+        "puertoRicanPercent": 0.44,
+        "cubanPercent": 0.1,
+        "salvadoranPercent": 0.21,
+        "guatemalanPercent": 0.07,
+        "colombianPercent": 0,
+        "diversityIndex": 33,
+        "highSchoolOrHigherPercent": 95.2,
+        "bachelorsOrHigherPercent": 45.8,
+        "graduateDegreePercent": 29.1,
+        "medianHouseholdIncome": 76402,
+        "perCapitaIncome": 44728,
+        "povertyRate": 11.1,
+        "foreignBornPercent": 6.7,
+        "familyHouseholdsPercent": 44.7,
+        "marriedCouplePercent": 17.3,
+        "singlePersonPercent": 17.4,
+        "englishOnlyPercent": 90,
+        "spanishAtHomePercent": 10,
+        "asianLanguageAtHomePercent": 2.1
+      },
+      "bea": {
+        "purchasingPower": {
+          "realPersonalIncome": 45432.2,
+          "realPerCapitaIncome": 55995
+        },
+        "regionalPriceParity": {
+          "allItems": 94.205,
+          "goods": 95.859,
+          "housing": 102.41,
+          "utilities": 66.353,
+          "otherServices": 91.685
+        },
+        "taxes": {
+          "state": "ID",
+          "effectiveTaxRate": 12.44,
+          "perCapitaIncome": 57034,
+          "perCapitaDisposable": 49939,
+          "federalTaxes": 11004116,
+          "stateTaxes": 2773739,
+          "localTaxes": 17682,
+          "totalTaxes": 13795537
+        },
+        "year": "2022",
+        "lastUpdated": "2026-01-29"
+      },
+      "climate": {
+        "noaa": {
+          "source": "ACIS+Open-Meteo",
+          "station": "KBOI",
+          "normalPeriod": "1991-2020",
+          "lastUpdated": "2026-01-29",
+          "comfortDays": 71,
+          "extremeHeatDays": 25,
+          "freezeDays": 108,
+          "rainDays": 89,
+          "annualPrecipitation": 11.5,
+          "snowDays": 6,
+          "annualSnowfall": 17.6,
+          "coolingDegreeDays": 1046,
+          "heatingDegreeDays": 5308,
+          "growingSeasonDays": 363,
+          "lastSpringFreeze": "01-12",
+          "firstFallFreeze": "01-10",
+          "diurnalSwing": 22.7,
+          "seasonalStability": null,
+          "cloudyDays": 110,
+          "avgCloudCover": 49,
+          "julyDewpoint": 38.7,
+          "summerHumidityIndex": 29
+        }
+      },
+      "qol": {
+        "walkability": null,
+        "crime": {
+          "violentCrimeRate": 242,
+          "propertyCrimeRate": 1336,
+          "trend3Year": "stable",
+          "dataYear": 2022
+        },
+        "airQuality": {
+          "annualAQI": 46,
+          "healthyDaysPercent": 66,
+          "hazardousDays": 22,
+          "primaryPollutant": "PM2.5",
+          "dataYear": 2023
+        },
+        "broadband": {
+          "fiberCoveragePercent": 78,
+          "providerCount": 4,
+          "maxDownloadSpeed": 2000
+        },
+        "education": {
+          "studentTeacherRatio": 18,
+          "graduationRate": 89,
+          "schoolCount": 60
+        },
+        "health": {
+          "primaryCarePhysiciansPer100k": 85,
+          "hospitalBeds100k": 200,
+          "hpsaScore": 10
+        },
+        "recreation": {
+          "nature": {
+            "parkAcresPer1K": 23.5,
+            "trailMilesWithin10Mi": 2580,
+            "protectedLandPercent": null,
+            "stateParksWithin50Mi": 13
+          },
+          "geography": {
+            "coastlineWithin15Mi": false,
+            "coastlineDistanceMi": 345,
+            "waterQualityIndex": null,
+            "maxElevationDelta": 3421,
+            "nearestMountainDistMi": 0,
+            "nearestSkiResortMi": null
+          },
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T23:08:52.531Z"
+        }
+      },
+      "cultural": {
+        "urbanLifestyle": {
+          "nightlife": {
+            "barsAndClubsPer10K": 1.5,
+            "totalVenues": 36,
+            "lateNightVenues": 1
+          },
+          "arts": {
+            "museums": 13,
+            "theaters": 15,
+            "artGalleries": 68,
+            "musicVenues": 1
+          },
+          "dining": {
+            "fineDiningCount": null,
+            "restaurantsPer10K": 19.1,
+            "cuisineDiversity": 50,
+            "breweries": 0,
+            "coffeeshops": 69
+          },
+          "sports": null,
+          "dataYear": 2026,
+          "lastUpdated": "2026-01-29T23:08:52.610Z"
         }
       }
     }

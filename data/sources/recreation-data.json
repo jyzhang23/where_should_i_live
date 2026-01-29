@@ -760,6 +760,23 @@
         "nearestSkiResortMi": null
       },
       "dataYear": 2026
+    },
+    "boise": {
+      "nature": {
+        "parkAcresPer1K": 23.5,
+        "trailMilesWithin10Mi": 2580,
+        "protectedLandPercent": null,
+        "stateParksWithin50Mi": 13
+      },
+      "geography": {
+        "coastlineWithin15Mi": false,
+        "coastlineDistanceMi": 345,
+        "waterQualityIndex": null,
+        "maxElevationDelta": 3421,
+        "nearestMountainDistMi": 0,
+        "nearestSkiResortMi": null
+      },
+      "dataYear": 2026
     }
   }
 }
