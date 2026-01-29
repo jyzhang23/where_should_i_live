@@ -41,18 +41,17 @@ export default function CityPage({ params }: CityPageProps) {
   // Comparison mode
   const [showComparison, setShowComparison] = useState(false);
 
-  // Calculate score for this city
-  const cityScore = useMemo(() => {
-    if (!city || !city.metrics || !isHydrated) return null;
-    const result = calculateScores([city], preferences);
-    return result.rankings[0] || null;
-  }, [city, preferences, isHydrated]);
-
-  // Calculate all rankings for comparison panel
+  // Calculate all rankings (needed for percentile-based scoring and comparison panel)
   const allRankings = useMemo(() => {
     if (!allCitiesData?.cities || !isHydrated) return null;
     return calculateScores(allCitiesData.cities, preferences);
   }, [allCitiesData, preferences, isHydrated]);
+
+  // Find this city's score from the full rankings
+  const cityScore = useMemo(() => {
+    if (!city || !allRankings) return null;
+    return allRankings.rankings.find(r => r.cityId === city.id) || null;
+  }, [city, allRankings]);
 
   if (isLoading) {
     return (
