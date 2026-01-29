@@ -4,6 +4,7 @@ import { usePreferencesStore } from "@/lib/store";
 import { TOOLTIPS } from "@/types/preferences";
 import { PreferenceSlider } from "./PreferenceSlider";
 import { QuickStart } from "./QuickStart";
+import { CityTinder } from "./CityTinder";
 
 export function BasicPreferences() {
   const { preferences, updateWeight } = usePreferencesStore();
@@ -11,14 +12,17 @@ export function BasicPreferences() {
   return (
     <div className="space-y-6">
       {/* Quick Setup */}
-      <div className="flex items-center justify-between">
+      <div className="space-y-2">
         <div>
           <h3 className="text-sm font-semibold">New here?</h3>
           <p className="text-xs text-muted-foreground">
-            Answer a few questions to get started
+            Set your preferences with a quick wizard or fun game
           </p>
         </div>
-        <QuickStart />
+        <div className="flex gap-2">
+          <QuickStart />
+          <CityTinder />
+        </div>
       </div>
 
       <hr className="border-border" />

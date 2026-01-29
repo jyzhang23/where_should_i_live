@@ -230,6 +230,46 @@ async function countPOIsNearCity(
 }
 
 /**
+ * Count unique cuisine types to measure dining diversity
+ * Returns the number of distinct cuisine values found on restaurants
+ */
+async function countCuisineDiversity(lat: number, lon: number, radiusMiles: number): Promise<number> {
+  const radiusMeters = radiusMiles * 1609.34;
+  
+  // Query restaurants with cuisine tags and return unique values
+  const query = `
+    [out:json][timeout:90];
+    (
+      node["amenity"="restaurant"]["cuisine"](around:${radiusMeters},${lat},${lon});
+      way["amenity"="restaurant"]["cuisine"](around:${radiusMeters},${lat},${lon});
+    );
+    out tags;
+  `;
+  
+  interface OsmElement {
+    tags?: { cuisine?: string };
+  }
+  
+  const result = await queryOverpass(query) as { elements?: OsmElement[] } | null;
+  if (!result?.elements) return 0;
+  
+  // Extract unique cuisine types (some have multiple like "italian;pizza")
+  const cuisineSet = new Set<string>();
+  for (const el of result.elements) {
+    const cuisine = el.tags?.cuisine;
+    if (cuisine) {
+      // Split on semicolons and commas (OSM allows multiple cuisines)
+      const types = cuisine.split(/[;,]/).map(c => c.trim().toLowerCase());
+      types.forEach(t => {
+        if (t && t.length > 0) cuisineSet.add(t);
+      });
+    }
+  }
+  
+  return cuisineSet.size;
+}
+
+/**
  * Count hiking/walking trails near a city
  * Loosened filters to catch more trails (removed strict sac_scale requirement)
  */
@@ -344,18 +384,19 @@ async function collectRecreationData(city: CityData, population: number): Promis
   const lat = city.latitude;
   const lon = city.longitude;
   
-  // Count parks (local parks within 5mi)
+  // Count parks (local parks within 5mi) - using leisure tag
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-  const parkCount = await countPOIsNearCity(lat, lon, 5, ["park"]);
-  const parkAcresPer1K = population > 0 ? Math.round(parkCount * 20 * 10 / population) : null; // Estimate 20 acres avg per park
+  const parkCount = await countPOIsNearCity(lat, lon, 5, ["park", "nature_reserve", "garden"], "leisure");
+  // Estimate 20 acres avg per park, formula: (parkCount * 20 acres) / (population / 1000)
+  const parkAcresPer1K = population > 0 ? Math.round(parkCount * 20 * 1000 / population * 10) / 10 : null;
   
   // Count trail miles
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
   const trailMiles = await countTrailsMiles(lat, lon, 10);
   
-  // Protected land estimate (based on nearby state/national parks)
+  // Count state/national parks within 50mi using boundary tag
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-  const stateParks = await countPOIsNearCity(lat, lon, 50, []);
+  const stateParks = await countPOIsNearCity(lat, lon, 50, ["national_park", "protected_area"], "boundary");
   // Query for protected areas separately
   
   // Coastline distance
@@ -401,6 +442,10 @@ async function collectUrbanLifestyleData(city: CityData, population: number): Pr
   const barsCount = await countPOIsNearCity(lat, lon, 5, ["bar", "pub", "nightclub"]);
   const barsAndClubsPer10K = pop10K > 0 ? Math.round(barsCount / pop10K * 10) / 10 : null;
   
+  // Late night venues - nightclubs specifically (proxy for late-night scene)
+  await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
+  const lateNightVenues = await countPOIsNearCity(lat, lon, 10, ["nightclub"]);
+  
   // Arts - museums (use tourism tag, not amenity!)
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
   const museums = await countPOIsNearCity(lat, lon, 10, ["museum"], "tourism");
@@ -413,10 +458,18 @@ async function collectUrbanLifestyleData(city: CityData, population: number): Pr
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
   const galleries = await countPOIsNearCity(lat, lon, 5, ["gallery", "artwork"], "tourism");
   
+  // Arts - music venues (concerts, live music)
+  await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
+  const musicVenues = await countPOIsNearCity(lat, lon, 10, ["music_venue", "concert_hall"], "amenity");
+  
   // Dining - restaurants
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
   const restaurants = await countPOIsNearCity(lat, lon, 5, ["restaurant", "fast_food", "cafe"]);
   const restaurantsPer10K = pop10K > 0 ? Math.round(restaurants / pop10K * 10) / 10 : null;
+  
+  // Dining - cuisine diversity (unique cuisine types)
+  await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
+  const cuisineDiversity = await countCuisineDiversity(lat, lon, 10);
   
   // Dining - breweries
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
@@ -430,18 +483,18 @@ async function collectUrbanLifestyleData(city: CityData, population: number): Pr
     nightlife: {
       barsAndClubsPer10K,
       totalVenues: barsCount,
-      lateNightVenues: null, // Would need opening hours data
+      lateNightVenues,
     },
     arts: {
       museums,
       theaters,
       artGalleries: galleries,
-      musicVenues: null, // Complex to detect
+      musicVenues,
     },
     dining: {
       fineDiningCount: null, // Would need Michelin/Yelp data
       restaurantsPer10K,
-      cuisineDiversity: null, // Would need cuisine type analysis
+      cuisineDiversity,
       breweries,
       coffeeshops,
     },
@@ -480,14 +533,17 @@ function getUrbanLifestyleGaps(data: UrbanLifestyleSourceData | undefined): stri
   // Nightlife - 0 is suspicious for any real city
   if (data.nightlife.barsAndClubsPer10K === 0 || data.nightlife.barsAndClubsPer10K === null) gaps.push("bars");
   if (data.nightlife.totalVenues === 0 || data.nightlife.totalVenues === null) gaps.push("bars");
+  if (data.nightlife.lateNightVenues === null) gaps.push("lateNightVenues");
   
   // Arts - 0 museums is suspicious for most cities
   if (data.arts.museums === 0 || data.arts.museums === null) gaps.push("museums");
   if (data.arts.theaters === 0 || data.arts.theaters === null) gaps.push("theaters");
   if (data.arts.artGalleries === 0 || data.arts.artGalleries === null) gaps.push("galleries");
+  if (data.arts.musicVenues === 0 || data.arts.musicVenues === null) gaps.push("musicVenues");
   
   // Dining - 0 restaurants is definitely rate-limited
   if (data.dining.restaurantsPer10K === 0 || data.dining.restaurantsPer10K === null) gaps.push("restaurants");
+  if (data.dining.cuisineDiversity === 0 || data.dining.cuisineDiversity === null) gaps.push("cuisineDiversity");
   if (data.dining.breweries === 0 || data.dining.breweries === null) gaps.push("breweries");
   if (data.dining.coffeeshops === 0 || data.dining.coffeeshops === null) gaps.push("coffeeshops");
   
@@ -538,6 +594,12 @@ async function fillUrbanLifestyleGaps(
     result.arts = { ...result.arts, artGalleries };
   }
   
+  if (gaps.includes("musicVenues")) {
+    await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
+    const musicVenues = await countPOIsNearCity(lat, lon, 10, ["music_venue", "concert_hall"], "amenity");
+    result.arts = { ...result.arts, musicVenues };
+  }
+  
   if (gaps.includes("restaurants")) {
     await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
     const restaurants = await countPOIsNearCity(lat, lon, 5, ["restaurant", "fast_food", "cafe"]);
@@ -557,6 +619,18 @@ async function fillUrbanLifestyleGaps(
     await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
     const coffeeshops = await countPOIsNearCity(lat, lon, 5, ["cafe"]);
     result.dining = { ...result.dining, coffeeshops };
+  }
+  
+  if (gaps.includes("lateNightVenues")) {
+    await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
+    const lateNightVenues = await countPOIsNearCity(lat, lon, 10, ["nightclub"]);
+    result.nightlife = { ...result.nightlife, lateNightVenues };
+  }
+  
+  if (gaps.includes("cuisineDiversity")) {
+    await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
+    const cuisineDiversity = await countCuisineDiversity(lat, lon, 10);
+    result.dining = { ...result.dining, cuisineDiversity };
   }
   
   return result;
@@ -579,8 +653,8 @@ async function fillRecreationGaps(
   
   if (gaps.includes("parks")) {
     await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-    const parkCount = await countPOIsNearCity(lat, lon, 5, ["park"]);
-    const parkAcresPer1K = population > 0 ? Math.round(parkCount * 20 * 10 / population) : null;
+    const parkCount = await countPOIsNearCity(lat, lon, 5, ["park", "nature_reserve", "garden"], "leisure");
+    const parkAcresPer1K = population > 0 ? Math.round(parkCount * 20 * 1000 / population * 10) / 10 : null;
     result.nature = { ...result.nature, parkAcresPer1K };
   }
   
@@ -592,7 +666,7 @@ async function fillRecreationGaps(
   
   if (gaps.includes("stateParks")) {
     await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-    const stateParksWithin50Mi = await countPOIsNearCity(lat, lon, 50, []);
+    const stateParksWithin50Mi = await countPOIsNearCity(lat, lon, 50, ["national_park", "protected_area"], "boundary");
     result.nature = { ...result.nature, stateParksWithin50Mi };
   }
   
