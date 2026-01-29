@@ -578,7 +578,7 @@ function analyzeClimate(
   // Extreme Heat
   if (noaa?.extremeHeatDays !== null && noaa?.extremeHeatDays !== undefined) {
     const days = noaa.extremeHeatDays;
-    const maxHeat = prefs.maxHeatDays;
+    const maxHeat = prefs.maxExtremeHeatDays;
     let status: FactorAnalysis["status"] = "neutral";
 
     if (days > maxHeat) {
@@ -604,7 +604,7 @@ function analyzeClimate(
   // Sunshine
   if (metrics?.daysOfSunshine !== null && metrics?.daysOfSunshine !== undefined) {
     const days = metrics.daysOfSunshine;
-    const minSun = prefs.minSunshine;
+    const minSun = prefs.minSunshineDays;
     let status: FactorAnalysis["status"] = "neutral";
 
     if (days < minSun) {
@@ -627,29 +627,31 @@ function analyzeClimate(
     });
   }
 
-  // Summer Humidity
-  if (noaa?.summerHumidityIndex !== null && noaa?.summerHumidityIndex !== undefined) {
-    const humidity = noaa.summerHumidityIndex;
-    const maxHumid = prefs.maxHumidity;
+  // Summer Humidity (using July dewpoint as proxy)
+  if (noaa?.julyDewpoint !== null && noaa?.julyDewpoint !== undefined) {
+    const dewpoint = noaa.julyDewpoint;
+    const maxDewpoint = prefs.maxJulyDewpoint;
     let status: FactorAnalysis["status"] = "neutral";
 
-    if (humidity > maxHumid) {
+    if (dewpoint > maxDewpoint) {
       status = "bad";
-    } else if (humidity < 60) {
+    } else if (dewpoint < 60) {
       status = "good";
     }
 
     factors.push({
-      name: "Summer Humidity",
+      name: "Summer Humidity (Dewpoint)",
       weight: 15,
-      value: humidity,
-      unit: "",
-      threshold: { value: maxHumid, type: "max", label: "Your max" },
-      score: Math.max(0, 100 - humidity),
+      value: dewpoint,
+      unit: "°F",
+      threshold: { value: maxDewpoint, type: "max", label: "Your max" },
+      score: Math.max(0, 100 - (dewpoint - 50) * 2),
       status,
-      explanation: humidity > maxHumid
-        ? `Summer humidity index of ${humidity} exceeds your max of ${maxHumid}.`
-        : `Summer humidity index of ${humidity} is comfortable.`,
+      explanation: dewpoint > maxDewpoint
+        ? `July dewpoint of ${dewpoint}°F exceeds your max of ${maxDewpoint}°F (muggy).`
+        : dewpoint < 60 
+        ? `July dewpoint of ${dewpoint}°F is comfortable and dry.`
+        : `July dewpoint of ${dewpoint}°F is moderate.`,
     });
   }
 
@@ -679,7 +681,7 @@ function analyzeCost(
   const prefs = preferences.advanced.costOfLiving;
 
   // Housing (RPP)
-  if (bea?.regionalPriceParity?.housing !== null) {
+  if (bea?.regionalPriceParity?.housing != null) {
     const rpp = bea.regionalPriceParity.housing;
     let status: FactorAnalysis["status"] = "neutral";
 
@@ -705,7 +707,7 @@ function analyzeCost(
   }
 
   // Overall Cost of Living
-  if (bea?.regionalPriceParity?.allItems !== null) {
+  if (bea?.regionalPriceParity?.allItems != null) {
     const rpp = bea.regionalPriceParity.allItems;
     let status: FactorAnalysis["status"] = "neutral";
 
@@ -727,7 +729,7 @@ function analyzeCost(
   }
 
   // Tax Rate
-  if (bea?.taxes?.effectiveTaxRate !== null) {
+  if (bea?.taxes?.effectiveTaxRate != null) {
     const rate = bea.taxes.effectiveTaxRate;
     let status: FactorAnalysis["status"] = "neutral";
 
@@ -778,7 +780,7 @@ function analyzeDemographics(
   const prefs = preferences.advanced.demographics;
 
   // Population
-  if (census?.totalPopulation !== null) {
+  if (census?.totalPopulation != null) {
     const pop = census.totalPopulation;
     const minPop = prefs.minPopulation;
     let status: FactorAnalysis["status"] = "neutral";
@@ -803,7 +805,7 @@ function analyzeDemographics(
   }
 
   // Diversity
-  if (census?.diversityIndex !== null) {
+  if (census?.diversityIndex != null) {
     const div = census.diversityIndex;
     const minDiv = prefs.minDiversityIndex;
     let status: FactorAnalysis["status"] = "neutral";
@@ -829,7 +831,7 @@ function analyzeDemographics(
   }
 
   // Median Age
-  if (census?.medianAge !== null) {
+  if (census?.medianAge != null) {
     const age = census.medianAge;
     let status: FactorAnalysis["status"] = "neutral";
 
@@ -845,7 +847,7 @@ function analyzeDemographics(
   }
 
   // Education
-  if (census?.bachelorsOrHigherPercent !== null) {
+  if (census?.bachelorsOrHigherPercent != null) {
     const edu = census.bachelorsOrHigherPercent;
     let status: FactorAnalysis["status"] = "neutral";
 
@@ -894,7 +896,7 @@ function analyzeCultural(
   const prefs = preferences.advanced.cultural;
 
   // Political Alignment
-  if (cultural?.political?.partisanIndex !== null) {
+  if (cultural?.political?.partisanIndex != null) {
     const pi = cultural.political.partisanIndex;
     const demPct = cultural.political.democratPercent;
     const prefAlign = prefs.partisanPreference;
