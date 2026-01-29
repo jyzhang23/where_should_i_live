@@ -23,7 +23,9 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { CensusDemographics } from "@/types/city";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("census-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const CENSUS_API_KEY = process.env.CENSUS_API_KEY || "";
 const ACS_YEAR = 2022; // Most recent 5-year ACS
@@ -127,19 +129,19 @@ async function fetchCensusData(
 
     const profileUrl = `${ACS_PROFILE_URL}?get=${profileVars}&for=place:${placeFips}&in=state:${stateFips}${apiKey}`;
     
-    console.log(`    Fetching profile data...`);
+    logger.debug("Fetching profile data");
     const profileResp = await fetch(profileUrl);
     
     if (!profileResp.ok) {
       const errorText = await profileResp.text();
-      console.error(`Census Profile API error for ${cityName}: ${profileResp.status} - ${errorText.substring(0, 200)}`);
+      logger.error("Census Profile API error", { city: cityName, status: profileResp.status, error: errorText.substring(0, 200) });
       return null;
     }
 
     const profileData = await profileResp.json();
     
     if (!profileData || profileData.length < 2) {
-      console.error(`No profile data returned for ${cityName}`);
+      logger.error("No profile data returned", { city: cityName });
       return null;
     }
 
@@ -169,7 +171,7 @@ async function fetchCensusData(
     
     let asianData: Record<string, number | null> = {};
     try {
-      console.log(`    Fetching Asian subgroup data...`);
+      logger.debug("Fetching Asian subgroup data");
       const detailResp = await fetch(detailUrl);
       if (detailResp.ok) {
         const detailJson = await detailResp.json();
@@ -184,7 +186,7 @@ async function fetchCensusData(
         }
       }
     } catch (e) {
-      console.log(`    Warning: Could not fetch Asian subgroup data`);
+      logger.warn("Could not fetch Asian subgroup data");
     }
 
     // Fetch Hispanic subgroup data from detailed tables
@@ -202,7 +204,7 @@ async function fetchCensusData(
     
     let hispanicData: Record<string, number | null> = {};
     try {
-      console.log(`    Fetching Hispanic subgroup data...`);
+      logger.debug("Fetching Hispanic subgroup data");
       const hispanicResp = await fetch(hispanicUrl);
       if (hispanicResp.ok) {
         const hispanicJson = await hispanicResp.json();
@@ -217,7 +219,7 @@ async function fetchCensusData(
         }
       }
     } catch (e) {
-      console.log(`    Warning: Could not fetch Hispanic subgroup data`);
+      logger.warn("Could not fetch Hispanic subgroup data");
     }
 
     // Calculate age brackets
@@ -261,7 +263,7 @@ async function fetchCensusData(
     // Validate: race percentages should sum to roughly 100% (allow some margin for rounding)
     const raceSum = racePercentages.reduce((a, b) => a + b, 0);
     if (raceSum < 50 || raceSum > 150) {
-      console.warn(`    Warning: Race percentages sum to ${raceSum.toFixed(1)}% - data may be invalid`);
+      logger.warn("Race percentages sum invalid", { sum: raceSum.toFixed(1) });
     }
     
     const diversityIndex = calculateDiversityIndex(racePercentages);
@@ -370,7 +372,7 @@ async function fetchCensusData(
       asianLanguageAtHomePercent: sanitizePercentOrNull(data["DP02_0118PE"]),
     };
   } catch (error) {
-    console.error(`Error fetching Census data for ${cityName}:`, error);
+    logger.error("Error fetching Census data", { city: cityName, error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -437,7 +439,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`Fetching Census data for ${citiesWithFips.length} cities...`);
+    logger.info("Fetching Census data", { cityCount: citiesWithFips.length });
 
     let successCount = 0;
     let skipCount = 0;
@@ -445,7 +447,7 @@ export async function POST(request: NextRequest) {
 
     // Process cities sequentially to avoid rate limiting
     for (const city of citiesWithFips) {
-      console.log(`  Fetching ${city.name} (${city.censusFips!.state}-${city.censusFips!.place})...`);
+      logger.debug("Fetching city", { city: city.name, fips: `${city.censusFips!.state}-${city.censusFips!.place}` });
       
       const censusData = await fetchCensusData(
         city.censusFips!.state,
@@ -456,17 +458,12 @@ export async function POST(request: NextRequest) {
       if (!censusData) {
         skipCount++;
         errors.push(`${city.name}: Failed to fetch`);
-        console.log(`    ✗ Failed`);
+        logger.warn("Failed to fetch city", { city: city.name });
         continue;
       }
 
       successCount++;
-      console.log(
-        `    ✓ Pop=${censusData.totalPopulation?.toLocaleString()}, ` +
-        `Diversity=${censusData.diversityIndex}, ` +
-        `MedianAge=${censusData.medianAge}, ` +
-        `Bachelor+=${censusData.bachelorsOrHigherPercent}%`
-      );
+      logger.debug("Updated city", { city: city.name, pop: censusData.totalPopulation, diversity: censusData.diversityIndex, medianAge: censusData.medianAge, bachelors: censusData.bachelorsOrHigherPercent });
 
       // Ensure city entry exists in metrics
       if (!metricsFile.cities[city.id]) {
@@ -504,7 +501,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -518,7 +515,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Census pull error:", error);
+    logger.error("Census pull failed", { error: error instanceof Error ? error.message : String(error) });
 
     try {
       await prisma.dataRefreshLog.create({

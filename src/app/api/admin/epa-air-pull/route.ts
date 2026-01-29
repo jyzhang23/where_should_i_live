@@ -20,7 +20,9 @@ import { join } from "path";
 import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
 import { getFallbackData } from "@/lib/cityAliases";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("epa-air-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const EPA_EMAIL = process.env.EPA_EMAIL || "";
 const EPA_API_KEY = process.env.EPA_API_KEY || "";
@@ -216,7 +218,7 @@ async function fetchCountyAQI(
   }
 
   if (!EPA_EMAIL || !EPA_API_KEY) {
-    console.log("    Warning: EPA_EMAIL and EPA_API_KEY not set, using sample data");
+    logger.warn("EPA_EMAIL and EPA_API_KEY not set, using sample data");
     return null;
   }
 
@@ -224,7 +226,7 @@ async function fetchCountyAQI(
     // EPA AQS annualData endpoint provides summary statistics
     const url = `${EPA_AQS_BASE_URL}/annualData/byCounty?email=${encodeURIComponent(EPA_EMAIL)}&key=${EPA_API_KEY}&param=44201,42101,42602,88101&bdate=${year}0101&edate=${year}1231&state=${stateFips}&county=${countyFips}`;
     
-    console.log(`    Fetching EPA AQI data for county ${stateFips}-${countyFips}...`);
+    logger.debug("Fetching EPA AQI data", { county: `${stateFips}-${countyFips}` });
     
     const response = await fetch(url, {
       headers: { "Accept": "application/json" },
@@ -232,14 +234,14 @@ async function fetchCountyAQI(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`    EPA API error: ${response.status} - ${errorText.substring(0, 200)}`);
+      logger.error("EPA API error", { status: response.status, error: errorText.substring(0, 200) });
       return null;
     }
 
     const data = await response.json();
     
     if (!data || data.Header?.status !== "Success" || !data.Data || data.Data.length === 0) {
-      console.log(`    No EPA data returned for county ${stateFips}-${countyFips}`);
+      logger.debug("No EPA data returned", { county: `${stateFips}-${countyFips}` });
       return null;
     }
 
@@ -316,7 +318,7 @@ async function fetchCountyAQI(
     countyAQICache.set(cacheKey, result);
     return result;
   } catch (error) {
-    console.error(`Error fetching EPA data for ${stateFips}-${countyFips}:`, error);
+    logger.error("Error fetching EPA data", { county: `${stateFips}-${countyFips}`, error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -340,7 +342,7 @@ async function fetchAirNowHistorical(
     // For now, return null to use EPA as primary
     return null;
   } catch (error) {
-    console.error("AirNow API error:", error);
+    logger.error("AirNow API error", { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -420,19 +422,19 @@ export async function POST(request: NextRequest) {
     const fallbackCities: string[] = [];
     const dataYear = 2023; // Most recent complete year
 
-    console.log(`Processing ${cities.length} cities for EPA air quality data...`);
+    logger.info("Processing cities for EPA air quality data", { cityCount: cities.length });
 
     // Clear cache for fresh data
     countyAQICache.clear();
 
     for (const city of cities) {
-      console.log(`  Processing ${city.name}, ${city.state}...`);
+      logger.debug("Processing city", { city: city.name, state: city.state });
       
       // Get county FIPS for this city (with fuzzy matching)
       const countyInfo = getFallbackData(city.id, CITY_TO_COUNTY);
       
       if (!countyInfo) {
-        console.log(`    Skipping: No county mapping for ${city.id}`);
+        logger.debug("No county mapping, skipping", { city: city.id });
         skipCount++;
         continue;
       }
@@ -456,14 +458,14 @@ export async function POST(request: NextRequest) {
             usedFallback = true;
             fallbackCount++;
             fallbackCities.push(city.name);
-            console.log(`    Using fallback data for ${city.name}`);
+            logger.debug("Using fallback data", { city: city.name });
           }
         } else {
           apiCount++;
         }
 
         if (!aqiData) {
-          console.log(`    No AQI data available`);
+          logger.warn("No AQI data available", { city: city.name });
           errors.push(`${city.name}: No data available`);
           continue;
         }
@@ -495,12 +497,12 @@ export async function POST(request: NextRequest) {
         };
 
         successCount++;
-        console.log(`    AQI: ${aqiData.annualAQI}, Healthy days: ${aqiData.healthyDaysPercent}%${usedFallback ? " (fallback)" : ""}`);
+        logger.debug("Updated city", { city: city.name, aqi: aqiData.annualAQI, healthyDays: aqiData.healthyDaysPercent, fallback: usedFallback });
 
         // Rate limiting
         await new Promise(resolve => setTimeout(resolve, 200));
       } catch (error) {
-        console.error(`    Error processing ${city.name}:`, error);
+        logger.error("Error processing city", { city: city.name, error: error instanceof Error ? error.message : String(error) });
         errors.push(`${city.name}: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
@@ -532,7 +534,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -549,7 +551,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("EPA air quality pull error:", error);
+    logger.error("EPA air quality pull failed", { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       {
         error: "Failed to pull EPA air quality data",

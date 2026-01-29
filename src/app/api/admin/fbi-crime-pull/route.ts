@@ -18,7 +18,9 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { QoLMetrics } from "@/types/city";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("fbi-crime-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const FBI_API_KEY = process.env.FBI_API_KEY || "";
 
@@ -163,7 +165,7 @@ async function fetchStateCrimeData(
       
       // Try the state estimates endpoint
       const url = `${FBI_CDE_BASE_URL}/estimate/state/${stateAbbr}/${fromYear}/${currentYear}?api_key=${FBI_API_KEY}`;
-      console.log(`    Fetching FBI crime data for ${stateAbbr}...`);
+      logger.debug("Fetching FBI crime data", { state: stateAbbr });
       
       const response = await fetch(url, {
         headers: { "Accept": "application/json" },
@@ -208,16 +210,16 @@ async function fetchStateCrimeData(
           }
         }
       }
-      console.log(`    API returned no data for ${stateAbbr}, using fallback...`);
+      logger.debug("API returned no data, using fallback", { state: stateAbbr });
     } catch (error) {
-      console.log(`    API error for ${stateAbbr}, using fallback...`);
+      logger.debug("API error, using fallback", { state: stateAbbr });
     }
   }
 
   // Fallback to pre-populated state data (FBI UCR 2022)
   const fallbackData = STATE_CRIME_DATA[stateAbbr];
   if (fallbackData) {
-    console.log(`    Using pre-populated data for ${stateAbbr}`);
+    logger.debug("Using pre-populated data", { state: stateAbbr });
     
     stateDataCache.set(stateAbbr, {
       violentRate: fallbackData.violent,
@@ -326,19 +328,19 @@ export async function POST(request: NextRequest) {
     const errors: string[] = [];
     const currentYear = 2022; // Most recent year with complete FBI data
 
-    console.log(`Processing ${cities.length} cities for FBI crime data...`);
+    logger.info("Processing cities for FBI crime data", { cityCount: cities.length });
 
     // Clear cache for fresh data
     stateDataCache.clear();
 
     for (const city of cities) {
-      console.log(`  Processing ${city.name}, ${city.state}...`);
+      logger.debug("Processing city", { city: city.name, state: city.state });
       
       // Get state abbreviation
       const stateAbbr = getStateAbbr(city.state, city.censusFips);
       
       if (!stateAbbr) {
-        console.log(`    Skipping: Cannot determine state abbreviation for ${city.state}`);
+        logger.warn("Cannot determine state abbreviation", { state: city.state });
         skipCount++;
         continue;
       }
@@ -348,7 +350,7 @@ export async function POST(request: NextRequest) {
         const crimeData = await fetchStateCrimeData(stateAbbr, currentYear);
 
         if (!crimeData) {
-          console.log(`    No crime data available for ${stateAbbr}`);
+          logger.warn("No crime data available", { state: stateAbbr });
           errors.push(`${city.name}: No data available`);
           continue;
         }
@@ -379,12 +381,12 @@ export async function POST(request: NextRequest) {
         };
 
         successCount++;
-        console.log(`    Crime rate: ${crimeData.violentCrimeRate}/100K (${crimeData.trend3Year})`);
+        logger.debug("Updated city", { city: city.name, violentRate: crimeData.violentCrimeRate, trend: crimeData.trend3Year });
 
         // Rate limiting - be gentle with FBI API
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
-        console.error(`    Error processing ${city.name}:`, error);
+        logger.error("Error processing city", { city: city.name, error: error instanceof Error ? error.message : String(error) });
         errors.push(`${city.name}: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
@@ -416,7 +418,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -430,7 +432,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("FBI crime pull error:", error);
+    logger.error("FBI crime pull failed", { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       {
         error: "Failed to pull FBI crime data",

@@ -31,7 +31,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("climate-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 const ACIS_API_URL = "https://data.rcc-acis.org/StnData";
 const OPEN_METEO_URL = "https://archive-api.open-meteo.com/v1/archive";
@@ -204,7 +206,7 @@ async function fetchACISData(stationId: string): Promise<Partial<ClimateData> | 
     ]);
 
     if (!countsResp.ok || !growingResp.ok || !monthlyResp.ok || !diurnalResp.ok) {
-      console.error(`ACIS API returned non-200 for ${stationId}`);
+      logger.error("ACIS API returned non-200", { station: stationId });
       return null;
     }
 
@@ -214,8 +216,7 @@ async function fetchACISData(stationId: string): Promise<Partial<ClimateData> | 
     const diurnalData: ACISResponse = await diurnalResp.json();
 
     if (countsData.error || growingData.error || monthlyData.error || diurnalData.error) {
-      console.error(`ACIS error for ${stationId}:`, 
-        countsData.error || growingData.error || monthlyData.error || diurnalData.error);
+      logger.error("ACIS error", { station: stationId, error: countsData.error || growingData.error || monthlyData.error || diurnalData.error });
       return null;
     }
 
@@ -305,7 +306,7 @@ async function fetchACISData(stationId: string): Promise<Partial<ClimateData> | 
       ...(coordinates && { _lat: coordinates[1], _lon: coordinates[0] }),
     };
   } catch (error) {
-    console.error(`Error fetching ACIS data for ${stationId}:`, error);
+    logger.error("Error fetching ACIS data", { station: stationId, error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -340,19 +341,19 @@ async function fetchOpenMeteoData(
     url.searchParams.set("temperature_unit", "fahrenheit");
     url.searchParams.set("timezone", "UTC");
 
-    console.log(`    Open-Meteo URL: ${url.toString().substring(0, 100)}...`);
+    logger.debug("Fetching Open-Meteo data", { url: url.toString().substring(0, 100) });
     
     const response = await fetch(url.toString());
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`Open-Meteo returned ${response.status}: ${errorText.substring(0, 200)}`);
+      logger.error("Open-Meteo error", { status: response.status, error: errorText.substring(0, 200) });
       return null;
     }
 
     const data = await response.json();
     
     if (!data.hourly || !data.hourly.time) {
-      console.error("Open-Meteo returned no hourly data");
+      logger.error("Open-Meteo returned no hourly data");
       return null;
     }
 
@@ -431,7 +432,7 @@ async function fetchOpenMeteoData(
       summerHumidityIndex,
     };
   } catch (error) {
-    console.error(`Error fetching Open-Meteo data:`, error);
+    logger.error("Error fetching Open-Meteo data", { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -498,7 +499,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`Fetching climate data for ${citiesWithStations.length} cities...`);
+    logger.info("Fetching climate data", { cityCount: citiesWithStations.length });
 
     let acisSuccessCount = 0;
     let openMeteoSuccessCount = 0;
@@ -507,7 +508,7 @@ export async function POST(request: NextRequest) {
 
     // Process cities sequentially to avoid overwhelming the APIs
     for (const city of citiesWithStations) {
-      console.log(`  Fetching ${city.name} (${city.noaaStation})...`);
+      logger.debug("Fetching city", { city: city.name, station: city.noaaStation });
       
       // Fetch ACIS data
       const acisData = await fetchACISData(city.noaaStation!);
@@ -515,14 +516,12 @@ export async function POST(request: NextRequest) {
       if (!acisData) {
         skipCount++;
         errors.push(`${city.name}: ACIS failed`);
-        console.log(`    ✗ ACIS: No data available`);
+        logger.warn("ACIS: No data available", { city: city.name });
         continue;
       }
 
       acisSuccessCount++;
-      console.log(
-        `    ✓ ACIS: Comfort=${acisData.comfortDays}, Snow=${acisData.snowDays}days/${acisData.annualSnowfall}in`
-      );
+      logger.debug("ACIS data fetched", { city: city.name, comfort: acisData.comfortDays, snowDays: acisData.snowDays, snowfall: acisData.annualSnowfall });
 
       // Get coordinates for Open-Meteo
       // First try from ACIS response, then from city data
@@ -536,14 +535,12 @@ export async function POST(request: NextRequest) {
         
         if (openMeteoData) {
           openMeteoSuccessCount++;
-          console.log(
-            `    ✓ Open-Meteo: Cloudy=${openMeteoData.cloudyDays}days, JulyDewpoint=${openMeteoData.julyDewpoint}°F`
-          );
+          logger.debug("Open-Meteo data fetched", { city: city.name, cloudyDays: openMeteoData.cloudyDays, julyDewpoint: openMeteoData.julyDewpoint });
         } else {
-          console.log(`    ⚠ Open-Meteo: Failed to fetch`);
+          logger.warn("Open-Meteo: Failed to fetch", { city: city.name });
         }
       } else {
-        console.log(`    ⚠ Open-Meteo: No coordinates available`);
+        logger.warn("Open-Meteo: No coordinates available", { city: city.name });
       }
 
       // Ensure city entry exists in metrics
@@ -617,7 +614,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -632,7 +629,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Climate pull error:", error);
+    logger.error("Climate pull failed", { error: error instanceof Error ? error.message : String(error) });
 
     try {
       await prisma.dataRefreshLog.create({

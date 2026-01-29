@@ -19,7 +19,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
+import { createAdminLogger } from "@/lib/admin-logger";
 
+const logger = createAdminLogger("zillow-pull");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cursorftw";
 
 // Zillow public CSV URLs for ZHVI Single-Family Homes, Mid-Tier
@@ -149,23 +151,23 @@ export async function POST(request: NextRequest) {
     const citiesFile = JSON.parse(readFileSync(join(dataDir, "cities.json"), "utf-8"));
     const cities: CityData[] = citiesFile.cities;
 
-    console.log("Downloading Zillow MSA data...");
+    logger.info("Downloading Zillow MSA data");
     const msaResponse = await fetch(ZILLOW_MSA_URL);
     if (!msaResponse.ok) {
       throw new Error(`Failed to download MSA data: ${msaResponse.status}`);
     }
     const msaCSV = await msaResponse.text();
     const msaData = parseCSV(msaCSV);
-    console.log(`Parsed ${msaData.length} MSA rows`);
+    logger.debug("Parsed MSA rows", { count: msaData.length });
 
-    console.log("Downloading Zillow City data...");
+    logger.info("Downloading Zillow City data");
     const cityResponse = await fetch(ZILLOW_CITY_URL);
     if (!cityResponse.ok) {
       throw new Error(`Failed to download City data: ${cityResponse.status}`);
     }
     const cityCSV = await cityResponse.text();
     const cityData = parseCSV(cityCSV);
-    console.log(`Parsed ${cityData.length} City rows`);
+    logger.debug("Parsed City rows", { count: cityData.length });
 
     // Build lookup maps by RegionID (the stable identifier)
     const msaByRegionId = new Map<number, Record<string, string>>();
@@ -175,7 +177,7 @@ export async function POST(request: NextRequest) {
         msaByRegionId.set(regionId, row);
       }
     }
-    console.log(`Built MSA lookup with ${msaByRegionId.size} entries`);
+    logger.debug("Built MSA lookup", { entries: msaByRegionId.size });
 
     const cityByRegionId = new Map<number, Record<string, string>>();
     for (const row of cityData) {
@@ -184,7 +186,7 @@ export async function POST(request: NextRequest) {
         cityByRegionId.set(regionId, row);
       }
     }
-    console.log(`Built City lookup with ${cityByRegionId.size} entries`);
+    logger.debug("Built City lookup", { entries: cityByRegionId.size });
 
     // Process each city by matching on RegionID
     const zhviHistory: Record<string, ZHVIHistoryEntry> = {};
@@ -195,7 +197,7 @@ export async function POST(request: NextRequest) {
 
     for (const city of cities) {
       if (!city.zillowRegionId) {
-        console.log(`No RegionID for ${city.name}, skipping`);
+        logger.debug("No RegionID, skipping", { city: city.name });
         noMatch++;
         continue;
       }
@@ -227,7 +229,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (!row) {
-        console.log(`No Zillow data for ${city.name} (RegionID: ${city.zillowRegionId})`);
+        logger.warn("No Zillow data", { city: city.name, regionId: city.zillowRegionId });
         noMatch++;
         continue;
       }
@@ -252,7 +254,7 @@ export async function POST(request: NextRequest) {
         history,
       };
 
-      console.log(`  ✓ ${city.name} (${geography}, ${history.length} points)`);
+      logger.debug("Matched city", { city: city.name, geography, points: history.length });
     }
 
     // Save updated zhvi-history.json
@@ -318,7 +320,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (logError) {
-      console.error("Failed to log refresh:", logError);
+      logger.error("Failed to log refresh", { error: String(logError) });
     }
 
     return NextResponse.json({
@@ -335,7 +337,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Zillow pull error:", error);
+    logger.error("Zillow pull failed", { error: error instanceof Error ? error.message : String(error) });
 
     try {
       await prisma.dataRefreshLog.create({
