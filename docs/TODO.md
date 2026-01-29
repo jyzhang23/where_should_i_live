@@ -1,6 +1,13 @@
 ## Features
 - Add Austin, TX and test the adding cities pipeline
 
+### Why does my city suck ✅ DONE
+- Click on any score card in the city detail page to see a breakdown of:
+  - Each factor's weight and actual value
+  - Thresholds vs actual values
+  - Issues (red), concerns (yellow), and strengths (green)
+  - Tips to adjust preferences
+
 ## Robustness
 - Architecture reivew
     - Look for poor architecuture and broken branches from legacy code/designs

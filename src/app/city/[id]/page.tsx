@@ -9,10 +9,11 @@ import { calculateScores } from "@/lib/scoring";
 // PriceTrendChart is now embedded in CityMetricsGrid
 import { CityMetricsGrid } from "@/components/city/CityMetricsGrid";
 import { ComparisonPanel } from "@/components/comparison";
+import { ScoreBreakdown } from "@/components/city/ScoreBreakdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { ArrowLeft, MapPin, TrendingUp, Award, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, TrendingUp, Award, GitCompare, HelpCircle } from "lucide-react";
 import { getScoreColor, getGrade, getScoreRelative, getScoreLabel } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import {
@@ -21,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { CityWithMetrics } from "@/types/city";
 
 interface CityPageProps {
   params: Promise<{ id: string }>;
@@ -40,6 +42,11 @@ export default function CityPage({ params }: CityPageProps) {
 
   // Comparison mode
   const [showComparison, setShowComparison] = useState(false);
+  
+  // Score breakdown dialog
+  const [breakdownCategory, setBreakdownCategory] = useState<
+    "climate" | "cost" | "demographics" | "qol" | "cultural" | null
+  >(null);
 
   // Calculate all rankings (needed for percentile-based scoring and comparison panel)
   const allRankings = useMemo(() => {
@@ -137,11 +144,11 @@ export default function CityPage({ params }: CityPageProps) {
             </CardContent>
           </Card>
           
-          <ScoreCard label="Climate" score={cityScore.climateScore} />
-          <ScoreCard label="Cost" score={cityScore.costScore} />
-          <ScoreCard label="Demographics" score={cityScore.demographicsScore} />
-          <ScoreCard label="Quality of Life" score={cityScore.qualityOfLifeScore} />
-          <ScoreCard label="Cultural" score={cityScore.culturalScore} />
+          <ScoreCard label="Climate" score={cityScore.climateScore} onClick={() => setBreakdownCategory("climate")} />
+          <ScoreCard label="Cost" score={cityScore.costScore} onClick={() => setBreakdownCategory("cost")} />
+          <ScoreCard label="Demographics" score={cityScore.demographicsScore} onClick={() => setBreakdownCategory("demographics")} />
+          <ScoreCard label="Quality of Life" score={cityScore.qualityOfLifeScore} onClick={() => setBreakdownCategory("qol")} />
+          <ScoreCard label="Cultural" score={cityScore.culturalScore} onClick={() => setBreakdownCategory("cultural")} />
         </div>
       )}
 
@@ -189,11 +196,29 @@ export default function CityPage({ params }: CityPageProps) {
           initialCityId={id}
         />
       )}
+
+      {/* Score Breakdown Dialog */}
+      {breakdownCategory && cityScore && (
+        <ScoreBreakdown
+          city={city as CityWithMetrics}
+          preferences={preferences}
+          category={breakdownCategory}
+          score={
+            breakdownCategory === "climate" ? cityScore.climateScore :
+            breakdownCategory === "cost" ? cityScore.costScore :
+            breakdownCategory === "demographics" ? cityScore.demographicsScore :
+            breakdownCategory === "qol" ? cityScore.qualityOfLifeScore :
+            cityScore.culturalScore
+          }
+          isOpen={true}
+          onClose={() => setBreakdownCategory(null)}
+        />
+      )}
     </div>
   );
 }
 
-function ScoreCard({ label, score }: { label: string; score: number }) {
+function ScoreCard({ label, score, onClick }: { label: string; score: number; onClick?: () => void }) {
   const relative = getScoreRelative(score);
   const scoreLabel = getScoreLabel(score);
   
@@ -201,9 +226,18 @@ function ScoreCard({ label, score }: { label: string; score: number }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Card className="cursor-help">
+          <Card 
+            className={cn(
+              "cursor-pointer transition-colors hover:bg-muted/50",
+              onClick && "hover:border-primary/50"
+            )}
+            onClick={onClick}
+          >
             <CardContent className="pt-6 text-center">
-              <span className="text-sm text-muted-foreground">{label}</span>
+              <div className="flex items-center justify-center gap-1 mb-0.5">
+                <span className="text-sm text-muted-foreground">{label}</span>
+                {onClick && <HelpCircle className="h-3 w-3 text-muted-foreground/50" />}
+              </div>
               <div className="flex items-center justify-center gap-2">
                 <span className={cn("text-2xl font-bold", getScoreColor(score))}>
                   {score.toFixed(1)}
@@ -225,7 +259,7 @@ function ScoreCard({ label, score }: { label: string; score: number }) {
               ? `${(score - 50).toFixed(0)} points above U.S. average` 
               : `${(50 - score).toFixed(0)} points below U.S. average`}
           </p>
-          <p className="text-muted-foreground mt-1">50 = national average</p>
+          <p className="text-muted-foreground mt-1">Click for detailed breakdown</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
