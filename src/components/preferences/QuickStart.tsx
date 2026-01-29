@@ -247,17 +247,17 @@ export function QuickStart({ onComplete }: QuickStartProps) {
         type="button"
         onClick={onClick}
         className={cn(
-          "flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all text-center",
+          "flex flex-col items-center gap-0.5 p-2 rounded-lg border-2 transition-all text-center",
           selected
             ? "border-primary bg-primary/10"
             : "border-muted hover:border-muted-foreground/30"
         )}
       >
-        <div className={cn("mb-1", selected ? "text-primary" : "text-muted-foreground")}>
+        <div className={cn(selected ? "text-primary" : "text-muted-foreground")}>
           {icon}
         </div>
-        <span className="text-sm font-medium">{title}</span>
-        <span className="text-xs text-muted-foreground">{description}</span>
+        <span className="text-xs font-medium">{title}</span>
+        <span className="text-[10px] text-muted-foreground leading-tight">{description}</span>
       </button>
     );
 
@@ -283,8 +283,8 @@ export function QuickStart({ onComplete }: QuickStartProps) {
           Quick Setup
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
             Quick Setup
@@ -294,10 +294,10 @@ export function QuickStart({ onComplete }: QuickStartProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-5 py-3 overflow-y-auto flex-1 min-h-0 pr-2">
           {/* Housing Situation */}
           <div>
-            <h4 className="text-sm font-medium mb-3">Your housing situation</h4>
+            <h4 className="text-sm font-medium mb-2">Your housing situation</h4>
             <div className="grid grid-cols-3 gap-2">
               <OptionCard
                 selected={housing === "renter"}
@@ -328,7 +328,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
 
           {/* Work Situation */}
           <div>
-            <h4 className="text-sm font-medium mb-3">Your work situation</h4>
+            <h4 className="text-sm font-medium mb-2">Your work situation</h4>
             <div className="grid grid-cols-3 gap-2">
               <OptionCard
                 selected={work === "local-earner"}
@@ -359,7 +359,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
 
           {/* Climate Preference */}
           <div>
-            <h4 className="text-sm font-medium mb-3">Climate preference</h4>
+            <h4 className="text-sm font-medium mb-2">Climate preference</h4>
             <div className="grid grid-cols-4 gap-2">
               <OptionCard
                 selected={climate === "warm"}
@@ -398,7 +398,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
 
           {/* Lifestyle / Persona */}
           <div>
-            <h4 className="text-sm font-medium mb-3">Your lifestyle</h4>
+            <h4 className="text-sm font-medium mb-2">Your lifestyle</h4>
             <div className="grid grid-cols-3 gap-2">
               <OptionCard
                 selected={lifestyle === "young-professional"}
@@ -453,7 +453,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
 
           {/* Activities & Recreation */}
           <div>
-            <h4 className="text-sm font-medium mb-3">Your ideal weekend</h4>
+            <h4 className="text-sm font-medium mb-2">Your ideal weekend</h4>
             <div className="grid grid-cols-3 gap-2">
               <OptionCard
                 selected={activity === "urbanite"}
@@ -508,7 +508,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
 
           {/* Priority */}
           <div>
-            <h4 className="text-sm font-medium mb-3">What matters most?</h4>
+            <h4 className="text-sm font-medium mb-2">What matters most?</h4>
             <div className="grid grid-cols-4 gap-2">
               <OptionCard
                 selected={priority === "cost"}
@@ -547,7 +547,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
         </div>
 
         {/* Reminder */}
-        <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 flex gap-2">
+        <div className="flex-shrink-0 text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 flex gap-2">
           <Sparkles className="h-4 w-4 flex-shrink-0 mt-0.5" />
           <div>
             <strong>Tip:</strong> These are starting points! Fine-tune individual settings in{" "}
@@ -556,7 +556,7 @@ export function QuickStart({ onComplete }: QuickStartProps) {
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0">
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
