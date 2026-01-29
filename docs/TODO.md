@@ -1,10 +1,9 @@
 ## Features
 
-- [ ] Walkability: Replace EPA walkability API with simple walkscore.com lookup
-  - Current walkscore-pull uses EPA National Walkability Index (complex, often missing data)
-  - walkscore.com has direct Walk/Transit/Bike scores available at `https://www.walkscore.com/score/{city}-{state}`
-  - Could use web search or simple scraping as fallback
-  - Example: Boise data sourced from [walkscore.com](https://www.walkscore.com/score/boise-id)
+- [x] ~~Walkability: Replace EPA walkability API with simple walkscore.com lookup~~ ✅ DONE
+  - Created `scripts/fetch-walkscore.ts` to fetch Walk/Transit/Bike scores
+  - All 45 cities now have walkability data from walkscore.com
+  - Much simpler than previous EPA National Walkability Index approach
 
 ## Bugs
 
