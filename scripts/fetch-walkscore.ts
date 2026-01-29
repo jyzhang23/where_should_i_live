@@ -3,14 +3,22 @@
  * Fetch walkability data from walkscore.com
  * 
  * Usage:
- *   npx tsx scripts/fetch-walkscore.ts           # All cities
- *   npx tsx scripts/fetch-walkscore.ts --city=boise  # Single city
- *   npx tsx scripts/fetch-walkscore.ts --dry-run # Preview without saving
+ *   npx tsx scripts/fetch-walkscore.ts              # All cities
+ *   npx tsx scripts/fetch-walkscore.ts --city=boise # Single city
+ *   npx tsx scripts/fetch-walkscore.ts --dry-run    # Preview without saving
+ *   npx tsx scripts/fetch-walkscore.ts --strict     # Fail on validation warnings
+ *   npx tsx scripts/fetch-walkscore.ts --skip=boise # Skip a specific city
  * 
  * This script:
- * 1. Fetches Walk Score page for each city
- * 2. Extracts Walk Score, Transit Score, and Bike Score
- * 3. Updates metrics.json with the new data
+ * 1. Fetches Walk Score city page for each city
+ * 2. Validates it's a city page (not an address page)
+ * 3. Extracts Walk Score, Transit Score, and Bike Score
+ * 4. Warns about suspicious scores (e.g., multiple 100s)
+ * 5. Updates metrics.json with the new data
+ * 
+ * IMPORTANT: Walk Score URLs are inconsistent. If a city fails validation,
+ * you may need to add it to CITY_URL_OVERRIDES with the correct URL path.
+ * Check https://www.walkscore.com/STATE/City_Name manually.
  */
 
 import { readFileSync, writeFileSync } from "fs";
@@ -68,7 +76,67 @@ function getWalkScoreDescription(score: number | null): string {
   return "Almost All Errands Require a Car";
 }
 
-async function fetchWalkScore(city: CityData): Promise<WalkScoreData | null> {
+interface ValidationResult {
+  isValid: boolean;
+  isCityPage: boolean;
+  warnings: string[];
+}
+
+function validateCityPage(html: string, finalUrl: string, city: CityData): ValidationResult {
+  const warnings: string[] = [];
+  
+  // Check 1: Final URL should NOT contain /score/ (that's an address page)
+  if (finalUrl.includes("/score/")) {
+    warnings.push("URL redirected to /score/ (address page, not city page)");
+    return { isValid: false, isCityPage: false, warnings };
+  }
+  
+  // Check 2: City pages have "has an average Walk Score of X" text
+  const hasAvgText = /has an average Walk Score of \d+/i.test(html);
+  
+  // Check 3: City pages have neighborhood listings
+  const hasNeighborhoods = /neighborhoods/i.test(html) && /Walk Score.*Transit Score.*Bike Score/i.test(html);
+  
+  // Check 4: City pages mention population "X residents"
+  const hasPopulation = /[\d,]+ residents/i.test(html);
+  
+  // Check 5: Page should mention the city name
+  const cityNamePattern = new RegExp(city.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+  const hasCityName = cityNamePattern.test(html);
+  
+  // Determine if this looks like a city page
+  const cityPageSignals = [hasAvgText, hasNeighborhoods, hasPopulation, hasCityName].filter(Boolean).length;
+  const isCityPage = cityPageSignals >= 2; // At least 2 of 4 signals
+  
+  if (!isCityPage) {
+    if (!hasAvgText) warnings.push("Missing 'average Walk Score' text (city page marker)");
+    if (!hasNeighborhoods) warnings.push("Missing neighborhood listings");
+    if (!hasPopulation) warnings.push("Missing population info");
+    if (!hasCityName) warnings.push(`City name "${city.name}" not found in page`);
+  }
+  
+  return { isValid: isCityPage, isCityPage, warnings };
+}
+
+function validateScores(walkScore: number | null, transitScore: number | null, bikeScore: number | null): string[] {
+  const warnings: string[] = [];
+  
+  // Perfect 100 scores are very rare for city-wide averages (only NYC transit is ~100)
+  // Multiple 100s is highly suspicious
+  const perfectScores = [walkScore, transitScore, bikeScore].filter(s => s === 100).length;
+  if (perfectScores >= 2) {
+    warnings.push(`SUSPICIOUS: ${perfectScores} perfect scores of 100 (likely address page data)`);
+  }
+  
+  // Transit score of 100 is rare - only NYC has it
+  if (transitScore === 100 && walkScore !== null && walkScore < 95) {
+    warnings.push(`SUSPICIOUS: Transit 100 but Walk ${walkScore} (mismatch suggests address page)`);
+  }
+  
+  return warnings;
+}
+
+async function fetchWalkScore(city: CityData, strictMode: boolean = false): Promise<WalkScoreData | null> {
   const url = getWalkScoreUrl(city);
   
   try {
@@ -85,12 +153,23 @@ async function fetchWalkScore(city: CityData): Promise<WalkScoreData | null> {
       return null;
     }
     
+    // Get the final URL after redirects
+    const finalUrl = response.url;
     const html = await response.text();
     
-    // Check if we got redirected to an address page (indicates wrong URL pattern)
-    if (html.includes("/score/") && html.includes("Redirecting")) {
-      console.log(`    ⚠️  Redirected to address page - wrong URL`);
-      return null;
+    // Validate this is a city page, not an address page
+    const validation = validateCityPage(html, finalUrl, city);
+    
+    if (!validation.isValid) {
+      console.log(`\n    ❌ VALIDATION FAILED:`);
+      validation.warnings.forEach(w => console.log(`       - ${w}`));
+      console.log(`       URL: ${url}`);
+      console.log(`       Final URL: ${finalUrl}`);
+      if (strictMode) {
+        console.log(`       (strict mode: skipping this city)`);
+        return null;
+      }
+      console.log(`       (continuing anyway - data may be incorrect!)`);
     }
     
     // Extract scores from city page format
@@ -123,6 +202,17 @@ async function fetchWalkScore(city: CityData): Promise<WalkScoreData | null> {
     
     const cityAvgWalkScore = cityAvgMatch ? parseInt(cityAvgMatch[1]) : null;
     
+    // Validate the extracted scores
+    const scoreWarnings = validateScores(walkScore, transitScore, bikeScore);
+    if (scoreWarnings.length > 0) {
+      console.log(`\n    ⚠️  SCORE WARNINGS:`);
+      scoreWarnings.forEach(w => console.log(`       - ${w}`));
+      if (strictMode) {
+        console.log(`       (strict mode: skipping this city)`);
+        return null;
+      }
+    }
+    
     // Use city average if it differs from main score (city avg is more representative)
     const effectiveWalkScore = cityAvgWalkScore ?? walkScore;
     
@@ -142,10 +232,15 @@ async function fetchWalkScore(city: CityData): Promise<WalkScoreData | null> {
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
+  const strictMode = args.includes("--strict");
   const singleCity = args.find(a => a.startsWith("--city="))?.split("=")[1];
   const skipCity = args.find(a => a.startsWith("--skip="))?.split("=")[1];
   
-  console.log("🚶 Walk Score Fetcher\n");
+  console.log("🚶 Walk Score Fetcher");
+  if (strictMode) {
+    console.log("   (strict mode: will skip cities with validation warnings)");
+  }
+  console.log();
   
   // Load cities
   const citiesData = JSON.parse(readFileSync(CITIES_FILE, "utf-8"));
@@ -178,7 +273,7 @@ async function main() {
     // Rate limiting - be nice to the server
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const data = await fetchWalkScore(city);
+    const data = await fetchWalkScore(city, strictMode);
     results.push({ city: city.id, data });
     
     if (data && data.walkScore !== null) {
