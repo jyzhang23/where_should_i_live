@@ -103,7 +103,7 @@ The codebase has evolved organically, creating some redundancy and technical deb
 
 ## 2. Identified Issues
 
-### 2.1 Dual Storage Redundancy
+### 2.1 Dual Storage: JSON vs PostgreSQL
 
 **Problem:** Data is stored in both JSON files and PostgreSQL, requiring complex merge logic in API routes.
 
@@ -116,7 +116,25 @@ The codebase has evolved organically, creating some redundancy and technical deb
 | Cultural | metrics.json → cultural | CityMetrics.cityDemocratPercent ⚠️ | JSON ✓ |
 | ZHVI prices | zhvi-history.json | ZHVIDataPoint | Both (synced) |
 
-**Recommendation:** Remove deprecated fields from database, keep JSON as source of truth for metrics.
+#### Decision: Keep Hybrid, Clean Up Deprecated Fields
+
+**Why keep both?**
+
+| Factor | JSON | PostgreSQL |
+|--------|------|------------|
+| Read speed | Faster (no network round-trip) | Slower (DB query to Neon) |
+| Development | Easy to view/edit directly | Requires DB tools |
+| Deployment | Just files | Requires hosted DB service |
+| Time-series data | Awkward (large files) | Efficient (ZHVI history) |
+| Future scale (500+ cities) | May slow down | Handles well |
+| Audit trail | Manual | DataRefreshLog table |
+
+**For 43 cities, JSON wins on simplicity and speed.** However, we keep PostgreSQL for:
+1. **ZHVI History** - 5000+ time-series data points, better suited for DB
+2. **DataRefreshLog** - Audit trail of data updates
+3. **Future-proofing** - If scaling to hundreds of cities
+
+**Action:** Keep hybrid architecture but remove deprecated DB fields that duplicate JSON data.
 
 ### 2.2 Multiple Data Refresh Mechanisms
 
@@ -138,24 +156,15 @@ The codebase has evolved organically, creating some redundancy and technical deb
 
 **Recommendation:** Standardize on slug for all systems, or add slug field to database.
 
-### 2.4 Deprecated Fields Still in Use
+### 2.4 Deprecated Fields ✅ CLEANED UP
 
-In `src/types/city.ts` (CityMetrics interface):
-- `crimeRate` → Use `qol.crime.violentCrimeRate`
-- `walkScore` → Use `qol.walkability.walkScore`
-- `transitScore` → Use `qol.walkability.transitScore`
-- `avgBroadbandSpeed` → Use `qol.broadband.maxDownloadSpeed`
-- `hasInternationalAirport` → Removed from preferences
-- `healthScore` → Use `qol.health`
-- `pollutionIndex` → Use `qol.airQuality`
-- `waterQualityIndex` → Use `qol.airQuality`
-- `trafficIndex` → No longer tracked
-- `cityDemocratPercent` → Use `cultural.political.democratPercent`
-- `stateDemocratPercent` → Use `cultural.political`
+The following deprecated fields have been removed from the database schema:
+- Demographics: `diversityIndex`, `population`, `eastAsianPercent` → now in `metrics.json → census`
+- QoL: `crimeRate`, `walkScore`, `transitScore`, `avgBroadbandSpeed`, `healthScore`, `pollutionIndex`, `waterQualityIndex`, `trafficIndex`, `qualityOfLifeScore`, `hasInternationalAirport` → now in `metrics.json → qol`
+- Political: `cityDemocratPercent`, `stateDemocratPercent` → now in `metrics.json → cultural.political`
+- Cost: `medianHomePrice`, `costOfLivingIndex`, `stateTaxRate`, `propertyTaxRate` → now from `zhvi-history.json` and `metrics.json → bea`
 
-In `prisma/schema.prisma`:
-- `diversityIndex` → Use `census.diversityIndex`
-- `eastAsianPercent` → Use `census.asianPercent`
+**Remaining in `src/types/city.ts`:** The TypeScript interface still has these fields marked `@deprecated` for backward compatibility with any code that might reference them. They will return `null` from the database.
 
 ---
 
@@ -198,7 +207,7 @@ In `src/types/preferences.ts`:
 ## 5. Recommendations
 
 ### High Priority
-1. [ ] Remove deprecated fields from Prisma schema after confirming no usage
+1. [x] Remove deprecated fields from Prisma schema (14 columns dropped)
 2. [x] Clean up orphaned files (`add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`)
 3. [ ] Document the correct data refresh workflow
 

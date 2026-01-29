@@ -32,41 +32,14 @@ interface CityData {
   };
 }
 
+// Only climate data is stored in DB; other metrics come from metrics.json
 interface MetricsData {
-  climate: {
+  climate?: {
     avgTemp: number | null;
     avgWinterTemp: number | null;
     avgSummerTemp: number | null;
     daysOfSunshine: number | null;
     daysOfRain: number | null;
-  };
-  cost: {
-    medianHomePrice: number | null;
-    costOfLivingIndex: number | null;
-    stateTaxRate: number | null;
-    propertyTaxRate: number | null;
-  };
-  demographics: {
-    population: number | null;
-    diversityIndex: number | null;
-    eastAsianPercent: number | null;
-    crimeRate: number | null;
-  };
-  quality: {
-    qualityOfLifeScore: number | null;
-    walkScore: number | null;
-    transitScore: number | null;
-    hasInternationalAirport: boolean;
-    airportCode: string | null;
-    healthScore: number | null;
-    pollutionIndex: number | null;
-    waterQualityIndex: number | null;
-    trafficIndex: number | null;
-    broadbandSpeed: number | null;
-  };
-  political: {
-    cityDemocratPercent: number | null;
-    stateDemocratPercent: number | null;
   };
 }
 
@@ -154,32 +127,17 @@ export async function POST(request: NextRequest) {
         regionId: city.zillowRegionId, // Prisma schema uses 'regionId'
       };
 
-      // Prepare metrics data (with null checks for optional sections)
+      // Prepare metrics data
+      // NOTE: Most metrics now come from metrics.json (bea, census, qol, cultural)
+      // and are merged in the API route. We only store essential fields in DB.
       const metricsData = {
+        // Climate (still used as fallback)
         avgTemp: cityMetrics.climate?.avgTemp ?? null,
         avgWinterTemp: cityMetrics.climate?.avgWinterTemp ?? null,
         avgSummerTemp: cityMetrics.climate?.avgSummerTemp ?? null,
         daysOfSunshine: cityMetrics.climate?.daysOfSunshine ?? null,
         daysOfRain: cityMetrics.climate?.daysOfRain ?? null,
-        diversityIndex: cityMetrics.demographics?.diversityIndex ?? null,
-        population: cityMetrics.demographics?.population ?? null,
-        eastAsianPercent: cityMetrics.demographics?.eastAsianPercent ?? null,
-        medianHomePrice: cityMetrics.cost?.medianHomePrice ?? null,
-        stateTaxRate: cityMetrics.cost?.stateTaxRate ?? null,
-        propertyTaxRate: cityMetrics.cost?.propertyTaxRate ?? null,
-        costOfLivingIndex: cityMetrics.cost?.costOfLivingIndex ?? null,
-        crimeRate: cityMetrics.demographics?.crimeRate ?? null,
-        walkScore: cityMetrics.quality?.walkScore ?? null,
-        transitScore: cityMetrics.quality?.transitScore ?? null,
-        avgBroadbandSpeed: cityMetrics.quality?.broadbandSpeed ?? null,
-        hasInternationalAirport: cityMetrics.quality?.hasInternationalAirport ?? false,
-        healthScore: cityMetrics.quality?.healthScore ?? null,
-        pollutionIndex: cityMetrics.quality?.pollutionIndex ?? null,
-        waterQualityIndex: cityMetrics.quality?.waterQualityIndex ?? null,
-        trafficIndex: cityMetrics.quality?.trafficIndex ?? null,
-        qualityOfLifeScore: cityMetrics.quality?.qualityOfLifeScore ?? null,
-        cityDemocratPercent: cityMetrics.political?.cityDemocratPercent ?? null,
-        stateDemocratPercent: cityMetrics.political?.stateDemocratPercent ?? null,
+        // Sports teams (stored in DB for convenience)
         nflTeams: city.sports?.nfl?.join(", ") || null,
         nbaTeams: city.sports?.nba?.join(", ") || null,
         mlbTeams: city.sports?.mlb?.join(", ") || null,

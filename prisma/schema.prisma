@@ -31,39 +31,12 @@ model CityMetrics {
   cityId String @unique
   city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
 
-  // === Climate ===
+  // === Climate (fallback - primary source is metrics.json -> noaa) ===
   avgTemp        Float? // Average annual temperature (°F)
   avgWinterTemp  Float? // Average winter temperature (°F)
   avgSummerTemp  Float? // Average summer temperature (°F)
-  daysOfSunshine Int? // Days of sunshine per year
-  daysOfRain     Int? // Days of rain per year
-
-  // === Demographics (Legacy - Census ACS data in metrics.json is primary source) ===
-  diversityIndex   Float? // @deprecated - Use census.diversityIndex from metrics.json
-  population       Int? // Metro area population (thousands) - fallback only
-  eastAsianPercent Float? // @deprecated - Use census.asianPercent from metrics.json
-
-  // === Cost of Living ===
-  medianHomePrice   Float? // Median single-family home price
-  stateTaxRate      Float? // Max state income tax rate (decimal)
-  propertyTaxRate   Float? // Effective property tax rate (decimal)
-  costOfLivingIndex Float? // Cost of living index (US avg = 100)
-
-  // === Quality of Life ===
-  crimeRate               Float? // Violent crime per 100K
-  walkScore               Int? // Walk Score (0-100)
-  transitScore            Int? // Transit Score (0-100)
-  avgBroadbandSpeed       Float? // Average broadband speed (Mbps)
-  hasInternationalAirport Boolean? // Has international airport
-  healthScore             Float? // ACSM health ranking
-  pollutionIndex          Float? // Numbeo pollution index
-  waterQualityIndex       Float? // Numbeo water quality index
-  trafficIndex            Float? // INRIX traffic index (hours/year lost)
-  qualityOfLifeScore      Float? // Overall quality of life score (1-100)
-
-  // === Political ===
-  cityDemocratPercent  Float? // % voted Democrat in city (2024)
-  stateDemocratPercent Float? // % voted Democrat in state (2024)
+  daysOfSunshine Int?   // Days of sunshine per year
+  daysOfRain     Int?   // Days of rain per year
 
   // === Sports/Amenities (Major Professional Leagues) ===
   nflTeams String? // NFL team names (comma-separated)
@@ -75,6 +48,9 @@ model CityMetrics {
   // === Metadata ===
   dataAsOf  DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // NOTE: Demographics, Cost, QoL, Political data now come from metrics.json
+  // and are merged in the API layer. See docs/ARCHITECTURE-REVIEW.md
 }
 
 model ZHVIDataPoint {
