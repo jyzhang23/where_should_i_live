@@ -28,7 +28,8 @@ interface CityData {
   };
 }
 
-// Flexible interface to handle both old and new metrics formats
+// Only climate data is stored in DB; other metrics come from metrics.json at runtime
+// See docs/ARCHITECTURE-REVIEW.md for rationale
 interface MetricsData {
   climate?: {
     avgTemp?: number | null;
@@ -36,47 +37,6 @@ interface MetricsData {
     avgSummerTemp?: number | null;
     daysOfSunshine?: number | null;
     daysOfRain?: number | null;
-  };
-  cost?: {
-    medianHomePrice?: number | null;
-    costOfLivingIndex?: number | null;
-    stateTaxRate?: number | null;
-    propertyTaxRate?: number | null;
-  };
-  demographics?: {
-    population?: number | null;
-    diversityIndex?: number | null;
-    eastAsianPercent?: number | null;
-    crimeRate?: number | null;
-  };
-  quality?: {
-    qualityOfLifeScore?: number | null;
-    walkScore?: number | null;
-    transitScore?: number | null;
-    hasInternationalAirport?: boolean;
-    airportCode?: string | null;
-    healthScore?: number | null;
-    pollutionIndex?: number | null;
-    waterQualityIndex?: number | null;
-    trafficIndex?: number | null;
-    broadbandSpeed?: number | null;
-  };
-  political?: {
-    cityDemocratPercent?: number | null;
-    stateDemocratPercent?: number | null;
-  };
-  // New format fields
-  census?: {
-    totalPopulation?: number | null;
-    diversityIndex?: number | null;
-  };
-  qol?: {
-    crime?: {
-      violentCrimeRate?: number | null;
-    };
-    walkability?: {
-      walkScore?: number | null;
-    };
   };
 }
 
@@ -125,38 +85,15 @@ async function main() {
       longitude: null as number | null,
     };
 
-    // Prepare metrics data with optional chaining for flexible format
+    // Prepare metrics data - only climate + sports stored in DB
+    // Other metrics (demographics, cost, QoL, political) come from metrics.json at runtime
     const metricsData = {
-      // Climate
+      // Climate (fallback - primary source is metrics.json -> noaa)
       avgTemp: cityMetrics.climate?.avgTemp ?? null,
       avgWinterTemp: cityMetrics.climate?.avgWinterTemp ?? null,
       avgSummerTemp: cityMetrics.climate?.avgSummerTemp ?? null,
       daysOfSunshine: cityMetrics.climate?.daysOfSunshine ?? null,
       daysOfRain: cityMetrics.climate?.daysOfRain ?? null,
-      // Demographics (try both old and new format)
-      diversityIndex: cityMetrics.demographics?.diversityIndex ?? cityMetrics.census?.diversityIndex ?? null,
-      population: cityMetrics.demographics?.population ?? cityMetrics.census?.totalPopulation ?? null,
-      eastAsianPercent: cityMetrics.demographics?.eastAsianPercent ?? null,
-      // Cost
-      medianHomePrice: cityMetrics.cost?.medianHomePrice ?? null,
-      stateTaxRate: cityMetrics.cost?.stateTaxRate ?? null,
-      propertyTaxRate: cityMetrics.cost?.propertyTaxRate ?? null,
-      costOfLivingIndex: cityMetrics.cost?.costOfLivingIndex ?? null,
-      // Crime (try both formats)
-      crimeRate: cityMetrics.demographics?.crimeRate ?? cityMetrics.qol?.crime?.violentCrimeRate ?? null,
-      // Quality (try both formats)
-      walkScore: cityMetrics.quality?.walkScore ?? cityMetrics.qol?.walkability?.walkScore ?? null,
-      transitScore: cityMetrics.quality?.transitScore ?? null,
-      avgBroadbandSpeed: cityMetrics.quality?.broadbandSpeed ?? null,
-      hasInternationalAirport: cityMetrics.quality?.hasInternationalAirport ?? false,
-      healthScore: cityMetrics.quality?.healthScore ?? null,
-      pollutionIndex: cityMetrics.quality?.pollutionIndex ?? null,
-      waterQualityIndex: cityMetrics.quality?.waterQualityIndex ?? null,
-      trafficIndex: cityMetrics.quality?.trafficIndex ?? null,
-      qualityOfLifeScore: cityMetrics.quality?.qualityOfLifeScore ?? null,
-      // Political
-      cityDemocratPercent: cityMetrics.political?.cityDemocratPercent ?? null,
-      stateDemocratPercent: cityMetrics.political?.stateDemocratPercent ?? null,
       // Sports (5 Major Leagues)
       nflTeams: city.sports?.nfl?.join(", ") || null,
       nbaTeams: city.sports?.nba?.join(", ") || null,

@@ -138,8 +138,8 @@ export async function GET(
     // Always merge supplementary data and ZHVI price into city metrics
     const mergedMetrics = {
       ...city.metrics,
-      // Use ZHVI price if available
-      medianHomePrice: zhviPrice ?? city.metrics?.medianHomePrice ?? null,
+      // medianHomePrice comes from ZHVI history (latest price)
+      medianHomePrice: zhviPrice ?? null,
       ...(supplementary?.bea && { bea: supplementary.bea }),
       ...(supplementary?.noaa && { noaa: supplementary.noaa }),
       ...(supplementary?.census && { census: supplementary.census }),

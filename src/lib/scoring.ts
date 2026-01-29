@@ -266,26 +266,6 @@ export function calculateScores(
       continue;
     }
 
-    // Check hard filters first
-    const exclusionReason = checkFilters(city, preferences);
-    if (exclusionReason) {
-      rankings.push({
-        cityId: city.id,
-        cityName: city.name,
-        state: city.state,
-        climateScore: 0,
-        costScore: 0,
-        demographicsScore: 0,
-        qualityOfLifeScore: 0,
-        culturalScore: 0,
-        totalScore: 0,
-        excluded: true,
-        exclusionReason,
-      });
-      excludedCount++;
-      continue;
-    }
-
     // Calculate category scores (0-100 each)
     const climateScore = calculateClimateScore(city, preferences);
     const costScore = calculateCostScore(city, preferences);
@@ -334,19 +314,6 @@ export function calculateScores(
     includedCount: rankings.length - excludedCount,
     excludedCount,
   };
-}
-
-/**
- * Check if a city should be excluded based on hard filters
- * Note: NFL/NBA filters were removed - sports are now a soft preference in Urban Lifestyle scoring
- */
-function checkFilters(
-  city: CityWithMetrics,
-  preferences: UserPreferences
-): string | null {
-  // No hard filters currently defined
-  // Reserved for future use (e.g., minimum population, maximum crime rate)
-  return null;
 }
 
 /**
@@ -666,9 +633,9 @@ function calculateDemographicsScore(
   const census = metrics.census;
   const prefs = preferences.advanced.demographics;
 
-  // If no Census data, use legacy scoring
+  // If no Census data, return neutral score
   if (!census) {
-    return calculateLegacyDemographicsScore(city, preferences);
+    return 50;
   }
 
   let totalScore = 0;
@@ -854,40 +821,6 @@ function calculateDemographicsScore(
   }
 
   return Math.max(0, Math.min(100, totalScore / totalWeight));
-}
-
-/**
- * Legacy demographics scoring for cities without Census data
- * Only uses basic population and diversity data from the database
- */
-function calculateLegacyDemographicsScore(
-  city: CityWithMetrics,
-  preferences: UserPreferences
-): number {
-  const metrics = city.metrics!;
-  const { minPopulation, minDiversityIndex } = preferences.advanced.demographics;
-
-  let score = 50; // Start at national average
-
-  // Population check
-  if (metrics.population !== null && minPopulation > 0) {
-    // Convert from thousands if needed
-    const pop = metrics.population > 1000 ? metrics.population : metrics.population * 1000;
-    if (pop < minPopulation) {
-      score -= 30;
-    }
-  }
-
-  // Diversity index
-  if (metrics.diversityIndex !== null && minDiversityIndex > 0) {
-    if (metrics.diversityIndex >= minDiversityIndex) {
-      score += Math.min(15, (metrics.diversityIndex - minDiversityIndex) / 3);
-    } else {
-      score -= (minDiversityIndex - metrics.diversityIndex) * 1.5;
-    }
-  }
-
-  return Math.max(0, Math.min(100, score));
 }
 
 /**
@@ -1172,61 +1105,8 @@ function calculateQualityOfLifeScore(
     }
   }
 
-  // Fallback: Legacy calculation using static metrics
-  return calculateLegacyQualityOfLifeScore(city, preferences);
-}
-
-/**
- * Legacy QoL scoring for cities without API data
- */
-function calculateLegacyQualityOfLifeScore(
-  city: CityWithMetrics,
-  preferences: UserPreferences
-): number {
-  const metrics = city.metrics!;
-  const { minWalkScore, minTransitScore, maxCrimeRate } =
-    preferences.advanced.qualityOfLife;
-
-  let score = 50; // Start at national average, adjust up/down
-
-  // Walk score
-  if (metrics.walkScore !== null) {
-    if (metrics.walkScore >= minWalkScore) {
-      score += (metrics.walkScore - minWalkScore) / 10;
-    } else {
-      score -= (minWalkScore - metrics.walkScore) / 5;
-    }
-  }
-
-  // Transit score
-  if (metrics.transitScore !== null) {
-    if (metrics.transitScore >= minTransitScore) {
-      score += (metrics.transitScore - minTransitScore) / 10;
-    } else {
-      score -= (minTransitScore - metrics.transitScore) / 5;
-    }
-  }
-
-  // Crime rate (lower is better)
-  if (metrics.crimeRate !== null) {
-    if (metrics.crimeRate <= maxCrimeRate) {
-      score += 10;
-    } else {
-      score -= ((metrics.crimeRate - maxCrimeRate) / maxCrimeRate) * 20;
-    }
-  }
-
-  // Pollution (lower is better, typical range 20-80)
-  if (metrics.pollutionIndex !== null) {
-    score -= (metrics.pollutionIndex - 40) / 4;
-  }
-
-  // Water quality (higher is better, typical range 50-90)
-  if (metrics.waterQualityIndex !== null) {
-    score += (metrics.waterQualityIndex - 70) / 4;
-  }
-
-  return Math.max(0, Math.min(100, score));
+  // No QoL data available - return neutral score
+  return 50;
 }
 
 /**

@@ -1,5 +1,5 @@
 ## Features
-- Add Austin, TX and test the adding cities pipeline
+
 
 ## Robustness
 
@@ -9,14 +9,14 @@ See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 **Cleanup Tasks (from review):**
 - [x] Delete orphaned files: `scripts/add-bea-geofips.ts`, `style-preview.html`, `types/index.ts`
 - [x] Remove deprecated fields from Prisma schema (14 columns dropped)
-- [ ] Consolidate `seed.ts` and `refresh/route.ts`
+- [x] Sync `seed.ts` with new schema (now matches `refresh/route.ts`)
 - [ ] Add city slug to PostgreSQL for consistent ID
 
 ### Code Review & Refactor
-- [ ] Remove/migrate 11 deprecated CityMetrics fields
+- [x] Remove deprecated CityMetrics fields (done with Prisma schema cleanup)
+- [x] `checkFilters` function - already removed from codebase
 - [ ] Clean up legacy preference fields
 - [ ] Replace console.log in admin routes with proper logging
-- [ ] Implement or remove empty `checkFilters` function
 
 ### Security (future)
 - Consider hiding the data access interface from regular users
@@ -27,3 +27,8 @@ See `docs/ARCHITECTURE-REVIEW.md` for full analysis.
 - [ ] Changelog
 
 ## Bugs
+
+## Future City Backlog
+- Boise
+- Boulder
+- San Luis Obispo

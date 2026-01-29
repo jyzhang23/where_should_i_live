@@ -184,15 +184,9 @@ The following deprecated fields have been removed from the database schema:
 
 79 console.log statements across 13 admin API routes. Acceptable for admin-only code, but consider a proper logging library for production.
 
-### 4.2 Empty Function Reserved for Future
+### 4.2 ~~Empty Function Reserved for Future~~ ✅ Removed
 
-```typescript
-// src/lib/scoring.ts line 343-350
-function checkFilters(...) {
-  // Reserved for hard filters (exclusion logic)
-  return null;
-}
-```
+The placeholder `checkFilters` function has been removed from the codebase.
 
 ### 4.3 Legacy Preference Fields
 
@@ -212,14 +206,14 @@ In `src/types/preferences.ts`:
 3. [ ] Document the correct data refresh workflow
 
 ### Medium Priority
-4. [ ] Consolidate `seed.ts` and `refresh/route.ts` into single mechanism
+4. [x] Sync `seed.ts` with `refresh/route.ts` (both now use same simplified schema)
 5. [ ] Add city slug to PostgreSQL schema for consistent identification
 6. [ ] Replace console.log with proper logging library in admin routes
 
 ### Low Priority
 7. [ ] Remove legacy preference fields after migration period
-8. [ ] Implement `checkFilters` function or remove placeholder
-9. [ ] Consider migrating entirely to JSON or entirely to database (not both)
+8. [x] `checkFilters` placeholder removed
+9. [x] Decided: Keep hybrid JSON + PostgreSQL (see section 2.1)
 
 ---
 

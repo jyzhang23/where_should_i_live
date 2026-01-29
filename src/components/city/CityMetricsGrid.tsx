@@ -1523,39 +1523,8 @@ Lower is more affordable`}
               </div>
             </div>
           ) : (
-            // Legacy display for cities without QoL API data
-            <div className="grid grid-cols-2 gap-2">
-              <MetricItem
-                icon={<Footprints className="h-4 w-4" />}
-                label="Walk Score"
-                value={metrics.walkScore}
-                tooltip="Walkability score (0-100)"
-                colorClass={getScoreColor(metrics.walkScore)}
-              />
-              <MetricItem
-                icon={<Train className="h-4 w-4" />}
-                label="Transit Score"
-                value={metrics.transitScore}
-                tooltip="Public transit accessibility (0-100)"
-                colorClass={getScoreColor(metrics.transitScore)}
-              />
-              <MetricItem
-                icon={<Shield className="h-4 w-4" />}
-                label="Crime Rate"
-                value={metrics.crimeRate?.toFixed(0)}
-                tooltip="Violent crimes per 100,000 residents"
-                colorClass={getScoreColor(metrics.crimeRate, true)}
-              />
-              <MetricItem
-                icon={<Activity className="h-4 w-4" />}
-                label="Health Score"
-                value={metrics.healthScore?.toFixed(0)}
-                tooltip="Healthcare access and quality score"
-                colorClass={getScoreColor(metrics.healthScore)}
-              />
-              <div className="col-span-2 text-center py-4 text-muted-foreground text-sm">
-                <p>Pull QoL data from the Admin panel for detailed metrics.</p>
-              </div>
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              <p>Pull QoL data from the Admin panel for detailed metrics.</p>
             </div>
           )}
         </CardContent>
@@ -1689,13 +1658,8 @@ Lower is more affordable`}
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-4 text-muted-foreground">
-                    <MetricItem
-                      icon={<Vote className="h-4 w-4 text-blue-600" />}
-                      label="City Dem %"
-                      value={formatPercent(metrics.cityDemocratPercent)}
-                      tooltip="City-level Democratic vote share (legacy data)"
-                    />
+                  <div className="text-center py-4 text-muted-foreground text-sm">
+                    Pull Cultural data from the Admin panel.
                   </div>
                 )}
               </div>
