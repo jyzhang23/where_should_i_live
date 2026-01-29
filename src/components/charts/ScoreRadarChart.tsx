@@ -111,11 +111,12 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
               <Radar
                 name="National Avg"
                 dataKey="nationalAvg"
-                stroke="var(--muted-foreground)"
+                stroke="#888888"
                 fill="transparent"
                 fillOpacity={0}
-                strokeWidth={1}
-                strokeDasharray="4 4"
+                strokeWidth={2}
+                strokeDasharray="6 4"
+                strokeOpacity={0.7}
                 dot={false}
               />
               <Radar
@@ -162,8 +163,8 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
           </div>
         )}
         {/* National average legend */}
-        <div className="flex items-center justify-center gap-1 mt-2 text-xs text-muted-foreground">
-          <span className="inline-block w-4 border-t border-dashed border-muted-foreground" />
+        <div className="flex items-center justify-center gap-2 mt-2 text-xs text-muted-foreground">
+          <span className="inline-block w-6 border-t-2 border-dashed" style={{ borderColor: '#888888' }} />
           <span>Dashed line = U.S. national average (50)</span>
         </div>
       </CardContent>

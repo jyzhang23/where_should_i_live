@@ -196,26 +196,28 @@ async function queryOverpass(query: string, retryCount = 0): Promise<unknown> {
  * Count POIs around a city using Overpass
  * Now includes nodes, ways, AND relations (buildings/areas mapped as polygons)
  * Uses regex pattern for efficiency
+ * Supports custom tag key (default: amenity)
  */
 async function countPOIsNearCity(
   lat: number, 
   lon: number, 
   radiusMiles: number,
-  amenityTypes: string[]
+  tagValues: string[],
+  tagKey: string = "amenity"
 ): Promise<number> {
-  if (amenityTypes.length === 0) return 0;
+  if (tagValues.length === 0) return 0;
   
   const radiusMeters = radiusMiles * 1609.34;
-  // Use regex pattern to combine amenity types (e.g., "bar|pub|nightclub")
-  const amenityFilter = amenityTypes.join("|");
+  // Use regex pattern to combine tag values (e.g., "bar|pub|nightclub")
+  const tagFilter = tagValues.join("|");
   
   // Query nodes, ways, AND relations - many POIs are mapped as building polygons
   const query = `
     [out:json][timeout:60];
     (
-      node["amenity"~"^(${amenityFilter})$"](around:${radiusMeters},${lat},${lon});
-      way["amenity"~"^(${amenityFilter})$"](around:${radiusMeters},${lat},${lon});
-      relation["amenity"~"^(${amenityFilter})$"](around:${radiusMeters},${lat},${lon});
+      node["${tagKey}"~"^(${tagFilter})$"](around:${radiusMeters},${lat},${lon});
+      way["${tagKey}"~"^(${tagFilter})$"](around:${radiusMeters},${lat},${lon});
+      relation["${tagKey}"~"^(${tagFilter})$"](around:${radiusMeters},${lat},${lon});
     );
     out count;
   `;
@@ -342,8 +344,6 @@ async function collectRecreationData(city: CityData, population: number): Promis
   const lat = city.latitude;
   const lon = city.longitude;
   
-  console.log(`  Collecting recreation data for ${city.name}...`);
-  
   // Count parks (local parks within 5mi)
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
   const parkCount = await countPOIsNearCity(lat, lon, 5, ["park"]);
@@ -396,24 +396,22 @@ async function collectUrbanLifestyleData(city: CityData, population: number): Pr
   const { lat, lon } = getUrbanCoords(city);
   const pop10K = population / 10000;
   
-  console.log(`  Collecting urban lifestyle data for ${city.name}...`);
-  
   // Nightlife - bars and clubs
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
   const barsCount = await countPOIsNearCity(lat, lon, 5, ["bar", "pub", "nightclub"]);
   const barsAndClubsPer10K = pop10K > 0 ? Math.round(barsCount / pop10K * 10) / 10 : null;
   
-  // Arts - museums
+  // Arts - museums (use tourism tag, not amenity!)
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-  const museums = await countPOIsNearCity(lat, lon, 10, ["museum"]);
+  const museums = await countPOIsNearCity(lat, lon, 10, ["museum"], "tourism");
   
   // Arts - theaters
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
   const theaters = await countPOIsNearCity(lat, lon, 10, ["theatre", "cinema"]);
   
-  // Arts - art galleries  
+  // Arts - art galleries (use tourism tag)
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-  const galleries = await countPOIsNearCity(lat, lon, 5, ["gallery"]);
+  const galleries = await countPOIsNearCity(lat, lon, 5, ["gallery", "artwork"], "tourism");
   
   // Dining - restaurants
   await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
@@ -524,7 +522,7 @@ async function fillUrbanLifestyleGaps(
   
   if (gaps.includes("museums")) {
     await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-    const museums = await countPOIsNearCity(lat, lon, 10, ["museum"]);
+    const museums = await countPOIsNearCity(lat, lon, 10, ["museum"], "tourism");
     result.arts = { ...result.arts, museums };
   }
   
@@ -536,7 +534,7 @@ async function fillUrbanLifestyleGaps(
   
   if (gaps.includes("galleries")) {
     await new Promise(resolve => setTimeout(resolve, OVERPASS_DELAY_MS));
-    const artGalleries = await countPOIsNearCity(lat, lon, 5, ["gallery"]);
+    const artGalleries = await countPOIsNearCity(lat, lon, 5, ["gallery", "artwork"], "tourism");
     result.arts = { ...result.arts, artGalleries };
   }
   
