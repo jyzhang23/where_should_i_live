@@ -2,66 +2,89 @@
 
 All notable changes to the Cities App project.
 
-## [Unreleased]
+## [1.0.0] - 2026-01-30
 
-### Architecture Improvements
-- **Database Schema Cleanup**: Removed 14 deprecated columns from `CityMetrics` table
-  - Demographics, QoL, Cost, and Political data now sourced from `metrics.json`
-  - Only climate data and sports teams remain in database
-  - See `docs/ARCHITECTURE-REVIEW.md` for rationale
+### 🎉 Initial Release
 
-- **City ID Consistency**: Added `slug` field to City table
-  - Matches JSON file IDs (e.g., `san-francisco`)
-  - Simplifies API layer by eliminating name-to-slug conversions
+The first stable release of "Where Should I Live" - a comprehensive city comparison tool that helps you find your perfect city based on personalized preferences.
 
-- **Data Flow Documentation**: Created `docs/ARCHITECTURE-REVIEW.md`
-  - Documents JSON vs PostgreSQL decision
-  - Maps data sources and flow
-  - Identifies remaining technical debt
+### Core Features
 
-### Code Quality
-- **Admin Logger**: Added `src/lib/admin-logger.ts` utility
-  - Structured logging with timestamps and source context
-  - Supports info, warn, error, debug levels
-  - Migrated `bea-pull` and `cultural-pull` routes
+- **Multi-Factor City Rankings**: Score cities across 5 major categories:
+  - Climate (11 weather factors from NOAA/Open-Meteo)
+  - Cost of Living (BEA purchasing power with housing adjustments)
+  - Demographics (Census ACS data, diversity, education)
+  - Quality of Life (walkability, safety, healthcare, schools, internet)
+  - Cultural (political lean, religious communities, urban lifestyle)
 
-- **Orphaned Files Cleanup**: Removed unused files
-  - `scripts/add-bea-geofips.ts`
-  - `style-preview.html`
-  - `src/types/index.ts`
+- **Personalized Scoring**: 
+  - Adjustable category weights
+  - Housing situation modes (Renter, Homeowner, Prospective Buyer)
+  - Work situation modes (Local Earner, Standard, Retiree)
+  - Minority community preferences with subgroup targeting
 
-- **Script Sync**: Updated `scripts/seed.ts` to match `refresh/route.ts`
-  - Both now use simplified schema (climate + sports only)
+- **Interactive UI**:
+  - Real-time score updates as preferences change
+  - Top 10 ranking bar chart
+  - Radar chart for category breakdown
+  - Price trend charts (Zillow ZHVI history)
+  - Side-by-side city comparison
+  - Score breakdown dialog ("Why does this city score low?")
 
-### Features
-- **Score Breakdown Dialog**: "Why does my city suck" feature
-  - Click any score card to see detailed factor analysis
-  - Shows strengths, concerns, and issues with explanations
-  - Color-coded indicators for each factor
+- **Quick Start Wizard**: Guided preference setup with lifestyle personas
 
-- **Pre-push Hook**: TypeScript type checking before push
-  - Prevents production build failures from type errors
-  - Located at `.git/hooks/pre-push`
+- **45 Major US Cities**: Comprehensive data coverage
 
-### Bug Fixes
-- Fixed score label inconsistency (e.g., "Average" with "F" grade)
-  - Aligned `getScoreLabel` thresholds with `getGrade` function
+### Data Pipeline
 
----
+- **Walk Score® Integration**: City-wide walkability scores from walkscore.com
+  - Robust URL validation to prevent address-page data
+  - Automatic detection of redirects and suspicious scores
+  
+- **Admin CLI Tools**: 
+  - `scripts/admin.ts` - Unified admin operations
+  - `scripts/add-city.ts` - Automated city addition pipeline
+  - `scripts/fetch-walkscore.ts` - Walk Score scraper with validation
+  - `scripts/verify-city-data.ts` - Data completeness checker
 
-## Data Sources
+- **Security Hardening**:
+  - Admin API routes restricted to development mode
+  - Environment variable authentication
+  - No hardcoded credentials
+
+### Technical Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS + shadcn/ui
+- Prisma + PostgreSQL
+- Recharts for visualizations
+
+### Data Sources
 
 | Source | API/Dataset | Data |
 |--------|-------------|------|
 | BEA | Regional Price Parities | Cost of living, purchasing power |
-| Census | ACS 5-Year Estimates | Demographics, diversity |
-| NOAA | ACIS + Open-Meteo | Climate normals |
+| Census | ACS 5-Year Estimates | Demographics, diversity, education |
+| NOAA | ACIS + Open-Meteo | Climate normals (30-year) |
 | EPA | Air Quality System | AQI statistics |
 | FBI | Crime Data Explorer | Crime rates |
 | FCC | Broadband Map | Internet availability |
 | HRSA | Health Resources | Healthcare access |
 | NCES | Education Statistics | School quality |
-| Walk Score | API | Walkability scores |
+| Walk Score® | walkscore.com | Walkability, transit, bike scores |
 | Zillow | ZHVI | Home price history |
-| MIT Election Lab | County Returns | Political data |
+| MIT Election Lab | County Returns | Political lean |
 | ARDA | Religion Census | Religious composition |
+
+### Documentation
+
+- `docs/ADDING-CITIES.md` - Guide for adding new cities
+- `docs/ADMIN.md` - Admin operations documentation
+- `/help` page - In-app scoring methodology explanation
+
+---
+
+## [Unreleased]
+
+_Future improvements and features will be listed here._

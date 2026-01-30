@@ -1,10 +1,5 @@
 ## Features
 
-- [x] ~~Walkability: Replace EPA walkability API with simple walkscore.com lookup~~ ✅ DONE
-  - Created `scripts/fetch-walkscore.ts` to fetch Walk/Transit/Bike scores
-  - All 45 cities now have walkability data from walkscore.com
-  - Much simpler than previous EPA National Walkability Index approach
-
 ## Bugs
 
 ## Maintenance

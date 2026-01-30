@@ -88,7 +88,22 @@ export default function Home() {
       {/* Header */}
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Where Should I Live</h1>
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-3xl font-bold tracking-tight">Where Should I Live</h1>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-xs text-muted-foreground cursor-help hover:text-foreground transition-colors">
+                  v1.0
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs">
+                <p className="font-medium">Version 1.0.0</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  45 cities • 5 scoring categories • Walk Score® data
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <p className="text-muted-foreground mt-1">
             Find your perfect city based on your preferences
           </p>
