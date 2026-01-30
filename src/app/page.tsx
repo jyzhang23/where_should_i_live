@@ -93,13 +93,13 @@ export default function Home() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="text-xs text-muted-foreground cursor-help hover:text-foreground transition-colors">
-                  v1.0
+                  v1.1
                 </span>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-xs">
-                <p className="font-medium">Version 1.0.0</p>
+                <p className="font-medium">Version 1.1.0</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  45 cities • 5 scoring categories • Walk Score® data
+                  45 cities • 5 scoring categories • Walk Score® data • Dating Favorability
                 </p>
               </TooltipContent>
             </Tooltip>
