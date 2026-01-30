@@ -14,7 +14,6 @@ import {
   ArrowLeft,
   Calculator,
   Sliders,
-  Filter,
   Scale,
   Sun,
   Home,
@@ -447,7 +446,7 @@ export default function HelpPage() {
                 <h4>Factor Scores</h4>
                 <ul className="space-y-2">
                   <li>
-                    <strong>Population:</strong> Hard filter. Cities below your minimum are scored at 30 (significant penalty).
+                    <strong>Population:</strong> Cities below your minimum population threshold receive a score of 30 (significant penalty), while cities meeting your threshold score 70+.
                   </li>
                   <li>
                     <strong>Diversity Index:</strong> Simpson&apos;s Diversity Index (0-100). Score scales with diversity level; 
@@ -785,43 +784,6 @@ export default function HelpPage() {
         </CardContent>
       </Card>
 
-      {/* Filters */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Hard Filters (Exclusions)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-          <p>
-            Some preferences act as <strong>hard filters</strong> that exclude cities entirely
-            (shown with strikethrough in the rankings):
-          </p>
-          <table className="w-full text-sm">
-            <thead>
-              <tr>
-                <th className="text-left">Filter</th>
-                <th className="text-left">Exclusion Reason</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Requires NFL Team</td>
-                <td>City has no NFL team</td>
-              </tr>
-              <tr>
-                <td>Requires NBA Team</td>
-                <td>City has no NBA team</td>
-              </tr>
-            </tbody>
-          </table>
-          <p className="text-muted-foreground text-sm mt-4">
-            Excluded cities appear at the bottom of the rankings with their exclusion reason shown.
-          </p>
-        </CardContent>
-      </Card>
-
       {/* Score Interpretation */}
       <Card className="mb-8">
         <CardHeader>
@@ -952,8 +914,8 @@ export default function HelpPage() {
               demographics at all, set its weight to 0.
             </li>
             <li>
-              <strong>Use filters sparingly:</strong> Hard filters (requires NFL/NBA) 
-              completely exclude cities. Use the scoring system for softer preferences.
+              <strong>All preferences affect scoring:</strong> Even strong preferences like 
+              sports teams use weighted scoring rather than exclusions, so you&apos;ll always see all cities ranked.
             </li>
             <li>
               <strong>Cost of Living has two persona selectors:</strong> Choose your housing situation 
