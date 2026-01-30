@@ -134,6 +134,11 @@ export interface UserPreferences {
       maxPovertyRate: number;             // Maximum poverty rate %
       weightEconomicHealth: number;       // 0-100, default 25
       
+      // Dating Favorability (optional sub-feature)
+      datingEnabled: boolean;             // Enable dating favorability scoring
+      seekingGender: "men" | "women" | null;  // Who you're looking for
+      datingAgeRange: "20-29" | "30-39" | "40-49" | null;  // Age range interested in
+      datingWeight: number;               // 0-100, how much dating affects demographics score
     };
 
     // Quality of life sub-preferences
@@ -278,6 +283,11 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       minMedianHouseholdIncome: 0,
       maxPovertyRate: 100,
       weightEconomicHealth: 25,
+      // Dating Favorability (off by default)
+      datingEnabled: false,
+      seekingGender: null,
+      datingAgeRange: null,
+      datingWeight: 50,
     },
     qualityOfLife: {
       minWalkScore: 0,
@@ -441,6 +451,16 @@ export const TOOLTIPS: Record<string, string> = {
     "Maximum acceptable poverty rate %. US avg: 11%. Higher poverty may indicate economic challenges.",
   "advanced.demographics.weightEconomicHealth":
     "How important is economic health (income, poverty rate) in scoring?",
+  
+  // Demographics advanced - Dating Favorability
+  "advanced.demographics.datingEnabled":
+    "Enable dating favorability scoring. Considers gender ratios, single population, economic factors, and walkability.",
+  "advanced.demographics.seekingGender":
+    "Who are you looking for? Affects how gender ratios are scored - looking for women favors cities with more women (ratio < 100).",
+  "advanced.demographics.datingAgeRange":
+    "Age range you're interested in. We'll use gender ratios for that specific bracket.",
+  "advanced.demographics.datingWeight":
+    "How much dating favorability affects your demographics score. 0 = ignore, 100 = dating factors only.",
 
   // Quality of life advanced
   "advanced.qualityOfLife.minWalkScore":

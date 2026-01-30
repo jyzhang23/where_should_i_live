@@ -870,6 +870,163 @@ function analyzeDemographics(
     });
   }
 
+  // === DATING FAVORABILITY (if enabled) ===
+  if (prefs.datingEnabled && prefs.seekingGender) {
+    const seekingGender = prefs.seekingGender;
+    const ageRange = prefs.datingAgeRange;
+    const datingWeight = prefs.datingWeight;
+    const qol = city.metrics?.qol;
+    const cultural = city.metrics?.cultural;
+    const bea = city.metrics?.bea;
+
+    // Get appropriate gender ratio
+    let genderRatio: { male: number; female: number; ratio: number } | null = null;
+    if (census?.genderRatios) {
+      switch (ageRange) {
+        case "20-29": genderRatio = census.genderRatios.age20to29; break;
+        case "30-39": genderRatio = census.genderRatios.age30to39; break;
+        case "40-49": genderRatio = census.genderRatios.age40to49; break;
+        default: genderRatio = census.genderRatios.overall;
+      }
+    }
+
+    // Pool: Gender Ratio
+    if (genderRatio) {
+      const ratio = genderRatio.ratio;
+      let status: FactorAnalysis["status"] = "neutral";
+      let score = 50;
+      let explanation = "";
+      
+      if (seekingGender === "women") {
+        // Looking for women: ratio < 100 is favorable (more women)
+        score = Math.max(0, Math.min(100, 100 - (ratio - 85) * (100 / 30)));
+        if (ratio < 95) {
+          status = "good";
+          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - more women available.`;
+        } else if (ratio > 105) {
+          status = "bad";
+          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - fewer women available.`;
+        } else {
+          explanation = `Gender ratio of ${ratio.toFixed(1)} is near balanced.`;
+        }
+      } else {
+        // Looking for men: ratio > 100 is favorable (more men)
+        score = Math.max(0, Math.min(100, (ratio - 85) * (100 / 30)));
+        if (ratio > 105) {
+          status = "good";
+          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - more men available.`;
+        } else if (ratio < 95) {
+          status = "bad";
+          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - fewer men available.`;
+        } else {
+          explanation = `Gender ratio of ${ratio.toFixed(1)} is near balanced.`;
+        }
+      }
+
+      factors.push({
+        name: `Dating: Gender Ratio${ageRange ? ` (${ageRange})` : ""}`,
+        weight: Math.round(datingWeight * 0.4),
+        value: ratio.toFixed(1),
+        unit: " M/100F",
+        score,
+        status,
+        explanation,
+      });
+    }
+
+    // Pool: Never Married %
+    const neverMarriedPct = seekingGender === "women" 
+      ? census?.neverMarriedFemalePercent
+      : census?.neverMarriedMalePercent;
+    
+    if (neverMarriedPct != null) {
+      let status: FactorAnalysis["status"] = "neutral";
+      let score = Math.min(100, 30 + neverMarriedPct * 1.5);
+      
+      if (neverMarriedPct >= 40) {
+        status = "good";
+      } else if (neverMarriedPct < 25) {
+        status = "warning";
+      }
+
+      factors.push({
+        name: `Dating: ${seekingGender === "women" ? "Single Women" : "Single Men"} %`,
+        weight: Math.round(datingWeight * 0.15),
+        value: neverMarriedPct.toFixed(0),
+        unit: "%",
+        score,
+        status,
+        explanation: neverMarriedPct >= 40
+          ? `${neverMarriedPct.toFixed(0)}% never married - large dating pool.`
+          : `${neverMarriedPct.toFixed(0)}% never married (15+).`,
+      });
+    }
+
+    // Economic: Dating Affordability
+    if (bea && census?.medianHouseholdIncome) {
+      const income = census.medianHouseholdIncome;
+      const housingRPP = bea.regionalPriceParity?.housing || 100;
+      const estimatedAnnualRent = 16800 * (housingRPP / 100);
+      const disposableIncome = income - estimatedAnnualRent;
+      const rentToIncomeRatio = estimatedAnnualRent / income;
+      
+      let status: FactorAnalysis["status"] = "neutral";
+      let score = Math.min(100, 20 + (disposableIncome / 1000));
+      
+      if (rentToIncomeRatio < 0.25) {
+        status = "good";
+        score += 10;
+      } else if (rentToIncomeRatio > 0.35) {
+        status = "bad";
+        score -= 15;
+      }
+      score = Math.max(0, Math.min(100, score));
+
+      factors.push({
+        name: "Dating: Affordability",
+        weight: Math.round(datingWeight * 0.3),
+        value: `$${(disposableIncome / 1000).toFixed(0)}K`,
+        unit: "/yr",
+        score,
+        status,
+        explanation: rentToIncomeRatio < 0.25
+          ? `${(rentToIncomeRatio * 100).toFixed(0)}% rent burden - affordable for dating.`
+          : rentToIncomeRatio > 0.35
+          ? `${(rentToIncomeRatio * 100).toFixed(0)}% rent burden - limited disposable income.`
+          : `${(rentToIncomeRatio * 100).toFixed(0)}% rent burden - moderate dating budget.`,
+      });
+    }
+
+    // Walk Score for dating
+    if (qol?.walkability?.walkScore != null) {
+      const ws = qol.walkability.walkScore;
+      let status: FactorAnalysis["status"] = "neutral";
+      let score = ws >= 70 ? Math.min(100, 60 + ws * 0.5) 
+                : ws >= 50 ? 50 + (ws - 50) * 0.5
+                : Math.max(20, ws);
+      
+      if (ws >= 70) {
+        status = "good";
+      } else if (ws < 40) {
+        status = "warning";
+      }
+
+      factors.push({
+        name: "Dating: Walkability",
+        weight: Math.round(datingWeight * 0.1),
+        value: ws,
+        unit: "",
+        score,
+        status,
+        explanation: ws >= 70
+          ? `Walk Score® ${ws} - great for meeting people organically.`
+          : ws < 40
+          ? `Walk Score® ${ws} - car-dependent, harder to meet casually.`
+          : `Walk Score® ${ws} - moderate walkability.`,
+      });
+    }
+  }
+
   const badFactors = factors.filter((f) => f.status === "bad");
   const goodFactors = factors.filter((f) => f.status === "good");
   

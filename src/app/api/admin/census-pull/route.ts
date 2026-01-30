@@ -125,6 +125,9 @@ async function fetchCensusData(
       "DP02_0113PE", // English only %
       "DP02_0114PE", // Spanish %
       "DP02_0118PE", // Asian/Pacific Islander languages %
+      // Marital Status (for dating demographics)
+      "DP02_0026PE", // Never married (males 15+ years) %
+      "DP02_0032PE", // Never married (females 15+ years) %
     ].join(",");
 
     const profileUrl = `${ACS_PROFILE_URL}?get=${profileVars}&for=place:${placeFips}&in=state:${stateFips}${apiKey}`;
@@ -221,6 +224,90 @@ async function fetchCensusData(
     } catch (e) {
       logger.warn("Could not fetch Hispanic subgroup data");
     }
+
+    // Fetch Sex by Age data from B01001 table for gender ratio calculations
+    // B01001: Sex by Age (detailed age brackets by sex)
+    const sexByAgeVars = [
+      // Male 20-29
+      "B01001_007E", // Male 20
+      "B01001_008E", // Male 21
+      "B01001_009E", // Male 22-24
+      "B01001_010E", // Male 25-29
+      // Male 30-39
+      "B01001_011E", // Male 30-34
+      "B01001_012E", // Male 35-39
+      // Male 40-49
+      "B01001_013E", // Male 40-44
+      "B01001_014E", // Male 45-49
+      // Female 20-29
+      "B01001_031E", // Female 20
+      "B01001_032E", // Female 21
+      "B01001_033E", // Female 22-24
+      "B01001_034E", // Female 25-29
+      // Female 30-39
+      "B01001_035E", // Female 30-34
+      "B01001_036E", // Female 35-39
+      // Female 40-49
+      "B01001_037E", // Female 40-44
+      "B01001_038E", // Female 45-49
+      // Totals by sex
+      "B01001_002E", // Male total
+      "B01001_026E", // Female total
+    ].join(",");
+
+    const sexByAgeUrl = `${ACS_DETAIL_URL}?get=NAME,${sexByAgeVars}&for=place:${placeFips}&in=state:${stateFips}${apiKey}`;
+    
+    let sexByAgeData: Record<string, number | null> = {};
+    try {
+      logger.debug("Fetching sex by age data");
+      const sexByAgeResp = await fetch(sexByAgeUrl);
+      if (sexByAgeResp.ok) {
+        const sexByAgeJson = await sexByAgeResp.json();
+        if (sexByAgeJson && sexByAgeJson.length >= 2) {
+          const sexByAgeHeaders = sexByAgeJson[0] as string[];
+          const sexByAgeValues = sexByAgeJson[1] as (string | number)[];
+          sexByAgeHeaders.forEach((header, i) => {
+            const val = sexByAgeValues[i];
+            sexByAgeData[header] = val === null || val === "" || val === "-" ? null :
+              typeof val === "number" ? val : parseFloat(String(val)) || null;
+          });
+        }
+      }
+    } catch (e) {
+      logger.warn("Could not fetch sex by age data");
+    }
+
+    // Calculate gender ratios by age bracket
+    const calculateGenderRatio = (maleCount: number | null, femaleCount: number | null) => {
+      if (maleCount === null || femaleCount === null || femaleCount === 0) return null;
+      return {
+        male: maleCount,
+        female: femaleCount,
+        ratio: Math.round((maleCount / femaleCount) * 1000) / 10, // males per 100 females
+      };
+    };
+
+    // Sum age groups
+    const male20to29 = (sexByAgeData["B01001_007E"] || 0) + (sexByAgeData["B01001_008E"] || 0) + 
+                       (sexByAgeData["B01001_009E"] || 0) + (sexByAgeData["B01001_010E"] || 0);
+    const female20to29 = (sexByAgeData["B01001_031E"] || 0) + (sexByAgeData["B01001_032E"] || 0) + 
+                         (sexByAgeData["B01001_033E"] || 0) + (sexByAgeData["B01001_034E"] || 0);
+    
+    const male30to39 = (sexByAgeData["B01001_011E"] || 0) + (sexByAgeData["B01001_012E"] || 0);
+    const female30to39 = (sexByAgeData["B01001_035E"] || 0) + (sexByAgeData["B01001_036E"] || 0);
+    
+    const male40to49 = (sexByAgeData["B01001_013E"] || 0) + (sexByAgeData["B01001_014E"] || 0);
+    const female40to49 = (sexByAgeData["B01001_037E"] || 0) + (sexByAgeData["B01001_038E"] || 0);
+    
+    const maleTotal = sexByAgeData["B01001_002E"];
+    const femaleTotal = sexByAgeData["B01001_026E"];
+
+    const genderRatios = {
+      age20to29: male20to29 > 0 && female20to29 > 0 ? calculateGenderRatio(male20to29, female20to29) : null,
+      age30to39: male30to39 > 0 && female30to39 > 0 ? calculateGenderRatio(male30to39, female30to39) : null,
+      age40to49: male40to49 > 0 && female40to49 > 0 ? calculateGenderRatio(male40to49, female40to49) : null,
+      overall: calculateGenderRatio(maleTotal, femaleTotal),
+    };
 
     // Calculate age brackets
     // Guard against API returning counts instead of percentages (values > 100 are invalid)
@@ -319,6 +406,9 @@ async function fetchCensusData(
       age35to54Percent: age35to54 > 0 && age35to54 <= 100 ? Math.round(age35to54 * 10) / 10 : null,
       age55PlusPercent: age55Plus > 0 && age55Plus <= 100 ? Math.round(age55Plus * 10) / 10 : null,
       
+      // Gender ratios by age bracket (for dating demographics)
+      genderRatios,
+      
       // Race/Ethnicity (sanitized) - 2022 ACS variable codes
       whitePercent: sanitizePercentOrNull(data["DP05_0079PE"]),
       blackPercent: sanitizePercentOrNull(data["DP05_0080PE"]),
@@ -365,6 +455,10 @@ async function fetchCensusData(
       familyHouseholdsPercent: sanitizePercentOrNull(data["DP02_0002PE"]),
       marriedCouplePercent: sanitizePercentOrNull(data["DP02_0003PE"]),
       singlePersonPercent: sanitizePercentOrNull(data["DP02_0012PE"]),
+      
+      // Marital Status (for dating demographics)
+      neverMarriedMalePercent: sanitizePercentOrNull(data["DP02_0026PE"]),
+      neverMarriedFemalePercent: sanitizePercentOrNull(data["DP02_0032PE"]),
       
       // Language
       englishOnlyPercent: sanitizePercentOrNull(data["DP02_0113PE"]),
@@ -468,7 +562,8 @@ export async function POST(request: NextRequest) {
       }
 
       successCount++;
-      logger.debug("Updated city", { city: city.name, pop: censusData.totalPopulation, diversity: censusData.diversityIndex, medianAge: censusData.medianAge, bachelors: censusData.bachelorsOrHigherPercent });
+      const genderRatio20s = censusData.genderRatios?.age20to29?.ratio;
+      logger.debug("Updated city", { city: city.name, pop: censusData.totalPopulation, diversity: censusData.diversityIndex, medianAge: censusData.medianAge, genderRatio20s });
 
       // Ensure city entry exists in metrics
       if (!metricsFile.cities[city.id]) {

@@ -269,6 +269,10 @@ test('25% vs 40% Asian: Difference should be <15 pts (plateau effect)', () => {
         minorityImportance: 100,
         minMedianHouseholdIncome: 0,
         maxPovertyRate: 100,
+        datingEnabled: false,
+        seekingGender: null,
+        datingAgeRange: null,
+        datingWeight: 50,
       },
     },
   };
@@ -340,6 +344,10 @@ test('5% Asian (below threshold) should score lower than 25%', () => {
         minorityImportance: 100,
         minMedianHouseholdIncome: 0,
         maxPovertyRate: 100,
+        datingEnabled: false,
+        seekingGender: null,
+        datingAgeRange: null,
+        datingWeight: 50,
       },
     },
   };

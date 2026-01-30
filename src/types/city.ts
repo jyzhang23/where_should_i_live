@@ -17,6 +17,15 @@ export interface CensusDemographics {
   age35to54Percent: number | null;
   age55PlusPercent: number | null;
   
+  // Gender Ratios by Age Bracket (for dating demographics)
+  // Ratio = males per 100 females (>100 means more men, <100 means more women)
+  genderRatios?: {
+    age20to29: { male: number; female: number; ratio: number } | null;
+    age30to39: { male: number; female: number; ratio: number } | null;
+    age40to49: { male: number; female: number; ratio: number } | null;
+    overall: { male: number; female: number; ratio: number } | null;
+  } | null;
+  
   // Race/Ethnicity (percentages, sum to ~100%)
   whitePercent: number | null;          // White alone, not Hispanic
   blackPercent: number | null;          // Black/African American alone
@@ -63,6 +72,11 @@ export interface CensusDemographics {
   familyHouseholdsPercent: number | null;
   marriedCouplePercent: number | null;
   singlePersonPercent: number | null;
+  
+  // Marital Status (for dating demographics)
+  // Percentage of 15+ population that has never been married
+  neverMarriedMalePercent?: number | null;
+  neverMarriedFemalePercent?: number | null;
   
   // Language
   englishOnlyPercent: number | null;

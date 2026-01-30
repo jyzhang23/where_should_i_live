@@ -873,6 +873,105 @@ export function AdvancedPreferences() {
             </>
           )}
         </div>
+
+        {/* Dating Favorability */}
+        <div className="space-y-3 pt-4 border-t">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-1.5">
+              <Heart className="h-3.5 w-3.5 text-pink-500" />
+              Dating Favorability
+            </h4>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger><HelpCircle className="h-3.5 w-3.5 text-muted-foreground" /></TooltipTrigger>
+                <TooltipContent><p className="max-w-xs text-xs">{TOOLTIPS["advanced.demographics.datingEnabled"]}</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
+          {/* Enable Toggle */}
+          <div className="flex items-center justify-between p-2 rounded-md bg-muted/50">
+            <Label htmlFor="dating-enabled" className="text-sm font-medium cursor-pointer">
+              Enable Dating Scoring
+            </Label>
+            <Switch
+              id="dating-enabled"
+              checked={preferences.advanced.demographics.datingEnabled}
+              onCheckedChange={(checked) => updateAdvanced("demographics", "datingEnabled", checked)}
+            />
+          </div>
+          
+          {preferences.advanced.demographics.datingEnabled && (
+            <div className="space-y-3 pl-2 border-l-2 border-pink-200 dark:border-pink-800">
+              {/* Seeking Gender */}
+              <div className="space-y-2">
+                <label className="text-xs text-muted-foreground flex items-center gap-1">
+                  I&apos;m looking for
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger><HelpCircle className="h-3 w-3" /></TooltipTrigger>
+                      <TooltipContent><p className="max-w-xs text-xs">{TOOLTIPS["advanced.demographics.seekingGender"]}</p></TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </label>
+                <Select
+                  value={preferences.advanced.demographics.seekingGender || ""}
+                  onValueChange={(v) => updateAdvanced("demographics", "seekingGender", v === "" ? null : v as "men" | "women")}
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="women">Women</SelectItem>
+                    <SelectItem value="men">Men</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Age Range */}
+              <div className="space-y-2">
+                <label className="text-xs text-muted-foreground flex items-center gap-1">
+                  Age range interested in
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger><HelpCircle className="h-3 w-3" /></TooltipTrigger>
+                      <TooltipContent><p className="max-w-xs text-xs">{TOOLTIPS["advanced.demographics.datingAgeRange"]}</p></TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </label>
+                <Select
+                  value={preferences.advanced.demographics.datingAgeRange || ""}
+                  onValueChange={(v) => updateAdvanced("demographics", "datingAgeRange", v === "" ? null : v as "20-29" | "30-39" | "40-49")}
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Any age range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="20-29">20-29 years</SelectItem>
+                    <SelectItem value="30-39">30-39 years</SelectItem>
+                    <SelectItem value="40-49">40-49 years</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Dating Weight */}
+              <PreferenceSlider
+                label="Dating Weight"
+                value={preferences.advanced.demographics.datingWeight}
+                onChange={(v) => updateAdvanced("demographics", "datingWeight", v)}
+                min={0}
+                max={100}
+                tooltip={TOOLTIPS["advanced.demographics.datingWeight"]}
+                formatValue={(v) => v === 0 ? "Off" : v === 100 ? "Max" : `${v}%`}
+              />
+              
+              {/* Note about political alignment */}
+              <p className="text-xs text-muted-foreground italic">
+                Your political preference (in Cultural settings) is also used for dating alignment scoring.
+              </p>
+            </div>
+          )}
+        </div>
       </CollapsibleSection>
 
       {/* Quality of Life Details */}
