@@ -427,22 +427,22 @@ function SwipeScreen({
             </motion.div>
 
             {/* City info - extends to bottom of card */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
-              <h3 className="text-xl font-bold text-white">
+            <div className="absolute bottom-0 left-0 right-0 p-4 pb-5 bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-16">
+              <h3 className="text-xl font-bold text-white drop-shadow-lg">
                 {city.name}
-                <span className="text-base font-normal ml-2 text-white/80">
+                <span className="text-base font-normal ml-2 text-white/90">
                   {city.state}
                 </span>
               </h3>
-              <p className="text-sm text-white/90 italic mt-0.5">{city.tagline}</p>
-              <p className="text-xs text-white/80 mt-1.5 leading-relaxed line-clamp-2">{city.bio}</p>
+              <p className="text-sm text-white/95 italic mt-1 drop-shadow">{city.tagline}</p>
+              <p className="text-xs text-white/85 mt-2 leading-relaxed line-clamp-3">{city.bio}</p>
               
               {/* Trait tags */}
-              <div className="flex flex-wrap gap-1 mt-2">
+              <div className="flex flex-wrap gap-1.5 mt-3">
                 {city.traits.slice(0, 4).map(trait => (
                   <span
                     key={trait}
-                    className="px-2 py-0.5 text-xs rounded-full bg-white/20 text-white"
+                    className="px-2 py-0.5 text-xs rounded-full bg-white/25 text-white backdrop-blur-sm"
                   >
                     {trait}
                   </span>
