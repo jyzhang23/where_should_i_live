@@ -4,11 +4,9 @@ This document describes how to manage and update city data in the application.
 
 ## Overview
 
-City data can be updated through two methods:
-1. **CLI Scripts** (recommended) - Run locally to pull and update data
-2. **Admin API Routes** (development only) - Web interface for data updates
+City data is updated through the **CLI scripts** (recommended). All data pulls work directly from the command line without starting a dev server.
 
-In production, the Admin API routes are disabled for security. Use the CLI scripts instead.
+Admin API routes are also available for the web-based Admin Panel, but are disabled in production for security.
 
 ## CLI Usage
 
@@ -18,53 +16,47 @@ The admin CLI is located at `scripts/admin.ts`. Run it with `npx tsx`:
 # Show help
 npx tsx scripts/admin.ts help
 
-# Pull all available data sources
+# Pull all available data sources (takes several minutes)
 npx tsx scripts/admin.ts all
 
-# Pull specific data source
+# Pull specific data sources
+npx tsx scripts/admin.ts census      # Census ACS demographics
+npx tsx scripts/admin.ts bea         # BEA cost of living data
+npx tsx scripts/admin.ts climate     # NOAA ACIS + Open-Meteo climate
 npx tsx scripts/admin.ts zillow      # Zillow ZHVI home prices
+npx tsx scripts/admin.ts qol         # All QoL data (crime, air, broadband, education, health)
 npx tsx scripts/admin.ts cultural    # Political/religious data
 npx tsx scripts/admin.ts recreation  # Parks, trails, outdoor data
 npx tsx scripts/admin.ts urbanlife   # Nightlife, dining, arts
 npx tsx scripts/admin.ts refresh     # Refresh database from JSON
 
 # Verbose output
-npx tsx scripts/admin.ts zillow --verbose
+npx tsx scripts/admin.ts all --verbose
 ```
 
 ### Available Commands
 
-| Command | Description | External API |
-|---------|-------------|--------------|
-| `zillow` | Pull Zillow ZHVI home price data | Yes |
-| `cultural` | Load cultural data from sources | No |
-| `recreation` | Load recreation data from sources | No |
-| `urbanlife` | Load urban lifestyle data from sources | No |
-| `refresh` | Refresh database from JSON files | No |
-| `all` | Run all above commands | Mixed |
+| Command | Description | External API | API Key Required |
+|---------|-------------|--------------|------------------|
+| `all` | Pull all data sources | Yes | Various (see below) |
+| `census` | Pull Census ACS demographics | Yes | CENSUS_API_KEY (optional) |
+| `bea` | Pull BEA cost of living data | Yes | BEA_API_KEY |
+| `climate` | Pull NOAA + Open-Meteo climate data | Yes | None |
+| `zillow` | Pull Zillow ZHVI home prices | Yes | None |
+| `qol` | Pull all Quality of Life data | Yes | FBI_API_KEY, EPA_EMAIL/KEY (optional) |
+| `cultural` | Load cultural data from sources | No | None |
+| `recreation` | Load recreation data from sources | No | None |
+| `urbanlife` | Load urban lifestyle data from sources | No | None |
+| `refresh` | Refresh database from JSON files | No | None |
 
-### Commands Requiring External APIs
+### QoL Sub-pulls
 
-Some data pulls require external APIs and are better run through the development server:
-
-| Command | API Required | How to Run |
-|---------|--------------|------------|
-| `bea` | BEA_API_KEY | Use dev server |
-| `climate` | NOAA + Open-Meteo | Use dev server |
-| `census` | CENSUS_API_KEY | Use dev server |
-| `qol` | Various (FBI, EPA, FCC, etc.) | Use dev server |
-
-To run these through the development server:
-
-```bash
-# Start development server
-npm run dev
-
-# In another terminal, use curl
-curl -X POST http://localhost:3000/api/admin/bea-pull \
-  -H 'Content-Type: application/json' \
-  -d '{"password":"your-admin-password"}'
-```
+The `qol` command runs all Quality of Life data pulls:
+- **FBI Crime** - Violent/property crime rates (falls back to static data if no API key)
+- **EPA Air** - Air quality index (falls back to static data if no API key)
+- **FCC Broadband** - Fiber coverage and provider counts (static data)
+- **NCES Education** - Student-teacher ratios, graduation rates (static data)
+- **HRSA Health** - Healthcare provider density (static data)
 
 ## Development Server Admin UI
 
@@ -74,7 +66,7 @@ When running in development mode (`npm run dev`), an Admin Panel is available in
 2. Enter your admin password
 3. Click buttons to pull data from various sources
 
-**Note:** The Admin Panel is only visible when `NODE_ENV=development`.
+**Note:** The Admin Panel is only visible when `NODE_ENV=development`. For production updates, use the CLI scripts instead.
 
 ## Environment Variables
 
