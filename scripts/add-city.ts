@@ -214,9 +214,16 @@ async function main() {
   const configFile = args.find(a => a.startsWith("--config="))?.split("=")[1];
   const cityName = args.find(a => a.startsWith("--city="))?.split("=")[1];
   const skipDataPull = args.includes("--skip-data-pull");
-  const adminPassword = process.env.ADMIN_PASSWORD || "cursorftw";
+  const adminPassword = process.env.ADMIN_PASSWORD;
   
   console.log("🏙️  Add City Script\n");
+  
+  // Require ADMIN_PASSWORD for data pulls
+  if (!skipDataPull && !adminPassword) {
+    console.error("❌ Error: ADMIN_PASSWORD environment variable is required for data pulls.");
+    console.error("   Set it in your .env file or run with --skip-data-pull to skip API calls.\n");
+    process.exit(1);
+  }
   
   let config: CityConfig | null = null;
   
@@ -268,7 +275,7 @@ async function main() {
   if (!skipDataPull) {
     // Step 3: Pull census data first (needed for lifestyle data collection)
     console.log("\n📊 Step 3: Pulling census data (required for lifestyle metrics)...");
-    await runAdminPull("census-pull", adminPassword);
+    await runAdminPull("census-pull", adminPassword!);
     
     // Step 4: Collect lifestyle data (requires census population data)
     console.log("\n🌳 Step 4: Collecting lifestyle data (this may take a few minutes)...");
@@ -290,7 +297,7 @@ async function main() {
     ];
     
     for (const pull of pulls) {
-      await runAdminPull(pull, adminPassword);
+      await runAdminPull(pull, adminPassword!);
     }
     
     // Step 6: Fetch walkability data from walkscore.com
@@ -299,7 +306,7 @@ async function main() {
     
     // Step 7: Refresh database
     console.log("\n🔄 Step 7: Refreshing database...");
-    await runAdminPull("refresh", adminPassword);
+    await runAdminPull("refresh", adminPassword!);
     
     // Step 8: Re-seed to sync all data
     console.log("\n💾 Step 8: Final database sync...");

@@ -39,6 +39,12 @@ import {
   type ProgressReporter,
 } from "../src/lib/admin/helpers";
 
+// Import shared pull modules
+import { 
+  pullCensusData, pullBEAData, pullClimateData,
+  pullFBICrimeData, pullEPAAirData, pullFCCBroadbandData, pullNCESEducationData, pullHRSAHealthData
+} from "../src/lib/admin/pulls";
+
 // Import Prisma client
 import prisma from "../src/lib/db";
 
@@ -87,13 +93,13 @@ Usage:
 Commands:
   all           Pull all data sources (takes several minutes)
   zillow        Pull Zillow ZHVI home price data
-  bea           Pull BEA cost of living data  
-  climate       Pull NOAA/Open-Meteo climate data
+  bea           Pull BEA cost of living data
   census        Pull Census demographic data
-  cultural      Pull cultural/political data
-  recreation    Pull recreation data from sources
-  urbanlife     Pull urban lifestyle data from sources
-  qol           Pull all Quality of Life data
+  climate       Pull NOAA/Open-Meteo climate data
+  cultural      Pull cultural/political data (from sources/)
+  recreation    Pull recreation data (from sources/)
+  urbanlife     Pull urban lifestyle data (from sources/)
+  qol           Pull all Quality of Life data (crime, air, broadband, education, health)
   refresh       Refresh database from JSON files
   help          Show this help message
 
@@ -103,12 +109,17 @@ Options:
 Environment Variables:
   DATABASE_URL     PostgreSQL connection string (for DB operations)
   BEA_API_KEY      BEA API key (required for 'bea' command)
-  CENSUS_API_KEY   Census API key (optional)
+  CENSUS_API_KEY   Census API key (optional, improves rate limits)
+  FBI_API_KEY      FBI Crime Data API key (optional, falls back to static data)
+  EPA_EMAIL        EPA AQS API email (optional, falls back to static data)
+  EPA_API_KEY      EPA AQS API key (optional, falls back to static data)
 
 Examples:
   npx tsx scripts/admin.ts zillow
-  npx tsx scripts/admin.ts all --verbose
+  npx tsx scripts/admin.ts census
   npx tsx scripts/admin.ts climate
+  npx tsx scripts/admin.ts qol
+  npx tsx scripts/admin.ts all --verbose
 `);
 }
 
@@ -556,38 +567,194 @@ async function main(): Promise<void> {
         break;
       
       case "bea":
-        report.warn("BEA pull requires BEA_API_KEY. Use the dev server API for now.");
-        report.info("Start dev server and run: curl -X POST http://localhost:3000/api/admin/bea-pull -H 'Content-Type: application/json' -d '{\"password\":\"your-password\"}'");
+        report.info("Pulling BEA Regional Price Parity data...");
+        {
+          const result = await pullBEAData(dataDir, (msg) => report.debug(msg));
+          if (result.success) {
+            report.success(`BEA: ${result.message}`);
+            await logRefresh("bea-cli", "success", result.stats?.citiesUpdated);
+          } else {
+            report.error(`BEA: ${result.error}`);
+            await logRefresh("bea-cli", "error", 0, result.error);
+            success = false;
+          }
+        }
         break;
       
       case "climate":
-        report.warn("Climate pull requires external API calls. Use the dev server API for now.");
-        report.info("Start dev server and run: curl -X POST http://localhost:3000/api/admin/climate-pull -H 'Content-Type: application/json' -d '{\"password\":\"your-password\"}'");
+        report.info("Pulling climate data (NOAA ACIS + Open-Meteo)...");
+        {
+          const result = await pullClimateData(dataDir, (msg) => report.debug(msg));
+          if (result.success) {
+            report.success(`Climate: ${result.message}`);
+            await logRefresh("climate-cli", "success", result.stats?.acisUpdated as number | undefined);
+          } else {
+            report.error(`Climate: ${result.error}`);
+            await logRefresh("climate-cli", "error", 0, result.error);
+            success = false;
+          }
+        }
         break;
       
       case "census":
-        report.warn("Census pull requires external API calls. Use the dev server API for now.");
-        report.info("Start dev server and run: curl -X POST http://localhost:3000/api/admin/census-pull -H 'Content-Type: application/json' -d '{\"password\":\"your-password\"}'");
+        report.info("Pulling Census demographic data...");
+        {
+          const result = await pullCensusData(dataDir, (msg) => report.debug(msg));
+          if (result.success) {
+            report.success(`Census: ${result.message}`);
+            await logRefresh("census-cli", "success", result.stats?.citiesUpdated);
+          } else {
+            report.error(`Census: ${result.error}`);
+            await logRefresh("census-cli", "error", 0, result.error);
+            success = false;
+          }
+        }
         break;
       
       case "qol":
-        report.warn("QoL pulls require external API calls. Use the dev server API for now.");
-        report.info("Available QoL endpoints: fbi-crime-pull, epa-air-pull, fcc-broadband-pull, nces-education-pull, hrsa-health-pull");
-        report.info("For walkability data, use: npx tsx scripts/fetch-walkscore.ts");
+        report.info("Pulling Quality of Life data...\n");
+        {
+          // FBI Crime data
+          const crimeResult = await pullFBICrimeData(dataDir, (msg) => report.debug(msg));
+          if (crimeResult.success) {
+            report.success(`FBI Crime: ${crimeResult.message}`);
+            await logRefresh("fbi-crime-cli", "success", crimeResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`FBI Crime: ${crimeResult.error || "failed"}`);
+          }
+          
+          // EPA Air Quality
+          const epaResult = await pullEPAAirData(dataDir, (msg) => report.debug(msg));
+          if (epaResult.success) {
+            report.success(`EPA Air: ${epaResult.message}`);
+            await logRefresh("epa-air-cli", "success", epaResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`EPA Air: ${epaResult.error || "failed"}`);
+          }
+          
+          // FCC Broadband
+          const fccResult = await pullFCCBroadbandData(dataDir, (msg) => report.debug(msg));
+          if (fccResult.success) {
+            report.success(`FCC Broadband: ${fccResult.message}`);
+            await logRefresh("fcc-broadband-cli", "success", fccResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`FCC Broadband: ${fccResult.error || "failed"}`);
+          }
+          
+          // NCES Education
+          const ncesResult = await pullNCESEducationData(dataDir, (msg) => report.debug(msg));
+          if (ncesResult.success) {
+            report.success(`NCES Education: ${ncesResult.message}`);
+            await logRefresh("nces-education-cli", "success", ncesResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`NCES Education: ${ncesResult.error || "failed"}`);
+          }
+          
+          // HRSA Health
+          const hrsaResult = await pullHRSAHealthData(dataDir, (msg) => report.debug(msg));
+          if (hrsaResult.success) {
+            report.success(`HRSA Health: ${hrsaResult.message}`);
+            await logRefresh("hrsa-health-cli", "success", hrsaResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`HRSA Health: ${hrsaResult.error || "failed"}`);
+          }
+          
+          report.info("\nFor walkability data, use: npx tsx scripts/fetch-walkscore.ts");
+        }
         break;
       
       case "all":
         report.info("Running all available pulls...\n");
         
-        // Run source-based pulls
+        // Run source-based pulls (local JSON files)
         await pullCultural(dataDir, report);
         await pullRecreation(dataDir, report);
         await pullUrbanLife(dataDir, report);
         await pullZillow(dataDir, report);
-        await refreshDatabase(dataDir, report);
         
-        report.info("\nNote: Some pulls (BEA, climate, census, QoL) require running the dev server.");
-        report.info("See 'npx tsx scripts/admin.ts help' for details.");
+        // Run API-based pulls
+        {
+          const censusResult = await pullCensusData(dataDir, (msg) => report.debug(msg));
+          if (censusResult.success) {
+            report.success(`Census: ${censusResult.message}`);
+            await logRefresh("census-cli", "success", censusResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`Census: ${censusResult.error || "failed"}`);
+          }
+        }
+        
+        {
+          const beaResult = await pullBEAData(dataDir, (msg) => report.debug(msg));
+          if (beaResult.success) {
+            report.success(`BEA: ${beaResult.message}`);
+            await logRefresh("bea-cli", "success", beaResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`BEA: ${beaResult.error || "failed"}`);
+          }
+        }
+        
+        {
+          const climateResult = await pullClimateData(dataDir, (msg) => report.debug(msg));
+          if (climateResult.success) {
+            report.success(`Climate: ${climateResult.message}`);
+            await logRefresh("climate-cli", "success", climateResult.stats?.acisUpdated as number | undefined);
+          } else {
+            report.warn(`Climate: ${climateResult.error || "failed"}`);
+          }
+        }
+        
+        {
+          const crimeResult = await pullFBICrimeData(dataDir, (msg) => report.debug(msg));
+          if (crimeResult.success) {
+            report.success(`FBI Crime: ${crimeResult.message}`);
+            await logRefresh("fbi-crime-cli", "success", crimeResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`FBI Crime: ${crimeResult.error || "failed"}`);
+          }
+        }
+        
+        {
+          const epaResult = await pullEPAAirData(dataDir, (msg) => report.debug(msg));
+          if (epaResult.success) {
+            report.success(`EPA Air: ${epaResult.message}`);
+            await logRefresh("epa-air-cli", "success", epaResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`EPA Air: ${epaResult.error || "failed"}`);
+          }
+        }
+        
+        {
+          const fccResult = await pullFCCBroadbandData(dataDir, (msg) => report.debug(msg));
+          if (fccResult.success) {
+            report.success(`FCC Broadband: ${fccResult.message}`);
+            await logRefresh("fcc-broadband-cli", "success", fccResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`FCC Broadband: ${fccResult.error || "failed"}`);
+          }
+        }
+        
+        {
+          const ncesResult = await pullNCESEducationData(dataDir, (msg) => report.debug(msg));
+          if (ncesResult.success) {
+            report.success(`NCES Education: ${ncesResult.message}`);
+            await logRefresh("nces-education-cli", "success", ncesResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`NCES Education: ${ncesResult.error || "failed"}`);
+          }
+        }
+        
+        {
+          const hrsaResult = await pullHRSAHealthData(dataDir, (msg) => report.debug(msg));
+          if (hrsaResult.success) {
+            report.success(`HRSA Health: ${hrsaResult.message}`);
+            await logRefresh("hrsa-health-cli", "success", hrsaResult.stats?.citiesUpdated);
+          } else {
+            report.warn(`HRSA Health: ${hrsaResult.error || "failed"}`);
+          }
+        }
+        
+        // Refresh database
+        await refreshDatabase(dataDir, report);
         break;
       
       default:

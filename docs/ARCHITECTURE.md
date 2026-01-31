@@ -66,9 +66,9 @@ cities-app/
 ├── prisma/
 │   └── schema.prisma          # Database schema
 │
-├── scripts/                   # CLI utilities
+├── scripts/                   # CLI utilities (run directly, no dev server needed)
 │   ├── add-city.ts            # Add new city workflow
-│   ├── admin.ts               # Admin CLI for data pulls
+│   ├── admin.ts               # Admin CLI for all data pulls
 │   ├── seed.ts                # Database seeding
 │   ├── fetch-walkscore.ts     # Walk Score scraper
 │   ├── collect-lifestyle-data.ts  # Collect recreation/urban data from OSM & USGS
@@ -101,7 +101,14 @@ cities-app/
 │   │   ├── scoring.ts         # ⭐ Core scoring algorithms
 │   │   ├── cost-of-living.ts  # Cost calculations with personas
 │   │   ├── store.ts           # Zustand preference store
-│   │   └── db.ts              # Prisma client
+│   │   ├── db.ts              # Prisma client
+│   │   └── admin/
+│   │       ├── helpers.ts     # Admin validation, data directory utils
+│   │       └── pulls/         # ⭐ Shared data pull modules (CLI + API)
+│   │           ├── census.ts  # Census ACS demographics
+│   │           ├── bea.ts     # BEA economic data
+│   │           ├── climate.ts # NOAA ACIS + Open-Meteo
+│   │           └── qol.ts     # FBI, EPA, FCC, NCES, HRSA
 │   │
 │   ├── types/
 │   │   ├── city.ts            # City and metrics types
@@ -368,6 +375,14 @@ interface PreferencesState {
 
 ## Data Pipeline
 
+### Architecture
+
+Data pulls are implemented as shared modules in `src/lib/admin/pulls/` that can be used by both:
+- **CLI** (`scripts/admin.ts`) - Direct execution, no server required
+- **API routes** (`src/app/api/admin/`) - HTTP endpoints for admin panel
+
+This design ensures consistent behavior and avoids code duplication.
+
 ### Initial Setup
 
 ```bash
@@ -379,6 +394,26 @@ npm run db:seed
 
 # 3. Pull all data (requires API keys in .env)
 npx tsx scripts/admin.ts all
+```
+
+### CLI Commands
+
+All data pulls work directly from the CLI without starting a dev server:
+
+```bash
+# Pull all data sources
+npx tsx scripts/admin.ts all --verbose
+
+# Individual pulls
+npx tsx scripts/admin.ts census    # Census ACS demographics
+npx tsx scripts/admin.ts bea       # BEA cost of living data
+npx tsx scripts/admin.ts climate   # NOAA ACIS + Open-Meteo climate
+npx tsx scripts/admin.ts zillow    # Zillow home prices
+npx tsx scripts/admin.ts qol       # All QoL data (crime, air, broadband, education, health)
+npx tsx scripts/admin.ts cultural  # Political/religious data
+npx tsx scripts/admin.ts recreation # Recreation data
+npx tsx scripts/admin.ts urbanlife # Urban lifestyle data
+npx tsx scripts/admin.ts refresh   # Re-seed database from JSON
 ```
 
 ### Adding a New City
@@ -402,11 +437,13 @@ See `docs/ADDING-CITIES.md` for detailed instructions.
 │                     Data Refresh Flow                         │
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
-│  1. Admin triggers pull (CLI or Admin Panel)                  │
-│     └── POST /api/admin/{source}-pull                         │
+│  1. Admin triggers pull (CLI preferred, or Admin Panel)       │
+│     ├── CLI: npx tsx scripts/admin.ts {source}               │
+│     └── API: POST /api/admin/{source}-pull                    │
 │                                                               │
-│  2. API fetches from external source                          │
-│     └── Census API, BEA API, NOAA ACIS, etc.                  │
+│  2. Shared pull module fetches from external source           │
+│     └── src/lib/admin/pulls/{source}.ts                       │
+│         └── Census API, BEA API, NOAA ACIS, etc.             │
 │                                                               │
 │  3. Data written to data/metrics.json                         │
 │     └── Keyed by city slug (e.g., "san-francisco")            │
@@ -505,6 +542,9 @@ npx tsx scripts/test-normalization.ts
 | Lint | `npm run lint` |
 | Seed database | `npm run db:seed` |
 | Pull all data | `npx tsx scripts/admin.ts all` |
+| Pull Census data | `npx tsx scripts/admin.ts census` |
+| Pull climate data | `npx tsx scripts/admin.ts climate` |
+| Pull QoL data | `npx tsx scripts/admin.ts qol` |
 | Add city | `npx tsx scripts/add-city.ts --city="Name, ST"` |
 | Validate data | `npx tsx scripts/validate-data.ts` |
 | Verify city | `npx tsx scripts/verify-city-data.ts [cityId]` |
