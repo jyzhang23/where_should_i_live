@@ -70,7 +70,12 @@ cities-app/
 │   ├── add-city.ts            # Add new city workflow
 │   ├── admin.ts               # Admin CLI for data pulls
 │   ├── seed.ts                # Database seeding
-│   └── fetch-walkscore.ts     # Walk Score scraper
+│   ├── fetch-walkscore.ts     # Walk Score scraper
+│   ├── collect-lifestyle-data.ts  # Collect recreation/urban data from OSM & USGS
+│   ├── process-city-images.ts # Process raw photos for City Tinder
+│   ├── test-normalization.ts  # Test scoring normalization
+│   ├── validate-data.ts       # Validate metrics.json data
+│   └── verify-city-data.ts    # Verify city data completeness
 │
 ├── src/
 │   ├── app/                   # Next.js App Router
@@ -460,7 +465,7 @@ See `docs/ADDING-CITIES.md` for detailed instructions.
 
 ### Adding a New Data Source
 
-1. Research the API and document in `data/data.md`
+1. Research the API and document in `docs/DATA-SOURCES.md`
 2. Create pull route in `src/app/api/admin/{source}-pull/route.ts`
 3. Add FIPS or identifier mapping to `data/cities.json` if needed
 4. Add to `scripts/admin.ts` for CLI access
@@ -501,6 +506,11 @@ npx tsx scripts/test-normalization.ts
 | Seed database | `npm run db:seed` |
 | Pull all data | `npx tsx scripts/admin.ts all` |
 | Add city | `npx tsx scripts/add-city.ts --city="Name, ST"` |
+| Validate data | `npx tsx scripts/validate-data.ts` |
+| Verify city | `npx tsx scripts/verify-city-data.ts [cityId]` |
+| Test scoring | `npx tsx scripts/test-normalization.ts` |
+| Process images | `npx tsx scripts/process-city-images.ts` |
+| Collect lifestyle data | `npx tsx scripts/collect-lifestyle-data.ts` |
 
 ---
 

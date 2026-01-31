@@ -147,7 +147,7 @@ The app pulls data from official government APIs plus some manual research:
 | Political | MIT Election Lab | Static JSON |
 | Religious | ARDA | Static JSON |
 
-See `data/data.md` for detailed documentation on each data source.
+See `docs/DATA-SOURCES.md` for detailed documentation on each data source.
 
 ## Deployment
 
