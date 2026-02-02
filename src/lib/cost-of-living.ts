@@ -243,10 +243,15 @@ function calculateStateTax(income: number, state: string): number {
   // For progressive states, the rates above are approximate effective rates
   // at median income levels - actual calculation would need full bracket tables
   
-  // Apply a scaling factor based on income level (lower income = lower effective rate)
-  // This is a simplification of progressive taxation
+  // Apply a scaling factor based on income level
+  // - Lower income = lower effective rate (progressive)
+  // - Higher income = higher effective rate (up to 1.5x for $225K+)
+  // 
+  // FIX: Previously capped at 1.0 which favored high earners in progressive states
+  // A $200K earner in California was paying the effective rate of a $75K earner
+  // Now allows scale factor up to 1.5 for high earners
   const medianIncome = 75000;
-  const scaleFactor = Math.min(1, Math.sqrt(income / medianIncome));
+  const scaleFactor = Math.min(1.5, Math.sqrt(income / medianIncome));
   
   return income * rate * scaleFactor;
 }
@@ -375,15 +380,26 @@ function calculateAdjustedRPP(
           MORTGAGE_TERM_YEARS
         );
         
-        // National average monthly mortgage payment (2026 estimate)
-        // Based on ~$400K median home at 7% = ~$2,128/month
-        const nationalAvgMortgage = 2128;
+        // CRITICAL FIX: Include property tax in monthly housing cost (PITI, not just PI)
+        // This is essential for comparing Austin TX (2.2%) vs Denver CO (0.5%)
+        // On a $500K home: Austin = $917/mo tax, Denver = $208/mo tax = $709 difference!
+        const propertyTaxRate = options.propertyTaxRate ?? NATIONAL_AVG_PROPERTY_TAX_RATE;
+        const monthlyPropertyTax = (homePrice * propertyTaxRate) / 12;
+        const totalMonthlyHousing = monthlyMortgage + monthlyPropertyTax;
         
-        // Create a housing index based on mortgage payment
+        // National average monthly housing cost (2026 estimate)
+        // Mortgage: ~$400K median home at 7% = ~$2,128/month
+        // Property Tax: ~$400K × 1.1% / 12 = ~$367/month
+        // Total: ~$2,495/month
+        const nationalAvgMortgage = 2128;
+        const nationalAvgPropertyTax = (NATIONAL_MEDIAN_HOME_PRICE * NATIONAL_AVG_PROPERTY_TAX_RATE) / 12;
+        const nationalAvgHousing = nationalAvgMortgage + nationalAvgPropertyTax;
+        
+        // Create a housing index based on total monthly housing cost (mortgage + property tax)
         // Use logarithmic compression for extreme values to avoid
         // completely crushing expensive cities' scores
         // Linear up to 150 (1.5x national), then compressed above
-        const rawHousingIndex = (monthlyMortgage / nationalAvgMortgage) * 100;
+        const rawHousingIndex = (totalMonthlyHousing / nationalAvgHousing) * 100;
         
         let housingIndex: number;
         if (rawHousingIndex <= 150) {
@@ -398,7 +414,7 @@ function calculateAdjustedRPP(
           housingIndex = 150 + compressed;
         }
         
-        // Blend: 35% housing (mortgage), 35% goods, 30% services
+        // Blend: 35% housing (mortgage + property tax), 35% goods, 30% services
         // Slightly reduced housing weight since we're already penalizing via compression
         const goods = rpp.goods ?? 100;
         const services = rpp.otherServices ?? 100;
