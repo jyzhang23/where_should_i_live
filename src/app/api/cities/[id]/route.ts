@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { readFileSync, existsSync } from "fs";
+import { readFile, access } from "fs/promises";
+import { constants } from "fs";
 import { join } from "path";
 import prisma from "@/lib/db";
 import { BEAMetrics } from "@/lib/cost-of-living";
@@ -21,17 +22,28 @@ interface MetricsJsonData {
   cultural?: CulturalMetrics;
 }
 
-// Load ZHVI price for a specific city
-function loadCityZHVIPrice(citySlug: string): number | null {
+// Helper to check if a file exists
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path, constants.R_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Load ZHVI price for a specific city (async)
+async function loadCityZHVIPrice(citySlug: string): Promise<number | null> {
   const possiblePaths = [
     join(process.cwd(), "data", "zhvi-history.json"),
     join(process.cwd(), "../data", "zhvi-history.json"),
   ];
 
   for (const path of possiblePaths) {
-    if (existsSync(path)) {
+    if (await fileExists(path)) {
       try {
-        const zhviFile = JSON.parse(readFileSync(path, "utf-8"));
+        const content = await readFile(path, "utf-8");
+        const zhviFile = JSON.parse(content);
         const cityData = zhviFile.cities?.[citySlug] as { history?: { date: string; value: number }[] } | undefined;
         
         if (cityData?.history && cityData.history.length > 0) {
@@ -48,17 +60,18 @@ function loadCityZHVIPrice(citySlug: string): number | null {
   return null;
 }
 
-// Load supplementary data from metrics.json for a specific city
-function loadCityMetricsData(citySlug: string): MetricsJsonData | null {
+// Load supplementary data from metrics.json for a specific city (async)
+async function loadCityMetricsData(citySlug: string): Promise<MetricsJsonData | null> {
   const possiblePaths = [
     join(process.cwd(), "data", "metrics.json"),
     join(process.cwd(), "../data", "metrics.json"),
   ];
 
   for (const path of possiblePaths) {
-    if (existsSync(path)) {
+    if (await fileExists(path)) {
       try {
-        const metricsFile = JSON.parse(readFileSync(path, "utf-8"));
+        const content = await readFile(path, "utf-8");
+        const metricsFile = JSON.parse(content);
         const cityMetrics = metricsFile.cities?.[citySlug] as {
           bea?: BEAMetrics;
           climate?: { noaa?: NOAAClimateData };
@@ -128,12 +141,12 @@ export async function GET(
       return NextResponse.json({ error: "City not found" }, { status: 404 });
     }
 
-    // Load supplementary data from metrics.json (BEA, NOAA, etc.)
+    // Load supplementary data from JSON files in parallel (async)
     const slug = cityNameToSlug(city.name);
-    const supplementary = loadCityMetricsData(slug);
-    
-    // Load ZHVI price for median home price
-    const zhviPrice = loadCityZHVIPrice(slug);
+    const [supplementary, zhviPrice] = await Promise.all([
+      loadCityMetricsData(slug),
+      loadCityZHVIPrice(slug),
+    ]);
 
     // Always merge supplementary data and ZHVI price into city metrics
     const mergedMetrics = {

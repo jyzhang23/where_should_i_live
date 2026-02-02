@@ -67,7 +67,7 @@ cities-app/
 │   └── schema.prisma          # Database schema
 │
 ├── scripts/                   # CLI utilities (run directly, no dev server needed)
-│   ├── add-city.ts            # Add new city workflow
+│   ├── add-city.ts            # Add new city workflow (with auto-discovery)
 │   ├── admin.ts               # Admin CLI for all data pulls
 │   ├── seed.ts                # Database seeding
 │   ├── fetch-walkscore.ts     # Walk Score scraper
@@ -89,8 +89,14 @@ cities-app/
 │   ├── components/
 │   │   ├── preferences/       # User preference controls
 │   │   │   ├── BasicPreferences.tsx
-│   │   │   ├── AdvancedPreferences.tsx
-│   │   │   └── QuickStart.tsx
+│   │   │   ├── AdvancedPreferences.tsx  # Shell that imports sections
+│   │   │   ├── QuickStart.tsx
+│   │   │   └── sections/      # ⭐ Decomposed preference sections
+│   │   │       ├── ClimatePreferences.tsx
+│   │   │       ├── CostPreferences.tsx
+│   │   │       ├── DemographicsPreferences.tsx
+│   │   │       ├── QualityOfLifePreferences.tsx
+│   │   │       └── CulturalPreferences.tsx
 │   │   ├── rankings/          # City ranking display
 │   │   ├── city/              # City detail components
 │   │   ├── comparison/        # City comparison tools
@@ -98,7 +104,18 @@ cities-app/
 │   │   └── ui/                # shadcn/ui primitives
 │   │
 │   ├── lib/
-│   │   ├── scoring.ts         # ⭐ Core scoring algorithms
+│   │   ├── scoring.ts         # Re-exports from scoring/ (backward compat)
+│   │   ├── scoring/           # ⭐ Modular scoring system
+│   │   │   ├── index.ts       # Main entry + calculateScores()
+│   │   │   ├── constants.ts   # Range constants (climate, QoL, etc.)
+│   │   │   ├── utils.ts       # normalizeToRange, toPercentileScore, etc.
+│   │   │   ├── types.ts       # QoLPercentiles interface + cache
+│   │   │   ├── climate.ts     # Climate scoring (NOAA-based)
+│   │   │   ├── cost.ts        # Cost of living scoring (BEA)
+│   │   │   ├── demographics.ts # Demographics + dating scoring
+│   │   │   ├── quality-of-life.ts  # QoL scoring (walk, safety, etc.)
+│   │   │   ├── cultural.ts    # Cultural scoring (political, urban)
+│   │   │   └── display.ts     # getGrade, getScoreColor, etc.
 │   │   ├── cost-of-living.ts  # Cost calculations with personas
 │   │   ├── store.ts           # Zustand preference store
 │   │   ├── db.ts              # Prisma client
@@ -214,6 +231,26 @@ cities-app/
 ---
 
 ## Scoring System
+
+### Module Structure
+
+The scoring system is decomposed into category-specific modules in `src/lib/scoring/`:
+
+```
+src/lib/scoring/
+├── index.ts           # Main entry: calculateScores() + re-exports
+├── constants.ts       # CLIMATE_RANGES, QOL_RANGES, etc.
+├── utils.ts           # normalizeToRange, toPercentileScore, urbanAmenityScore
+├── types.ts           # QoLPercentiles interface + cache management
+├── climate.ts         # calculateClimateScore() - NOAA-based
+├── cost.ts            # calculateCostScore() - BEA + personas
+├── demographics.ts    # calculateDemographicsScore() + dating
+├── quality-of-life.ts # calculateQualityOfLifeScore() - walk, safety, etc.
+├── cultural.ts        # calculateCulturalScore() - political, urban lifestyle
+└── display.ts         # getGrade(), getScoreColor(), getScoreLabel()
+```
+
+The original `src/lib/scoring.ts` re-exports everything for backward compatibility.
 
 ### Philosophy
 
@@ -350,6 +387,8 @@ interface PreferencesState {
 | `/api/cities` | GET | Returns all cities with merged metrics |
 | `/api/cities/[id]` | GET | Returns single city with full metrics |
 
+**Note**: API routes use async file I/O (`fs/promises`) and load JSON files in parallel via `Promise.all()` for optimal performance.
+
 ### Admin APIs (Password Protected)
 
 | Endpoint | Description |
@@ -419,14 +458,29 @@ npx tsx scripts/admin.ts refresh   # Re-seed database from JSON
 ### Adding a New City
 
 ```bash
-# Interactive workflow
-npx tsx scripts/add-city.ts --city="City Name, ST"
+# Auto-discovery mode (recommended) - fetches data from external APIs
+npx tsx scripts/add-city.ts --auto-discover --city="Phoenix" --state="AZ"
 
-# This will:
-# 1. Add city to cities.json with FIPS codes
-# 2. Pull all metrics from APIs
-# 3. Re-seed database
+# Interactive mode - prompts for fields, offers auto-discovery
+npx tsx scripts/add-city.ts --interactive
+
+# Config file mode
+npx tsx scripts/add-city.ts --config=phoenix.json
 ```
+
+#### Auto-Discovery APIs
+
+The add-city script integrates with external APIs to automatically discover:
+
+| Data | API Source | Key Required |
+|------|------------|--------------|
+| Coordinates | OpenStreetMap Nominatim | No |
+| Census Place FIPS | Census Bureau Geocoder | No |
+| NOAA Station | NOAA Weather.gov API | No |
+| BEA MSA Code | BEA Regional API | Yes (`BEA_API_KEY`) |
+| Sports Teams | Wikidata SPARQL | No |
+
+Built-in validation includes coordinate boundary checks, reverse geocoding verification, and sports team validation against known franchises.
 
 See `docs/ADDING-CITIES.md` for detailed instructions.
 
@@ -476,29 +530,28 @@ See `docs/ADDING-CITIES.md` for detailed instructions.
 
 2. **Create admin pull API** in `src/app/api/admin/new-pull/route.ts`
 
-3. **Add scoring logic** in `src/lib/scoring.ts`:
+3. **Add scoring logic** in the appropriate category file under `src/lib/scoring/`:
    ```typescript
-   function calculateQualityOfLifeScore(city, preferences) {
-     // Add weight check and calculation
-     if (prefs.newMetricWeight > 0 && qol.newMetric?.value !== null) {
-       const score = normalizeToRange(qol.newMetric.value, MIN, MAX, inverted);
-       totalScore += score * prefs.newMetricWeight;
-       totalWeight += prefs.newMetricWeight;
-     }
+   // Example: src/lib/scoring/quality-of-life.ts
+   if (prefs.newMetricWeight > 0 && qol.newMetric?.value !== null) {
+     const score = normalizeToRange(qol.newMetric.value, MIN, MAX, inverted);
+     totalScore += score * prefs.newMetricWeight;
+     totalWeight += prefs.newMetricWeight;
    }
    ```
 
-4. **Add preference controls** in `src/types/preferences.ts` and `src/components/preferences/AdvancedPreferences.tsx`
+4. **Add preference controls** in `src/types/preferences.ts` and the appropriate section component in `src/components/preferences/sections/`
 
 5. **Add to score breakdown** in `src/components/city/ScoreBreakdown.tsx`
 
 ### Adding a New Scoring Category
 
 1. Add to `UserPreferences.weights` in `src/types/preferences.ts`
-2. Create `calculateNewCategoryScore()` in `src/lib/scoring.ts`
-3. Integrate into `calculateScores()` weighted average
-4. Add UI controls in `BasicPreferences.tsx` and `AdvancedPreferences.tsx`
-5. Add breakdown analysis in `ScoreBreakdown.tsx`
+2. Create `src/lib/scoring/new-category.ts` with `calculateNewCategoryScore()`
+3. Export from `src/lib/scoring/index.ts` and integrate into `calculateScores()`
+4. Create `src/components/preferences/sections/NewCategoryPreferences.tsx`
+5. Add to `AdvancedPreferences.tsx` as a new collapsible section
+6. Add breakdown analysis in `ScoreBreakdown.tsx`
 
 ### Adding a New Data Source
 
@@ -545,7 +598,8 @@ npx tsx scripts/test-normalization.ts
 | Pull Census data | `npx tsx scripts/admin.ts census` |
 | Pull climate data | `npx tsx scripts/admin.ts climate` |
 | Pull QoL data | `npx tsx scripts/admin.ts qol` |
-| Add city | `npx tsx scripts/add-city.ts --city="Name, ST"` |
+| Add city (auto) | `npx tsx scripts/add-city.ts -a --city="Name" --state="ST"` |
+| Add city (interactive) | `npx tsx scripts/add-city.ts -i` |
 | Validate data | `npx tsx scripts/validate-data.ts` |
 | Verify city | `npx tsx scripts/verify-city-data.ts [cityId]` |
 | Test scoring | `npx tsx scripts/test-normalization.ts` |
