@@ -21,7 +21,7 @@
 ### Product Purpose
 
 This application helps users find their ideal city to live in by:
-1. **Scoring cities** across 5 major categories (Climate, Cost, Demographics, QoL, Cultural)
+1. **Scoring cities** across 6 major categories (Climate, Cost, Demographics, QoL, Values, Entertainment)
 2. **Personalizing rankings** based on user-defined weights and preferences
 3. **Providing detailed breakdowns** of what makes each city score high or low
 4. **Comparing cities** side-by-side with radar charts and metrics tables
@@ -96,7 +96,8 @@ cities-app/
 │   │   │       ├── CostPreferences.tsx
 │   │   │       ├── DemographicsPreferences.tsx
 │   │   │       ├── QualityOfLifePreferences.tsx
-│   │   │       └── CulturalPreferences.tsx
+│   │   │       ├── ValuesPreferences.tsx      # Political + Religious alignment
+│   │   │       └── EntertainmentPreferences.tsx  # Nightlife, arts, dining, sports, recreation
 │   │   ├── rankings/          # City ranking display
 │   │   ├── city/              # City detail components
 │   │   ├── comparison/        # City comparison tools
@@ -114,7 +115,8 @@ cities-app/
 │   │   │   ├── cost.ts        # Cost of living scoring (BEA)
 │   │   │   ├── demographics.ts # Demographics + dating scoring
 │   │   │   ├── quality-of-life.ts  # QoL scoring (walk, safety, etc.)
-│   │   │   ├── cultural.ts    # Cultural scoring (political, urban)
+│   │   │   ├── values.ts      # Values scoring (political, religious)
+│   │   │   ├── entertainment.ts # Entertainment scoring (nightlife, arts, dining, sports, recreation)
 │   │   │   └── display.ts     # getGrade, getScoreColor, etc.
 │   │   ├── cost-of-living.ts  # Cost calculations with personas
 │   │   ├── store.ts           # Zustand preference store
@@ -246,7 +248,8 @@ src/lib/scoring/
 ├── cost.ts            # calculateCostScore() - BEA + personas
 ├── demographics.ts    # calculateDemographicsScore() + dating
 ├── quality-of-life.ts # calculateQualityOfLifeScore() - walk, safety, etc.
-├── cultural.ts        # calculateCulturalScore() - political, urban lifestyle
+├── values.ts          # calculateValuesScore() - political + religious alignment
+├── entertainment.ts   # calculateEntertainmentScore() - nightlife, arts, dining, sports, recreation
 └── display.ts         # getGrade(), getScoreColor(), getScoreLabel()
 ```
 
@@ -265,7 +268,8 @@ Scores are **relative to U.S. geographic extremes**, not absolute values:
 ┌────────────────────────────────────────────────────────────────┐
 │                     TOTAL SCORE                                 │
 │  = (Climate × W₁ + Cost × W₂ + Demographics × W₃               │
-│     + QoL × W₄ + Cultural × W₅) / (W₁ + W₂ + W₃ + W₄ + W₅)    │
+│     + QoL × W₄ + Entertainment × W₅ + Values × W₆)             │
+│     / (W₁ + W₂ + W₃ + W₄ + W₅ + W₆)                            │
 └────────────────────────────────────────────────────────────────┘
          │
          ├── Climate Score (0-100)
@@ -296,19 +300,27 @@ Scores are **relative to U.S. geographic extremes**, not absolute values:
          │       ├── Alignment Score (20%): political match
          │       └── Safety Score (10%): walkability + crime
          │
-         ├── Quality of Life Score (0-100)
+         ├── Quality of Life Score (0-100) - Infrastructure metrics
          │   ├── Walkability weight × (walk + transit + bike scores)
          │   ├── Safety weight × crime score (inverted)
          │   ├── Air quality weight × healthy days score
          │   ├── Broadband weight × fiber coverage score
          │   ├── Education weight × student-teacher ratio (inverted)
-         │   ├── Healthcare weight × physicians score
-         │   └── Recreation weight × (trails + parks + elevation)
+         │   └── Healthcare weight × physicians score
          │
-         └── Cultural Score (0-100)
-             ├── Political alignment weight × match score
-             ├── Religious diversity weight × score
-             └── Urban lifestyle weight × (nightlife + arts + dining + sports)
+         ├── Values Score (0-100) - "Do I belong here?" (SUBJECTIVE)
+         │   ├── Political alignment (Gaussian decay model)
+         │   │   ├── 80% Alignment score (distance-based)
+         │   │   └── 20% Civic health score (voter turnout)
+         │   ├── Religious tradition presence weight × score
+         │   └── Religious diversity weight × score
+         │
+         └── Entertainment Score (0-100) - "Is it fun?" (OBJECTIVE)
+             ├── Nightlife weight × bars/clubs score (log curve)
+             ├── Arts weight × museums/theaters score (log curve)
+             ├── Dining weight × restaurants/cuisine diversity score
+             ├── Sports weight × pro teams count score
+             └── Recreation weight × (trails + parks + beach + mountains)
 ```
 
 ### Normalization Methods
@@ -330,6 +342,51 @@ Scores are **relative to U.S. geographic extremes**, not absolute values:
    // Example: 30 bars/10K is "enough" - more provides marginal benefit
    urbanAmenityScore(50, 2, 30, 80) // → ~82 (above plateau, into diminishing returns)
    ```
+
+4. **Gaussian Decay** (`calculateValuesScore` - political): Continuous distance-based decay
+   ```typescript
+   // Alignment score uses Gaussian decay: 100 × e^(-k × distance²)
+   // k scales with user's importance setting (1.0 to 3.0)
+   alignmentScore = 100 * Math.exp(-k * distance * distance)
+   ```
+
+### Political Scoring Model ("Elastic Band") - Values Category
+
+The political scoring algorithm uses a psychologically-informed "Elastic Band" model that addresses two common problems in preference matching:
+
+**Problem 1: Saturation** - Additive bonuses (e.g., +10 for high turnout) can push scores above 100, erasing distinctions between "perfect match" and "okay match".
+
+**Problem 2: Discontinuity** - Hard splits between "same side" and "opposite side" create unrealistic cliffs at the political center. A moderate Democrat (0.1) would see a huge score drop between a slight Democrat (0.05) and a slight Republican (-0.05), even though they're nearly identical politically.
+
+**Solution: Gaussian Decay with Weighted Components**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Political Score = (Alignment × 0.8) + (Turnout × 0.2)          │
+│                                                                 │
+│  Where:                                                         │
+│    Alignment = 100 × e^(-k × distance²) × tribalPenalty         │
+│    Turnout = normalizeToRange(voterTurnout, 40%, 80%)           │
+│    k = 1.0 + (userImportance / 50)  // Range: 1.0 to 3.0        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Key Features:**
+
+1. **Continuous decay** - No cliff at zero; score drops smoothly based on distance
+2. **Importance affects curve shape** - Higher importance = steeper Gaussian (more sensitive to small differences)
+3. **Tribal penalty only for partisans** - Users with |targetPI| ≥ 0.3 (strong-dem/strong-rep) get 15% penalty for crossing party lines; moderates only get 5% penalty
+4. **Weighted turnout** - Prevents saturation; mathematically impossible to exceed 100
+
+**Example Scores: Lean Dem (0.2), Important (weight 70)**
+
+| City | PI | Distance | Alignment | Tribal | Turnout | Final |
+|------|-----|----------|-----------|--------|---------|-------|
+| San Francisco | 0.72 | 0.52 | 53 | — | 88 | 60 |
+| Las Vegas | 0.01 | 0.19 | 92 | — | 53 | 84 |
+| Oklahoma City | -0.17 | 0.37 | 72 | ×0.95 | 45 | 64 |
+
+The intuition: A "Lean Dem" finds OKC (slight Republican) almost as acceptable as SF (strong Democrat) because **distance matters more than party label** for moderates.
 
 ---
 

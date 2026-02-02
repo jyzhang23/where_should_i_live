@@ -1,7 +1,6 @@
 import { CityWithMetrics } from "@/types/city";
 import { UserPreferences } from "@/types/preferences";
-import { normalizeToRange, toPercentileScore } from "./utils";
-import { RECREATION_RANGES } from "./constants";
+import { toPercentileScore } from "./utils";
 import { getQoLPercentilesCache } from "./types";
 
 /**
@@ -177,109 +176,7 @@ export function calculateQualityOfLifeScore(
       totalWeight += weights.healthcare;
     }
 
-    // Recreation & Outdoor Access (NEW) - Mixed percentile and range-based
-    if (weights.recreation > 0 && qol.recreation) {
-      let recreationScore = 50;
-      const rec = qol.recreation;
-      const natureWeight = prefs.natureImportance;
-      const beachWeight = prefs.beachImportance;
-      const mountainWeight = prefs.mountainImportance;
-      const subTotal = natureWeight + beachWeight + mountainWeight;
-      
-      if (subTotal > 0) {
-        let natureScore = 50;
-        let beachScore = 50;
-        let mountainScore = 50;
-        
-        // Nature scoring (parks + trails + protected land) - Percentile-based
-        if (rec.nature && natureWeight > 0) {
-          let natureSubScores = 0;
-          let natureSubCount = 0;
-          
-          // Trail miles - percentile if we have data, else range-based
-          if (rec.nature.trailMilesWithin10Mi !== null) {
-            if (percentiles?.trailMiles.length) {
-              natureSubScores += toPercentileScore(rec.nature.trailMilesWithin10Mi, percentiles.trailMiles, true);
-            } else {
-              natureSubScores += normalizeToRange(rec.nature.trailMilesWithin10Mi, 
-                RECREATION_RANGES.trailMiles.min, RECREATION_RANGES.trailMiles.max, false);
-            }
-            natureSubCount++;
-          }
-          
-          // Park acres - percentile if we have data, else range-based
-          if (rec.nature.parkAcresPer1K !== null) {
-            if (percentiles?.parkAcres.length) {
-              natureSubScores += toPercentileScore(rec.nature.parkAcresPer1K, percentiles.parkAcres, true);
-            } else {
-              natureSubScores += normalizeToRange(rec.nature.parkAcresPer1K,
-                RECREATION_RANGES.parkAcres.min, RECREATION_RANGES.parkAcres.max, false);
-            }
-            natureSubCount++;
-          }
-          
-          // Protected land percentage - range-based
-          if (rec.nature.protectedLandPercent !== null) {
-            natureSubScores += normalizeToRange(rec.nature.protectedLandPercent,
-              RECREATION_RANGES.protectedLandPercent.min, RECREATION_RANGES.protectedLandPercent.max, false);
-            natureSubCount++;
-          }
-          
-          if (natureSubCount > 0) {
-            natureScore = natureSubScores / natureSubCount;
-          }
-        }
-        
-        // Beach scoring - Binary bonus + distance decay
-        if (rec.geography && beachWeight > 0) {
-          if (rec.geography.coastlineWithin15Mi) {
-            // Full score if within 15 miles
-            beachScore = 100;
-            // Small bonus for water quality
-            if (rec.geography.waterQualityIndex !== null && rec.geography.waterQualityIndex >= 70) {
-              beachScore = Math.min(100, beachScore + 5);
-            }
-          } else if (rec.geography.coastlineDistanceMi !== null && rec.geography.coastlineDistanceMi <= 100) {
-            // Distance decay: 15mi = 100, 50mi = 50, 100mi = 0
-            beachScore = Math.max(0, 100 - (rec.geography.coastlineDistanceMi - 15) * 1.2);
-          } else {
-            // No ocean access
-            beachScore = 0;
-          }
-        }
-        
-        // Mountain scoring - Range-based on elevation delta
-        if (rec.geography && mountainWeight > 0) {
-          if (rec.geography.maxElevationDelta !== null) {
-            // Use percentile if available, else range-based
-            if (percentiles?.elevationDeltas.length) {
-              mountainScore = toPercentileScore(rec.geography.maxElevationDelta, percentiles.elevationDeltas, true);
-            } else {
-              mountainScore = normalizeToRange(rec.geography.maxElevationDelta,
-                RECREATION_RANGES.elevationDelta.min, RECREATION_RANGES.elevationDelta.max, false);
-            }
-            
-            // Bonus for nearby ski resorts
-            if (rec.geography.nearestSkiResortMi !== null && rec.geography.nearestSkiResortMi <= 60) {
-              mountainScore = Math.min(100, mountainScore + 10);
-            }
-          } else {
-            // No elevation data - flat city
-            mountainScore = 0;
-          }
-        }
-        
-        // Weighted average of sub-scores
-        recreationScore = (
-          natureScore * natureWeight +
-          beachScore * beachWeight +
-          mountainScore * mountainWeight
-        ) / subTotal;
-      }
-      
-      totalScore += Math.max(0, Math.min(100, recreationScore)) * weights.recreation;
-      totalWeight += weights.recreation;
-    }
+    // Note: Recreation has been moved to Entertainment category
 
     if (totalWeight > 0) {
       return Math.max(0, Math.min(100, totalScore / totalWeight));

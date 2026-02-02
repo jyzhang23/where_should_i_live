@@ -140,7 +140,7 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     const weightDeltas: Record<string, number> = {};
     const climateDeltas: Record<string, number> = {};
     const qolDeltas: Record<string, number> = {};
-    const culturalDeltas: Record<string, number> = {};
+    const entertainmentDeltas: Record<string, number> = {};
     const demographicsDeltas: Record<string, number> = {};
     
     for (const result of results) {
@@ -170,9 +170,9 @@ export function CityTinder({ onComplete }: CityTinderProps) {
             qolDeltas[key] = (qolDeltas[key] || 0) + (value as number) * multiplier;
           }
         }
-        if (mapping.cultural) {
-          for (const [key, value] of Object.entries(mapping.cultural)) {
-            culturalDeltas[key] = (culturalDeltas[key] || 0) + (value as number) * multiplier;
+        if (mapping.entertainment) {
+          for (const [key, value] of Object.entries(mapping.entertainment)) {
+            entertainmentDeltas[key] = (entertainmentDeltas[key] || 0) + (value as number) * multiplier;
           }
         }
         if (mapping.demographics) {
@@ -190,7 +190,7 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     if (weightDeltas.costOfLiving) updateWeight("costOfLiving", clamp(70 + weightDeltas.costOfLiving));
     if (weightDeltas.qualityOfLife) updateWeight("qualityOfLife", clamp(70 + weightDeltas.qualityOfLife));
     if (weightDeltas.demographics) updateWeight("demographics", clamp(50 + weightDeltas.demographics));
-    if (weightDeltas.cultural) updateWeight("cultural", clamp(50 + weightDeltas.cultural));
+    if (weightDeltas.entertainment) updateWeight("entertainment", clamp(50 + weightDeltas.entertainment));
     
     // Apply climate preferences
     if (climateDeltas.weightComfortDays) {
@@ -209,26 +209,34 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     // Apply QoL weights
     if (qolDeltas.walkability) updateQoLWeight("walkability", clamp(50 + qolDeltas.walkability));
     if (qolDeltas.safety) updateQoLWeight("safety", clamp(70 + qolDeltas.safety));
-    if (qolDeltas.recreation) updateQoLWeight("recreation", clamp(50 + qolDeltas.recreation));
     if (qolDeltas.schools) updateQoLWeight("schools", clamp(50 + qolDeltas.schools));
     if (qolDeltas.healthcare) updateQoLWeight("healthcare", clamp(50 + qolDeltas.healthcare));
     if (qolDeltas.internet) updateQoLWeight("internet", clamp(50 + qolDeltas.internet));
     
-    // Apply cultural preferences
-    if (culturalDeltas.urbanLifestyleWeight) {
-      updateAdvanced("cultural", "urbanLifestyleWeight", clamp(50 + culturalDeltas.urbanLifestyleWeight));
+    // Apply entertainment preferences
+    if (entertainmentDeltas.nightlifeImportance) {
+      updateAdvanced("entertainment", "nightlifeImportance", clamp(50 + entertainmentDeltas.nightlifeImportance));
     }
-    if (culturalDeltas.nightlifeImportance) {
-      updateAdvanced("cultural", "nightlifeImportance", clamp(50 + culturalDeltas.nightlifeImportance));
+    if (entertainmentDeltas.diningImportance) {
+      updateAdvanced("entertainment", "diningImportance", clamp(50 + entertainmentDeltas.diningImportance));
     }
-    if (culturalDeltas.diningImportance) {
-      updateAdvanced("cultural", "diningImportance", clamp(50 + culturalDeltas.diningImportance));
+    if (entertainmentDeltas.artsImportance) {
+      updateAdvanced("entertainment", "artsImportance", clamp(50 + entertainmentDeltas.artsImportance));
     }
-    if (culturalDeltas.artsImportance) {
-      updateAdvanced("cultural", "artsImportance", clamp(50 + culturalDeltas.artsImportance));
+    if (entertainmentDeltas.sportsImportance) {
+      updateAdvanced("entertainment", "sportsImportance", clamp(50 + entertainmentDeltas.sportsImportance));
     }
-    if (culturalDeltas.sportsImportance) {
-      updateAdvanced("cultural", "sportsImportance", clamp(50 + culturalDeltas.sportsImportance));
+    if (entertainmentDeltas.recreationImportance) {
+      updateAdvanced("entertainment", "recreationImportance", clamp(50 + entertainmentDeltas.recreationImportance));
+    }
+    if (entertainmentDeltas.natureWeight) {
+      updateAdvanced("entertainment", "natureWeight", clamp(50 + entertainmentDeltas.natureWeight));
+    }
+    if (entertainmentDeltas.beachWeight) {
+      updateAdvanced("entertainment", "beachWeight", clamp(50 + entertainmentDeltas.beachWeight));
+    }
+    if (entertainmentDeltas.mountainWeight) {
+      updateAdvanced("entertainment", "mountainWeight", clamp(50 + entertainmentDeltas.mountainWeight));
     }
     
     // Apply demographics preferences

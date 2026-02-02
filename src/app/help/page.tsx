@@ -18,9 +18,10 @@ import {
   Sun,
   Home,
   Users,
-  Activity,
+  HeartHandshake,
   HelpCircle,
   Church,
+  PartyPopper,
 } from "lucide-react";
 
 export default function HelpPage() {
@@ -56,24 +57,25 @@ export default function HelpPage() {
         </CardHeader>
         <CardContent className="prose prose-slate dark:prose-invert max-w-none">
           <p>
-            Each city receives a <strong>total score from 0-100</strong> based on five categories:
+            Each city receives a <strong>total score from 0-100</strong> based on six categories:
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 my-6 not-prose">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 my-6 not-prose">
             <ScoreCard icon={<Sun className="h-5 w-5 text-orange-500" />} title="Climate" />
             <ScoreCard icon={<Home className="h-5 w-5 text-green-500" />} title="Cost of Living" />
             <ScoreCard icon={<Users className="h-5 w-5 text-blue-500" />} title="Demographics" />
-            <ScoreCard icon={<Activity className="h-5 w-5 text-red-500" />} title="Quality of Life" />
-            <ScoreCard icon={<Church className="h-5 w-5 text-purple-500" />} title="Cultural" />
+            <ScoreCard icon={<HeartHandshake className="h-5 w-5 text-red-500" />} title="Quality of Life" />
+            <ScoreCard icon={<PartyPopper className="h-5 w-5 text-amber-500" />} title="Entertainment" />
+            <ScoreCard icon={<Church className="h-5 w-5 text-purple-500" />} title="Values" />
           </div>
           <p>
             Your <strong>category weights</strong> determine how much each category contributes to the final score.
             The formula is:
           </p>
           <div className="bg-muted p-4 rounded-lg font-mono text-sm my-4">
-            Total Score = (Climate × W₁ + Cost × W₂ + Demographics × W₃ + QoL × W₄ + Cultural × W₅) / (W₁ + W₂ + W₃ + W₄ + W₅)
+            Total Score = (Climate × W₁ + Cost × W₂ + Demographics × W₃ + QoL × W₄ + Entertainment × W₅ + Values × W₆) / (W₁ + ... + W₆)
           </div>
           <p className="text-sm text-muted-foreground">
-            Where W₁–W₅ are your weight settings (0-100 each). Cultural is off by default (W₅=0).
+            Where W₁–W₆ are your weight settings (0-100 each). Values is off by default (W₆=0).
           </p>
         </CardContent>
       </Card>
@@ -511,6 +513,98 @@ export default function HelpPage() {
                   Final = (85×25 + 70×25 + 60×25 + 84×50) / (25+25+25+50){"\n"}
                   Final = 9575 / 125 = 76.6
                 </div>
+
+                <h4 className="mt-6 pt-4 border-t">Dating Favorability (Optional)</h4>
+                <p>
+                  An optional sub-feature that scores cities based on dating market factors. Enable it in 
+                  Advanced &gt; Demographics to blend dating favorability into your demographics score.
+                </p>
+
+                <p className="font-medium mt-3">How It Works</p>
+                <p className="text-xs">
+                  Dating Favorability uses a weighted formula inspired by Pew Research dating market analysis. 
+                  The score combines four factors:
+                </p>
+
+                <table className="w-full text-xs mt-2">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Factor</th>
+                      <th className="text-left">Weight</th>
+                      <th className="text-left">What It Measures</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Pool Score</strong></td>
+                      <td>40%</td>
+                      <td>Gender ratio + never-married % in your target age bracket</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Economic Score</strong></td>
+                      <td>30%</td>
+                      <td>Disposable income after rent (&quot;date tax&quot; affordability)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Alignment Score</strong></td>
+                      <td>20%</td>
+                      <td>Political preference match (uses your Values settings)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Walk/Safety Score</strong></td>
+                      <td>10%</td>
+                      <td>Walkability + crime rate (for meeting people safely)</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p className="font-medium mt-3">Pool Score Details</p>
+                <ul className="text-xs space-y-1">
+                  <li><strong>Gender Ratio:</strong> Males per 100 females in your target age bracket. 
+                    Seeking women? Ratio &lt;100 is favorable. Seeking men? Ratio &gt;100 is favorable.</li>
+                  <li><strong>Never-Married %:</strong> Higher = larger dating pool. 
+                    Uses gender-specific percentages for whoever you&apos;re seeking.</li>
+                </ul>
+                <p className="text-xs text-muted-foreground">
+                  Age brackets: 20-29, 30-39, 40-49 (or overall if no preference set).
+                </p>
+
+                <p className="font-medium mt-3">Dating Weight Slider</p>
+                <p className="text-xs">
+                  The <strong>Dating Weight</strong> slider (0-100) controls how much dating factors affect 
+                  your overall demographics score:
+                </p>
+                <div className="bg-muted p-3 rounded font-mono text-xs mt-2">
+                  Final Demographics = Base × (1 - weight/100) + Dating × (weight/100){"\n"}
+                  {"\n"}
+                  weight = 0: Demographics only{"\n"}
+                  weight = 50: 50/50 blend{"\n"}
+                  weight = 100: Dating score only
+                </div>
+
+                <p className="font-medium mt-3">Example Cities</p>
+                <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                  <div className="bg-muted/50 p-2 rounded">
+                    <p className="font-medium">NYC (seeking women, 20-29)</p>
+                    <ul className="text-muted-foreground">
+                      <li>Gender ratio: 95.2 (favorable)</li>
+                      <li>Never-married F: 72%</li>
+                      <li>Very walkable, high cost</li>
+                    </ul>
+                  </div>
+                  <div className="bg-muted/50 p-2 rounded">
+                    <p className="font-medium">Phoenix (seeking women, 30-39)</p>
+                    <ul className="text-muted-foreground">
+                      <li>Gender ratio: 102.1 (unfavorable)</li>
+                      <li>Never-married F: 38%</li>
+                      <li>Car-dependent, affordable</li>
+                    </ul>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Data source: Census ACS gender ratios by age bracket, never-married percentages, 
+                  BEA disposable income, Walk Score, FBI crime rates.
+                </p>
               </AccordionContent>
             </AccordionItem>
 
@@ -518,7 +612,7 @@ export default function HelpPage() {
             <AccordionItem value="qol">
               <AccordionTrigger>
                 <span className="flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-red-500" />
+                  <HeartHandshake className="h-4 w-4 text-red-500" />
                   Quality of Life Score
                 </span>
               </AccordionTrigger>
@@ -612,28 +706,15 @@ export default function HelpPage() {
                 </div>
                 <p className="text-xs text-muted-foreground">HPSA 0 = no shortage, 25+ = severe shortage. National avg: ~75 physicians/100K.</p>
 
-                <h4>Recreation & Outdoor Access (NEW)</h4>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Measures access to outdoor recreation amenities. Off by default - enable in Advanced Options.
-                </p>
-                <ul className="text-xs space-y-1">
-                  <li><strong>Nature Score:</strong> Parks, trails, protected lands (percentile ranking)</li>
-                  <li><strong>Beach Score:</strong> 100 if coast within 15mi, distance decay for further</li>
-                  <li><strong>Mountain Score:</strong> Elevation prominence within 30mi (0-4000ft range)</li>
-                </ul>
-                <div className="bg-muted p-3 rounded font-mono text-xs mt-2">
-                  Recreation = (nature × w1 + beach × w2 + mountain × w3) / (w1 + w2 + w3)
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Denver: high nature + mountains | San Diego: beaches | Dallas: flat, no coast
-                </p>
-
                 <h4>Final Calculation</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
                   QoL_Score = (walkability × w1 + safety × w2 + air × w3 +{"\n"}
-                              internet × w4 + schools × w5 + health × w6 + recreation × w7){"\n"}
-                              / (w1 + w2 + w3 + w4 + w5 + w6 + w7)
+                              internet × w4 + schools × w5 + health × w6){"\n"}
+                              / (w1 + w2 + w3 + w4 + w5 + w6)
                 </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Note: Recreation & outdoor access is now part of the Entertainment category.
+                </p>
 
                 <h4 className="mt-4">Data Sources Note</h4>
                 <p className="text-xs text-muted-foreground">
@@ -653,12 +734,65 @@ export default function HelpPage() {
               </AccordionContent>
             </AccordionItem>
 
-            {/* Cultural Preferences */}
-            <AccordionItem value="cultural">
+            {/* Entertainment Preferences */}
+            <AccordionItem value="entertainment">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <PartyPopper className="h-4 w-4 text-amber-500" />
+                  Entertainment & Recreation
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
+                <p>
+                  Entertainment preferences measure <strong>objective amenity density</strong> — &quot;Is it fun?&quot;
+                  Unlike Values, this doesn&apos;t require personal alignment; you just want more of what you enjoy.
+                </p>
+
+                <h4>Urban Amenities</h4>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Uses logarithmic &quot;critical mass&quot; scoring — diminishing returns after a threshold.
+                </p>
+                <ul className="text-xs space-y-1">
+                  <li><strong>Nightlife:</strong> Bars/clubs per 10K (plateaus at ~30)</li>
+                  <li><strong>Arts:</strong> Museums, theaters, galleries (plateaus at ~20)</li>
+                  <li><strong>Dining:</strong> Restaurant density, cuisine diversity, breweries</li>
+                  <li><strong>Sports:</strong> NFL, NBA, MLB, NHL, MLS teams</li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-1">
+                  NYC: 1,500+ bars | DC: 70+ museums | Smaller cities: 50-100 bars, 10-20 museums
+                </p>
+
+                <h4>Recreation & Outdoors</h4>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Parks, trails, beach, and mountain access — moved from Quality of Life.
+                </p>
+                <ul className="text-xs space-y-1">
+                  <li><strong>Nature:</strong> Trail miles (10mi radius), park acres, protected land</li>
+                  <li><strong>Beach:</strong> Coastal access within 15mi (distance decay beyond)</li>
+                  <li><strong>Mountains:</strong> Elevation prominence, ski resort proximity</li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Denver: 300+ trail miles | Salt Lake: 4,000ft elevation range | ~30% of cities have beach access
+                </p>
+
+                <h4>Final Calculation</h4>
+                <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
+                  Entertainment_Score = (Nightlife × w1 + Arts × w2 + Dining × w3 +{"\n"}
+                                         Sports × w4 + Recreation × w5){"\n"}
+                                         / (w1 + w2 + w3 + w4 + w5)
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Each sub-category uses your importance sliders (0-100). If all are 0, defaults to 50.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Values Preferences */}
+            <AccordionItem value="values">
               <AccordionTrigger>
                 <span className="flex items-center gap-2">
                   <Church className="h-4 w-4 text-purple-500" />
-                  Cultural Preferences
+                  Values & Alignment
                 </span>
               </AccordionTrigger>
               <AccordionContent className="prose prose-slate dark:prose-invert max-w-none text-sm">
@@ -670,9 +804,8 @@ export default function HelpPage() {
                 </div>
 
                 <p>
-                  Cultural preferences let you find cities that match your political and religious community 
-                  needs. This data is provided at the <strong>county/metro level</strong> — individual 
-                  neighborhoods may vary significantly.
+                  Values preferences help you find cities that match your political and religious community 
+                  needs. This is <strong>subjective alignment</strong> — &quot;Do I belong here?&quot;
                 </p>
 
                 <h4>Data Sources</h4>
@@ -705,15 +838,39 @@ export default function HelpPage() {
                 
                 <p>Your preference options:</p>
                 <ul className="text-xs">
-                  <li><strong>Strong D/R:</strong> Matches cities with PI near ±0.6</li>
-                  <li><strong>Lean D/R:</strong> Matches cities with PI near ±0.2</li>
-                  <li><strong>Swing:</strong> Matches cities with |PI| &lt; 0.10 (competitive)</li>
+                  <li><strong>Strong D/R:</strong> Best match with PI near ±0.6</li>
+                  <li><strong>Lean D/R:</strong> Best match with PI near ±0.2</li>
+                  <li><strong>Swing:</strong> Rewards cities with |PI| &lt; 0.10 (competitive)</li>
                   <li><strong>Neutral:</strong> Political lean not factored into score</li>
                 </ul>
 
-                <p>
-                  The <strong>High Voter Turnout</strong> toggle gives bonus points to cities with 
-                  turnout above 65%, which often correlates with civic engagement and community activism.
+                <p className="font-medium mt-3">How Scoring Works</p>
+                <p className="text-xs">
+                  We use a <strong>Gaussian decay</strong> model that feels more intuitive than simple distance matching:
+                </p>
+                <ul className="text-xs space-y-1">
+                  <li><strong>Close match:</strong> Cities near your preference score highest</li>
+                  <li><strong>Same direction, more extreme:</strong> Still scores well (e.g., &quot;Lean Dem&quot; user + strongly Democratic city)</li>
+                  <li><strong>Opposite direction:</strong> Score drops smoothly based on distance, not a sudden cliff</li>
+                  <li><strong>Moderates vs Partisans:</strong> If you select &quot;Lean&quot;, crossing party lines is barely penalized. If you select &quot;Strong&quot;, there&apos;s a ~15% penalty for opposite-party cities.</li>
+                </ul>
+                
+                <p className="font-medium mt-3">Importance Slider</p>
+                <p className="text-xs">
+                  The <strong>importance slider</strong> doesn&apos;t just weight the score—it changes how <em>sensitive</em> 
+                  you are to political distance:
+                </p>
+                <ul className="text-xs">
+                  <li><strong>Low importance:</strong> Even large distances barely affect your score (flat curve)</li>
+                  <li><strong>High importance:</strong> Small differences create big score changes (steep curve)</li>
+                  <li><strong>Dealbreaker level (&gt;80):</strong> Poor political matches will significantly drag down your overall Values score</li>
+                </ul>
+
+                <p className="font-medium mt-3">Voter Turnout</p>
+                <p className="text-xs">
+                  The <strong>High Voter Turnout</strong> toggle includes civic health as 20% of your political score 
+                  (turnout is normalized: 40% → 0, 80% → 100). This rewards cities with engaged communities 
+                  without causing score inflation.
                 </p>
 
                 <h4>Religious Scoring</h4>
@@ -748,35 +905,16 @@ export default function HelpPage() {
                   or a pluralistic mix.
                 </p>
 
-                <h4>Urban Lifestyle (NEW)</h4>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Measures urban entertainment and lifestyle amenities. Off by default.
-                </p>
-                <ul className="text-xs space-y-1">
-                  <li><strong>Nightlife Score:</strong> Bars/clubs per 10K (logarithmic curve, plateaus at ~30)</li>
-                  <li><strong>Arts Score:</strong> Museums, theaters, galleries (logarithmic, plateaus at ~20)</li>
-                  <li><strong>Dining Score:</strong> Restaurant density, cuisine diversity, breweries</li>
-                </ul>
-                <div className="bg-muted p-3 rounded font-mono text-xs mt-2">
-                  UrbanLifestyle = (nightlife × w1 + arts × w2 + dining × w3) / (w1 + w2 + w3)
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  NYC: 1,500+ bars | DC: 70+ museums | Smaller cities: 50-100 bars, 10-20 museums
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  <em>Diminishing returns:</em> Once a city has &quot;enough&quot; bars/museums (critical mass), 
-                  the score plateaus. Having 100 vs 80 museums matters less than 10 vs 20.
-                </p>
-
                 <h4>Final Calculation</h4>
                 <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
-                  Cultural_Score = (Political_Score × Political_Weight +{"\n"}
-                                   Religious_Score × Religious_Weight +{"\n"}
-                                   UrbanLifestyle_Score × Lifestyle_Weight){"\n"}
-                                   / (Political_Weight + Religious_Weight + Lifestyle_Weight)
+                  Political_Score = (Alignment × 0.8) + (Turnout × 0.2){"\n"}
+                  {"\n"}
+                  Values_Score = (Political_Score × Political_Weight +{"\n"}
+                                 Religious_Score × Religious_Weight){"\n"}
+                                 / (Political_Weight + Religious_Weight)
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  If all cultural preferences are set to neutral/off, the score defaults to 50 (national average).
+                  If all values preferences are set to neutral/off, the score defaults to 50 (national average).
                 </p>
               </AccordionContent>
             </AccordionItem>

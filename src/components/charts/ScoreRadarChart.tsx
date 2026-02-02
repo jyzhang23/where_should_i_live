@@ -57,16 +57,23 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
       fullMark: 100,
     },
     {
-      category: "Quality of Life",
+      category: "QoL",
       score: cityScore.qualityOfLifeScore,
       comparison: comparisonScore?.qualityOfLifeScore,
       nationalAvg: 50,
       fullMark: 100,
     },
     {
-      category: "Cultural",
-      score: cityScore.culturalScore,
-      comparison: comparisonScore?.culturalScore,
+      category: "Entertainment",
+      score: cityScore.entertainmentScore,
+      comparison: comparisonScore?.entertainmentScore,
+      nationalAvg: 50,
+      fullMark: 100,
+    },
+    {
+      category: "Values",
+      score: cityScore.valuesScore,
+      comparison: comparisonScore?.valuesScore,
       nationalAvg: 50,
       fullMark: 100,
     },
@@ -141,6 +148,11 @@ export function ScoreRadarChart({ cityScore, comparisonScore }: ScoreRadarChartP
                   backgroundColor: "var(--card)",
                   border: "1px solid var(--border)",
                   borderRadius: "8px",
+                }}
+                labelStyle={{
+                  color: "var(--foreground)",
+                }}
+                itemStyle={{
                   color: "var(--foreground)",
                 }}
                 formatter={(value: number | undefined, name: string | undefined) => [

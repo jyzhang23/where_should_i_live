@@ -10,7 +10,6 @@ import {
   Sun,
   Home,
   Users,
-  Activity,
   DollarSign,
   Thermometer,
   CloudRain,
@@ -21,6 +20,9 @@ import {
   Wind,
   Vote,
   Church,
+  PartyPopper,
+  HeartHandshake,
+  BarChart3,
 } from "lucide-react";
 
 interface MetricsComparisonProps {
@@ -172,7 +174,7 @@ export function MetricsComparison({
         {/* Scores Section */}
         <div>
           <SectionHeader
-            icon={<Activity className="h-4 w-4" />}
+            icon={<BarChart3 className="h-4 w-4" />}
             title="Scores"
             city1Name={city1.name}
             city2Name={city2.name}
@@ -208,9 +210,15 @@ export function MetricsComparison({
             format={(v) => formatNumber(v, 1)}
           />
           <ComparisonRow
-            label="Cultural"
-            value1={score1.culturalScore}
-            value2={score2.culturalScore}
+            label="Entertainment"
+            value1={score1.entertainmentScore}
+            value2={score2.entertainmentScore}
+            format={(v) => formatNumber(v, 1)}
+          />
+          <ComparisonRow
+            label="Values"
+            value1={score1.valuesScore}
+            value2={score2.valuesScore}
             format={(v) => formatNumber(v, 1)}
           />
         </div>
@@ -383,7 +391,7 @@ export function MetricsComparison({
         {/* Quality of Life Section - Enhanced with QoL API data */}
         <div>
           <SectionHeader
-            icon={<Activity className="h-4 w-4 text-rose-500" />}
+            icon={<HeartHandshake className="h-4 w-4 text-rose-500" />}
             title="Quality of Life"
             city1Name={city1.name}
             city2Name={city2.name}
@@ -447,11 +455,66 @@ export function MetricsComparison({
           />
         </div>
 
-        {/* Cultural Section */}
+        {/* Entertainment Section */}
+        <div>
+          <SectionHeader
+            icon={<PartyPopper className="h-4 w-4 text-amber-500" />}
+            title="Entertainment & Recreation"
+            city1Name={city1.name}
+            city2Name={city2.name}
+          />
+          <ComparisonRow
+            label="Bars & Clubs (per 10K)"
+            value1={m1?.cultural?.urbanLifestyle?.nightlife?.barsAndClubsPer10K ?? null}
+            value2={m2?.cultural?.urbanLifestyle?.nightlife?.barsAndClubsPer10K ?? null}
+            format={(v) => formatNumber(v, 1)}
+          />
+          <ComparisonRow
+            label="Museums"
+            value1={m1?.cultural?.urbanLifestyle?.arts?.museums ?? null}
+            value2={m2?.cultural?.urbanLifestyle?.arts?.museums ?? null}
+            format={formatInt}
+          />
+          <ComparisonRow
+            label="Restaurants (per 10K)"
+            value1={m1?.cultural?.urbanLifestyle?.dining?.restaurantsPer10K ?? null}
+            value2={m2?.cultural?.urbanLifestyle?.dining?.restaurantsPer10K ?? null}
+            format={(v) => formatNumber(v, 1)}
+          />
+          <ComparisonRow
+            label="Pro Sports Teams"
+            value1={((m1?.nflTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m1?.nbaTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m1?.mlbTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m1?.nhlTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m1?.mlsTeams?.split(',').filter(t => t.trim()).length || 0)) || null}
+            value2={((m2?.nflTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m2?.nbaTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m2?.mlbTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m2?.nhlTeams?.split(',').filter(t => t.trim()).length || 0) +
+                    (m2?.mlsTeams?.split(',').filter(t => t.trim()).length || 0)) || null}
+            format={formatInt}
+          />
+          <ComparisonRow
+            label="Trail Miles (10mi radius)"
+            value1={m1?.qol?.recreation?.nature?.trailMilesWithin10Mi ?? null}
+            value2={m2?.qol?.recreation?.nature?.trailMilesWithin10Mi ?? null}
+            format={formatInt}
+          />
+          <ComparisonRow
+            label="Coastal Access"
+            value1={m1?.qol?.recreation?.geography?.coastlineWithin15Mi ? 1 : 0}
+            value2={m2?.qol?.recreation?.geography?.coastlineWithin15Mi ? 1 : 0}
+            format={(v) => v === 1 ? "Yes" : "No"}
+            showDiff={false}
+          />
+        </div>
+
+        {/* Values Section */}
         <div>
           <SectionHeader
             icon={<Vote className="h-4 w-4 text-purple-500" />}
-            title="Cultural Profile"
+            title="Values & Alignment"
             city1Name={city1.name}
             city2Name={city2.name}
           />

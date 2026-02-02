@@ -9,7 +9,8 @@
  * - src/lib/scoring/cost.ts: Cost of living scoring using BEA data
  * - src/lib/scoring/demographics.ts: Demographics scoring using Census data
  * - src/lib/scoring/quality-of-life.ts: QoL scoring (walkability, safety, etc.)
- * - src/lib/scoring/cultural.ts: Cultural scoring (political, religious, urban lifestyle)
+ * - src/lib/scoring/values.ts: Values scoring (political alignment, religious presence)
+ * - src/lib/scoring/entertainment.ts: Entertainment scoring (nightlife, arts, dining, sports, recreation)
  * - src/lib/scoring/display.ts: UI display utilities (grades, colors, labels)
  * 
  * This file re-exports everything for backward compatibility with existing imports.
@@ -24,7 +25,8 @@ export {
   calculateCostScore,
   calculateDemographicsScore,
   calculateQualityOfLifeScore,
-  calculateCulturalScore,
+  calculateValuesScore,
+  calculateEntertainmentScore,
   
   // Display utilities
   getGrade,

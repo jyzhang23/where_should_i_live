@@ -396,7 +396,7 @@ export function DemographicsPreferences() {
             
             {/* Note about political alignment */}
             <p className="text-xs text-muted-foreground italic">
-              Your political preference (in Cultural settings) is also used for dating alignment scoring.
+              Your political preference (in Values settings) is also used for dating alignment scoring.
             </p>
           </div>
         )}

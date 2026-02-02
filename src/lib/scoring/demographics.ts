@@ -19,8 +19,14 @@ function calculateDatingFavorability(
   const bea = metrics.bea;
   const qol = metrics.qol;
   const cultural = metrics.cultural;
-  const prefs = preferences.advanced.demographics;
-  const culturalPrefs = preferences.advanced.cultural;
+  const prefs = preferences.advanced?.demographics;
+  // Use values preferences for political alignment (was cultural before refactor)
+  const valuesPrefs = preferences.advanced?.values;
+  
+  // If no demographics preferences, return neutral
+  if (!prefs) {
+    return 50;
+  }
   
   // Dating preferences
   const seekingGender = prefs.seekingGender;
@@ -34,7 +40,7 @@ function calculateDatingFavorability(
   // === POOL SCORE (40%) ===
   // Gender ratio: seeking women prefers ratio < 100, seeking men prefers ratio > 100
   // Never married %: higher is better for dating pool
-  let poolScore = 50;
+  let poolScore = 0;
   let poolFactors = 0;
   
   // Get the appropriate gender ratio for age range
@@ -81,9 +87,8 @@ function calculateDatingFavorability(
     }
   }
   
-  if (poolFactors > 0) {
-    poolScore = poolScore / poolFactors;
-  }
+  // Average the pool factors, or use neutral (50) if no data
+  poolScore = poolFactors > 0 ? poolScore / poolFactors : 50;
   
   // === ECONOMIC SCORE (30%) - "Date Tax" ===
   // Disposable income after rent affects dating affordability
@@ -123,7 +128,7 @@ function calculateDatingFavorability(
   let alignScore = 50; // Neutral if no preference
   
   const political = cultural?.political;
-  const partisanPref = culturalPrefs.partisanPreference;
+  const partisanPref = valuesPrefs?.partisanPreference ?? "neutral";
   
   if (political && political.partisanIndex !== null && partisanPref !== "neutral") {
     const pi = political.partisanIndex; // -1 (R) to +1 (D)
@@ -146,7 +151,7 @@ function calculateDatingFavorability(
   
   // === WALK/SAFETY SCORE (10%) ===
   // Walkability for serendipitous meetings + safety
-  let walkSafeScore = 50;
+  let walkSafeScore = 0;
   let walkSafeFactors = 0;
   
   // Walk Score (higher = more walkable = easier to meet people)
@@ -170,9 +175,8 @@ function calculateDatingFavorability(
     walkSafeFactors++;
   }
   
-  if (walkSafeFactors > 0) {
-    walkSafeScore = walkSafeScore / walkSafeFactors;
-  }
+  // Average the walk/safe factors, or use neutral (50) if no data
+  walkSafeScore = walkSafeFactors > 0 ? walkSafeScore / walkSafeFactors : 50;
   
   // === FINAL WEIGHTED SCORE ===
   // Pool 40% + Economic 30% + Alignment 20% + Walk/Safety 10%
@@ -195,10 +199,10 @@ export function calculateDemographicsScore(
 ): number {
   const metrics = city.metrics!;
   const census = metrics.census;
-  const prefs = preferences.advanced.demographics;
+  const prefs = preferences.advanced?.demographics;
 
-  // If no Census data, return neutral score
-  if (!census) {
+  // If no Census data or no demographics preferences, return neutral score
+  if (!census || !prefs) {
     return 50;
   }
 
@@ -379,10 +383,14 @@ export function calculateDemographicsScore(
     totalWeight += prefs.weightEconomicHealth;
   }
 
+  // Get dating preferences with defaults
+  const datingEnabled = prefs.datingEnabled ?? false;
+  const datingWeight = prefs.datingWeight ?? 50;
+
   // If no weights were set, return a neutral score (50 = national average)
   if (totalWeight === 0) {
     // But if dating is enabled, return dating score instead
-    if (prefs.datingEnabled && prefs.datingWeight > 0) {
+    if (datingEnabled && datingWeight > 0) {
       const datingScore = calculateDatingFavorability(city, preferences);
       return datingScore;
     }
@@ -394,11 +402,11 @@ export function calculateDemographicsScore(
   
   // === DATING FAVORABILITY INTEGRATION ===
   // If dating is enabled, blend the dating score into demographics
-  if (prefs.datingEnabled && prefs.datingWeight > 0) {
+  if (datingEnabled && datingWeight > 0) {
     const datingScore = calculateDatingFavorability(city, preferences);
     
     // datingWeight: 0 = ignore dating, 50 = 50/50 blend, 100 = dating only
-    const datingInfluence = prefs.datingWeight / 100;
+    const datingInfluence = datingWeight / 100;
     baseScore = baseScore * (1 - datingInfluence) + datingScore * datingInfluence;
   }
   

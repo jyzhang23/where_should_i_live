@@ -62,10 +62,17 @@ export function BasicPreferences() {
         />
 
         <PreferenceSlider
-          label="Cultural"
-          value={preferences.weights.cultural}
-          onChange={(v) => updateWeight("cultural", v)}
-          tooltip={TOOLTIPS["weights.cultural"]}
+          label="Entertainment"
+          value={preferences.weights.entertainment}
+          onChange={(v) => updateWeight("entertainment", v)}
+          tooltip={TOOLTIPS["weights.entertainment"]}
+        />
+
+        <PreferenceSlider
+          label="Values"
+          value={preferences.weights.values}
+          onChange={(v) => updateWeight("values", v)}
+          tooltip={TOOLTIPS["weights.values"]}
         />
       </div>
     </div>

@@ -156,48 +156,46 @@ export function QuickStart({ onComplete }: QuickStartProps) {
     // Apply activity/recreation preferences
     if (activity === "urbanite") {
       // Prioritize nightlife, dining, sports - urban lifestyle metrics
-      updateAdvanced("cultural", "urbanLifestyleWeight", 80);
-      updateAdvanced("cultural", "nightlifeImportance", 90);
-      updateAdvanced("cultural", "diningImportance", 80);
-      updateAdvanced("cultural", "artsImportance", 50);
-      updateAdvanced("cultural", "sportsImportance", 70); // Sports fans tend to be urbanites
-      // Enable cultural category if not already
-      updateWeight("cultural", Math.max(50, 50)); // Ensure cultural has weight
+      updateAdvanced("entertainment", "nightlifeImportance", 90);
+      updateAdvanced("entertainment", "diningImportance", 80);
+      updateAdvanced("entertainment", "artsImportance", 50);
+      updateAdvanced("entertainment", "sportsImportance", 70); // Sports fans tend to be urbanites
+      // Enable entertainment category
+      updateWeight("entertainment", 80);
     } else if (activity === "culture-lover") {
       // Prioritize museums, theaters, galleries
-      updateAdvanced("cultural", "urbanLifestyleWeight", 80);
-      updateAdvanced("cultural", "artsImportance", 100);
-      updateAdvanced("cultural", "nightlifeImportance", 30);
-      updateAdvanced("cultural", "diningImportance", 50);
-      updateAdvanced("cultural", "sportsImportance", 40); // Moderate sports interest
-      // Enable cultural category
-      updateWeight("cultural", Math.max(50, 50));
+      updateAdvanced("entertainment", "artsImportance", 100);
+      updateAdvanced("entertainment", "nightlifeImportance", 30);
+      updateAdvanced("entertainment", "diningImportance", 50);
+      updateAdvanced("entertainment", "sportsImportance", 40); // Moderate sports interest
+      // Enable entertainment category
+      updateWeight("entertainment", 80);
     } else if (activity === "nature-lover") {
       // Prioritize parks, trails, protected lands
-      updateQoLWeight("recreation", 80);
-      updateAdvanced("qualityOfLife", "recreationWeight", 80);
-      updateAdvanced("qualityOfLife", "natureImportance", 100);
-      updateAdvanced("qualityOfLife", "beachImportance", 30);
-      updateAdvanced("qualityOfLife", "mountainImportance", 40);
-      updateAdvanced("cultural", "sportsImportance", 20); // Lower sports priority
+      updateAdvanced("entertainment", "recreationImportance", 80);
+      updateAdvanced("entertainment", "natureWeight", 100);
+      updateAdvanced("entertainment", "beachWeight", 30);
+      updateAdvanced("entertainment", "mountainWeight", 40);
+      updateAdvanced("entertainment", "sportsImportance", 20); // Lower sports priority
+      updateWeight("entertainment", 70);
     } else if (activity === "outdoor-athlete") {
       // Prioritize mountains, beaches, ski resorts
-      updateQoLWeight("recreation", 90);
-      updateAdvanced("qualityOfLife", "recreationWeight", 90);
-      updateAdvanced("qualityOfLife", "mountainImportance", 100);
-      updateAdvanced("qualityOfLife", "beachImportance", 80);
-      updateAdvanced("qualityOfLife", "natureImportance", 60);
-      updateAdvanced("cultural", "sportsImportance", 50); // Balanced sports interest
+      updateAdvanced("entertainment", "recreationImportance", 90);
+      updateAdvanced("entertainment", "mountainWeight", 100);
+      updateAdvanced("entertainment", "beachWeight", 80);
+      updateAdvanced("entertainment", "natureWeight", 60);
+      updateAdvanced("entertainment", "sportsImportance", 50); // Balanced sports interest
+      updateWeight("entertainment", 80);
     } else if (activity === "homebody") {
       // De-prioritize recreation and urban lifestyle
-      updateQoLWeight("recreation", 0);
-      updateAdvanced("qualityOfLife", "recreationWeight", 0);
-      updateAdvanced("cultural", "urbanLifestyleWeight", 0);
-      updateAdvanced("cultural", "sportsImportance", 30); // Might watch sports on TV
+      updateAdvanced("entertainment", "recreationImportance", 0);
+      updateAdvanced("entertainment", "nightlifeImportance", 20);
+      updateAdvanced("entertainment", "sportsImportance", 30); // Might watch sports on TV
+      updateWeight("entertainment", 20);
       // Bump up safety instead
       updateQoLWeight("safety", 80);
     }
-    // "any" = leave defaults (sportsImportance = 50)
+    // "any" = leave defaults
 
     // Apply priority weights
     if (priority === "cost") {

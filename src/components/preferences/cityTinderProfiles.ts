@@ -123,7 +123,8 @@ export interface TraitMapping {
     costOfLiving: number;
     demographics: number;
     qualityOfLife: number;
-    cultural: number;
+    entertainment: number;
+    values: number;
   }>;
   climate?: Partial<{
     weightComfortDays: number;
@@ -138,14 +139,16 @@ export interface TraitMapping {
     internet: number;
     schools: number;
     healthcare: number;
-    recreation: number;
   }>;
-  cultural?: Partial<{
-    urbanLifestyleWeight: number;
+  entertainment?: Partial<{
     nightlifeImportance: number;
-    diningImportance: number;
     artsImportance: number;
+    diningImportance: number;
     sportsImportance: number;
+    recreationImportance: number;
+    natureWeight: number;
+    beachWeight: number;
+    mountainWeight: number;
   }>;
   demographics?: Partial<{
     weightDiversity: number;
@@ -170,13 +173,13 @@ export const traitMappings: Record<string, TraitMapping> = {
 
   // Urban/lifestyle traits
   urban: {
-    weights: { qualityOfLife: 10 },
+    weights: { qualityOfLife: 10, entertainment: 10 },
     qol: { walkability: 20 },
-    cultural: { urbanLifestyleWeight: 15 },
+    entertainment: { nightlifeImportance: 15, diningImportance: 10 },
   },
   suburban: {
     qol: { walkability: -10 },
-    cultural: { urbanLifestyleWeight: -15 },
+    entertainment: { nightlifeImportance: -15 },
   },
   walkable: {
     qol: { walkability: 20 },
@@ -195,41 +198,40 @@ export const traitMappings: Record<string, TraitMapping> = {
 
   // Cultural/entertainment traits
   cultural: {
-    weights: { cultural: 15 },
-    cultural: { artsImportance: 20 },
+    weights: { entertainment: 15 },
+    entertainment: { artsImportance: 20 },
   },
   nightlife: {
-    cultural: { nightlifeImportance: 20, urbanLifestyleWeight: 10 },
+    entertainment: { nightlifeImportance: 20 },
   },
   music: {
-    cultural: { artsImportance: 15, nightlifeImportance: 10 },
+    entertainment: { artsImportance: 15, nightlifeImportance: 10 },
   },
   foodie: {
-    cultural: { diningImportance: 20 },
+    entertainment: { diningImportance: 20 },
   },
   sports: {
-    cultural: { sportsImportance: 20 },
+    entertainment: { sportsImportance: 20 },
   },
 
   // Nature/outdoor traits
   outdoors: {
-    qol: { recreation: 25 },
-    cultural: { urbanLifestyleWeight: -10 },
+    entertainment: { recreationImportance: 25, natureWeight: 20 },
   },
   nature: {
-    qol: { recreation: 20 },
+    entertainment: { recreationImportance: 20, natureWeight: 20 },
   },
   mountains: {
-    qol: { recreation: 15 },
+    entertainment: { recreationImportance: 15, mountainWeight: 20 },
   },
   beaches: {
-    qol: { recreation: 15 },
+    entertainment: { recreationImportance: 15, beachWeight: 20 },
   },
   coastal: {
-    qol: { recreation: 10 },
+    entertainment: { beachWeight: 15 },
   },
   active: {
-    qol: { recreation: 15 },
+    entertainment: { recreationImportance: 15 },
   },
 
   // Demographics/community traits
@@ -241,7 +243,7 @@ export const traitMappings: Record<string, TraitMapping> = {
     demographics: { weightDiversity: 5 },
   },
   historic: {
-    cultural: { artsImportance: 10 },
+    entertainment: { artsImportance: 10 },
   },
 
   // Quality of life traits
@@ -266,7 +268,7 @@ export const traitMappings: Record<string, TraitMapping> = {
     weights: { qualityOfLife: 10 },
   },
   quirky: {
-    weights: { cultural: 10 },
+    weights: { entertainment: 10 },
     demographics: { weightDiversity: 10 },
   },
 };

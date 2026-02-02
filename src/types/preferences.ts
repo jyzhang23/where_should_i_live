@@ -3,13 +3,14 @@
 export interface UserPreferences {
   // === BASIC OPTIONS (always visible) ===
 
-  // Category weights (0-100, shown as sliders)
+  // Category weights (0-100, shown as sliders) - 6 categories
   weights: {
     climate: number;
     costOfLiving: number;
     demographics: number;
     qualityOfLife: number;
-    cultural: number;
+    values: number;        // NEW - political + religious alignment
+    entertainment: number; // NEW - nightlife, arts, dining, sports, recreation
   };
 
   // Quick filters (toggles) - reserved for future hard filters
@@ -141,7 +142,7 @@ export interface UserPreferences {
       datingWeight: number;               // 0-100, how much dating affects demographics score
     };
 
-    // Quality of life sub-preferences
+    // Quality of life sub-preferences (infrastructure metrics)
     qualityOfLife: {
       // Walkability thresholds
       minWalkScore: number;        // 0-100, default 0
@@ -164,29 +165,23 @@ export interface UserPreferences {
       // Healthcare
       minPhysiciansPer100k: number;   // default 50
       
-      // Recreation & Outdoor Access (NEW)
-      recreationWeight: number;       // 0-100, overall recreation importance
-      natureImportance: number;       // Parks, trails, protected land (0-100)
-      beachImportance: number;        // Coastal access (0-100)
-      mountainImportance: number;     // Mountain/elevation access (0-100)
-      
       // Legacy (kept for backward compatibility)
       maxCrimeRate: number;
       
-      // Category weights (sum to 100)
+      // Category weights (sum to 100) - Recreation moved to Entertainment
       weights: {
         walkability: number;  // default 20
-        safety: number;       // default 25
+        safety: number;       // default 30
         airQuality: number;   // default 15
         internet: number;     // default 10
         schools: number;      // default 15
-        healthcare: number;   // default 15
-        recreation: number;   // default 0 (NEW)
+        healthcare: number;   // default 10
       };
     };
 
-    // Cultural preferences (political + religious + urban lifestyle)
-    cultural: {
+    // Values preferences (political + religious alignment)
+    // Question: "Do I belong here?" - SUBJECTIVE alignment
+    values: {
       // Political
       partisanPreference: "strong-dem" | "lean-dem" | "swing" | "lean-rep" | "strong-rep" | "neutral";
       partisanWeight: number;           // 0-100
@@ -198,17 +193,44 @@ export interface UserPreferences {
       traditionsWeight: number;         // 0-100
       preferReligiousDiversity: boolean; // High diversity = higher score
       diversityWeight: number;          // 0-100
-      
-      // Urban Lifestyle (NEW)
-      urbanLifestyleWeight: number;     // 0-100, overall urban vibe importance
+    };
+
+    // Entertainment preferences (amenities + recreation)
+    // Question: "Is it fun?" - OBJECTIVE density/variety
+    entertainment: {
+      // Urban amenities (logarithmic/critical mass scoring)
       nightlifeImportance: number;      // Bars, clubs, late night (0-100)
       artsImportance: number;           // Museums, theaters, galleries (0-100)
       diningImportance: number;         // Fine dining, cuisine diversity (0-100)
       sportsImportance: number;         // Professional sports teams (0-100)
+      
+      // Recreation (moved from QoL)
+      recreationImportance: number;     // Overall outdoor access importance (0-100)
+      natureWeight: number;             // Parks, trails, protected land (0-100)
+      beachWeight: number;              // Coastal access (0-100)
+      mountainWeight: number;           // Mountain/elevation access (0-100)
+    };
+
+    // Legacy cultural preferences (kept for backward compatibility / migration)
+    /** @deprecated Use values and entertainment instead */
+    cultural?: {
+      partisanPreference: "strong-dem" | "lean-dem" | "swing" | "lean-rep" | "strong-rep" | "neutral";
+      partisanWeight: number;
+      preferHighTurnout: boolean;
+      religiousTraditions: string[];
+      minTraditionPresence: number;
+      traditionsWeight: number;
+      preferReligiousDiversity: boolean;
+      diversityWeight: number;
+      urbanLifestyleWeight: number;
+      nightlifeImportance: number;
+      artsImportance: number;
+      diningImportance: number;
+      sportsImportance: number;
     };
 
     // Legacy political preferences (kept for migration)
-    /** @deprecated Use cultural instead */
+    /** @deprecated Use values instead */
     political?: {
       preferredLeaning: "blue" | "red" | "neutral";
       strengthOfPreference: number;
@@ -223,7 +245,8 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     costOfLiving: 50,
     demographics: 50,
     qualityOfLife: 50,
-    cultural: 0,  // Off by default (sensitive topic)
+    values: 0,        // Off by default (sensitive topic)
+    entertainment: 50, // On by default
   },
   filters: {},
   advanced: {
@@ -299,23 +322,17 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       minProviders: 2,
       maxStudentTeacherRatio: 20,
       minPhysiciansPer100k: 50,
-      // Recreation preferences (NEW)
-      recreationWeight: 0,        // Off by default
-      natureImportance: 50,       // Balanced when enabled
-      beachImportance: 50,
-      mountainImportance: 50,
       maxCrimeRate: 1000, // Legacy
       weights: {
         walkability: 20,
-        safety: 25,
+        safety: 30,
         airQuality: 15,
         internet: 10,
         schools: 15,
-        healthcare: 15,
-        recreation: 0,            // Off by default (NEW)
+        healthcare: 10,
       },
     },
-    cultural: {
+    values: {
       partisanPreference: "neutral",
       partisanWeight: 0,
       preferHighTurnout: false,
@@ -324,12 +341,16 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       traditionsWeight: 0,
       preferReligiousDiversity: false,
       diversityWeight: 0,
-      // Urban Lifestyle preferences (NEW)
-      urbanLifestyleWeight: 0,    // Off by default
+    },
+    entertainment: {
       nightlifeImportance: 50,    // Balanced when enabled
       artsImportance: 50,
       diningImportance: 50,
-      sportsImportance: 50,       // Balanced when enabled
+      sportsImportance: 50,
+      recreationImportance: 50,   // Balanced when enabled
+      natureWeight: 50,
+      beachWeight: 50,
+      mountainWeight: 50,
     },
   },
 };
@@ -345,8 +366,10 @@ export const TOOLTIPS: Record<string, string> = {
     "How heavily to weight population and diversity factors. Higher = demographics matter more.",
   "weights.qualityOfLife":
     "How heavily to weight quality of life factors (walkability, transit, crime, pollution). Higher = QoL matters more.",
-  "weights.cultural":
-    "How heavily to weight cultural factors (political lean, religious communities). Set to 0 to ignore. Configure specific preferences in Advanced > Cultural Preferences.",
+  "weights.values":
+    "How heavily to weight value alignment (political lean, religious communities). Set to 0 to ignore. Configure specific preferences in Advanced > Values.",
+  "weights.entertainment":
+    "How heavily to weight entertainment and recreation (nightlife, arts, dining, sports, outdoor access). Set to 0 to ignore. Configure in Advanced > Entertainment.",
 
   // Climate advanced (NOAA-based)
   "advanced.climate.weightComfortDays":
@@ -494,51 +517,47 @@ export const TOOLTIPS: Record<string, string> = {
   "advanced.qualityOfLife.weights.healthcare":
     "Weight for healthcare access in QoL calculation.",
 
-  // Cultural advanced - Political
-  "advanced.cultural.partisanPreference":
+  // Values advanced - Political
+  "advanced.values.partisanPreference":
     "Prefer cities that lean Democratic, Republican, or swing/competitive. 'Neutral' ignores political lean entirely.",
-  "advanced.cultural.partisanWeight":
+  "advanced.values.partisanWeight":
     "How strongly to weight political alignment (0 = ignore, 100 = very important).",
-  "advanced.cultural.preferHighTurnout":
+  "advanced.values.preferHighTurnout":
     "Prefer cities with high voter turnout (>65%). Often correlates with civic engagement and community activism.",
   
-  // Cultural advanced - Religious
-  "advanced.cultural.religiousTraditions":
+  // Values advanced - Religious
+  "advanced.values.religiousTraditions":
     "Select religious traditions you want to find community with. Cities with higher presence score better.",
-  "advanced.cultural.minTraditionPresence":
+  "advanced.values.minTraditionPresence":
     "Minimum adherents per 1,000 residents. 50 = small community, 150 = moderate, 300+ = strong presence. National avg Catholic: 205, Evangelical: 256.",
-  "advanced.cultural.traditionsWeight":
+  "advanced.values.traditionsWeight":
     "How important is finding your religious community (0 = ignore, 100 = very important).",
-  "advanced.cultural.preferReligiousDiversity":
+  "advanced.values.preferReligiousDiversity":
     "Prefer cities with diverse religious landscape vs. dominated by one tradition.",
-  "advanced.cultural.diversityWeight":
+  "advanced.values.diversityWeight":
     "How important is religious diversity (0 = ignore, 100 = very important).",
 
-  // Cultural advanced - Urban Lifestyle (NEW)
-  "advanced.cultural.urbanLifestyleWeight":
-    "How important is urban entertainment and nightlife (0 = ignore, 100 = very important).",
-  "advanced.cultural.nightlifeImportance":
+  // Entertainment advanced - Urban Amenities
+  "advanced.entertainment.nightlifeImportance":
     "How important are bars, clubs, and late-night venues? NYC has ~1,500+ bars, smaller cities have 50-100.",
-  "advanced.cultural.artsImportance":
+  "advanced.entertainment.artsImportance":
     "How important are museums, theaters, and galleries? DC has 70+ museums, most cities have 10-20.",
-  "advanced.cultural.diningImportance":
+  "advanced.entertainment.diningImportance":
     "How important is the dining scene? Fine dining, cuisine diversity, craft breweries.",
-  "advanced.cultural.sportsImportance":
+  "advanced.entertainment.sportsImportance":
     "How important are professional sports teams (NFL, NBA)? NYC/LA have 4+ teams, many cities have 1-2, some have none.",
 
-  // Quality of Life - Recreation (NEW)
-  "advanced.qualityOfLife.recreationWeight":
+  // Entertainment advanced - Recreation
+  "advanced.entertainment.recreationImportance":
     "How important is outdoor recreation access (0 = ignore, 100 = very important).",
-  "advanced.qualityOfLife.natureImportance":
+  "advanced.entertainment.natureWeight":
     "How important are parks, hiking trails, and protected lands? Denver has 300+ miles of trails nearby.",
-  "advanced.qualityOfLife.beachImportance":
-    "How important is beach/coastal access? Only ~30% of US cities are within 15 miles of coastline.",
-  "advanced.qualityOfLife.mountainImportance":
-    "How important is mountain access? Salt Lake has 4,000ft elevation gain within 30 miles; Dallas has <200ft.",
-  "advanced.qualityOfLife.weights.recreation":
-    "Weight for recreation/outdoor access in QoL calculation.",
+  "advanced.entertainment.beachWeight":
+    "How important is coastal/beach access? Cities within 15mi of coast score highest.",
+  "advanced.entertainment.mountainWeight":
+    "How important is mountain access for hiking/skiing? Salt Lake, Denver have 4000ft+ elevation nearby.",
 
-  // Privacy note for cultural preferences
-  "advanced.cultural.privacyNote":
+  // Privacy note for values preferences
+  "advanced.values.privacyNote":
     "Political and religious preferences are stored locally in your browser only and never sent to our servers.",
 };

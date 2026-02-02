@@ -21,7 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-type SortField = "rank" | "city" | "climate" | "cost" | "demographics" | "qol" | "cultural" | "total";
+type SortField = "rank" | "city" | "climate" | "cost" | "demographics" | "qol" | "values" | "entertainment" | "total";
 type SortDirection = "asc" | "desc";
 
 interface RankingTableProps {
@@ -94,8 +94,11 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
         case "qol":
           comparison = b.qualityOfLifeScore - a.qualityOfLifeScore;
           break;
-        case "cultural":
-          comparison = b.culturalScore - a.culturalScore;
+        case "values":
+          comparison = b.valuesScore - a.valuesScore;
+          break;
+        case "entertainment":
+          comparison = b.entertainmentScore - a.entertainmentScore;
           break;
       }
       
@@ -155,9 +158,10 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
             </TableHead>
             <SortableHeader field="climate">Climate</SortableHeader>
             <SortableHeader field="cost">Cost</SortableHeader>
-            <SortableHeader field="demographics">Demographics</SortableHeader>
+            <SortableHeader field="demographics">Demo</SortableHeader>
             <SortableHeader field="qol">QoL</SortableHeader>
-            <SortableHeader field="cultural">Cultural</SortableHeader>
+            <SortableHeader field="entertainment">Ent</SortableHeader>
+            <SortableHeader field="values">Values</SortableHeader>
             <SortableHeader field="total">Total</SortableHeader>
             <TableHead className="w-16 text-right text-xs">Details</TableHead>
           </TableRow>
@@ -194,7 +198,10 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
                 <ScoreCell score={city.qualityOfLifeScore} category="quality of life" />
               </TableCell>
               <TableCell className="text-right">
-                <ScoreCell score={city.culturalScore} category="cultural fit" />
+                <ScoreCell score={city.entertainmentScore} category="entertainment" />
+              </TableCell>
+              <TableCell className="text-right">
+                <ScoreCell score={city.valuesScore} category="values" />
               </TableCell>
               <TableCell className="text-right font-bold">
                 <ScoreCell score={city.totalScore} category="overall" />
@@ -215,7 +222,7 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
             <>
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={10}
                   className="text-center text-muted-foreground bg-muted/30 py-2"
                 >
                   Excluded ({excludedCities.length} cities)
@@ -239,24 +246,13 @@ export function RankingTable({ rankings, onCityClick, selectedCityId }: RankingT
                       {city.exclusionReason}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    —
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    —
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    —
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    —
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    —
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    —
-                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-right text-muted-foreground">—</TableCell>
                   <TableCell className="text-right">
                     <Link
                       href={`/city/${city.cityId}`}

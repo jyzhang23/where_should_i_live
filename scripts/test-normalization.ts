@@ -150,7 +150,8 @@ const climateOnlyPrefs: UserPreferences = {
     costOfLiving: 0,
     demographics: 0,
     qualityOfLife: 0,
-    cultural: 0,
+    values: 0,
+    entertainment: 0,
   },
 };
 
@@ -195,7 +196,8 @@ const demographicsOnlyPrefs: UserPreferences = {
     costOfLiving: 0,
     demographics: 100,
     qualityOfLife: 0,
-    cultural: 0,
+    values: 0,
+    entertainment: 0,
   },
   advanced: {
     ...DEFAULT_PREFERENCES.advanced,
@@ -248,7 +250,8 @@ test('25% vs 40% Asian: Difference should be <15 pts (plateau effect)', () => {
       costOfLiving: 0,
       demographics: 100,
       qualityOfLife: 0,
-      cultural: 0,
+      values: 0,
+      entertainment: 0,
     },
     advanced: {
       ...DEFAULT_PREFERENCES.advanced,
@@ -323,7 +326,8 @@ test('5% Asian (below threshold) should score lower than 25%', () => {
       costOfLiving: 0,
       demographics: 100,
       qualityOfLife: 0,
-      cultural: 0,
+      values: 0,
+      entertainment: 0,
     },
     advanced: {
       ...DEFAULT_PREFERENCES.advanced,
@@ -375,7 +379,8 @@ const qolSafetyOnlyPrefs: UserPreferences = {
     costOfLiving: 0,
     demographics: 0,
     qualityOfLife: 100,
-    cultural: 0,
+    values: 0,
+    entertainment: 0,
   },
   advanced: {
     ...DEFAULT_PREFERENCES.advanced,
@@ -388,7 +393,6 @@ const qolSafetyOnlyPrefs: UserPreferences = {
         internet: 0,
         schools: 0,
         healthcare: 0,
-        recreation: 0,
       },
     },
   },

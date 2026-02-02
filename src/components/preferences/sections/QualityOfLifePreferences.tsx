@@ -10,7 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Info, TreePine, Mountain, Waves } from "lucide-react";
+import { Info } from "lucide-react";
 
 export function QualityOfLifePreferences() {
   const { preferences, updateAdvanced, updateQoLWeight } = usePreferencesStore();
@@ -207,7 +207,7 @@ export function QualityOfLifePreferences() {
       </div>
 
       {/* Healthcare */}
-      <div className="space-y-3 pt-4 pb-4 border-b">
+      <div className="space-y-3 pt-4">
         <h4 className="text-xs font-semibold text-muted-foreground uppercase">Healthcare</h4>
         <PreferenceSlider
           label="Min Physicians per 100K"
@@ -221,81 +221,7 @@ export function QualityOfLifePreferences() {
         />
       </div>
 
-      {/* Recreation & Outdoor Access */}
-      <div className="space-y-3 pt-4">
-        <h4 className="text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2">
-          <TreePine className="h-4 w-4 text-green-600" />
-          Recreation & Outdoor Access
-        </h4>
-        <PreferenceSlider
-          label="Recreation Weight (in QoL)"
-          value={preferences.advanced.qualityOfLife.weights.recreation}
-          onChange={(v) => updateQoLWeight("recreation", v)}
-          min={0}
-          max={50}
-          tooltip={TOOLTIPS["advanced.qualityOfLife.weights.recreation"]}
-          formatValue={(v) => v === 0 ? "Off" : `${v}%`}
-        />
-        
-        {preferences.advanced.qualityOfLife.weights.recreation > 0 && (
-          <>
-            <p className="text-xs text-muted-foreground">
-              Fine-tune which outdoor activities matter most to you:
-            </p>
-            
-            <div className="space-y-3 p-3 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <TreePine className="h-4 w-4 text-green-600" />
-                Nature & Hiking
-              </div>
-              <PreferenceSlider
-                label="Importance"
-                value={preferences.advanced.qualityOfLife.natureImportance}
-                onChange={(v) => updateAdvanced("qualityOfLife", "natureImportance", v)}
-                tooltip={TOOLTIPS["advanced.qualityOfLife.natureImportance"]}
-                formatValue={(v) => v === 0 ? "Off" : `${v}%`}
-              />
-              <p className="text-xs text-muted-foreground">
-                Parks, hiking trails, protected lands. Denver: 300+ miles nearby.
-              </p>
-            </div>
-            
-            <div className="space-y-3 p-3 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Waves className="h-4 w-4 text-blue-500" />
-                Beach & Coastal Access
-              </div>
-              <PreferenceSlider
-                label="Importance"
-                value={preferences.advanced.qualityOfLife.beachImportance}
-                onChange={(v) => updateAdvanced("qualityOfLife", "beachImportance", v)}
-                tooltip={TOOLTIPS["advanced.qualityOfLife.beachImportance"]}
-                formatValue={(v) => v === 0 ? "Off" : `${v}%`}
-              />
-              <p className="text-xs text-muted-foreground">
-                ~30% of US cities within 15mi of coastline. San Diego, Miami, Seattle.
-              </p>
-            </div>
-            
-            <div className="space-y-3 p-3 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Mountain className="h-4 w-4 text-slate-600" />
-                Mountains & Skiing
-              </div>
-              <PreferenceSlider
-                label="Importance"
-                value={preferences.advanced.qualityOfLife.mountainImportance}
-                onChange={(v) => updateAdvanced("qualityOfLife", "mountainImportance", v)}
-                tooltip={TOOLTIPS["advanced.qualityOfLife.mountainImportance"]}
-                formatValue={(v) => v === 0 ? "Off" : `${v}%`}
-              />
-              <p className="text-xs text-muted-foreground">
-                Elevation prominence and ski access. Salt Lake: 4000ft+ nearby, Dallas: flat.
-              </p>
-            </div>
-          </>
-        )}
-      </div>
+      {/* Note: Recreation has moved to Entertainment category */}
     </>
   );
 }

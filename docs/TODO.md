@@ -14,6 +14,15 @@
   - Added UI toggle in Demographics preferences with gender/age range selectors
   - Score breakdown dialog shows individual dating factor contributions
 
+- [x] ~~Category overhaul~~ ✅ DONE (2026-02-02)
+  - Split "Cultural" category into "Values" and "Entertainment" 
+  - Now 6 top-level categories: Climate, Cost, Demographics, QoL, Values, Entertainment
+  - Values: Political alignment (Gaussian decay), Religious presence/diversity
+  - Entertainment: Nightlife, Arts, Dining, Sports, Recreation (moved from QoL)
+  - Recreation (parks, trails, beach, mountains) now in Entertainment
+  - Added migration logic for existing users' saved preferences
+  - Updated all UI components (preferences, radar chart, score cards, comparison, etc.)
+
 ## Bugs
 
 ## Maintenance

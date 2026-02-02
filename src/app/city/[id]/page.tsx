@@ -45,7 +45,7 @@ export default function CityPage({ params }: CityPageProps) {
   
   // Score breakdown dialog
   const [breakdownCategory, setBreakdownCategory] = useState<
-    "climate" | "cost" | "demographics" | "qol" | "cultural" | null
+    "climate" | "cost" | "demographics" | "qol" | "values" | "entertainment" | null
   >(null);
 
   // Calculate all rankings (needed for percentile-based scoring and comparison panel)
@@ -128,7 +128,7 @@ export default function CityPage({ params }: CityPageProps) {
 
       {/* Score Overview */}
       {isHydrated && cityScore && (
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
           <Card className="col-span-2 md:col-span-1 bg-primary/5 border-primary/20">
             <CardContent className="pt-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-1">
@@ -148,7 +148,8 @@ export default function CityPage({ params }: CityPageProps) {
           <ScoreCard label="Cost" score={cityScore.costScore} onClick={() => setBreakdownCategory("cost")} />
           <ScoreCard label="Demographics" score={cityScore.demographicsScore} onClick={() => setBreakdownCategory("demographics")} />
           <ScoreCard label="Quality of Life" score={cityScore.qualityOfLifeScore} onClick={() => setBreakdownCategory("qol")} />
-          <ScoreCard label="Cultural" score={cityScore.culturalScore} onClick={() => setBreakdownCategory("cultural")} />
+          <ScoreCard label="Entertainment" score={cityScore.entertainmentScore} onClick={() => setBreakdownCategory("entertainment")} />
+          <ScoreCard label="Values" score={cityScore.valuesScore} onClick={() => setBreakdownCategory("values")} />
         </div>
       )}
 
@@ -208,7 +209,8 @@ export default function CityPage({ params }: CityPageProps) {
             breakdownCategory === "cost" ? cityScore.costScore :
             breakdownCategory === "demographics" ? cityScore.demographicsScore :
             breakdownCategory === "qol" ? cityScore.qualityOfLifeScore :
-            cityScore.culturalScore
+            breakdownCategory === "values" ? cityScore.valuesScore :
+            cityScore.entertainmentScore
           }
           isOpen={true}
           onClose={() => setBreakdownCategory(null)}

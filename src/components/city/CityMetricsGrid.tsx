@@ -36,6 +36,8 @@ import {
   GraduationCap,
   Stethoscope,
   Church,
+  HeartHandshake,
+  PartyPopper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -1270,7 +1272,7 @@ Lower is more affordable`}
       <Card className="md:col-span-2">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Activity className="h-4 w-4 text-rose-500" />
+            <HeartHandshake className="h-4 w-4 text-rose-500" />
             Quality of Life
           </CardTitle>
         </CardHeader>
@@ -1484,51 +1486,6 @@ Lower is more affordable`}
                 )}
               </div>
 
-              {/* Recreation & Outdoor Access Card (NEW) */}
-              <div className="p-3 rounded-lg border bg-muted/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Leaf className="h-4 w-4 text-green-600" />
-                  <span className="font-medium text-sm">Recreation</span>
-                </div>
-                {metrics.qol.recreation ? (
-                  <div className="space-y-1">
-                    {metrics.qol.recreation.nature && (
-                      <>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Trail Miles</span>
-                          <span className={getScoreColor(metrics.qol.recreation.nature.trailMilesWithin10Mi)}>
-                            {metrics.qol.recreation.nature.trailMilesWithin10Mi ?? "N/A"} mi
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Park Access</span>
-                          <span>{metrics.qol.recreation.nature.parkAcresPer1K ?? "N/A"}/1K</span>
-                        </div>
-                      </>
-                    )}
-                    {metrics.qol.recreation.geography && (
-                      <>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Coastal</span>
-                          <span className={metrics.qol.recreation.geography.coastlineWithin15Mi ? "text-blue-500 font-medium" : ""}>
-                            {metrics.qol.recreation.geography.coastlineWithin15Mi ? "Yes" : 
-                              metrics.qol.recreation.geography.coastlineDistanceMi ? 
-                              `${metrics.qol.recreation.geography.coastlineDistanceMi}mi` : "No"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Mountains</span>
-                          <span className={getScoreColor(metrics.qol.recreation.geography.maxElevationDelta)}>
-                            {metrics.qol.recreation.geography.maxElevationDelta ?? "N/A"} ft
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">Pull Recreation data</p>
-                )}
-              </div>
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground text-sm">
@@ -1538,12 +1495,223 @@ Lower is more affordable`}
         </CardContent>
       </Card>
 
-      {/* Cultural Profile Section - Enhanced */}
+      {/* Entertainment & Recreation Section */}
+      <Card className="md:col-span-2">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <PartyPopper className="h-4 w-4 text-amber-500" />
+            Entertainment & Recreation
+            {metrics.cultural?.urbanLifestyle?.dataYear && (
+              <span className="text-xs font-normal text-muted-foreground ml-auto">
+                Source: OpenStreetMap {metrics.cultural.urbanLifestyle.dataYear}
+              </span>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {(metrics.cultural?.urbanLifestyle || metrics.nflTeams || metrics.nbaTeams || 
+            metrics.mlbTeams || metrics.nhlTeams || metrics.mlsTeams || metrics.qol?.recreation) ? (
+            <>
+              {/* Urban Lifestyle Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {/* Nightlife */}
+                <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">🍺</span>
+                    <span className="font-medium text-sm">Nightlife</span>
+                  </div>
+                  {metrics.cultural?.urbanLifestyle?.nightlife ? (
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Bars/10K</span>
+                        <span className="font-medium">
+                          {metrics.cultural.urbanLifestyle.nightlife.barsAndClubsPer10K?.toFixed(1) ?? "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Total Venues</span>
+                        <span>{metrics.cultural.urbanLifestyle.nightlife.totalVenues ?? "N/A"}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No data</p>
+                  )}
+                </div>
+
+                {/* Arts */}
+                <div className="p-3 rounded-lg bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">🎭</span>
+                    <span className="font-medium text-sm">Arts & Culture</span>
+                  </div>
+                  {metrics.cultural?.urbanLifestyle?.arts ? (
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Museums</span>
+                        <span className="font-medium">
+                          {metrics.cultural.urbanLifestyle.arts.museums ?? "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Theaters</span>
+                        <span>{metrics.cultural.urbanLifestyle.arts.theaters ?? "N/A"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Galleries</span>
+                        <span>{metrics.cultural.urbanLifestyle.arts.artGalleries ?? "N/A"}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No data</p>
+                  )}
+                </div>
+
+                {/* Dining */}
+                <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">🍽️</span>
+                    <span className="font-medium text-sm">Dining Scene</span>
+                  </div>
+                  {metrics.cultural?.urbanLifestyle?.dining ? (
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Rest./10K</span>
+                        <span className="font-medium">
+                          {metrics.cultural.urbanLifestyle.dining.restaurantsPer10K?.toFixed(1) ?? "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Cuisines</span>
+                        <span>{metrics.cultural.urbanLifestyle.dining.cuisineDiversity ?? "N/A"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Breweries</span>
+                        <span>{metrics.cultural.urbanLifestyle.dining.breweries ?? "N/A"}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No data</p>
+                  )}
+                </div>
+
+                {/* Sports Teams */}
+                <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">🏈</span>
+                    <span className="font-medium text-sm">Pro Sports</span>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    {metrics.nflTeams && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">NFL</span>
+                        <span className="font-medium">{metrics.nflTeams}</span>
+                      </div>
+                    )}
+                    {metrics.nbaTeams && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">NBA</span>
+                        <span className="font-medium">{metrics.nbaTeams}</span>
+                      </div>
+                    )}
+                    {metrics.mlbTeams && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">MLB</span>
+                        <span className="font-medium">{metrics.mlbTeams}</span>
+                      </div>
+                    )}
+                    {metrics.nhlTeams && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">NHL</span>
+                        <span className="font-medium">{metrics.nhlTeams}</span>
+                      </div>
+                    )}
+                    {metrics.mlsTeams && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">MLS</span>
+                        <span className="font-medium">{metrics.mlsTeams}</span>
+                      </div>
+                    )}
+                    {(() => {
+                      const countTeams = (t: string | null) => t?.split(",").filter(s => s.trim()).length || 0;
+                      const total = countTeams(metrics.nflTeams) + countTeams(metrics.nbaTeams) + 
+                                    countTeams(metrics.mlbTeams) + countTeams(metrics.nhlTeams) + 
+                                    countTeams(metrics.mlsTeams);
+                      if (total === 0) return <p className="text-muted-foreground">No teams</p>;
+                      return (
+                        <div className="flex justify-between pt-1 border-t border-green-200 dark:border-green-800 mt-1">
+                          <span className="text-muted-foreground">Total</span>
+                          <span className="font-semibold">{total} teams</span>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Recreation & Outdoors */}
+              {metrics.qol?.recreation && (
+                <div className="pt-4 border-t">
+                  <h4 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground mb-4">
+                    <Leaf className="h-4 w-4 text-green-600" />
+                    RECREATION & OUTDOORS
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {metrics.qol.recreation.nature && (
+                      <>
+                        <div className="p-3 rounded-lg bg-muted/30 border">
+                          <div className="text-sm text-muted-foreground mb-1">Trail Miles (10mi)</div>
+                          <div className="text-xl font-semibold">
+                            {metrics.qol.recreation.nature.trailMilesWithin10Mi ?? "N/A"}
+                          </div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/30 border">
+                          <div className="text-sm text-muted-foreground mb-1">Park Acres/1K</div>
+                          <div className="text-xl font-semibold">
+                            {metrics.qol.recreation.nature.parkAcresPer1K ?? "N/A"}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {metrics.qol.recreation.geography && (
+                      <>
+                        <div className="p-3 rounded-lg bg-muted/30 border">
+                          <div className="text-sm text-muted-foreground mb-1">Coastal Access</div>
+                          <div className={cn(
+                            "text-xl font-semibold",
+                            metrics.qol.recreation.geography.coastlineWithin15Mi && "text-blue-500"
+                          )}>
+                            {metrics.qol.recreation.geography.coastlineWithin15Mi ? "Yes" : 
+                              metrics.qol.recreation.geography.coastlineDistanceMi ? 
+                              `${metrics.qol.recreation.geography.coastlineDistanceMi}mi` : "No"}
+                          </div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/30 border">
+                          <div className="text-sm text-muted-foreground mb-1">Elevation Range</div>
+                          <div className="text-xl font-semibold">
+                            {metrics.qol.recreation.geography.maxElevationDelta ?? "N/A"} ft
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="mb-2">Entertainment data not yet loaded.</p>
+              <p className="text-xs">Pull Urban Lifestyle and Recreation data from the Admin panel.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Values & Alignment Section */}
       <Card className="md:col-span-2">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Church className="h-4 w-4 text-purple-500" />
-            Cultural Profile
+            Values & Alignment
             {metrics.cultural?.political?.dataYear && (
               <span className="text-xs font-normal text-muted-foreground ml-auto">
                 Political: {metrics.cultural.political.dataYear} • Religious: {metrics.cultural?.religious?.dataYear || "N/A"}
@@ -1553,7 +1721,6 @@ Lower is more affordable`}
         </CardHeader>
         <CardContent>
           {metrics.cultural?.political || metrics.cultural?.religious ? (
-            <>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Column - Political */}
               <div className="space-y-4">
@@ -1783,159 +1950,9 @@ Lower is more affordable`}
                 )}
               </div>
             </div>
-
-            {/* Urban Lifestyle & Entertainment Section - Full Width Below */}
-            {(metrics.cultural?.urbanLifestyle || metrics.nflTeams || metrics.nbaTeams || 
-              metrics.mlbTeams || metrics.nhlTeams || metrics.mlsTeams) && (
-              <div className="pt-4 border-t">
-                <h4 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground mb-4">
-                  🍷 URBAN LIFESTYLE & ENTERTAINMENT
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {/* Nightlife */}
-                  <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">🍺</span>
-                      <span className="font-medium text-sm">Nightlife</span>
-                    </div>
-                    {metrics.cultural?.urbanLifestyle?.nightlife ? (
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Bars/10K</span>
-                          <span className="font-medium">
-                            {metrics.cultural.urbanLifestyle.nightlife.barsAndClubsPer10K?.toFixed(1) ?? "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Total Venues</span>
-                          <span>{metrics.cultural.urbanLifestyle.nightlife.totalVenues ?? "N/A"}</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">No data</p>
-                    )}
-                  </div>
-
-                  {/* Arts */}
-                  <div className="p-3 rounded-lg bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">🎭</span>
-                      <span className="font-medium text-sm">Arts & Culture</span>
-                    </div>
-                    {metrics.cultural?.urbanLifestyle?.arts ? (
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Museums</span>
-                          <span className="font-medium">
-                            {metrics.cultural.urbanLifestyle.arts.museums ?? "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Theaters</span>
-                          <span>{metrics.cultural.urbanLifestyle.arts.theaters ?? "N/A"}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Galleries</span>
-                          <span>{metrics.cultural.urbanLifestyle.arts.artGalleries ?? "N/A"}</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">No data</p>
-                    )}
-                  </div>
-
-                  {/* Dining */}
-                  <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">🍽️</span>
-                      <span className="font-medium text-sm">Dining Scene</span>
-                    </div>
-                    {metrics.cultural?.urbanLifestyle?.dining ? (
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Rest./10K</span>
-                          <span className="font-medium">
-                            {metrics.cultural.urbanLifestyle.dining.restaurantsPer10K?.toFixed(1) ?? "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Cuisines</span>
-                          <span>{metrics.cultural.urbanLifestyle.dining.cuisineDiversity ?? "N/A"}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Breweries</span>
-                          <span>{metrics.cultural.urbanLifestyle.dining.breweries ?? "N/A"}</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">No data</p>
-                    )}
-                  </div>
-
-                  {/* Sports Teams */}
-                  <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">🏈</span>
-                      <span className="font-medium text-sm">Pro Sports</span>
-                    </div>
-                    <div className="space-y-1 text-sm">
-                      {metrics.nflTeams && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">NFL</span>
-                          <span className="font-medium">{metrics.nflTeams}</span>
-                        </div>
-                      )}
-                      {metrics.nbaTeams && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">NBA</span>
-                          <span className="font-medium">{metrics.nbaTeams}</span>
-                        </div>
-                      )}
-                      {metrics.mlbTeams && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">MLB</span>
-                          <span className="font-medium">{metrics.mlbTeams}</span>
-                        </div>
-                      )}
-                      {metrics.nhlTeams && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">NHL</span>
-                          <span className="font-medium">{metrics.nhlTeams}</span>
-                        </div>
-                      )}
-                      {metrics.mlsTeams && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">MLS</span>
-                          <span className="font-medium">{metrics.mlsTeams}</span>
-                        </div>
-                      )}
-                      {(() => {
-                        const countTeams = (t: string | null) => t?.split(",").filter(s => s.trim()).length || 0;
-                        const total = countTeams(metrics.nflTeams) + countTeams(metrics.nbaTeams) + 
-                                      countTeams(metrics.mlbTeams) + countTeams(metrics.nhlTeams) + 
-                                      countTeams(metrics.mlsTeams);
-                        if (total === 0) return <p className="text-muted-foreground">No teams</p>;
-                        return (
-                          <div className="flex justify-between pt-1 border-t border-green-200 dark:border-green-800 mt-1">
-                            <span className="text-muted-foreground">Total</span>
-                            <span className="font-semibold">{total} teams</span>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                </div>
-                {metrics.cultural?.urbanLifestyle?.dataYear && (
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Source: OpenStreetMap {metrics.cultural.urbanLifestyle.dataYear}
-                  </div>
-                )}
-              </div>
-            )}
-          </>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              <p className="mb-2">Cultural data not yet loaded.</p>
+              <p className="mb-2">Values data not yet loaded.</p>
               <p className="text-xs">Pull Cultural data from the Admin panel to see political and religious demographics.</p>
             </div>
           )}

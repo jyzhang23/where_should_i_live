@@ -9,7 +9,8 @@
  * - cost.ts: Cost of living scoring using BEA data
  * - demographics.ts: Demographics scoring using Census data
  * - quality-of-life.ts: QoL scoring (walkability, safety, etc.)
- * - cultural.ts: Cultural scoring (political, religious, urban lifestyle)
+ * - values.ts: Values scoring (political alignment, religious presence)
+ * - entertainment.ts: Entertainment scoring (nightlife, arts, dining, sports, recreation)
  * - display.ts: UI display utilities (grades, colors, labels)
  */
 
@@ -22,7 +23,8 @@ import { calculateClimateScore } from "./climate";
 import { calculateCostScore } from "./cost";
 import { calculateDemographicsScore } from "./demographics";
 import { calculateQualityOfLifeScore } from "./quality-of-life";
-import { calculateCulturalScore } from "./cultural";
+import { calculateValuesScore } from "./values";
+import { calculateEntertainmentScore } from "./entertainment";
 
 // Import types and cache functions
 import { computeQoLPercentiles, setQoLPercentilesCache } from "./types";
@@ -36,11 +38,20 @@ export { calculateClimateScore } from "./climate";
 export { calculateCostScore } from "./cost";
 export { calculateDemographicsScore } from "./demographics";
 export { calculateQualityOfLifeScore } from "./quality-of-life";
-export { calculateCulturalScore } from "./cultural";
+export { calculateValuesScore } from "./values";
+export { calculateEntertainmentScore } from "./entertainment";
 
 /**
  * Calculate scores for all cities based on user preferences
  * This runs entirely client-side for instant feedback
+ * 
+ * Uses 6 categories:
+ * 1. Climate - weather preferences (NOAA data)
+ * 2. Cost - purchasing power (BEA data)
+ * 3. Demographics - population characteristics (Census data)
+ * 4. Quality of Life - infrastructure (walkability, safety, schools, etc.)
+ * 5. Values - alignment (political, religious)
+ * 6. Entertainment - amenities (nightlife, arts, dining, sports, recreation)
  */
 export function calculateScores(
   cities: CityWithMetrics[],
@@ -60,16 +71,17 @@ export function calculateScores(
       continue;
     }
 
-    // Calculate category scores (0-100 each)
+    // Calculate category scores (0-100 each) - 6 categories
     const climateScore = calculateClimateScore(city, preferences);
     const costScore = calculateCostScore(city, preferences);
     const demographicsScore = calculateDemographicsScore(city, preferences);
     const qualityOfLifeScore = calculateQualityOfLifeScore(city, preferences);
-    const culturalScore = calculateCulturalScore(city, preferences);
+    const valuesScore = calculateValuesScore(city, preferences);
+    const entertainmentScore = calculateEntertainmentScore(city, preferences);
 
-    // Apply category weights
-    const { climate, costOfLiving, demographics, qualityOfLife, cultural } = preferences.weights;
-    const totalWeight = climate + costOfLiving + demographics + qualityOfLife + cultural;
+    // Apply category weights (6 weights)
+    const { climate, costOfLiving, demographics, qualityOfLife, values, entertainment } = preferences.weights;
+    const totalWeight = climate + costOfLiving + demographics + qualityOfLife + values + entertainment;
 
     const totalScore =
       totalWeight > 0
@@ -77,7 +89,8 @@ export function calculateScores(
             costScore * costOfLiving +
             demographicsScore * demographics +
             qualityOfLifeScore * qualityOfLife +
-            culturalScore * cultural) /
+            valuesScore * values +
+            entertainmentScore * entertainment) /
           totalWeight
         : 0;
 
@@ -89,7 +102,8 @@ export function calculateScores(
       costScore,
       demographicsScore,
       qualityOfLifeScore,
-      culturalScore,
+      valuesScore,
+      entertainmentScore,
       totalScore,
       excluded: false,
     });

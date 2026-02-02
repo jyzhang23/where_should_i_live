@@ -17,7 +17,7 @@ import { AlertTriangle, CheckCircle, Info, TrendingDown, TrendingUp } from "luci
 interface ScoreBreakdownProps {
   city: CityWithMetrics;
   preferences: UserPreferences;
-  category: "climate" | "cost" | "demographics" | "qol" | "cultural";
+  category: "climate" | "cost" | "demographics" | "qol" | "values" | "entertainment";
   score: number;
   isOpen: boolean;
   onClose: () => void;
@@ -52,8 +52,10 @@ export function ScoreBreakdown({
         return analyzeCost(city, preferences);
       case "demographics":
         return analyzeDemographics(city, preferences);
-      case "cultural":
-        return analyzeCultural(city, preferences);
+      case "values":
+        return analyzeValues(city, preferences);
+      case "entertainment":
+        return analyzeEntertainment(city, preferences);
       default:
         return { factors: [], summary: "" };
     }
@@ -64,7 +66,8 @@ export function ScoreBreakdown({
     cost: "Cost of Living",
     demographics: "Demographics",
     qol: "Quality of Life",
-    cultural: "Cultural",
+    values: "Values",
+    entertainment: "Entertainment",
   };
 
   const problems = analysis.factors.filter((f) => f.status === "bad");
@@ -481,45 +484,7 @@ function analyzeQoL(
     });
   }
 
-  // Recreation (if enabled)
-  if (weights.recreation > 0) {
-    const rec = qol?.recreation;
-    const hasCoast = rec?.geography?.coastlineWithin15Mi ?? false;
-    const trails = rec?.nature?.trailMilesWithin10Mi ?? null;
-    const elevation = rec?.geography?.maxElevationDelta ?? null;
-
-    let status: FactorAnalysis["status"] = "neutral";
-    let explanation = "";
-    let score = 50;
-
-    const features: string[] = [];
-    if (hasCoast) features.push("coastal access");
-    if (trails && trails > 100) features.push(`${trails}mi of trails`);
-    if (elevation && elevation > 2000) features.push(`${elevation}ft elevation range`);
-
-    if (features.length >= 2) {
-      status = "good";
-      explanation = `Great outdoor access: ${features.join(", ")}.`;
-      score = 70 + features.length * 10;
-    } else if (features.length === 1) {
-      explanation = `Has ${features[0]}, but limited other outdoor options.`;
-      score = 60;
-    } else {
-      status = "warning";
-      explanation = "Limited outdoor recreation options nearby.";
-      score = 30;
-    }
-
-    factors.push({
-      name: "Recreation/Outdoors",
-      weight: Math.round((weights.recreation / totalWeight) * 100),
-      value: trails,
-      unit: "mi trails",
-      score: Math.min(100, Math.max(0, score)),
-      status,
-      explanation,
-    });
-  }
+  // Note: Recreation has been moved to Entertainment category
 
   // Generate summary
   const badFactors = factors.filter((f) => f.status === "bad");
@@ -1044,13 +1009,21 @@ function analyzeDemographics(
   return { factors, summary };
 }
 
-function analyzeCultural(
+function analyzeValues(
   city: CityWithMetrics,
   preferences: UserPreferences
 ): { factors: FactorAnalysis[]; summary: string } {
   const factors: FactorAnalysis[] = [];
   const cultural = city.metrics?.cultural;
-  const prefs = preferences.advanced.cultural;
+  const prefs = preferences.advanced?.values;
+
+  // If no values preferences, return minimal analysis
+  if (!prefs) {
+    return {
+      factors: [],
+      summary: "Values preferences not configured.",
+    };
+  }
 
   // Political Alignment
   if (cultural?.political?.partisanIndex != null) {
@@ -1078,7 +1051,7 @@ function analyzeCultural(
 
     factors.push({
       name: "Political Alignment",
-      weight: prefs.partisanWeight > 0 ? 30 : 0,
+      weight: prefs.partisanWeight > 0 ? 50 : 0,
       value: demPct?.toFixed(0) || null,
       unit: "% Dem",
       score: prefAlign === "neutral" ? 50 : (status === "good" ? 80 : 30),
@@ -1087,39 +1060,75 @@ function analyzeCultural(
     });
   }
 
-  // Urban Lifestyle
-  if (cultural?.urbanLifestyle) {
-    const ul = cultural.urbanLifestyle;
-    const bars = ul.nightlife?.barsAndClubsPer10K ?? null;
-    const museums = ul.arts?.museums ?? null;
-    const restaurants = ul.dining?.restaurantsPer10K ?? null;
-
+  // Religious traditions
+  if (cultural?.religious && prefs.religiousTraditions.length > 0) {
+    const religious = cultural.religious;
     let score = 50;
     let status: FactorAnalysis["status"] = "neutral";
-    const features: string[] = [];
+    
+    const foundTraditions: string[] = [];
+    const traditionMap: Record<string, number | null> = {
+      "catholic": religious.catholic,
+      "evangelical": religious.evangelicalProtestant,
+      "mainline": religious.mainlineProtestant,
+      "jewish": religious.jewish,
+      "muslim": religious.muslim,
+      "unaffiliated": religious.unaffiliated,
+    };
+    
+    for (const tradition of prefs.religiousTraditions) {
+      const presence = traditionMap[tradition];
+      if (presence && presence >= prefs.minTraditionPresence) {
+        foundTraditions.push(tradition);
+      }
+    }
 
-    if (bars && bars > 3) features.push(`${bars.toFixed(1)} bars/10K`);
-    if (museums && museums > 10) features.push(`${museums} museums`);
-    if (restaurants && restaurants > 50) features.push(`${restaurants.toFixed(0)} restaurants/10K`);
-
-    if (features.length >= 2) {
+    if (foundTraditions.length === prefs.religiousTraditions.length) {
       status = "good";
-      score = 75;
-    } else if (features.length === 0 && (bars || museums || restaurants)) {
+      score = 85;
+    } else if (foundTraditions.length > 0) {
+      score = 60;
+    } else {
       status = "warning";
-      score = 35;
+      score = 30;
     }
 
     factors.push({
-      name: "Urban Lifestyle",
-      weight: prefs.urbanLifestyleWeight > 0 ? 40 : 0,
-      value: museums,
-      unit: " museums",
+      name: "Religious Presence",
+      weight: prefs.traditionsWeight > 0 ? 30 : 0,
+      value: foundTraditions.length,
+      unit: ` of ${prefs.religiousTraditions.length}`,
       score,
       status,
-      explanation: features.length > 0
-        ? `Urban amenities: ${features.join(", ")}.`
-        : "Limited urban entertainment options.",
+      explanation: foundTraditions.length > 0
+        ? `Found ${foundTraditions.join(", ")} communities above threshold.`
+        : "Selected religious traditions have limited presence.",
+    });
+  }
+
+  // Religious diversity
+  if (prefs.preferReligiousDiversity && cultural?.religious?.diversityIndex != null) {
+    const diversity = cultural.religious.diversityIndex;
+    let status: FactorAnalysis["status"] = "neutral";
+    
+    if (diversity >= 70) {
+      status = "good";
+    } else if (diversity < 40) {
+      status = "warning";
+    }
+
+    factors.push({
+      name: "Religious Diversity",
+      weight: prefs.diversityWeight > 0 ? 20 : 0,
+      value: diversity,
+      unit: "/100",
+      score: diversity,
+      status,
+      explanation: diversity >= 70
+        ? "High religious diversity - many traditions present."
+        : diversity < 40
+        ? "Low religious diversity - one tradition dominates."
+        : "Moderate religious diversity.",
     });
   }
 
@@ -1128,13 +1137,219 @@ function analyzeCultural(
   
   let summary = "";
   if (badFactors.length > 0) {
-    summary = `Cultural mismatches: ${badFactors.map((f) => f.name.toLowerCase()).join(", ")}. `;
+    summary = `Values mismatches: ${badFactors.map((f) => f.name.toLowerCase()).join(", ")}. `;
   }
   if (goodFactors.length > 0) {
-    summary += `Cultural fits: ${goodFactors.map((f) => f.name.toLowerCase()).join(", ")}.`;
+    summary += `Values alignment: ${goodFactors.map((f) => f.name.toLowerCase()).join(", ")}.`;
   }
   if (!summary) {
-    summary = "Cultural factors are neutral for your preferences.";
+    summary = "Values factors are neutral for your preferences.";
+  }
+
+  return { factors, summary };
+}
+
+function analyzeEntertainment(
+  city: CityWithMetrics,
+  preferences: UserPreferences
+): { factors: FactorAnalysis[]; summary: string } {
+  const factors: FactorAnalysis[] = [];
+  const cultural = city.metrics?.cultural;
+  const qol = city.metrics?.qol;
+  const prefs = preferences.advanced?.entertainment;
+  const metrics = city.metrics;
+
+  // If no entertainment preferences, return minimal analysis
+  if (!prefs) {
+    return {
+      factors: [],
+      summary: "Entertainment preferences not configured.",
+    };
+  }
+
+  // Calculate total weight for percentages
+  const totalWeight = (prefs.nightlifeImportance ?? 50) + (prefs.artsImportance ?? 50) + 
+                      (prefs.diningImportance ?? 50) + (prefs.sportsImportance ?? 50) + 
+                      (prefs.recreationImportance ?? 50);
+
+  // Nightlife
+  if (prefs.nightlifeImportance > 0 && cultural?.urbanLifestyle?.nightlife) {
+    const nl = cultural.urbanLifestyle.nightlife;
+    const bars = nl.barsAndClubsPer10K;
+    
+    let score = 50;
+    let status: FactorAnalysis["status"] = "neutral";
+
+    if (bars !== null) {
+      score = Math.min(100, bars * 3);
+      if (bars >= 20) {
+        status = "good";
+      } else if (bars < 5) {
+        status = "warning";
+      }
+    }
+
+    factors.push({
+      name: "Nightlife",
+      weight: totalWeight > 0 ? Math.round((prefs.nightlifeImportance / totalWeight) * 100) : 0,
+      value: bars?.toFixed(1) || null,
+      unit: "/10K",
+      score,
+      status,
+      explanation: bars && bars >= 20
+        ? `${bars.toFixed(1)} bars/clubs per 10K - vibrant nightlife.`
+        : bars && bars < 5
+        ? `Only ${bars.toFixed(1)} bars/clubs per 10K - limited nightlife.`
+        : `${bars?.toFixed(1) || "N/A"} bars/clubs per 10K.`,
+    });
+  }
+
+  // Arts
+  if (prefs.artsImportance > 0 && cultural?.urbanLifestyle?.arts) {
+    const arts = cultural.urbanLifestyle.arts;
+    const museums = arts.museums;
+    
+    let score = 50;
+    let status: FactorAnalysis["status"] = "neutral";
+
+    if (museums !== null) {
+      score = Math.min(100, museums * 4);
+      if (museums >= 20) {
+        status = "good";
+      } else if (museums < 5) {
+        status = "warning";
+      }
+    }
+
+    factors.push({
+      name: "Arts & Culture",
+      weight: totalWeight > 0 ? Math.round((prefs.artsImportance / totalWeight) * 100) : 0,
+      value: museums,
+      unit: " museums",
+      score,
+      status,
+      explanation: museums && museums >= 20
+        ? `${museums} museums - rich cultural scene.`
+        : museums && museums < 5
+        ? `Only ${museums} museums - limited arts options.`
+        : `${museums || "N/A"} museums.`,
+    });
+  }
+
+  // Dining
+  if (prefs.diningImportance > 0 && cultural?.urbanLifestyle?.dining) {
+    const dining = cultural.urbanLifestyle.dining;
+    const restaurants = dining.restaurantsPer10K;
+    const diversity = dining.cuisineDiversity;
+    
+    let score = 50;
+    let status: FactorAnalysis["status"] = "neutral";
+
+    if (restaurants !== null) {
+      score = Math.min(100, restaurants * 1.5);
+      if (restaurants >= 50 && (diversity ?? 0) >= 30) {
+        status = "good";
+      } else if (restaurants < 20) {
+        status = "warning";
+      }
+    }
+
+    factors.push({
+      name: "Dining Scene",
+      weight: totalWeight > 0 ? Math.round((prefs.diningImportance / totalWeight) * 100) : 0,
+      value: restaurants?.toFixed(0) || null,
+      unit: "/10K",
+      score,
+      status,
+      explanation: restaurants && restaurants >= 50
+        ? `${restaurants.toFixed(0)} restaurants/10K with ${diversity || "?"} cuisines.`
+        : `${restaurants?.toFixed(0) || "N/A"} restaurants per 10K.`,
+    });
+  }
+
+  // Sports
+  if (prefs.sportsImportance > 0) {
+    const countTeams = (teams: string | null) => 
+      teams ? teams.split(",").filter(t => t.trim()).length : 0;
+    
+    const totalTeams = countTeams(metrics?.nflTeams ?? null) + countTeams(metrics?.nbaTeams ?? null) + 
+                       countTeams(metrics?.mlbTeams ?? null) + countTeams(metrics?.nhlTeams ?? null) + 
+                       countTeams(metrics?.mlsTeams ?? null);
+    
+    let score = totalTeams === 0 ? 30 : Math.min(100, 40 + totalTeams * 10);
+    let status: FactorAnalysis["status"] = "neutral";
+
+    if (totalTeams >= 5) {
+      status = "good";
+    } else if (totalTeams === 0) {
+      status = "warning";
+    }
+
+    factors.push({
+      name: "Pro Sports",
+      weight: totalWeight > 0 ? Math.round((prefs.sportsImportance / totalWeight) * 100) : 0,
+      value: totalTeams,
+      unit: " teams",
+      score,
+      status,
+      explanation: totalTeams >= 5
+        ? `${totalTeams} major league teams - sports city!`
+        : totalTeams === 0
+        ? "No major league teams."
+        : `${totalTeams} major league team(s).`,
+    });
+  }
+
+  // Recreation
+  if (prefs.recreationImportance > 0) {
+    const rec = qol?.recreation;
+    const hasCoast = rec?.geography?.coastlineWithin15Mi ?? false;
+    const trails = rec?.nature?.trailMilesWithin10Mi ?? null;
+    const elevation = rec?.geography?.maxElevationDelta ?? null;
+
+    let status: FactorAnalysis["status"] = "neutral";
+    let score = 50;
+    const features: string[] = [];
+
+    if (hasCoast) features.push("beach");
+    if (trails && trails > 100) features.push(`${trails}mi trails`);
+    if (elevation && elevation > 2000) features.push("mountains");
+
+    if (features.length >= 2) {
+      status = "good";
+      score = 85;
+    } else if (features.length === 1) {
+      score = 65;
+    } else {
+      status = "warning";
+      score = 30;
+    }
+
+    factors.push({
+      name: "Recreation",
+      weight: totalWeight > 0 ? Math.round((prefs.recreationImportance / totalWeight) * 100) : 0,
+      value: trails,
+      unit: "mi trails",
+      score,
+      status,
+      explanation: features.length > 0
+        ? `Outdoor access: ${features.join(", ")}.`
+        : "Limited outdoor recreation nearby.",
+    });
+  }
+
+  const badFactors = factors.filter((f) => f.status === "bad");
+  const goodFactors = factors.filter((f) => f.status === "good");
+  
+  let summary = "";
+  if (badFactors.length > 0) {
+    summary = `Entertainment gaps: ${badFactors.map((f) => f.name.toLowerCase()).join(", ")}. `;
+  }
+  if (goodFactors.length > 0) {
+    summary += `Entertainment highlights: ${goodFactors.map((f) => f.name.toLowerCase()).join(", ")}.`;
+  }
+  if (!summary) {
+    summary = "Entertainment options are average.";
   }
 
   return { factors, summary };

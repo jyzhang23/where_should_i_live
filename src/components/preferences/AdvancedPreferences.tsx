@@ -6,7 +6,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { 
-  ChevronRight, Thermometer, Users, Heart, DollarSign, X, Church
+  ChevronRight, Thermometer, Users, HeartHandshake, DollarSign, X, Scale, PartyPopper
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -17,10 +17,11 @@ import {
   CostPreferences,
   DemographicsPreferences,
   QualityOfLifePreferences,
-  CulturalPreferences,
+  ValuesPreferences,
+  EntertainmentPreferences,
 } from "./sections";
 
-type SectionId = "climate" | "cost" | "demographics" | "qol" | "cultural" | null;
+type SectionId = "climate" | "cost" | "demographics" | "qol" | "values" | "entertainment" | null;
 
 interface CollapsibleSectionProps {
   id: SectionId;
@@ -116,22 +117,33 @@ export function AdvancedPreferences() {
       <CollapsibleSection
         id="qol"
         title="Quality of Life"
-        icon={<Heart className="h-4 w-4 text-red-500" />}
+        icon={<HeartHandshake className="h-4 w-4 text-red-500" />}
         openSection={openSection}
         onToggle={setOpenSection}
       >
         <QualityOfLifePreferences />
       </CollapsibleSection>
 
-      {/* Cultural Preferences */}
+      {/* Entertainment (Urban + Recreation) */}
       <CollapsibleSection
-        id="cultural"
-        title="Cultural Preferences"
-        icon={<Church className="h-4 w-4 text-purple-500" />}
+        id="entertainment"
+        title="Entertainment & Recreation"
+        icon={<PartyPopper className="h-4 w-4 text-amber-500" />}
         openSection={openSection}
         onToggle={setOpenSection}
       >
-        <CulturalPreferences />
+        <EntertainmentPreferences />
+      </CollapsibleSection>
+
+      {/* Values (Political + Religious) */}
+      <CollapsibleSection
+        id="values"
+        title="Values & Alignment"
+        icon={<Scale className="h-4 w-4 text-purple-500" />}
+        openSection={openSection}
+        onToggle={setOpenSection}
+      >
+        <ValuesPreferences />
       </CollapsibleSection>
     </div>
   );
