@@ -4,11 +4,16 @@ import { minorityPresenceScore } from "./utils";
 
 /**
  * Calculate dating favorability score (0-100)
- * Sub-score for demographics that considers:
- * - Pool: Gender ratio + never-married % in target age bracket
- * - Economic: Disposable income for dating ("date tax")
- * - Alignment: Political preference match
- * - Walk/Safety: Walkability and safety for meeting people
+ * 
+ * 50-Point Baseline Philosophy:
+ * All sub-scores are centered around national averages = 50.
+ * An "average" city yields score 50, not 0 or 100.
+ * 
+ * Sub-scores:
+ * - Pool (40%): Gender ratio + never-married % - centered on ratio 100 and 55% single
+ * - Economic (30%): Disposable income for dating - centered on $25k disposable
+ * - Alignment (20%): Political preference match - Gaussian decay, 0.4 distance = 50
+ * - Walk/Safety (10%): Walkability and safety - centered on Walk 48 and Crime 380
  */
 function calculateDatingFavorability(
   city: CityWithMetrics,
@@ -19,179 +24,98 @@ function calculateDatingFavorability(
   const bea = metrics.bea;
   const qol = metrics.qol;
   const cultural = metrics.cultural;
-  const prefs = preferences.advanced?.demographics;
-  // Use values preferences for political alignment (was cultural before refactor)
+  const demographicsPrefs = preferences.advanced?.demographics;
   const valuesPrefs = preferences.advanced?.values;
   
-  // If no demographics preferences, return neutral
-  if (!prefs) {
-    return 50;
-  }
+  if (!demographicsPrefs?.seekingGender) return 50;
+
+  // --- 1. POOL SCORE (40%) ---
+  // Centered: Ratio 100 = Score 50. +/- 10 points of ratio = +/- 25 points of score.
+  let poolScore = 50;
   
-  // Dating preferences
-  const seekingGender = prefs.seekingGender;
-  const ageRange = prefs.datingAgeRange;
-  
-  // If no seeking gender specified, can't calculate properly
-  if (!seekingGender) {
-    return 50; // Neutral
-  }
-  
-  // === POOL SCORE (40%) ===
-  // Gender ratio: seeking women prefers ratio < 100, seeking men prefers ratio > 100
-  // Never married %: higher is better for dating pool
-  let poolScore = 0;
-  let poolFactors = 0;
-  
-  // Get the appropriate gender ratio for age range
-  let genderRatio: { male: number; female: number; ratio: number } | null = null;
   if (census?.genderRatios) {
-    switch (ageRange) {
-      case "20-29": genderRatio = census.genderRatios.age20to29; break;
-      case "30-39": genderRatio = census.genderRatios.age30to39; break;
-      case "40-49": genderRatio = census.genderRatios.age40to49; break;
-      default: genderRatio = census.genderRatios.overall; // Use overall if no age specified
+    // Select ratio based on age range preference
+    let ratioObj = census.genderRatios.overall;
+    if (demographicsPrefs.datingAgeRange === "20-29") ratioObj = census.genderRatios.age20to29;
+    else if (demographicsPrefs.datingAgeRange === "30-39") ratioObj = census.genderRatios.age30to39;
+    else if (demographicsPrefs.datingAgeRange === "40-49") ratioObj = census.genderRatios.age40to49;
+
+    if (ratioObj) {
+      const ratio = ratioObj.ratio; // males per 100 females
+      const deviation = ratio - 100;
+      
+      // If seeking women, positive deviation (more men) is bad (-).
+      // If seeking men, positive deviation (more men) is good (+).
+      const direction = demographicsPrefs.seekingGender === "women" ? -1 : 1;
+      
+      // 100 -> 50pts. 
+      // 90 (seeking women) -> 50 + (-1 * -10 * 2.5) = 75pts.
+      // 110 (seeking women) -> 50 + (-1 * 10 * 2.5) = 25pts.
+      poolScore = 50 + (direction * deviation * 2.5);
     }
   }
-  
-  if (genderRatio) {
-    const ratio = genderRatio.ratio; // males per 100 females
-    
-    // Tightened range: 90-110 is the critical zone (real metros vary 90-105)
-    // A 5% imbalance is socially noticeable, 10% is drastic
-    if (seekingGender === "women") {
-      // Looking for women: fewer men is better (ratio < 100)
-      // Ratio 90 or less = 100pts, 100 = 50pts, 110 or more = 0pts
-      const rawScore = 100 - ((ratio - 90) * 5);
-      poolScore += Math.max(0, Math.min(100, rawScore));
-      poolFactors++;
-    } else {
-      // Looking for men: more men is better (ratio > 100)
-      // Ratio 110 or more = 100pts, 100 = 50pts, 90 or less = 0pts
-      const rawScore = (ratio - 90) * 5;
-      poolScore += Math.max(0, Math.min(100, rawScore));
-      poolFactors++;
-    }
-  }
-  
-  // Never married percentage (for the relevant gender being sought)
+
+  // Singles Adjustment: Bonus for high single population, penalty for low
+  // Avg for young metros is ~55%. 
   if (census) {
-    const neverMarriedPct = seekingGender === "women" 
-      ? census.neverMarriedFemalePercent
+    const singlePct = demographicsPrefs.seekingGender === "women" 
+      ? census.neverMarriedFemalePercent 
       : census.neverMarriedMalePercent;
-    
-    if (neverMarriedPct !== null && neverMarriedPct !== undefined) {
-      // Higher never-married % = larger dating pool
-      // 25% = below average (40), 35% = average (60), 45%+ = excellent (90+)
-      const neverMarriedScore = Math.min(100, 30 + neverMarriedPct * 1.5);
-      poolScore += neverMarriedScore;
-      poolFactors++;
+
+    if (singlePct != null) {
+      // 55% = neutral. +/- 1% = +/- 1.5 score
+      const singleAdjustment = (singlePct - 55) * 1.5; 
+      poolScore += singleAdjustment;
     }
   }
-  
-  // Average the pool factors, or use neutral (50) if no data
-  poolScore = poolFactors > 0 ? poolScore / poolFactors : 50;
-  
-  // === ECONOMIC SCORE (30%) - "Date Tax" ===
-  // Disposable income after rent affects dating affordability
-  // Use per capita income (not household) since dating users are single
+  poolScore = Math.max(0, Math.min(100, poolScore));
+
+  // --- 2. ECONOMIC SCORE (30%) ---
+  // Centered: $25k Disposable = Score 50
   let econScore = 50;
-  
   if (bea && census?.perCapitaIncome) {
-    // Use per capita income for singles, not household income
-    const income = census.perCapitaIncome;
+    const income = census.perCapitaIncome; // Use individual income, not household
     const housingRPP = bea.regionalPriceParity?.housing || 100;
-    
-    // Estimate annual rent: national median ~$1400/mo = $16,800/yr
-    // Adjust by local housing RPP
-    const estimatedAnnualRent = 16800 * (housingRPP / 100);
-    const disposableIncome = income - estimatedAnnualRent;
-    
-    // Rent-to-income ratio (< 30% is healthy for singles)
-    const rentToIncomeRatio = estimatedAnnualRent / income;
-    
-    // Rescaled for per capita: $15K disposable = 0, $45K+ = 100
-    let incomeScore = Math.max(0, Math.min(100, (disposableIncome - 15000) / 300));
-    
-    // Rent burden penalty (stricter for singles)
-    if (rentToIncomeRatio > 0.40) {
-      incomeScore -= 20; // Severely rent-burdened
-    } else if (rentToIncomeRatio > 0.30) {
-      incomeScore -= 10;
-    } else if (rentToIncomeRatio < 0.25) {
-      incomeScore += 10; // Very affordable
-    }
-    
-    econScore = Math.max(0, Math.min(100, incomeScore));
+    const estimatedRent = 16800 * (housingRPP / 100); // Baseline ~$1400/mo normalized
+    const disposable = income - estimatedRent;
+
+    // $25k = 50pts. $45k = 75pts ($800 per point)
+    econScore = 50 + ((disposable - 25000) / 800);
+    econScore = Math.max(0, Math.min(100, econScore));
   }
-  
-  // === ALIGNMENT SCORE (20%) - Political Match ===
-  // Use user's partisan preference to score alignment
-  // Uses Gaussian decay (consistent with Values scoring) instead of linear
-  let alignScore = 50; // Neutral if no preference
-  
+
+  // --- 3. ALIGNMENT SCORE (20%) ---
+  // Centered: Distance 0.4 (Moderate gap) = Score 50
+  let alignScore = 50;
   const political = cultural?.political;
-  const partisanPref = valuesPrefs?.partisanPreference ?? "neutral";
-  
-  if (political && political.partisanIndex !== null && partisanPref !== "neutral") {
-    const pi = political.partisanIndex; // -1 (R) to +1 (D)
-    
-    // Map preference to target PI
-    const prefToPi: Record<string, number> = {
-      "strong-dem": 0.6,
-      "lean-dem": 0.2,
-      "swing": 0,
-      "lean-rep": -0.2,
-      "strong-rep": -0.6,
-    };
-    
-    const targetPi = prefToPi[partisanPref] ?? 0;
-    const distance = Math.abs(pi - targetPi);
-    
-    // Use Gaussian decay matching the main Values score
-    // k=2 is a standard "Important" curve - smooth falloff instead of linear cliff
-    alignScore = 100 * Math.exp(-2 * distance * distance);
+  const targetPi = valuesPrefs?.partisanPreference === "neutral" ? null : 
+    (valuesPrefs?.partisanPreference === "strong-dem" ? 0.6 :
+     valuesPrefs?.partisanPreference === "lean-dem" ? 0.2 :
+     valuesPrefs?.partisanPreference === "lean-rep" ? -0.2 :
+     valuesPrefs?.partisanPreference === "strong-rep" ? -0.6 : 0);
+
+  if (political?.partisanIndex != null && targetPi !== null) {
+    const dist = Math.abs(political.partisanIndex - targetPi);
+    // Gaussian: Perfect match (0) = 100.
+    // We want 0.4 distance to be ~50.
+    // 100 * e^(-k * 0.4^2) = 50  => k ≈ 4.3
+    alignScore = 100 * Math.exp(-4.3 * dist * dist);
   }
-  
-  // === WALK/SAFETY SCORE (10%) ===
-  // Walkability for serendipitous meetings + safety
-  let walkSafeScore = 0;
-  let walkSafeFactors = 0;
-  
-  // Walk Score (higher = more walkable = easier to meet people)
-  if (qol?.walkability?.walkScore !== null && qol?.walkability?.walkScore !== undefined) {
-    const ws = qol.walkability.walkScore;
-    // Walk Score: 70+ = good for dating (bonus), 50-70 = ok, <50 = car-dependent (penalty)
-    const walkability = ws >= 70 ? Math.min(100, 60 + ws * 0.5) 
-                      : ws >= 50 ? 50 + (ws - 50) * 0.5
-                      : Math.max(20, ws);
-    walkSafeScore += walkability;
-    walkSafeFactors++;
+
+  // --- 4. SAFETY/WALK SCORE (10%) ---
+  // Centered: Walk 48 = 50pts. Crime 380 = 50pts.
+  let vibeScore = 50;
+  if (qol?.walkability?.walkScore != null && qol?.crime?.violentCrimeRate != null) {
+    // Walk: 48 (national avg) = 50pts, 1:1 mapping beyond that
+    const wScore = 50 + (qol.walkability.walkScore - 48);
+    // Crime: 380 (national avg) = 50pts, 500pt crime diff = 100pt score diff
+    const cScore = 50 + (380 - qol.crime.violentCrimeRate) / 5;
+    vibeScore = Math.max(0, Math.min(100, (wScore + cScore) / 2));
   }
-  
-  // Safety (lower crime = more comfortable meeting strangers)
-  if (qol?.crime?.violentCrimeRate !== null && qol?.crime?.violentCrimeRate !== undefined) {
-    const crimeRate = qol.crime.violentCrimeRate;
-    // National avg ~380/100K; lower is better
-    // 200 = 90 pts, 400 = 60, 600 = 30
-    const safetyScore = Math.max(10, Math.min(100, 100 - (crimeRate - 100) * 0.1));
-    walkSafeScore += safetyScore;
-    walkSafeFactors++;
-  }
-  
-  // Average the walk/safe factors, or use neutral (50) if no data
-  walkSafeScore = walkSafeFactors > 0 ? walkSafeScore / walkSafeFactors : 50;
-  
-  // === FINAL WEIGHTED SCORE ===
+
+  // Final Weighted Average
   // Pool 40% + Economic 30% + Alignment 20% + Walk/Safety 10%
-  const finalScore = (
-    poolScore * 0.40 +
-    econScore * 0.30 +
-    alignScore * 0.20 +
-    walkSafeScore * 0.10
-  );
-  
-  return Math.max(0, Math.min(100, finalScore));
+  return (poolScore * 0.4) + (econScore * 0.3) + (alignScore * 0.2) + (vibeScore * 0.1);
 }
 
 /**
