@@ -57,17 +57,19 @@ function calculateDatingFavorability(
   if (genderRatio) {
     const ratio = genderRatio.ratio; // males per 100 females
     
+    // Tightened range: 90-110 is the critical zone (real metros vary 90-105)
+    // A 5% imbalance is socially noticeable, 10% is drastic
     if (seekingGender === "women") {
-      // Looking for women: more women is better (ratio < 100)
-      // Ratio 85 = very favorable (100 pts), ratio 100 = neutral (50), ratio 115 = unfavorable (0)
-      const favorability = Math.max(0, Math.min(100, 100 - (ratio - 85) * (100 / 30)));
-      poolScore += favorability;
+      // Looking for women: fewer men is better (ratio < 100)
+      // Ratio 90 or less = 100pts, 100 = 50pts, 110 or more = 0pts
+      const rawScore = 100 - ((ratio - 90) * 5);
+      poolScore += Math.max(0, Math.min(100, rawScore));
       poolFactors++;
     } else {
       // Looking for men: more men is better (ratio > 100)
-      // Ratio 115 = very favorable (100 pts), ratio 100 = neutral (50), ratio 85 = unfavorable (0)
-      const favorability = Math.max(0, Math.min(100, (ratio - 85) * (100 / 30)));
-      poolScore += favorability;
+      // Ratio 110 or more = 100pts, 100 = 50pts, 90 or less = 0pts
+      const rawScore = (ratio - 90) * 5;
+      poolScore += Math.max(0, Math.min(100, rawScore));
       poolFactors++;
     }
   }
@@ -92,12 +94,12 @@ function calculateDatingFavorability(
   
   // === ECONOMIC SCORE (30%) - "Date Tax" ===
   // Disposable income after rent affects dating affordability
+  // Use per capita income (not household) since dating users are single
   let econScore = 50;
   
-  if (bea && census?.medianHouseholdIncome) {
-    // Calculate disposable income (income - estimated annual rent)
-    // Use RPP housing as proxy for rent costs
-    const income = census.medianHouseholdIncome;
+  if (bea && census?.perCapitaIncome) {
+    // Use per capita income for singles, not household income
+    const income = census.perCapitaIncome;
     const housingRPP = bea.regionalPriceParity?.housing || 100;
     
     // Estimate annual rent: national median ~$1400/mo = $16,800/yr
@@ -105,19 +107,19 @@ function calculateDatingFavorability(
     const estimatedAnnualRent = 16800 * (housingRPP / 100);
     const disposableIncome = income - estimatedAnnualRent;
     
-    // Rent-to-income ratio (< 30% is healthy)
+    // Rent-to-income ratio (< 30% is healthy for singles)
     const rentToIncomeRatio = estimatedAnnualRent / income;
     
-    // Score: $30K disposable = 40, $50K = 65, $70K+ = 90
-    let incomeScore = Math.min(100, 20 + (disposableIncome / 1000));
+    // Rescaled for per capita: $15K disposable = 0, $45K+ = 100
+    let incomeScore = Math.max(0, Math.min(100, (disposableIncome - 15000) / 300));
     
-    // Bonus/penalty for rent burden
-    if (rentToIncomeRatio < 0.25) {
-      incomeScore += 10; // Very affordable
-    } else if (rentToIncomeRatio > 0.35) {
-      incomeScore -= 15; // Rent-burdened
+    // Rent burden penalty (stricter for singles)
+    if (rentToIncomeRatio > 0.40) {
+      incomeScore -= 20; // Severely rent-burdened
     } else if (rentToIncomeRatio > 0.30) {
-      incomeScore -= 5;
+      incomeScore -= 10;
+    } else if (rentToIncomeRatio < 0.25) {
+      incomeScore += 10; // Very affordable
     }
     
     econScore = Math.max(0, Math.min(100, incomeScore));
@@ -125,6 +127,7 @@ function calculateDatingFavorability(
   
   // === ALIGNMENT SCORE (20%) - Political Match ===
   // Use user's partisan preference to score alignment
+  // Uses Gaussian decay (consistent with Values scoring) instead of linear
   let alignScore = 50; // Neutral if no preference
   
   const political = cultural?.political;
@@ -145,8 +148,9 @@ function calculateDatingFavorability(
     const targetPi = prefToPi[partisanPref] ?? 0;
     const distance = Math.abs(pi - targetPi);
     
-    // Distance 0 = 100, distance 1.2 (max) = 0
-    alignScore = Math.max(0, 100 - (distance / 1.2) * 100);
+    // Use Gaussian decay matching the main Values score
+    // k=2 is a standard "Important" curve - smooth falloff instead of linear cliff
+    alignScore = 100 * Math.exp(-2 * distance * distance);
   }
   
   // === WALK/SAFETY SCORE (10%) ===
@@ -209,10 +213,15 @@ export function calculateDemographicsScore(
   let totalScore = 0;
   let totalWeight = 0;
 
-  // === Population Filter (hard requirement, not weighted) ===
+  // === Population Filter (soft penalty with decay) ===
+  // Instead of a hard cutoff, apply a graduated penalty based on how far below minimum
+  let populationPenalty = 0;
   if (prefs.minPopulation > 0 && census.totalPopulation !== null) {
     if (census.totalPopulation < prefs.minPopulation) {
-      return 30; // Significant penalty for not meeting minimum
+      // Calculate deficit as percentage (0 = at threshold, 1 = zero population)
+      const deficit = (prefs.minPopulation - census.totalPopulation) / prefs.minPopulation;
+      // Apply penalty: 50% deficit = 25pt penalty, 100% deficit = 50pt penalty
+      populationPenalty = 50 * deficit;
     }
   }
 
@@ -355,8 +364,9 @@ export function calculateDemographicsScore(
     if (census.medianHouseholdIncome !== null) {
       const income = census.medianHouseholdIncome;
       if (income >= prefs.minMedianHouseholdIncome) {
-        // Scale: $50K = 40, $80K = 70, $120K+ = 100
-        factorSum += Math.min(100, (income / 1200));
+        // Scale: $50K = 55, $75K = 83, $90K+ = 100
+        // Adjusted to reflect US median (~$75K) scoring in B+/A- range
+        factorSum += Math.min(100, (income / 900));
       } else {
         factorSum += Math.max(0, 50 - (prefs.minMedianHouseholdIncome - income) / 1000);
       }
@@ -409,6 +419,9 @@ export function calculateDemographicsScore(
     const datingInfluence = datingWeight / 100;
     baseScore = baseScore * (1 - datingInfluence) + datingScore * datingInfluence;
   }
+  
+  // Apply population penalty (graduated decay instead of hard cutoff)
+  baseScore = baseScore - populationPenalty;
   
   return Math.max(0, Math.min(100, baseScore));
 }
