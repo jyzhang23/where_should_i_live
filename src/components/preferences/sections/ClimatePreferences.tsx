@@ -3,6 +3,8 @@
 import { usePreferencesStore } from "@/lib/store";
 import { TOOLTIPS } from "@/types/preferences";
 import { PreferenceSlider } from "../PreferenceSlider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Sun, Snowflake, CloudRain, Zap, Leaf, Activity,
   Cloud, Droplets, Thermometer
@@ -129,16 +131,25 @@ export function ClimatePreferences() {
           tooltip={TOOLTIPS["advanced.climate.weightSnowDays"]}
           formatValue={(v) => v === 0 ? "Off" : `${v}%`}
         />
-        <PreferenceSlider
-          label="Max Days Tolerable"
-          value={preferences.advanced.climate.maxSnowDays}
-          onChange={(v) => updateAdvanced("climate", "maxSnowDays", v)}
-          min={0}
-          max={60}
-          step={5}
-          tooltip={TOOLTIPS["advanced.climate.maxSnowDays"]}
-          formatValue={(v) => `${v} days`}
-        />
+        {preferences.advanced.climate.weightSnowDays > 0 && (
+          <>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="prefer-snow" className="text-sm cursor-pointer">
+                I love snow (skier/winter enthusiast)
+              </Label>
+              <Switch
+                id="prefer-snow"
+                checked={preferences.advanced.climate.preferSnow ?? false}
+                onCheckedChange={(checked) => updateAdvanced("climate", "preferSnow", checked)}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {preferences.advanced.climate.preferSnow 
+                ? "More snow = better score (winter lovers)" 
+                : "Less snow = better score (warm weather lovers)"}
+            </p>
+          </>
+        )}
         <p className="text-xs text-muted-foreground">Minneapolis: 40+ days | Miami: 0 days</p>
       </div>
 
@@ -226,8 +237,27 @@ export function ClimatePreferences() {
           tooltip={TOOLTIPS["advanced.climate.weightSeasonalStability"]}
           formatValue={(v) => v === 0 ? "Off" : `${v}%`}
         />
+        {preferences.advanced.climate.weightSeasonalStability > 0 && (
+          <>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="prefer-seasons" className="text-sm cursor-pointer">
+                I love distinct four seasons
+              </Label>
+              <Switch
+                id="prefer-seasons"
+                checked={preferences.advanced.climate.preferDistinctSeasons ?? false}
+                onCheckedChange={(checked) => updateAdvanced("climate", "preferDistinctSeasons", checked)}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {preferences.advanced.climate.preferDistinctSeasons 
+                ? "More seasonal variation = better score (fall foliage, snowy winters)" 
+                : "Less variation = better score (perpetual spring)"}
+            </p>
+          </>
+        )}
         <p className="text-xs text-muted-foreground mb-2">
-          Prefer &quot;perpetual spring&quot;? San Diego: very stable | Chicago: high variation
+          San Diego: very stable | Chicago: high variation
         </p>
         <PreferenceSlider
           label="Daily Swing"

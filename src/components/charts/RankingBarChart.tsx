@@ -19,6 +19,25 @@ interface RankingBarChartProps {
   selectedCityId?: string | null;
 }
 
+// Abbreviate long city names to prevent overflow
+function abbreviateCityName(cityName: string): string {
+  // Common abbreviations for long city names
+  const abbreviations: Record<string, string> = {
+    "San Francisco": "San Fran",
+    "Salt Lake City": "Salt Lake",
+    "Oklahoma City": "OKC",
+    "New York City": "NYC",
+    "Los Angeles": "LA",
+    "San Antonio": "San Antonio",
+    "San Diego": "San Diego",
+    "Washington": "DC",
+    "Minneapolis": "Minneapolis",
+    "Philadelphia": "Philly",
+    "Jacksonville": "Jax",
+  };
+  return abbreviations[cityName] || cityName;
+}
+
 export function RankingBarChart({
   rankings,
   topN = 10,
@@ -32,7 +51,9 @@ export function RankingBarChart({
     .map((r, index) => ({
       ...r,
       rank: index + 1,
-      displayName: `${r.cityName}, ${r.state.slice(0, 2)}`,
+      // Use abbreviated name for chart, keep full name for tooltip
+      displayName: `${abbreviateCityName(r.cityName)}, ${r.state.slice(0, 2).toUpperCase()}`,
+      fullName: `${r.cityName}, ${r.state}`,
     }));
 
   if (topCities.length === 0) {
@@ -68,7 +89,7 @@ export function RankingBarChart({
             <BarChart
               data={topCities}
               layout="vertical"
-              margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+              margin={{ top: 5, right: 30, left: 85, bottom: 5 }}
             >
               <XAxis
                 type="number"
@@ -80,20 +101,33 @@ export function RankingBarChart({
               <YAxis
                 type="category"
                 dataKey="displayName"
-                tick={{ fill: "var(--foreground)", fontSize: 11 }}
+                tick={{ 
+                  fill: "var(--foreground)", 
+                  fontSize: 12,
+                  fontFamily: "system-ui, -apple-system, sans-serif"
+                }}
                 axisLine={{ stroke: "var(--border)" }}
                 tickLine={false}
-                width={55}
+                width={80}
               />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "var(--card)",
                   border: "1px solid var(--border)",
                   borderRadius: "8px",
+                }}
+                labelStyle={{
+                  color: "var(--foreground)",
+                }}
+                itemStyle={{
                   color: "var(--foreground)",
                 }}
                 formatter={(value: number | undefined) => [(value ?? 0).toFixed(1), "Score"]}
-                labelFormatter={(label) => label}
+                labelFormatter={(_, payload) => {
+                  // Show full city name in tooltip
+                  const data = payload?.[0]?.payload as { fullName?: string } | undefined;
+                  return data?.fullName || "";
+                }}
               />
               <Bar
                 dataKey="totalScore"

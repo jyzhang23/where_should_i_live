@@ -72,14 +72,16 @@ export function calculateClimateScore(
       totalWeight += prefs.weightRainDays;
     }
 
-    // Snow Days - Fewer is better
+    // Snow Days - Direction depends on user preference
+    // Default: fewer is better (warm weather lovers)
+    // With preferSnow: more is better (skiers, winter lovers)
     if (prefs.weightSnowDays > 0 && noaa.snowDays !== null) {
-      // Range-based: 0 days = 100, 65 days = 0
+      const lovesSnow = prefs.preferSnow ?? false;
       const snowScore = normalizeToRange(
         noaa.snowDays,
         CLIMATE_RANGES.snowDays.min,
         CLIMATE_RANGES.snowDays.max,
-        true // lower is better
+        !lovesSnow // invert only if they DON'T love snow
       );
       totalScore += snowScore * prefs.weightSnowDays;
       totalWeight += prefs.weightSnowDays;
@@ -140,14 +142,16 @@ export function calculateClimateScore(
       totalWeight += prefs.weightGrowingSeason;
     }
 
-    // Seasonal Stability (temp stddev) - Lower is better
+    // Seasonal Stability (temp stddev) - Direction depends on user preference
+    // Default: lower variance is better (perpetual spring, San Diego)
+    // With preferDistinctSeasons: higher variance is better (four seasons lovers)
     if (prefs.weightSeasonalStability > 0 && noaa.seasonalStability !== null) {
-      // Range-based: 5 = 100 (San Diego), 28 = 0 (Minneapolis)
+      const lovesFourSeasons = prefs.preferDistinctSeasons ?? false;
       const stabilityScore = normalizeToRange(
         noaa.seasonalStability,
         CLIMATE_RANGES.seasonalStability.min,
         CLIMATE_RANGES.seasonalStability.max,
-        true // lower is better
+        !lovesFourSeasons // invert only if they DON'T want distinct seasons
       );
       totalScore += stabilityScore * prefs.weightSeasonalStability;
       totalWeight += prefs.weightSeasonalStability;

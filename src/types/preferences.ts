@@ -42,6 +42,7 @@ export interface UserPreferences {
       // === SNOW ===
       weightSnowDays: number;           // 0-100, default 25
       maxSnowDays: number;              // Days with >1in snow, default 15
+      preferSnow: boolean;              // If true, MORE snow = better (for skiers/winter lovers)
 
       // === GLOOM / SUNSHINE ===
       weightCloudyDays: number;         // 0-100, default 40
@@ -62,6 +63,7 @@ export interface UserPreferences {
       // === STABILITY ===
       weightSeasonalStability: number;  // 0-100, default 25
       // Lower stddev = more "perpetual spring" like San Diego
+      preferDistinctSeasons: boolean;   // If true, MORE temp variance = better (for 4-seasons lovers)
 
       weightDiurnalSwing: number;       // 0-100, default 25
       maxDiurnalSwing: number;          // °F, default 25
@@ -262,6 +264,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       maxRainDays: 100,
       weightSnowDays: 25,
       maxSnowDays: 15,
+      preferSnow: false,  // Default: less snow is better
       weightCloudyDays: 40,
       maxCloudyDays: 150,
       weightHumidity: 40,
@@ -270,6 +273,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
       weightGrowingSeason: 0,  // Off by default
       minGrowingSeasonDays: 180,
       weightSeasonalStability: 25,
+      preferDistinctSeasons: false,  // Default: stable weather (San Diego) is better
       weightDiurnalSwing: 25,
       maxDiurnalSwing: 25,
       // Legacy fields

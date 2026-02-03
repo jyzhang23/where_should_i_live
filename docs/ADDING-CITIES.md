@@ -2,9 +2,12 @@
 
 This guide documents the complete process for adding a new city to the Cities App, including all required identifiers and data sources.
 
-> **Quick Start:** Use the automated script to add a city:
+> **Quick Start:** Use the automated script with auto-discovery to add a city:
 > ```bash
-> # Interactive mode (prompts for each field)
+> # Auto-discover mode (fetches data from external APIs automatically)
+> npx tsx scripts/add-city.ts --auto-discover --city="Phoenix" --state="AZ"
+> 
+> # Interactive mode (prompts for each field, offers auto-discovery)
 > npx tsx scripts/add-city.ts --interactive
 > 
 > # Or with a config file
@@ -15,9 +18,9 @@ This guide documents the complete process for adding a new city to the Cities Ap
 ## Overview
 
 Adding a city involves:
-1. Adding the city definition to `data/cities.json`
-2. Running automated data pulls via the Admin Panel
-3. Manual data entry for sources without APIs
+1. Adding the city definition to `data/cities.json` (automated via script)
+2. Running automated data pulls via Admin CLI or Panel
+3. Manual data entry for sources without APIs (Zillow ID, political data)
 
 ## Step 1: City Definition (`data/cities.json`)
 
@@ -88,9 +91,59 @@ Add a new entry to the `cities` array with these required fields:
 
 ## Using the Add City Script
 
-The `scripts/add-city.ts` script automates the city addition process.
+The `scripts/add-city.ts` script automates the city addition process with **auto-discovery** capabilities that fetch data from external APIs.
 
-### Option 1: Config File (Recommended)
+### Option 1: Auto-Discover Mode (Recommended)
+
+The fastest way to add a city - automatically fetches most required data:
+
+```bash
+npx tsx scripts/add-city.ts --auto-discover --city="Phoenix" --state="AZ"
+```
+
+This will:
+1. **Auto-discover** coordinates, FIPS codes, NOAA station, BEA MSA, and sports teams
+2. **Validate** all discovered data (coordinate bounds, reverse geocoding)
+3. **Display** the configuration for your review
+4. **Prompt** for confirmation before proceeding
+
+#### Auto-Discovery APIs
+
+| Data | API | Key Required |
+|------|-----|--------------|
+| Coordinates (airport + downtown) | OpenStreetMap Nominatim | No |
+| Census Place FIPS | US Census Bureau Geocoder | No |
+| NOAA Weather Station | NOAA Weather.gov API | No |
+| BEA MSA Code | BEA Regional API | Yes (`BEA_API_KEY` in .env) |
+| Sports Teams | Wikidata SPARQL | No |
+
+#### Verification Methods
+
+The auto-discovery includes built-in validation:
+- **Coordinate boundary checks**: Ensures coordinates fall within expected state bounds
+- **Reverse geocoding**: Confirms coordinates resolve back to the correct city name
+- **NOAA station format validation**: Verifies standard US station code format (KXXX)
+- **Sports team validation**: Filters results against known valid franchise names
+
+#### What Auto-Discovery Cannot Find
+
+Some data still requires manual lookup:
+- **Zillow Region ID**: No public API available - find at zillow.com/home-values
+- **Political data**: Requires election result research
+
+### Option 2: Interactive Mode
+
+```bash
+npx tsx scripts/add-city.ts --interactive
+```
+
+The script will:
+1. Prompt for city name and state
+2. **Offer to run auto-discovery** for other fields
+3. Show discovered values as defaults (press Enter to accept)
+4. Allow manual override of any field
+
+### Option 3: Config File
 
 Create a JSON config file with the city details:
 
@@ -117,14 +170,6 @@ Then run:
 npx tsx scripts/add-city.ts --config=boise.json
 ```
 
-### Option 2: Interactive Mode
-
-```bash
-npx tsx scripts/add-city.ts --interactive
-```
-
-The script will prompt for each field.
-
 ### What the Script Does
 
 1. Adds the city to `cities.json`
@@ -145,12 +190,33 @@ npx tsx scripts/add-city.ts --config=city.json --skip-data-pull
 
 ### Requirements
 
-- Dev server must be running (`npm run dev`) for data pulls
-- `ADMIN_PASSWORD` must be set in `.env`
+- `ADMIN_PASSWORD` must be set in `.env` (for data pulls)
+- `BEA_API_KEY` in `.env` (for BEA MSA auto-discovery)
 
-### Finding Identifiers
+### CLI Reference
 
-Use these resources to find required identifiers:
+```bash
+npx tsx scripts/add-city.ts --help
+
+# Modes:
+#   --interactive, -i     Interactive mode with prompts (offers auto-discovery)
+#   --auto-discover, -a   Auto-discover data from external APIs
+#   --config=FILE         Load city config from JSON file
+
+# Options:
+#   --city="Name"         City name (required for auto-discover)
+#   --state="XX"          State abbreviation (required for auto-discover)
+#   --skip-data-pull      Skip automated data pulls (only add to JSON)
+
+# Examples:
+npx tsx scripts/add-city.ts -a --city="Denver" --state="CO"
+npx tsx scripts/add-city.ts -i
+npx tsx scripts/add-city.ts --config=denver.json
+```
+
+### Manual Identifier Lookup (Fallback)
+
+If auto-discovery fails or you need to verify values:
 
 | Field | How to Find |
 |-------|-------------|
@@ -299,6 +365,19 @@ Also check the app to ensure:
 
 ## Data Source Reference
 
+### City Definition Auto-Discovery
+
+| Field | Auto-Discovery | Source | Notes |
+|-------|----------------|--------|-------|
+| Coordinates | ✅ Yes | OpenStreetMap Nominatim | Airport + downtown |
+| Census Place FIPS | ✅ Yes | Census Bureau Geocoder | Via coordinates |
+| NOAA Station | ✅ Yes | NOAA Weather.gov API | Closest station |
+| BEA MSA Code | ✅ Yes | BEA API | Requires `BEA_API_KEY` |
+| Sports Teams | ✅ Yes | Wikidata SPARQL | Validated against known teams |
+| Zillow Region ID | ❌ No | Manual lookup | zillow.com/home-values |
+
+### Metrics Data Sources
+
 | Category | Source | Update Frequency | API Available |
 |----------|--------|------------------|---------------|
 | Climate | NOAA ACIS + Open-Meteo | Annual | ✅ Yes |
@@ -314,7 +393,6 @@ Also check the app to ensure:
 | Urban Life | OpenStreetMap | Live | ✅ Yes (Overpass) |
 | Recreation | OSM + USGS | Live | ✅ Yes |
 | Political | Manual Research | Per election | ❌ No |
-| Sports Teams | Manual | As needed | ❌ No |
 
 ## Troubleshooting
 
@@ -337,6 +415,19 @@ Also check the app to ensure:
 - Check Census API for the specific place
 
 ## Quick Checklist
+
+### Using Auto-Discovery (Recommended)
+
+- [ ] Set `BEA_API_KEY` in `.env` (for MSA code lookup)
+- [ ] Ran `npx tsx scripts/add-city.ts -a --city="Name" --state="XX"`
+- [ ] Reviewed auto-discovered data and confirmed
+- [ ] Found Zillow region ID manually (zillow.com/home-values)
+- [ ] Updated `cities.json` with Zillow ID
+- [ ] Verified data: `npx tsx scripts/verify-city-data.ts city-id`
+- [ ] Added manual data (political, etc.) to `metrics.json`
+- [ ] Tested in app at http://localhost:3000
+
+### Using Config File
 
 - [ ] Created config file with all required fields
 - [ ] Found correct NOAA station code

@@ -5,19 +5,147 @@
 
 ## Table of Contents
 
-1. [Census API (Demographics)](#census-api-demographics)
-2. [BEA API (Cost of Living)](#bea-api-cost-of-living)
-3. [NOAA / Open-Meteo (Climate)](#noaa--open-meteo-climate)
-4. [Zillow ZHVI (Housing)](#zillow-zhvi-housing)
-5. [FBI Crime Data Explorer](#fbi-crime-data-explorer)
-6. [EPA Air Quality](#epa-air-quality)
-7. [Walk Score](#walk-score)
-8. [FCC Broadband](#fcc-broadband)
-9. [NCES Education](#nces-education)
-10. [HRSA Healthcare](#hrsa-healthcare)
-11. [Political / Religious Data](#political--religious-data)
-12. [Implementation Status](#implementation-status)
-13. [API Key Management](#api-key-management)
+1. [Auto-Discovery APIs (Add City)](#auto-discovery-apis-add-city)
+2. [Census API (Demographics)](#census-api-demographics)
+3. [BEA API (Cost of Living)](#bea-api-cost-of-living)
+4. [NOAA / Open-Meteo (Climate)](#noaa--open-meteo-climate)
+5. [Zillow ZHVI (Housing)](#zillow-zhvi-housing)
+6. [FBI Crime Data Explorer](#fbi-crime-data-explorer)
+7. [EPA Air Quality](#epa-air-quality)
+8. [Walk Score](#walk-score)
+9. [FCC Broadband](#fcc-broadband)
+10. [NCES Education](#nces-education)
+11. [HRSA Healthcare](#hrsa-healthcare)
+12. [Political / Religious Data](#political--religious-data)
+13. [Implementation Status](#implementation-status)
+14. [API Key Management](#api-key-management)
+
+---
+
+## Auto-Discovery APIs (Add City)
+
+**Status:** ✅ Implemented in `scripts/add-city.ts`
+
+The add-city script uses external APIs to automatically discover city configuration data. This reduces manual lookup and ensures data accuracy.
+
+### OpenStreetMap Nominatim (Coordinates)
+
+**URL:** https://nominatim.openstreetmap.org/
+
+**Used For:**
+- Downtown (urban center) coordinates
+- Airport coordinates
+- Bounding box for validation
+
+**Endpoints:**
+```
+# Forward geocoding (city to coordinates)
+GET https://nominatim.openstreetmap.org/search?q=Austin,Texas,USA&format=json&limit=5&countrycodes=us
+
+# Reverse geocoding (coordinates to city - for validation)
+GET https://nominatim.openstreetmap.org/reverse?lat=30.2672&lon=-97.7431&format=json
+```
+
+**Rate Limit:** 1 request/second (enforced by script)
+
+**Cost:** Free (no API key required)
+
+### US Census Bureau Geocoder (FIPS Codes)
+
+**URL:** https://geocoding.geo.census.gov/geocoder/
+
+**Used For:**
+- Census Place FIPS code (5 digits)
+
+**Endpoints:**
+```
+# Coordinate-based lookup (preferred)
+GET https://geocoding.geo.census.gov/geocoder/geographies/coordinates?
+    x={longitude}&y={latitude}&
+    benchmark=Public_AR_Current&vintage=Current_Current&
+    layers=160&format=json
+
+# Address-based fallback
+GET https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?
+    address=Austin,Texas&
+    benchmark=Public_AR_Current&vintage=Current_Current&
+    layers=160&format=json
+```
+
+**Cost:** Free (no API key required)
+
+### NOAA Weather.gov API (Weather Station)
+
+**URL:** https://www.weather.gov/documentation/services-web-api
+
+**Used For:**
+- Nearest NOAA weather observation station ID
+
+**Endpoints:**
+```
+# Get metadata for location
+GET https://api.weather.gov/points/{latitude},{longitude}
+
+# Get observation stations near point
+GET https://api.weather.gov/gridpoints/{office}/{gridX},{gridY}/stations
+```
+
+**Cost:** Free (no API key required)
+
+### BEA Regional Data API (MSA Code)
+
+**URL:** https://apps.bea.gov/api/
+
+**Used For:**
+- Metropolitan Statistical Area (MSA) GeoFIPS code (5 digits)
+
+**Endpoint:**
+```
+GET https://apps.bea.gov/api/data/?
+    UserID={BEA_API_KEY}&
+    method=GetParameterValuesFiltered&
+    DataSetName=Regional&
+    TargetParameter=GeoFips&
+    TableName=CAGDP1&
+    ResultFormat=JSON
+```
+
+**Cost:** Free (requires `BEA_API_KEY` in .env)
+
+### Wikidata SPARQL (Sports Teams)
+
+**URL:** https://query.wikidata.org/
+
+**Used For:**
+- Professional sports teams (NFL, NBA, MLB, NHL, MLS)
+
+**SPARQL Query:**
+```sparql
+SELECT DISTINCT ?team ?teamLabel ?leagueLabel WHERE {
+  ?team wdt:P31/wdt:P279* wd:Q476028 .  # instance of sports team
+  ?team wdt:P115 ?homeVenue .           # home venue
+  ?homeVenue wdt:P131* ?city .          # located in city
+  ?city rdfs:label "Austin"@en .
+  ?team wdt:P118 ?league .              # league
+  VALUES ?league { wd:Q1215884 wd:Q155223 wd:Q743654 wd:Q1215892 wd:Q14056 }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+```
+
+**Validation:** Results are filtered against a static list of valid franchise names to exclude defunct teams, minor leagues, and incorrect matches.
+
+**Cost:** Free (no API key required)
+
+### Validation Methods
+
+The auto-discovery includes built-in validation:
+
+| Check | Description |
+|-------|-------------|
+| State Boundary | Coordinates verified against state bounding boxes |
+| Reverse Geocoding | Coordinates confirmed via Nominatim reverse lookup |
+| NOAA Station Format | Station codes validated as US format (KXXX) |
+| Sports Team Names | Filtered against known valid franchises |
 
 ---
 
@@ -271,6 +399,19 @@ GET https://www.airnowapi.org/aq/observation/latLong/historical/?
 ---
 
 ## Implementation Status
+
+### City Definition Auto-Discovery
+
+| Data | Status | Source | Key Required |
+|------|--------|--------|--------------|
+| Coordinates | ✅ Auto | OpenStreetMap Nominatim | No |
+| Census Place FIPS | ✅ Auto | Census Bureau Geocoder | No |
+| NOAA Station | ✅ Auto | NOAA Weather.gov API | No |
+| BEA MSA Code | ✅ Auto | BEA Regional API | Yes (`BEA_API_KEY`) |
+| Sports Teams | ✅ Auto | Wikidata SPARQL | No |
+| Zillow Region ID | ❌ Manual | zillow.com/home-values | N/A |
+
+### Metrics Data Sources
 
 | Data Type | Status | Source | Update Frequency |
 |-----------|--------|--------|------------------|

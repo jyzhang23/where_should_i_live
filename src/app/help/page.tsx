@@ -146,7 +146,7 @@ export default function HelpPage() {
                     <tr>
                       <td><strong>Snow Days</strong></td>
                       <td>ACIS</td>
-                      <td>Days with snowfall &gt;1 inch</td>
+                      <td>Days with snowfall &gt;1 inch. Toggle &quot;I love snow&quot; to find snowy cities.</td>
                     </tr>
                     <tr>
                       <td><strong>Cloudy Days</strong></td>
@@ -171,7 +171,7 @@ export default function HelpPage() {
                     <tr>
                       <td><strong>Seasonal Stability</strong></td>
                       <td>ACIS</td>
-                      <td>StdDev of monthly temps (lower = &quot;perpetual spring&quot;)</td>
+                      <td>StdDev of monthly temps. Toggle &quot;I love four seasons&quot; to find varied climates.</td>
                     </tr>
                     <tr>
                       <td><strong>Daily Swing</strong></td>
@@ -180,6 +180,20 @@ export default function HelpPage() {
                     </tr>
                   </tbody>
                 </table>
+
+                <h4>Preference Modes: Avoid vs. Seek</h4>
+                <p className="text-xs">
+                  Some climate factors can be <strong>inverted</strong> based on your preferences:
+                </p>
+                <ul className="text-xs">
+                  <li><strong>Snow Days:</strong> By default, less snow = better score. Toggle &quot;I love snow&quot; 
+                    if you&apos;re a skier or winter enthusiast, and more snow = better.</li>
+                  <li><strong>Seasonal Stability:</strong> By default, stable weather (San Diego) scores higher. 
+                    Toggle &quot;I love four seasons&quot; if you enjoy fall foliage, snowy winters, and spring blooms.</li>
+                </ul>
+                <p className="text-xs text-muted-foreground">
+                  These toggles only appear when the corresponding factor&apos;s importance is set above 0%.
+                </p>
 
                 <h4>Example Cities</h4>
                 <table className="text-xs w-full">

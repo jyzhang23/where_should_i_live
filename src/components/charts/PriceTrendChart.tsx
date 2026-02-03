@@ -172,6 +172,11 @@ export function PriceTrendChart({
                   backgroundColor: "var(--card)",
                   border: "1px solid var(--border)",
                   borderRadius: "8px",
+                }}
+                labelStyle={{
+                  color: "var(--foreground)",
+                }}
+                itemStyle={{
                   color: "var(--foreground)",
                 }}
                 formatter={(value: number | undefined, name: string | undefined) => [
