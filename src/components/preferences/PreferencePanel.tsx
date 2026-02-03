@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { usePreferencesStore } from "@/lib/store";
 import { BasicPreferences } from "./BasicPreferences";
 import { AdvancedPreferences } from "./AdvancedPreferences";
@@ -15,17 +15,13 @@ import {
   Download,
   Upload,
   RotateCcw,
-  ChevronDown,
-  ChevronRight,
   Settings2,
   Loader2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export function PreferencePanel() {
   const { exportPreferences, importPreferences, resetToDefaults } =
     usePreferencesStore();
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -124,26 +120,14 @@ export function PreferencePanel() {
           <>
             <BasicPreferences />
 
-            {/* Advanced Options Toggle */}
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className={cn(
-                "flex items-center gap-2 text-sm w-full py-3 px-3 -mx-3 rounded-md transition-colors",
-                showAdvanced
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
+            {/* Advanced Options Label */}
+            <div className="flex items-center gap-2 text-sm py-2 text-muted-foreground border-t pt-4 mt-2">
               <Settings2 className="h-4 w-4" />
-              <span className="font-medium flex-1 text-left">Advanced Options</span>
-              {showAdvanced ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </button>
+              <span className="font-medium">Advanced Options</span>
+              <span className="text-xs">— fine-tune each category</span>
+            </div>
 
-            {showAdvanced && <AdvancedPreferences />}
+            <AdvancedPreferences />
           </>
         )}
       </CardContent>
