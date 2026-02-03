@@ -295,9 +295,15 @@ export default function AboutPage() {
               </a>
             </p>
             <p className="text-sm text-muted-foreground">
-              Or email directly:{" "}
-              <a href="mailto:feedback@example.com" className="text-primary hover:underline">
-                feedback@example.com
+              Have other feedback?{" "}
+              <a
+                href="https://github.com/jyzhang23/where_should_i_live/issues/new?title=Feedback:%20[Topic]&body=**What%20feedback%20do%20you%20have%3F**%0A%0A**Is%20this%20a%20bug%2C%20feature%20request%2C%20or%20general%20comment%3F**%0A%0A"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline inline-flex items-center gap-1"
+              >
+                Open a feedback issue
+                <ExternalLink className="h-3 w-3" />
               </a>
             </p>
           </CardContent>
