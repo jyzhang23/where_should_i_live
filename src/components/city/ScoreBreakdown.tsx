@@ -744,7 +744,19 @@ function analyzeDemographics(
   const census = city.metrics?.census;
   const prefs = preferences.advanced.demographics;
 
-  // Population
+  // Calculate total weight for percentage display
+  let totalWeight = 0;
+  if (prefs.weightDiversity > 0) totalWeight += prefs.weightDiversity;
+  if (prefs.weightAge > 0) totalWeight += prefs.weightAge;
+  if (prefs.weightEducation > 0) totalWeight += prefs.weightEducation;
+  if (prefs.weightForeignBorn > 0) totalWeight += prefs.weightForeignBorn;
+  if (prefs.minorityGroup !== "none") totalWeight += prefs.minorityImportance;
+  if (prefs.weightEconomicHealth > 0) totalWeight += prefs.weightEconomicHealth;
+  
+  // Helper to convert raw weight to percentage of total
+  const toPercent = (w: number) => totalWeight > 0 ? Math.round((w / totalWeight) * 100) : 0;
+
+  // Population (shown as info/penalty, not a weighted factor)
   if (census?.totalPopulation != null) {
     const pop = census.totalPopulation;
     const minPop = prefs.minPopulation;
@@ -758,63 +770,91 @@ function analyzeDemographics(
 
     factors.push({
       name: "Population",
-      weight: 25,
-      value: (pop / 1000).toFixed(0) + "K",
+      weight: 0, // Info only - not a weighted factor (penalty applied separately)
+      value: pop > 1000000 ? (pop / 1000000).toFixed(1) + "M" : (pop / 1000).toFixed(0) + "K",
       threshold: minPop > 0 ? { value: minPop / 1000, type: "min", label: "Min (K)" } : undefined,
-      score: Math.min(100, pop / 20000),
+      score: pop < minPop ? 30 : 70,
       status,
       explanation: pop < minPop
-        ? `Population of ${(pop / 1000).toFixed(0)}K is below your minimum of ${(minPop / 1000).toFixed(0)}K.`
-        : `Population of ${(pop / 1000000).toFixed(1)}M.`,
+        ? `Population of ${(pop / 1000).toFixed(0)}K is below your minimum of ${(minPop / 1000).toFixed(0)}K (penalty applied).`
+        : `Population meets requirements.`,
     });
   }
 
-  // Diversity
-  if (census?.diversityIndex != null) {
+  // Diversity (only if weight > 0)
+  if (prefs.weightDiversity > 0 && census?.diversityIndex != null) {
     const div = census.diversityIndex;
     const minDiv = prefs.minDiversityIndex;
     let status: FactorAnalysis["status"] = "neutral";
+    // Match actual scoring: diversityScore = Math.min(100, (census.diversityIndex / 70) * 100)
+    let score = Math.min(100, (div / 70) * 100);
 
     if (div < minDiv) {
       status = "bad";
+      score = Math.max(0, 50 - (minDiv - div) * 2);
     } else if (div >= 70) {
       status = "good";
     }
 
     factors.push({
       name: "Diversity Index",
-      weight: 25,
+      weight: toPercent(prefs.weightDiversity),
       value: div,
       unit: "/100",
       threshold: minDiv > 0 ? { value: minDiv, type: "min", label: "Your min" } : undefined,
-      score: div,
+      score: Math.round(score),
       status,
       explanation: div < minDiv
         ? `Diversity index of ${div} is below your minimum of ${minDiv}.`
-        : `Diversity index of ${div}/100.`,
+        : `Diversity index of ${div}/100 (US avg ~40).`,
     });
   }
 
-  // Median Age
-  if (census?.medianAge != null) {
+  // Age (only if weight > 0)
+  if (prefs.weightAge > 0 && census?.medianAge != null) {
     const age = census.medianAge;
     let status: FactorAnalysis["status"] = "neutral";
+    let score = 50;
+    let explanation = "";
+
+    switch (prefs.preferredAgeGroup) {
+      case "young":
+        score = age < 30 ? 100 : age < 35 ? 80 : age < 40 ? 50 : 20;
+        status = age < 35 ? "good" : age < 40 ? "neutral" : "warning";
+        explanation = `Median age ${age.toFixed(1)} (you prefer young <35).`;
+        break;
+      case "mixed":
+        score = age >= 35 && age <= 45 ? 100 : age >= 30 && age <= 50 ? 70 : 40;
+        status = age >= 35 && age <= 45 ? "good" : "neutral";
+        explanation = `Median age ${age.toFixed(1)} (you prefer 35-45 family range).`;
+        break;
+      case "mature":
+        score = age > 50 ? 100 : age > 45 ? 80 : age > 40 ? 50 : 20;
+        status = age > 45 ? "good" : age > 40 ? "neutral" : "warning";
+        explanation = `Median age ${age.toFixed(1)} (you prefer mature >45).`;
+        break;
+      default:
+        score = 70;
+        explanation = `Median age ${age.toFixed(1)} years (US avg ~38).`;
+    }
 
     factors.push({
       name: "Median Age",
-      weight: 15,
+      weight: toPercent(prefs.weightAge),
       value: age.toFixed(1),
       unit: " years",
-      score: 50,
+      score,
       status,
-      explanation: `Median age is ${age.toFixed(1)} years (US avg ~38).`,
+      explanation,
     });
   }
 
-  // Education
-  if (census?.bachelorsOrHigherPercent != null) {
+  // Education (only if weight > 0)
+  if (prefs.weightEducation > 0 && census?.bachelorsOrHigherPercent != null) {
     const edu = census.bachelorsOrHigherPercent;
     let status: FactorAnalysis["status"] = "neutral";
+    // Match actual scoring: Math.min(100, 20 + (bachelorsPct * 1.3))
+    let score = Math.min(100, 20 + (edu * 1.3));
 
     if (edu >= 45) {
       status = "good";
@@ -824,14 +864,85 @@ function analyzeDemographics(
 
     factors.push({
       name: "Bachelor's Degree+",
-      weight: 20,
+      weight: toPercent(prefs.weightEducation),
       value: edu.toFixed(0),
       unit: "%",
-      score: Math.min(100, edu * 2),
+      score: Math.round(score),
       status,
       explanation: edu >= 45
         ? `${edu.toFixed(0)}% have bachelor's or higher - highly educated.`
         : `${edu.toFixed(0)}% have bachelor's or higher (US avg ~33%).`,
+    });
+  }
+
+  // Foreign-Born (only if weight > 0)
+  if (prefs.weightForeignBorn > 0 && census?.foreignBornPercent != null) {
+    const fb = census.foreignBornPercent;
+    const minFb = prefs.minForeignBornPercent;
+    let status: FactorAnalysis["status"] = "neutral";
+    // Match actual scoring: Math.min(100, 30 + (fbPct * 2.3))
+    let score = Math.min(100, 30 + (fb * 2.3));
+
+    if (fb < minFb) {
+      status = "warning";
+      score = Math.max(0, 50 - (minFb - fb) * 3);
+    } else if (fb >= 25) {
+      status = "good";
+    }
+
+    factors.push({
+      name: "Foreign-Born",
+      weight: toPercent(prefs.weightForeignBorn),
+      value: fb.toFixed(0),
+      unit: "%",
+      threshold: minFb > 0 ? { value: minFb, type: "min", label: "Your min" } : undefined,
+      score: Math.round(score),
+      status,
+      explanation: fb >= 25
+        ? `${fb.toFixed(0)}% foreign-born - rich international culture.`
+        : `${fb.toFixed(0)}% foreign-born (US avg ~14%).`,
+    });
+  }
+
+  // Economic Health (only if weight > 0)
+  if (prefs.weightEconomicHealth > 0) {
+    const income = census?.medianHouseholdIncome;
+    const poverty = census?.povertyRate;
+    let status: FactorAnalysis["status"] = "neutral";
+    let score = 50;
+    let value = "";
+    let explanation = "";
+
+    if (income != null && poverty != null) {
+      // Match actual scoring logic
+      const incomeScore = Math.min(100, income / 900);
+      const povertyScore = Math.max(0, 120 - poverty * 4);
+      score = (incomeScore + povertyScore) / 2;
+      value = `$${(income / 1000).toFixed(0)}K / ${poverty.toFixed(0)}%`;
+      
+      if (score >= 70) {
+        status = "good";
+        explanation = `Strong economy: $${(income / 1000).toFixed(0)}K median income, ${poverty.toFixed(0)}% poverty.`;
+      } else if (score < 40) {
+        status = "warning";
+        explanation = `Economic challenges: $${(income / 1000).toFixed(0)}K income, ${poverty.toFixed(0)}% poverty.`;
+      } else {
+        explanation = `$${(income / 1000).toFixed(0)}K median household income, ${poverty.toFixed(0)}% poverty rate.`;
+      }
+    } else if (income != null) {
+      score = Math.min(100, income / 900);
+      value = `$${(income / 1000).toFixed(0)}K`;
+      explanation = `Median household income: $${(income / 1000).toFixed(0)}K.`;
+    }
+
+    factors.push({
+      name: "Economic Health",
+      weight: toPercent(prefs.weightEconomicHealth),
+      value,
+      unit: " income/poverty",
+      score: Math.round(score),
+      status,
+      explanation,
     });
   }
 
