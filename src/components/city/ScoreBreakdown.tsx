@@ -136,7 +136,15 @@ export function ScoreBreakdown({
 
           {/* All Factors Detail */}
           <div>
-            <h3 className="font-semibold mb-3">All Factors</h3>
+            <h3 className="font-semibold mb-3">
+              {category === "cost" ? "Cost Components" : "All Factors"}
+            </h3>
+            {category === "cost" && (
+              <p className="text-xs text-muted-foreground mb-3">
+                Cost score uses a persona-based &quot;True Purchasing Power&quot; calculation, 
+                not weighted factors. These components show what drives the score for your profile.
+              </p>
+            )}
             <div className="space-y-2">
               {analysis.factors.map((factor, i) => (
                 <div
@@ -146,9 +154,11 @@ export function ScoreBreakdown({
                   <div className="flex items-center gap-2">
                     <StatusIcon status={factor.status} />
                     <span className="text-sm">{factor.name}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {factor.weight}%
-                    </Badge>
+                    {factor.weight > 0 && (
+                      <Badge variant="outline" className="text-xs">
+                        {factor.weight}%
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-muted-foreground">
@@ -176,11 +186,13 @@ export function ScoreBreakdown({
           <div className="p-4 rounded-lg border bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
             <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
               <Info className="h-4 w-4" />
-              Adjust Your Preferences
+              {category === "cost" ? "About This Score" : "Adjust Your Preferences"}
             </h4>
             <p className="text-sm text-muted-foreground">
-              If some factors matter less to you, adjust their weights in the Advanced
-              Preferences panel. Scores are relative to your personal priorities.
+              {category === "cost" 
+                ? "Cost score compares local income to local prices, adjusted for your housing situation (renter/owner/buyer) and income type. Change your cost profile in Advanced Preferences to see how different scenarios affect affordability."
+                : "If some factors matter less to you, adjust their weights in the Advanced Preferences panel. Scores are relative to your personal priorities."
+              }
             </p>
           </div>
         </div>
