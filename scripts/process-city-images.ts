@@ -38,17 +38,20 @@ const TARGET_WIDTH = 640;
 const TARGET_HEIGHT = 480;
 const JPEG_QUALITY = 85;
 
+// The "Dirty Dozen" - 12 cities for City Tinder
 const EXPECTED_CITIES = [
   "new-york-city",
   "san-francisco",
   "miami",
   "denver",
-  "phoenix",
+  "boise",
+  "minneapolis",
+  "salt-lake-city",
+  "new-orleans",
+  "seattle",
+  "las-vegas",
   "boston",
-  "nashville",
-  "portland",
-  "chicago",
-  "austin",
+  "houston",
 ];
 
 const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".avif", ".tiff"];
