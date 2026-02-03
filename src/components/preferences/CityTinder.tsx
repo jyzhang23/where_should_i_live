@@ -205,6 +205,15 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     if (climateDeltas.maxSnowDays !== undefined) {
       updateAdvanced("climate", "maxSnowDays", clamp(15 + climateDeltas.maxSnowDays));
     }
+    // Apply boolean climate preferences (only if user showed strong positive preference)
+    if (climateDeltas.preferSnow && climateDeltas.preferSnow > 0) {
+      updateAdvanced("climate", "preferSnow", true);
+      updateAdvanced("climate", "weightSnowDays", clamp(50 + climateDeltas.preferSnow * 10));
+    }
+    if (climateDeltas.preferDistinctSeasons && climateDeltas.preferDistinctSeasons > 0) {
+      updateAdvanced("climate", "preferDistinctSeasons", true);
+      updateAdvanced("climate", "weightSeasonalStability", clamp(50 + climateDeltas.preferDistinctSeasons * 10));
+    }
     
     // Apply QoL weights
     if (qolDeltas.walkability) updateQoLWeight("walkability", clamp(50 + qolDeltas.walkability));

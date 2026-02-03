@@ -132,6 +132,8 @@ export interface TraitMapping {
     maxFreezeDays: number;
     weightSnowDays: number;
     maxSnowDays: number;
+    preferSnow: boolean;
+    preferDistinctSeasons: boolean;
   }>;
   qol?: Partial<{
     walkability: number;
@@ -165,7 +167,7 @@ export const traitMappings: Record<string, TraitMapping> = {
     climate: { weightComfortDays: 10, weightFreezeDays: 10 },
   },
   fourSeasons: {
-    climate: { maxFreezeDays: 20, maxSnowDays: 15, weightComfortDays: -5 },
+    climate: { maxFreezeDays: 20, maxSnowDays: 15, weightComfortDays: -5, preferDistinctSeasons: true, preferSnow: true },
   },
   sunny: {
     climate: { weightComfortDays: 10 },

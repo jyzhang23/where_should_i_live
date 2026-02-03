@@ -94,13 +94,15 @@ export function QuickStart({ onComplete }: QuickStartProps) {
       updateAdvanced("climate", "maxExtremeHeatDays", 5);
       updateAdvanced("climate", "weightHumidity", 60);
     } else if (climate === "four-seasons") {
-      // Four seasons: balance, accept some cold
+      // Four seasons: balance, accept some cold, enable seasonal preference
       updateAdvanced("climate", "weightComfortDays", 50);
       updateAdvanced("climate", "weightFreezeDays", 30);
       updateAdvanced("climate", "maxFreezeDays", 60);
-      updateAdvanced("climate", "weightSnowDays", 20);
+      updateAdvanced("climate", "weightSnowDays", 40);
       updateAdvanced("climate", "maxSnowDays", 30);
-      updateAdvanced("climate", "weightSeasonalStability", 0);
+      updateAdvanced("climate", "preferSnow", true);  // Winter lovers want snow
+      updateAdvanced("climate", "weightSeasonalStability", 50);
+      updateAdvanced("climate", "preferDistinctSeasons", true);  // Enable 4-seasons mode
     }
     // "any" = leave defaults
 
