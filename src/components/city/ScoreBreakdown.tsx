@@ -759,78 +759,124 @@ function analyzeCost(
   const factors: FactorAnalysis[] = [];
   const bea = city.metrics?.bea;
   const prefs = preferences.advanced.costOfLiving;
+  const homePrice = city.metrics?.medianHomePrice;
 
-  // Housing (RPP)
-  if (bea?.regionalPriceParity?.housing != null) {
+  // Cost scoring uses persona-based "True Purchasing Power" - not weighted factors
+  // Show components that feed into the calculation
+  
+  const personaLabel = {
+    renter: "Renter",
+    homeowner: "Homeowner (fixed mortgage)",
+    "prospective-buyer": "Prospective Buyer",
+  }[prefs.housingSituation] || "Renter";
+  
+  const workLabel = {
+    "local-earner": "Local Earner",
+    standard: "Standard Income",
+    "high-earner": "High Earner",
+    retiree: "Retiree",
+  }[prefs.workSituation] || "Local Earner";
+
+  // Your Cost Profile (informational)
+  factors.push({
+    name: "Your Cost Profile",
+    weight: 0, // Not a weighted factor
+    value: `${personaLabel} / ${workLabel}`,
+    unit: "",
+    score: 50,
+    status: "neutral",
+    explanation: `Cost calculated for ${personaLabel.toLowerCase()} with ${workLabel.toLowerCase()} income profile.`,
+  });
+
+  // Housing Cost (depends on persona)
+  if (prefs.housingSituation === "prospective-buyer" && homePrice != null) {
+    // For buyers, show actual home price impact
+    const status: FactorAnalysis["status"] = homePrice > 600000 ? "bad" : homePrice < 350000 ? "good" : "neutral";
+    factors.push({
+      name: "Home Price",
+      weight: 0,
+      value: `$${(homePrice / 1000).toFixed(0)}K`,
+      unit: "",
+      score: Math.max(0, 100 - ((homePrice - 300000) / 12000)),
+      status,
+      explanation: homePrice > 600000
+        ? `Median home price $${(homePrice / 1000).toFixed(0)}K is expensive for buyers.`
+        : homePrice < 350000
+        ? `Median home price $${(homePrice / 1000).toFixed(0)}K is affordable.`
+        : `Median home price $${(homePrice / 1000).toFixed(0)}K (national median ~$420K).`,
+    });
+  } else if (bea?.regionalPriceParity?.housing != null) {
     const rpp = bea.regionalPriceParity.housing;
-    let status: FactorAnalysis["status"] = "neutral";
-
-    if (rpp > 150) {
-      status = "bad";
-    } else if (rpp < 90) {
-      status = "good";
-    }
-
+    const status: FactorAnalysis["status"] = rpp > 150 ? "bad" : rpp < 90 ? "good" : "neutral";
     factors.push({
       name: "Housing Cost Index",
-      weight: 40,
+      weight: 0,
       value: rpp.toFixed(0),
       unit: " (100=avg)",
-      score: Math.max(0, 150 - rpp),
+      score: Math.max(0, Math.min(100, 150 - rpp)),
       status,
       explanation: rpp > 150
-        ? `Housing costs ${(rpp - 100).toFixed(0)}% above national average - very expensive.`
+        ? `Housing costs ${(rpp - 100).toFixed(0)}% above national average.`
         : rpp < 90
-        ? `Housing costs ${(100 - rpp).toFixed(0)}% below national average - affordable!`
-        : `Housing costs are near national average.`,
+        ? `Housing costs ${(100 - rpp).toFixed(0)}% below national average.`
+        : `Housing costs near national average.`,
     });
   }
 
-  // Overall Cost of Living
-  if (bea?.regionalPriceParity?.allItems != null) {
-    const rpp = bea.regionalPriceParity.allItems;
-    let status: FactorAnalysis["status"] = "neutral";
-
-    if (rpp > 115) {
-      status = "bad";
-    } else if (rpp < 95) {
-      status = "good";
-    }
-
+  // Goods & Services Cost
+  if (bea?.regionalPriceParity?.goods != null && bea?.regionalPriceParity?.otherServices != null) {
+    const goods = bea.regionalPriceParity.goods;
+    const services = bea.regionalPriceParity.otherServices;
+    const avg = (goods + services) / 2;
+    const status: FactorAnalysis["status"] = avg > 110 ? "bad" : avg < 95 ? "good" : "neutral";
     factors.push({
-      name: "Overall Cost Index",
-      weight: 30,
-      value: rpp.toFixed(0),
+      name: "Goods & Services",
+      weight: 0,
+      value: avg.toFixed(0),
       unit: " (100=avg)",
-      score: Math.max(0, 130 - rpp),
+      score: Math.max(0, Math.min(100, 130 - avg)),
       status,
-      explanation: `Overall cost of living is ${(rpp - 100).toFixed(0)}% ${rpp > 100 ? "above" : "below"} national average.`,
+      explanation: `Goods ${goods.toFixed(0)}, Services ${services.toFixed(0)} (100 = national average).`,
     });
   }
 
-  // Tax Rate
+  // State Tax Impact (important for standard/retiree personas)
   if (bea?.taxes?.effectiveTaxRate != null) {
     const rate = bea.taxes.effectiveTaxRate;
-    let status: FactorAnalysis["status"] = "neutral";
-
-    if (rate > 20) {
-      status = "bad";
-    } else if (rate < 12) {
-      status = "good";
-    }
-
+    const status: FactorAnalysis["status"] = rate > 18 ? "bad" : rate < 12 ? "good" : "neutral";
+    const state = city.state;
+    const noIncomeTaxStates = ["TX", "FL", "WA", "NV", "TN", "WY", "SD", "NH", "AK"];
+    const isNoTax = noIncomeTaxStates.includes(state);
+    
     factors.push({
-      name: "Effective Tax Rate",
-      weight: 20,
+      name: "Tax Burden",
+      weight: 0,
       value: rate.toFixed(1),
       unit: "%",
-      score: Math.max(0, 100 - rate * 4),
+      score: Math.max(0, Math.min(100, 100 - rate * 4)),
       status,
-      explanation: rate > 20
+      explanation: isNoTax
+        ? `${state} has no state income tax - ${rate.toFixed(1)}% effective rate (federal only).`
+        : rate > 18
         ? `${rate.toFixed(1)}% effective tax rate is high.`
         : rate < 12
         ? `${rate.toFixed(1)}% effective tax rate is relatively low.`
         : `${rate.toFixed(1)}% effective tax rate is moderate.`,
+    });
+  }
+
+  // Per Capita Income (context for local earner)
+  if (prefs.workSituation === "local-earner" && bea?.taxes?.perCapitaIncome != null) {
+    const income = bea.taxes.perCapitaIncome;
+    const status: FactorAnalysis["status"] = income > 70000 ? "good" : income < 50000 ? "warning" : "neutral";
+    factors.push({
+      name: "Local Income",
+      weight: 0,
+      value: `$${(income / 1000).toFixed(0)}K`,
+      unit: "/capita",
+      score: Math.min(100, income / 800),
+      status,
+      explanation: `Local per capita income $${(income / 1000).toFixed(0)}K (US avg ~$60K). Higher income can offset higher costs.`,
     });
   }
 
@@ -839,13 +885,13 @@ function analyzeCost(
   
   let summary = "";
   if (badFactors.length > 0) {
-    summary = `Cost concerns: ${badFactors.map((f) => f.name.toLowerCase()).join(", ")}. `;
+    summary = `Cost concerns: ${badFactors.slice(1).map((f) => f.name.toLowerCase()).join(", ")}. `;
   }
   if (goodFactors.length > 0) {
     summary += `Cost advantages: ${goodFactors.map((f) => f.name.toLowerCase()).join(", ")}.`;
   }
   if (!summary) {
-    summary = "Cost of living is average.";
+    summary = `Cost of living is average for a ${personaLabel.toLowerCase()}.`;
   }
 
   return { factors, summary };
@@ -1249,43 +1295,85 @@ function analyzeValues(
     };
   }
 
-  // Political Alignment
-  if (cultural?.political?.partisanIndex != null) {
+  // Calculate total weight for percentage display
+  let totalWeight = 0;
+  if (prefs.partisanPreference !== "neutral" && prefs.partisanWeight > 0) {
+    totalWeight += prefs.partisanWeight;
+  } else if (prefs.preferHighTurnout) {
+    totalWeight += 30; // Default turnout weight when only turnout is set
+  }
+  if (prefs.religiousTraditions.length > 0 && prefs.traditionsWeight > 0) {
+    totalWeight += prefs.traditionsWeight;
+  }
+  if (prefs.preferReligiousDiversity && prefs.diversityWeight > 0) {
+    totalWeight += prefs.diversityWeight;
+  }
+
+  const toPercent = (w: number) => totalWeight > 0 ? Math.round((w / totalWeight) * 100) : 0;
+
+  // Political Alignment (using Gaussian decay like actual scoring)
+  if (prefs.partisanPreference !== "neutral" && prefs.partisanWeight > 0 && cultural?.political?.partisanIndex != null) {
     const pi = cultural.political.partisanIndex;
     const demPct = cultural.political.democratPercent;
-    const prefAlign = prefs.partisanPreference;
+    
+    // Map preference to target PI (same as actual scoring)
+    const prefToPi: Record<string, number> = {
+      "strong-dem": 0.6, "lean-dem": 0.2, "swing": 0, "lean-rep": -0.2, "strong-rep": -0.6,
+    };
+    const targetPi = prefToPi[prefs.partisanPreference] ?? 0;
+    const distance = Math.abs(pi - targetPi);
+    
+    // Calculate Gaussian decay score (matching actual scoring)
+    const k = 1.0 + (prefs.partisanWeight / 50);
+    let alignScore = 100 * Math.exp(-k * distance * distance);
+    
+    // Tribal penalty for partisans crossing party lines
+    const isOppositeSide = (pi > 0 && targetPi < 0) || (pi < 0 && targetPi > 0);
+    const isUserPartisan = Math.abs(targetPi) >= 0.3;
+    if (isOppositeSide && isUserPartisan) alignScore *= 0.85;
+    else if (isOppositeSide) alignScore *= 0.95;
     
     let status: FactorAnalysis["status"] = "neutral";
-    let explanation = "";
-
-    if (prefAlign !== "neutral") {
-      const wantsDem = prefAlign.includes("dem");
-      const cityDem = pi > 0;
-      
-      if ((wantsDem && cityDem) || (!wantsDem && !cityDem)) {
-        status = "good";
-        explanation = `City aligns with your ${wantsDem ? "Democratic" : "Republican"} preference.`;
-      } else {
-        status = "warning";
-        explanation = `City leans ${cityDem ? "Democratic" : "Republican"}, opposite your preference.`;
-      }
-    } else {
-      explanation = `${demPct?.toFixed(0) || "??"}% Democratic lean. Partisan index: ${pi.toFixed(2)}.`;
-    }
+    if (alignScore >= 70) status = "good";
+    else if (alignScore < 40) status = "warning";
+    
+    const wantsDem = prefs.partisanPreference.includes("dem");
+    const cityDem = pi > 0;
 
     factors.push({
       name: "Political Alignment",
-      weight: prefs.partisanWeight > 0 ? 50 : 0,
+      weight: toPercent(prefs.partisanWeight),
       value: demPct?.toFixed(0) || null,
       unit: "% Dem",
-      score: prefAlign === "neutral" ? 50 : (status === "good" ? 80 : 30),
+      score: Math.round(alignScore),
       status,
-      explanation,
+      explanation: (wantsDem && cityDem) || (!wantsDem && !cityDem)
+        ? `City aligns with your ${wantsDem ? "Democratic" : "Republican"} preference (PI: ${pi.toFixed(2)}).`
+        : `City leans ${cityDem ? "Democratic" : "Republican"} (PI: ${pi.toFixed(2)}) - ${distance.toFixed(2)} away from your preference.`,
+    });
+  } else if (prefs.preferHighTurnout && cultural?.political?.voterTurnout != null) {
+    // Turnout only (no partisan preference)
+    const turnout = cultural.political.voterTurnout;
+    const score = Math.max(0, Math.min(100, (turnout - 40) * 2.5)); // 40% = 0, 80% = 100
+    let status: FactorAnalysis["status"] = turnout >= 70 ? "good" : turnout < 55 ? "warning" : "neutral";
+    
+    factors.push({
+      name: "Civic Engagement",
+      weight: toPercent(30),
+      value: turnout.toFixed(0),
+      unit: "% turnout",
+      score: Math.round(score),
+      status,
+      explanation: turnout >= 70
+        ? `${turnout.toFixed(0)}% voter turnout - highly engaged community.`
+        : turnout < 55
+        ? `${turnout.toFixed(0)}% voter turnout is below average.`
+        : `${turnout.toFixed(0)}% voter turnout (US avg ~60%).`,
     });
   }
 
-  // Religious traditions
-  if (cultural?.religious && prefs.religiousTraditions.length > 0) {
+  // Religious traditions (only if enabled)
+  if (prefs.religiousTraditions.length > 0 && prefs.traditionsWeight > 0 && cultural?.religious) {
     const religious = cultural.religious;
     let score = 50;
     let status: FactorAnalysis["status"] = "neutral";
@@ -1300,50 +1388,56 @@ function analyzeValues(
       "unaffiliated": religious.unaffiliated,
     };
     
+    // National averages for concentration
+    const nationalAvg: Record<string, number> = {
+      "catholic": 205, "evangelical": 256, "mainline": 103,
+      "jewish": 22, "muslim": 11, "unaffiliated": 290,
+    };
+    
+    // Calculate score matching actual scoring logic
+    let traditionsScore = 50;
     for (const tradition of prefs.religiousTraditions) {
       const presence = traditionMap[tradition];
-      if (presence && presence >= prefs.minTraditionPresence) {
+      if (presence != null && presence >= prefs.minTraditionPresence) {
         foundTraditions.push(tradition);
+        const concentration = presence / (nationalAvg[tradition] || 100);
+        if (concentration > 2.0) traditionsScore += 20;
+        else if (concentration > 1.5) traditionsScore += 15;
+        else if (concentration > 1.0) traditionsScore += 10;
+        else traditionsScore += 5;
+      } else if (presence != null) {
+        traditionsScore -= Math.min(20, (prefs.minTraditionPresence - presence) / 5);
       }
     }
-
-    if (foundTraditions.length === prefs.religiousTraditions.length) {
-      status = "good";
-      score = 85;
-    } else if (foundTraditions.length > 0) {
-      score = 60;
-    } else {
-      status = "warning";
-      score = 30;
-    }
+    
+    score = Math.max(0, Math.min(100, traditionsScore));
+    if (foundTraditions.length === prefs.religiousTraditions.length) status = "good";
+    else if (foundTraditions.length === 0) status = "warning";
 
     factors.push({
-      name: "Religious Presence",
-      weight: prefs.traditionsWeight > 0 ? 30 : 0,
+      name: "Religious Community",
+      weight: toPercent(prefs.traditionsWeight),
       value: foundTraditions.length,
       unit: ` of ${prefs.religiousTraditions.length}`,
-      score,
+      score: Math.round(score),
       status,
       explanation: foundTraditions.length > 0
-        ? `Found ${foundTraditions.join(", ")} communities above threshold.`
+        ? `Found ${foundTraditions.join(", ")} communities above your threshold.`
         : "Selected religious traditions have limited presence.",
     });
   }
 
-  // Religious diversity
-  if (prefs.preferReligiousDiversity && cultural?.religious?.diversityIndex != null) {
+  // Religious diversity (only if enabled)
+  if (prefs.preferReligiousDiversity && prefs.diversityWeight > 0 && cultural?.religious?.diversityIndex != null) {
     const diversity = cultural.religious.diversityIndex;
     let status: FactorAnalysis["status"] = "neutral";
     
-    if (diversity >= 70) {
-      status = "good";
-    } else if (diversity < 40) {
-      status = "warning";
-    }
+    if (diversity >= 70) status = "good";
+    else if (diversity < 40) status = "warning";
 
     factors.push({
       name: "Religious Diversity",
-      weight: prefs.diversityWeight > 0 ? 20 : 0,
+      weight: toPercent(prefs.diversityWeight),
       value: diversity,
       unit: "/100",
       score: diversity,
@@ -1356,18 +1450,20 @@ function analyzeValues(
     });
   }
 
-  const badFactors = factors.filter((f) => f.status === "bad");
+  const badFactors = factors.filter((f) => f.status === "bad" || f.status === "warning");
   const goodFactors = factors.filter((f) => f.status === "good");
   
   let summary = "";
   if (badFactors.length > 0) {
-    summary = `Values mismatches: ${badFactors.map((f) => f.name.toLowerCase()).join(", ")}. `;
+    summary = `Values concerns: ${badFactors.map((f) => f.name.toLowerCase()).join(", ")}. `;
   }
   if (goodFactors.length > 0) {
     summary += `Values alignment: ${goodFactors.map((f) => f.name.toLowerCase()).join(", ")}.`;
   }
   if (!summary) {
-    summary = "Values factors are neutral for your preferences.";
+    summary = factors.length === 0 
+      ? "Enable political or religious preferences to see analysis."
+      : "Values factors are neutral for your preferences.";
   }
 
   return { factors, summary };
@@ -1391,12 +1487,38 @@ function analyzeEntertainment(
     };
   }
 
-  // Calculate total weight for percentages
-  const totalWeight = (prefs.nightlifeImportance ?? 50) + (prefs.artsImportance ?? 50) + 
-                      (prefs.diningImportance ?? 50) + (prefs.sportsImportance ?? 50) + 
-                      (prefs.recreationImportance ?? 50);
+  // Calculate total weight for percentages (only count enabled factors)
+  let totalWeight = 0;
+  if (prefs.nightlifeImportance > 0) totalWeight += prefs.nightlifeImportance;
+  if (prefs.artsImportance > 0) totalWeight += prefs.artsImportance;
+  if (prefs.diningImportance > 0) totalWeight += prefs.diningImportance;
+  if (prefs.sportsImportance > 0) totalWeight += prefs.sportsImportance;
+  if (prefs.recreationImportance > 0) totalWeight += prefs.recreationImportance;
 
-  // Nightlife
+  const toPercent = (w: number) => totalWeight > 0 ? Math.round((w / totalWeight) * 100) : 0;
+
+  // Helper: urbanAmenityScore matching actual scoring (logarithmic critical mass)
+  const urbanAmenityScore = (value: number, min: number, plateau: number, max: number) => {
+    if (value <= min) return 30;
+    if (value >= max) return 100;
+    if (value >= plateau) {
+      // Above plateau: logarithmic growth from 75 to 100
+      const progress = (value - plateau) / (max - plateau);
+      return 75 + 25 * Math.log10(1 + progress * 9);
+    }
+    // Below plateau: linear climb from 30 to 75
+    const progress = (value - min) / (plateau - min);
+    return 30 + 45 * progress;
+  };
+
+  // Calibrated ranges (matching constants.ts - Jan 2026 calibration)
+  const RANGES = {
+    barsAndClubsPer10K: { min: 0.5, plateau: 5, max: 10 },
+    museums: { min: 5, plateau: 30, max: 150 },
+    restaurantsPer10K: { min: 3, plateau: 20, max: 45 },
+  };
+
+  // Nightlife (only if weight > 0)
   if (prefs.nightlifeImportance > 0 && cultural?.urbanLifestyle?.nightlife) {
     const nl = cultural.urbanLifestyle.nightlife;
     const bars = nl.barsAndClubsPer10K;
@@ -1405,30 +1527,29 @@ function analyzeEntertainment(
     let status: FactorAnalysis["status"] = "neutral";
 
     if (bars !== null) {
-      score = Math.min(100, bars * 3);
-      if (bars >= 20) {
-        status = "good";
-      } else if (bars < 5) {
-        status = "warning";
-      }
+      score = urbanAmenityScore(bars, RANGES.barsAndClubsPer10K.min, 
+                                RANGES.barsAndClubsPer10K.plateau, RANGES.barsAndClubsPer10K.max);
+      // Bonus for late-night options
+      if (nl.lateNightVenues != null && nl.lateNightVenues >= 10) score = Math.min(100, score + 5);
+      
+      if (score >= 75) status = "good";
+      else if (score < 45) status = "warning";
     }
 
     factors.push({
       name: "Nightlife",
-      weight: totalWeight > 0 ? Math.round((prefs.nightlifeImportance / totalWeight) * 100) : 0,
+      weight: toPercent(prefs.nightlifeImportance),
       value: bars?.toFixed(1) || null,
       unit: "/10K",
-      score,
+      score: Math.round(score),
       status,
-      explanation: bars && bars >= 20
-        ? `${bars.toFixed(1)} bars/clubs per 10K - vibrant nightlife.`
-        : bars && bars < 5
-        ? `Only ${bars.toFixed(1)} bars/clubs per 10K - limited nightlife.`
-        : `${bars?.toFixed(1) || "N/A"} bars/clubs per 10K.`,
+      explanation: bars != null
+        ? `${bars.toFixed(1)} bars/clubs per 10K (Portland: 7.7, LA: 0.4).`
+        : "No nightlife data available.",
     });
   }
 
-  // Arts
+  // Arts (only if weight > 0)
   if (prefs.artsImportance > 0 && cultural?.urbanLifestyle?.arts) {
     const arts = cultural.urbanLifestyle.arts;
     const museums = arts.museums;
@@ -1437,30 +1558,25 @@ function analyzeEntertainment(
     let status: FactorAnalysis["status"] = "neutral";
 
     if (museums !== null) {
-      score = Math.min(100, museums * 4);
-      if (museums >= 20) {
-        status = "good";
-      } else if (museums < 5) {
-        status = "warning";
-      }
+      score = urbanAmenityScore(museums, RANGES.museums.min, RANGES.museums.plateau, RANGES.museums.max);
+      if (score >= 75) status = "good";
+      else if (score < 45) status = "warning";
     }
 
     factors.push({
       name: "Arts & Culture",
-      weight: totalWeight > 0 ? Math.round((prefs.artsImportance / totalWeight) * 100) : 0,
+      weight: toPercent(prefs.artsImportance),
       value: museums,
       unit: " museums",
-      score,
+      score: Math.round(score),
       status,
-      explanation: museums && museums >= 20
-        ? `${museums} museums - rich cultural scene.`
-        : museums && museums < 5
-        ? `Only ${museums} museums - limited arts options.`
-        : `${museums || "N/A"} museums.`,
+      explanation: museums != null
+        ? `${museums} museums (NYC: 162, small cities: 8-15).`
+        : "No arts data available.",
     });
   }
 
-  // Dining
+  // Dining (only if weight > 0)
   if (prefs.diningImportance > 0 && cultural?.urbanLifestyle?.dining) {
     const dining = cultural.urbanLifestyle.dining;
     const restaurants = dining.restaurantsPer10K;
@@ -1470,91 +1586,105 @@ function analyzeEntertainment(
     let status: FactorAnalysis["status"] = "neutral";
 
     if (restaurants !== null) {
-      score = Math.min(100, restaurants * 1.5);
-      if (restaurants >= 50 && (diversity ?? 0) >= 30) {
-        status = "good";
-      } else if (restaurants < 20) {
-        status = "warning";
-      }
+      score = urbanAmenityScore(restaurants, RANGES.restaurantsPer10K.min,
+                                RANGES.restaurantsPer10K.plateau, RANGES.restaurantsPer10K.max);
+      if (score >= 75) status = "good";
+      else if (score < 45) status = "warning";
     }
 
     factors.push({
       name: "Dining Scene",
-      weight: totalWeight > 0 ? Math.round((prefs.diningImportance / totalWeight) * 100) : 0,
+      weight: toPercent(prefs.diningImportance),
       value: restaurants?.toFixed(0) || null,
       unit: "/10K",
-      score,
+      score: Math.round(score),
       status,
-      explanation: restaurants && restaurants >= 50
-        ? `${restaurants.toFixed(0)} restaurants/10K with ${diversity || "?"} cuisines.`
-        : `${restaurants?.toFixed(0) || "N/A"} restaurants per 10K.`,
+      explanation: restaurants != null
+        ? `${restaurants.toFixed(0)} restaurants/10K, ${diversity || "?"} cuisines (SF: 42, Houston: 4).`
+        : "No dining data available.",
     });
   }
 
-  // Sports
+  // Sports (only if weight > 0)
   if (prefs.sportsImportance > 0) {
-    const countTeams = (teams: string | null) => 
+    const countTeams = (teams: string | null | undefined) => 
       teams ? teams.split(",").filter(t => t.trim()).length : 0;
     
-    const totalTeams = countTeams(metrics?.nflTeams ?? null) + countTeams(metrics?.nbaTeams ?? null) + 
-                       countTeams(metrics?.mlbTeams ?? null) + countTeams(metrics?.nhlTeams ?? null) + 
-                       countTeams(metrics?.mlsTeams ?? null);
+    const totalTeams = countTeams(metrics?.nflTeams) + countTeams(metrics?.nbaTeams) + 
+                       countTeams(metrics?.mlbTeams) + countTeams(metrics?.nhlTeams) + 
+                       countTeams(metrics?.mlsTeams);
     
-    let score = totalTeams === 0 ? 30 : Math.min(100, 40 + totalTeams * 10);
+    // Sports scoring matching actual scoring logic
+    let score = 30;
+    if (totalTeams === 0) score = 30;
+    else if (totalTeams <= 2) score = 50 + totalTeams * 10;
+    else if (totalTeams <= 4) score = 65 + (totalTeams - 2) * 7;
+    else if (totalTeams <= 6) score = 80 + (totalTeams - 4) * 5;
+    else if (totalTeams <= 8) score = 92 + (totalTeams - 6) * 2;
+    else score = Math.min(100, 97 + (totalTeams - 8));
+    
     let status: FactorAnalysis["status"] = "neutral";
-
-    if (totalTeams >= 5) {
-      status = "good";
-    } else if (totalTeams === 0) {
-      status = "warning";
-    }
+    if (score >= 80) status = "good";
+    else if (totalTeams === 0) status = "warning";
 
     factors.push({
       name: "Pro Sports",
-      weight: totalWeight > 0 ? Math.round((prefs.sportsImportance / totalWeight) * 100) : 0,
+      weight: toPercent(prefs.sportsImportance),
       value: totalTeams,
       unit: " teams",
-      score,
+      score: Math.round(score),
       status,
       explanation: totalTeams >= 5
-        ? `${totalTeams} major league teams - sports city!`
+        ? `${totalTeams} major league teams - major sports market!`
         : totalTeams === 0
         ? "No major league teams."
         : `${totalTeams} major league team(s).`,
     });
   }
 
-  // Recreation
+  // Recreation (only if weight > 0)
   if (prefs.recreationImportance > 0) {
     const rec = qol?.recreation;
     const hasCoast = rec?.geography?.coastlineWithin15Mi ?? false;
+    const coastDist = rec?.geography?.coastlineDistanceMi ?? null;
     const trails = rec?.nature?.trailMilesWithin10Mi ?? null;
     const elevation = rec?.geography?.maxElevationDelta ?? null;
 
-    let status: FactorAnalysis["status"] = "neutral";
-    let score = 50;
+    // Calculate sub-scores matching actual scoring
+    let natureScore = 50, beachScore = 50, mountainScore = 50;
+    
+    if (trails != null) natureScore = Math.min(100, trails / 1.5); // 150 trails = 100
+    if (hasCoast) beachScore = 100;
+    else if (coastDist != null && coastDist <= 100) beachScore = Math.max(0, 100 - (coastDist - 15) * 1.2);
+    else beachScore = 0;
+    if (elevation != null) mountainScore = Math.min(100, elevation / 40); // 4000ft = 100
+    else mountainScore = 0;
+    
+    // Weighted average of recreation sub-scores
+    const natureWt = prefs.natureWeight ?? 50;
+    const beachWt = prefs.beachWeight ?? 50;
+    const mountainWt = prefs.mountainWeight ?? 50;
+    const recTotal = natureWt + beachWt + mountainWt;
+    
+    const score = recTotal > 0 
+      ? (natureScore * natureWt + beachScore * beachWt + mountainScore * mountainWt) / recTotal
+      : 50;
+
     const features: string[] = [];
-
-    if (hasCoast) features.push("beach");
+    if (hasCoast) features.push("beach access");
     if (trails && trails > 100) features.push(`${trails}mi trails`);
-    if (elevation && elevation > 2000) features.push("mountains");
+    if (elevation && elevation > 2000) features.push(`${(elevation/1000).toFixed(1)}K ft mountains`);
 
-    if (features.length >= 2) {
-      status = "good";
-      score = 85;
-    } else if (features.length === 1) {
-      score = 65;
-    } else {
-      status = "warning";
-      score = 30;
-    }
+    let status: FactorAnalysis["status"] = "neutral";
+    if (score >= 70) status = "good";
+    else if (score < 35) status = "warning";
 
     factors.push({
       name: "Recreation",
-      weight: totalWeight > 0 ? Math.round((prefs.recreationImportance / totalWeight) * 100) : 0,
-      value: trails,
-      unit: "mi trails",
-      score,
+      weight: toPercent(prefs.recreationImportance),
+      value: features.length > 0 ? features.join(", ") : "Limited",
+      unit: "",
+      score: Math.round(score),
       status,
       explanation: features.length > 0
         ? `Outdoor access: ${features.join(", ")}.`
@@ -1562,7 +1692,7 @@ function analyzeEntertainment(
     });
   }
 
-  const badFactors = factors.filter((f) => f.status === "bad");
+  const badFactors = factors.filter((f) => f.status === "bad" || f.status === "warning");
   const goodFactors = factors.filter((f) => f.status === "good");
   
   let summary = "";
