@@ -917,19 +917,41 @@ function analyzeDemographics(
   const census = city.metrics?.census;
   const prefs = preferences.advanced.demographics;
 
-  // Calculate total weight for percentage display
-  let totalWeight = 0;
-  if (prefs.weightDiversity > 0) totalWeight += prefs.weightDiversity;
-  if (prefs.weightAge > 0) totalWeight += prefs.weightAge;
-  if (prefs.weightEducation > 0) totalWeight += prefs.weightEducation;
-  if (prefs.weightForeignBorn > 0) totalWeight += prefs.weightForeignBorn;
-  if (prefs.minorityGroup !== "none") totalWeight += prefs.minorityImportance;
-  if (prefs.weightEconomicHealth > 0) totalWeight += prefs.weightEconomicHealth;
-  // Include dating weight in total when enabled
-  if (prefs.datingEnabled && prefs.datingWeight > 0) totalWeight += prefs.datingWeight;
+  // Calculate weights for percentage display
+  // The actual scoring uses: finalScore = baseScore * (1 - datingInfluence) + datingScore * datingInfluence
+  // where datingInfluence = datingWeight / 100
+  // So we need to show percentages that reflect actual contribution to final score
   
-  // Helper to convert raw weight to percentage of total
-  const toPercent = (w: number) => totalWeight > 0 ? Math.round((w / totalWeight) * 100) : 0;
+  // Non-dating weights (for the "base" demographics score)
+  let nonDatingTotalWeight = 0;
+  if (prefs.weightDiversity > 0) nonDatingTotalWeight += prefs.weightDiversity;
+  if (prefs.weightAge > 0) nonDatingTotalWeight += prefs.weightAge;
+  if (prefs.weightEducation > 0) nonDatingTotalWeight += prefs.weightEducation;
+  if (prefs.weightForeignBorn > 0) nonDatingTotalWeight += prefs.weightForeignBorn;
+  if (prefs.minorityGroup !== "none") nonDatingTotalWeight += prefs.minorityImportance;
+  if (prefs.weightEconomicHealth > 0) nonDatingTotalWeight += prefs.weightEconomicHealth;
+  
+  // Dating influence (0-1) - controls the blend between base and dating scores
+  const datingEnabled = prefs.datingEnabled ?? false;
+  const datingWeight = prefs.datingWeight ?? 0;
+  const datingInfluence = datingEnabled ? datingWeight / 100 : 0;
+  
+  // Helper to convert non-dating factor weight to percentage of FINAL score
+  // Non-dating factors get (1 - datingInfluence) of the total, distributed by their weights
+  const toNonDatingPercent = (w: number) => {
+    if (nonDatingTotalWeight === 0) return 0;
+    const shareWithinNonDating = w / nonDatingTotalWeight;
+    return Math.round(shareWithinNonDating * (1 - datingInfluence) * 100);
+  };
+  
+  // Helper to convert dating factor weight to percentage of FINAL score
+  // Dating factors get datingInfluence of the total (e.g., 100% when slider is at max)
+  const toDatingPercent = (datingSubWeight: number) => {
+    return Math.round(datingSubWeight * datingInfluence * 100);
+  };
+  
+  // Legacy helper for backward compatibility (used by non-dating factors)
+  const totalWeight = nonDatingTotalWeight > 0 || datingEnabled ? 1 : 0; // Just for guards
 
   // Population penalty warning (only show if user set a minimum AND city is below it)
   // Population is NOT a weighted factor - it's a graduated penalty applied at the end
@@ -971,7 +993,7 @@ function analyzeDemographics(
 
     factors.push({
       name: "Diversity Index",
-      weight: toPercent(prefs.weightDiversity),
+      weight: toNonDatingPercent(prefs.weightDiversity),
       value: div,
       unit: "/100",
       threshold: minDiv > 0 ? { value: minDiv, type: "min", label: "Your min" } : undefined,
@@ -1013,7 +1035,7 @@ function analyzeDemographics(
 
     factors.push({
       name: "Median Age",
-      weight: toPercent(prefs.weightAge),
+      weight: toNonDatingPercent(prefs.weightAge),
       value: age.toFixed(1),
       unit: " years",
       score,
@@ -1037,7 +1059,7 @@ function analyzeDemographics(
 
     factors.push({
       name: "Bachelor's Degree+",
-      weight: toPercent(prefs.weightEducation),
+      weight: toNonDatingPercent(prefs.weightEducation),
       value: edu.toFixed(0),
       unit: "%",
       score: Math.round(score),
@@ -1065,7 +1087,7 @@ function analyzeDemographics(
 
     factors.push({
       name: "Foreign-Born",
-      weight: toPercent(prefs.weightForeignBorn),
+      weight: toNonDatingPercent(prefs.weightForeignBorn),
       value: fb.toFixed(0),
       unit: "%",
       threshold: minFb > 0 ? { value: minFb, type: "min", label: "Your min" } : undefined,
@@ -1110,7 +1132,7 @@ function analyzeDemographics(
 
     factors.push({
       name: "Economic Health",
-      weight: toPercent(prefs.weightEconomicHealth),
+      weight: toNonDatingPercent(prefs.weightEconomicHealth),
       value,
       unit: " income/poverty",
       score: Math.round(score),
@@ -1192,7 +1214,7 @@ function analyzeDemographics(
 
     factors.push({
       name: `Dating Pool${ageRange ? ` (${ageRange})` : ""}`,
-      weight: toPercent(datingWeight * DATING_WEIGHTS.pool),
+      weight: toDatingPercent(DATING_WEIGHTS.pool),
       value: ratioValue ? `${ratioValue} M/100F` : null,
       unit: singlesValue ? `, ${singlesValue}% single` : "",
       score: poolScore,
@@ -1217,7 +1239,7 @@ function analyzeDemographics(
 
       factors.push({
         name: "Dating: Affordability",
-        weight: toPercent(datingWeight * DATING_WEIGHTS.economic),
+        weight: toDatingPercent(DATING_WEIGHTS.economic),
         value: `$${(disposable / 1000).toFixed(0)}K`,
         unit: " disposable",
         score: econScore,
@@ -1261,7 +1283,7 @@ function analyzeDemographics(
 
     factors.push({
       name: "Dating: Alignment",
-      weight: toPercent(datingWeight * DATING_WEIGHTS.alignment),
+      weight: toDatingPercent(DATING_WEIGHTS.alignment),
       value: political?.democratPercent?.toFixed(0) || null,
       unit: political?.democratPercent ? "% Dem" : "",
       score: Math.round(alignScore),
@@ -1297,7 +1319,7 @@ function analyzeDemographics(
 
     factors.push({
       name: "Dating: Walk/Safety",
-      weight: toPercent(datingWeight * DATING_WEIGHTS.walkSafety),
+      weight: toDatingPercent(DATING_WEIGHTS.walkSafety),
       value: ws ?? null,
       unit: ws ? " Walk Score®" : "",
       score: Math.round(vibeScore),
@@ -1305,18 +1327,28 @@ function analyzeDemographics(
       explanation: vibeExplanation || "Walkability for meeting people organically.",
     });
 
-    // Add note about dating weight dominance if other factors are at 0
-    const nonDatingWeight = totalWeight - datingWeight;
-    if (nonDatingWeight === 0 && factors.length > 0) {
+    // Add note about dating weight dominance if other factors are at 0 or dating is at max
+    if (nonDatingTotalWeight === 0 && factors.length > 0) {
       // Insert an info factor at the beginning explaining the score composition
       factors.unshift({
         name: "ℹ️ Dating Focus Mode",
         weight: 0,
-        value: `${Math.round((datingWeight / totalWeight) * 100)}%`,
+        value: `${Math.round(datingInfluence * 100)}%`,
         unit: " of score",
         score: 50,
         status: "neutral",
         explanation: "Other demographic factors (diversity, age, education) are set to 0 weight. Adjust in Advanced Preferences to include them.",
+      });
+    } else if (datingInfluence === 1 && factors.length > 0) {
+      // Dating slider at max means 100% dating influence regardless of other weights
+      factors.unshift({
+        name: "ℹ️ Dating Maximum",
+        weight: 0,
+        value: "100%",
+        unit: " dating",
+        score: 50,
+        status: "neutral",
+        explanation: "Dating weight at maximum - score is 100% from dating factors. Lower the dating slider to blend with other demographics.",
       });
     }
   }
