@@ -2,9 +2,70 @@
 
 All notable changes to the Cities App project.
 
+## [2.1.0] - 2026-02-03
+
+### Added
+- **About Page** (`/about`) - Explains the app's philosophy, privacy-first architecture, and data sources
+- **Vercel Analytics** - Page view tracking and Speed Insights for Core Web Vitals
+- **Image Attribution** - `ATTRIBUTIONS.md` credits all city image photographers
+- **MIT License** - Open source license for public repository
+
+### Changed
+- Reorganized `public/cities/` folder structure (deploy/, raw/, backup/)
+- Score breakdowns now show dynamic weights matching actual scoring logic
+- Cost breakdown explains persona-based calculation instead of fake percentages
+
+### Fixed
+- NYC image restored after accidental overwrite by image pipeline
+- Entertainment scoring calibration (nightlife/dining ranges)
+- Demographics and Climate breakdowns now sum to 100%
+
+---
+
+## [2.0.0] - 2026-02-02
+
+### Major Changes
+- **6 Scoring Categories** (was 5): Split "Cultural" into "Values" and "Entertainment"
+- **City Tinder** - Swipe-based preference discovery game with 12 archetype cities
+
+### Added
+- **Values Category**: Political alignment (Gaussian decay scoring), religious community presence, religious diversity
+- **Entertainment Category**: Nightlife, Arts, Dining, Sports, Recreation (moved from QoL)
+- **City Tinder Game**: "The Dirty Dozen" - 12 cities selected to maximize algorithmic variance
+- **Quick Setup Wizard**: Lifestyle personas for fast preference initialization
+- Migration logic for existing users' saved preferences
+
+### Changed
+- Recreation (parks, trails, beach, mountains) moved from QoL to Entertainment
+- Urban amenity scoring uses logarithmic "critical mass" curves
+- Radar chart and all UI components updated for 6 categories
+
+### Technical
+- Calibrated `URBAN_LIFESTYLE_RANGES` to match actual OpenStreetMap data
+- Las Vegas data patched to include Strip venues (Paradise, NV)
+
+---
+
+## [1.1.0] - 2026-01-31
+
+### Added
+- **Dating Favorability** - New scoring dimension in Demographics category
+  - Pool Score (40%): Gender ratios by age bracket + never-married percentages
+  - Economic Score (30%): Disposable income / affordability for singles
+  - Alignment Score (20%): Political preference matching
+  - Lifestyle Score (10%): Walkability and safety for dating
+- Gender and age range selectors in Demographics preferences
+- Score breakdown dialog shows individual dating factor contributions
+
+### Data
+- Added gender ratio data by age brackets (Census ACS)
+- Added never-married percentage by gender (Census ACS)
+
+---
+
 ## [1.0.0] - 2026-01-30
 
-### 🎉 Initial Release
+### Initial Release
 
 The first stable release of "Where Should I Live" - a comprehensive city comparison tool that helps you find your perfect city based on personalized preferences.
 
@@ -37,20 +98,9 @@ The first stable release of "Where Should I Live" - a comprehensive city compari
 
 ### Data Pipeline
 
-- **Walk Score® Integration**: City-wide walkability scores from walkscore.com
-  - Robust URL validation to prevent address-page data
-  - Automatic detection of redirects and suspicious scores
-  
-- **Admin CLI Tools**: 
-  - `scripts/admin.ts` - Unified admin operations
-  - `scripts/add-city.ts` - Automated city addition pipeline
-  - `scripts/fetch-walkscore.ts` - Walk Score scraper with validation
-  - `scripts/verify-city-data.ts` - Data completeness checker
-
-- **Security Hardening**:
-  - Admin API routes restricted to development mode
-  - Environment variable authentication
-  - No hardcoded credentials
+- **Walk Score Integration**: City-wide walkability scores from walkscore.com
+- **Admin CLI Tools**: Unified admin operations, automated city addition
+- **Security**: Admin routes restricted to development mode
 
 ### Technical Stack
 
@@ -62,29 +112,17 @@ The first stable release of "Where Should I Live" - a comprehensive city compari
 
 ### Data Sources
 
-| Source | API/Dataset | Data |
-|--------|-------------|------|
-| BEA | Regional Price Parities | Cost of living, purchasing power |
-| Census | ACS 5-Year Estimates | Demographics, diversity, education |
-| NOAA | ACIS + Open-Meteo | Climate normals (30-year) |
-| EPA | Air Quality System | AQI statistics |
-| FBI | Crime Data Explorer | Crime rates |
-| FCC | Broadband Map | Internet availability |
-| HRSA | Health Resources | Healthcare access |
-| NCES | Education Statistics | School quality |
-| Walk Score® | walkscore.com | Walkability, transit, bike scores |
-| Zillow | ZHVI | Home price history |
-| MIT Election Lab | County Returns | Political lean |
-| ARDA | Religion Census | Religious composition |
-
-### Documentation
-
-- `docs/ADDING-CITIES.md` - Guide for adding new cities
-- `docs/ADMIN.md` - Admin operations documentation
-- `/help` page - In-app scoring methodology explanation
-
----
-
-## [Unreleased]
-
-_Future improvements and features will be listed here._
+| Source | Data |
+|--------|------|
+| BEA | Cost of living, purchasing power |
+| Census ACS | Demographics, diversity, education |
+| NOAA | Climate normals (30-year) |
+| EPA | Air quality statistics |
+| FBI | Crime rates |
+| FCC | Internet availability |
+| HRSA | Healthcare access |
+| NCES | School quality |
+| Walk Score | Walkability, transit, bike scores |
+| Zillow | Home price history |
+| MIT Election Lab | Political lean |
+| ARDA | Religious composition |

@@ -1,169 +1,126 @@
-# City Rankings
+# Where Should I Live
 
-A web application to compare US cities based on weather, cost of living, demographics, and more. Customize your preferences to find the best city for you.
+A personalized city comparison tool that ranks US cities based on **your** priorities—not generic "Best Places" lists.
+
+**Live Demo:** [where-should-i-live.vercel.app](https://where-should-i-live.vercel.app)
+
+## What Makes This Different
+
+- **You define what matters**: Weight climate, cost, politics, nightlife, and safety however you want
+- **Privacy-first**: All scoring happens in your browser. Your preferences never leave your device.
+- **Transparent methodology**: Every score can be explained. Click any category to see exactly why.
+- **No account required**: Preferences stored locally—clear your browser, it's gone
 
 ## Features
 
-- **Interactive preference controls** - Sliders and toggles to weight what matters to you
-- **Real-time scoring** - Rankings update instantly as you change preferences
-- **Hierarchical preferences** - Basic options always visible, advanced options collapsible
-- **Tooltips** - Helpful descriptions for every preference
-- **Export/Import** - Save your preferences as JSON and share them
-- **No account required** - Preferences stored locally in your browser
+### City Rankings
+- **6 Scoring Categories**: Climate, Cost of Living, Demographics, Quality of Life, Entertainment, Values
+- **Real-time updates**: Rankings recalculate instantly as you adjust preferences
+- **Score breakdowns**: Click any score to see which factors helped or hurt
+
+### City Tinder
+Swipe-based preference discovery. Like/dislike 12 "archetype" cities and the app infers your weights—no sliders needed.
+
+### Comparison Mode
+Side-by-side comparison of any two cities across all metrics.
+
+### Quick Setup
+Lifestyle personas (Urban Explorer, Budget Conscious, etc.) to initialize preferences fast.
 
 ## Tech Stack
 
-- **Frontend:** Next.js 14+ (App Router), React, TypeScript
-- **Styling:** Tailwind CSS + shadcn/ui
-- **State:** Zustand (preferences), TanStack Query (server data)
-- **Database:** PostgreSQL (Neon free tier)
-- **ORM:** Prisma
-- **Charts:** Recharts
-- **Deployment:** Vercel
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS + shadcn/ui |
+| State | Zustand + localStorage |
+| Data | Static JSON (client-side scoring) |
+| Charts | Recharts |
+| Hosting | Vercel |
+
+**Key architectural decision**: All scoring happens client-side. When you move a slider, rankings update instantly—no server roundtrip.
+
+## Data Sources
+
+| Category | Source | Vintage |
+|----------|--------|---------|
+| Cost of Living | BEA Regional Price Parities | 2023 |
+| Demographics | Census ACS 5-Year | 2022 |
+| Crime | FBI Uniform Crime Report | 2022 |
+| Climate | NOAA Climate Normals | 1991-2020 |
+| Walkability | Walk Score API | 2024 |
+| Nightlife/Dining | OpenStreetMap | 2024 |
+| Political | MIT Election Lab | 2020-2024 |
+
+See [docs/DATA-SOURCES.md](docs/DATA-SOURCES.md) for detailed methodology.
 
 ## Getting Started
 
 ### Prerequisites
-
 - Node.js 18+
-- npm
 - PostgreSQL database (or [Neon](https://neon.tech) free tier)
 
-### 1. Clone the repository
+### Setup
 
 ```bash
-git clone <your-repo-url>
+# Clone
+git clone https://github.com/jyzhang23/where_should_i_live.git
 cd cities-app
-```
 
-### 2. Install dependencies
-
-```bash
+# Install
 npm install
-```
 
-### 3. Set up environment variables
-
-Copy the example environment file:
-
-```bash
+# Configure
 cp .env.example .env
-```
+# Edit .env with your DATABASE_URL
 
-Edit `.env` and add your database URL:
-
-```env
-# For Neon PostgreSQL (recommended):
-DATABASE_URL="postgresql://user:password@host:5432/database?sslmode=require"
-
-# Admin password for data refresh
-ADMIN_PASSWORD="change-this-in-production"
-```
-
-**Getting a Neon database URL:**
-1. Go to [neon.tech](https://neon.tech) and create a free account
-2. Create a new project
-3. Copy the connection string from the dashboard
-
-### 4. Set up the database
-
-Push the Prisma schema to create tables:
-
-```bash
+# Database
 npm run db:push
-```
-
-Seed the database with city data from the Excel file:
-
-```bash
 npm run db:seed
-```
 
-### 5. Start the development server
-
-```bash
+# Run
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run db:generate` | Generate Prisma client |
-| `npm run db:push` | Push schema to database |
-| `npm run db:migrate` | Run database migrations |
-| `npm run db:seed` | Seed database from Excel |
-| `npm run db:studio` | Open Prisma Studio |
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure
 
 ```
 cities-app/
-├── prisma/
-│   └── schema.prisma          # Database schema
-├── scripts/
-│   └── seed.ts                # Excel import script
-├── src/
-│   ├── app/
-│   │   ├── api/               # API routes
-│   │   ├── layout.tsx         # Root layout
-│   │   └── page.tsx           # Main dashboard
-│   ├── components/
-│   │   ├── preferences/       # Preference controls
-│   │   ├── rankings/          # Rankings display
-│   │   └── ui/                # shadcn/ui components
-│   ├── hooks/                 # React hooks
-│   ├── lib/
-│   │   ├── db.ts              # Prisma client
-│   │   ├── scoring.ts         # Scoring algorithms
-│   │   └── store.ts           # Zustand store
-│   └── types/                 # TypeScript types
-└── package.json
+├── data/                 # Static JSON data files
+│   ├── cities.json       # City definitions
+│   ├── metrics.json      # All city metrics
+│   └── zhvi-history.json # Zillow price history
+├── docs/                 # Documentation
+├── public/cities/        # City images
+├── scripts/              # Admin CLI tools
+└── src/
+    ├── app/              # Next.js pages
+    │   ├── about/        # About page
+    │   ├── city/[id]/    # City detail pages
+    │   └── help/         # Methodology docs
+    ├── components/       # React components
+    ├── lib/
+    │   ├── scoring/      # Scoring algorithms
+    │   └── store.ts      # Zustand state
+    └── types/            # TypeScript types
 ```
 
-## Data Sources
+## Documentation
 
-The app pulls data from official government APIs plus some manual research:
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - System design and scoring algorithms
+- [DATA-SOURCES.md](docs/DATA-SOURCES.md) - Data sources and collection methods
+- [ADDING-CITIES.md](docs/ADDING-CITIES.md) - How to add new cities
+- [ADMIN.md](docs/ADMIN.md) - Admin CLI operations
 
-| Category | Source | API/Method |
-|----------|--------|------------|
-| Housing | [Zillow Research](https://zillow.com/research/data/) | Manual CSV import |
-| Demographics | US Census Bureau ACS | API (free) |
-| Crime | FBI Crime Data Explorer | API (free) |
-| Climate | NOAA ACIS + Open-Meteo | API (free) |
-| Cost of Living | BEA Regional Price Parities | API (free) |
-| Air Quality | EPA AQS | API (free) |
-| Walk/Bike Score | EPA National Walkability Index | API (free) |
-| Transit Score | walkscore.com | Manual research (Jan 2025) |
-| Broadband | FCC National Broadband Map | API (free) |
-| Education | NCES EDGE | API (free) |
-| Healthcare | HRSA | API (free) |
-| Political | MIT Election Lab | Static JSON |
-| Religious | ARDA | Static JSON |
+## Contributing
 
-See `docs/DATA-SOURCES.md` for detailed documentation on each data source.
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import the project in [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard
-4. Deploy
-
-### Environment Variables for Production
-
-Make sure to set these in your deployment platform:
-- `DATABASE_URL` - Your PostgreSQL connection string
-- `ADMIN_PASSWORD` - A secure password for admin functions
+Found a bug? Want a city added? [Open an issue](https://github.com/jyzhang23/where_should_i_live/issues/new).
 
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE)
+
+City images are licensed separately under Unsplash/Pexels licenses. See [ATTRIBUTIONS.md](ATTRIBUTIONS.md).
