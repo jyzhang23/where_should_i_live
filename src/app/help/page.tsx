@@ -1095,6 +1095,15 @@ export default function HelpPage() {
         <p>
           All scoring happens in your browser. Your preferences are stored locally and never sent to a server.
         </p>
+        <p className="mt-2">
+          <Link href="/about" className="text-primary hover:underline">
+            Why we built this
+          </Link>
+          {" · "}
+          <Link href="/" className="text-primary hover:underline">
+            Back to Rankings
+          </Link>
+        </p>
       </div>
     </div>
   );

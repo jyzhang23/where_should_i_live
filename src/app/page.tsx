@@ -22,7 +22,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { GitCompare, HelpCircle } from "lucide-react";
+import { GitCompare, HelpCircle, Info } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -110,6 +110,16 @@ export default function Home() {
         </div>
         <div className="flex flex-col items-end gap-1">
           <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/about">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>About This App</TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link href="/help">
