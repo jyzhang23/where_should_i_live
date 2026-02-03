@@ -756,29 +756,27 @@ function analyzeDemographics(
   // Helper to convert raw weight to percentage of total
   const toPercent = (w: number) => totalWeight > 0 ? Math.round((w / totalWeight) * 100) : 0;
 
-  // Population (shown as info/penalty, not a weighted factor)
-  if (census?.totalPopulation != null) {
+  // Population penalty warning (only show if user set a minimum AND city is below it)
+  // Population is NOT a weighted factor - it's a graduated penalty applied at the end
+  if (census?.totalPopulation != null && prefs.minPopulation > 0) {
     const pop = census.totalPopulation;
     const minPop = prefs.minPopulation;
-    let status: FactorAnalysis["status"] = "neutral";
 
     if (pop < minPop) {
-      status = "bad";
-    } else if (pop > 500000) {
-      status = "good";
+      // Only show when there's a penalty being applied
+      const deficit = (minPop - pop) / minPop;
+      const penalty = Math.round(50 * deficit);
+      
+      factors.push({
+        name: "⚠️ Population Penalty",
+        weight: 0, // Not a weighted factor
+        value: pop > 1000000 ? (pop / 1000000).toFixed(1) + "M" : (pop / 1000).toFixed(0) + "K",
+        threshold: { value: minPop / 1000, type: "min", label: "Min (K)" },
+        score: Math.max(0, 100 - penalty),
+        status: "bad",
+        explanation: `Population ${(pop / 1000).toFixed(0)}K is below your minimum of ${(minPop / 1000).toFixed(0)}K. Score reduced by ${penalty} points.`,
+      });
     }
-
-    factors.push({
-      name: "Population",
-      weight: 0, // Info only - not a weighted factor (penalty applied separately)
-      value: pop > 1000000 ? (pop / 1000000).toFixed(1) + "M" : (pop / 1000).toFixed(0) + "K",
-      threshold: minPop > 0 ? { value: minPop / 1000, type: "min", label: "Min (K)" } : undefined,
-      score: pop < minPop ? 30 : 70,
-      status,
-      explanation: pop < minPop
-        ? `Population of ${(pop / 1000).toFixed(0)}K is below your minimum of ${(minPop / 1000).toFixed(0)}K (penalty applied).`
-        : `Population meets requirements.`,
-    });
   }
 
   // Diversity (only if weight > 0)
