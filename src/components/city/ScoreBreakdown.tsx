@@ -925,6 +925,8 @@ function analyzeDemographics(
   if (prefs.weightForeignBorn > 0) totalWeight += prefs.weightForeignBorn;
   if (prefs.minorityGroup !== "none") totalWeight += prefs.minorityImportance;
   if (prefs.weightEconomicHealth > 0) totalWeight += prefs.weightEconomicHealth;
+  // Include dating weight in total when enabled
+  if (prefs.datingEnabled && prefs.datingWeight > 0) totalWeight += prefs.datingWeight;
   
   // Helper to convert raw weight to percentage of total
   const toPercent = (w: number) => totalWeight > 0 ? Math.round((w / totalWeight) * 100) : 0;
@@ -1126,6 +1128,22 @@ function analyzeDemographics(
     const cultural = city.metrics?.cultural;
     const bea = city.metrics?.bea;
 
+    // Dating sub-weights matching actual scoring formula (demographics.ts)
+    // Pool 40% + Economic 30% + Alignment 20% + Walk/Safety 10% = 100%
+    const DATING_WEIGHTS = {
+      pool: 0.40,        // Gender ratio + singles combined
+      economic: 0.30,    // Affordability/disposable income
+      alignment: 0.20,   // Political preference match
+      walkSafety: 0.10,  // Walkability + crime rate
+    };
+
+    // === 1. POOL SCORE (40%) - Gender ratio + singles combined ===
+    let poolScore = 50;
+    let poolStatus: FactorAnalysis["status"] = "neutral";
+    let poolExplanation = "";
+    let ratioValue: string | null = null;
+    let singlesValue: string | null = null;
+
     // Get appropriate gender ratio
     let genderRatio: { male: number; female: number; ratio: number } | null = null;
     if (census?.genderRatios) {
@@ -1137,139 +1155,168 @@ function analyzeDemographics(
       }
     }
 
-    // Pool: Gender Ratio
+    // Calculate pool score (matching actual scoring in demographics.ts)
     if (genderRatio) {
       const ratio = genderRatio.ratio;
-      let status: FactorAnalysis["status"] = "neutral";
-      let score = 50;
-      let explanation = "";
+      const deviation = ratio - 100;
+      const direction = seekingGender === "women" ? -1 : 1;
+      poolScore = 50 + (direction * deviation * 2.5);
+      ratioValue = ratio.toFixed(1);
       
       if (seekingGender === "women") {
-        // Looking for women: ratio < 100 is favorable (more women)
-        score = Math.max(0, Math.min(100, 100 - (ratio - 85) * (100 / 30)));
-        if (ratio < 95) {
-          status = "good";
-          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - more women available.`;
-        } else if (ratio > 105) {
-          status = "bad";
-          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - fewer women available.`;
-        } else {
-          explanation = `Gender ratio of ${ratio.toFixed(1)} is near balanced.`;
-        }
+        if (ratio < 95) poolExplanation = `Favorable ratio (${ratio.toFixed(1)} M/100F)`;
+        else if (ratio > 105) poolExplanation = `Unfavorable ratio (${ratio.toFixed(1)} M/100F)`;
+        else poolExplanation = `Balanced ratio (${ratio.toFixed(1)} M/100F)`;
       } else {
-        // Looking for men: ratio > 100 is favorable (more men)
-        score = Math.max(0, Math.min(100, (ratio - 85) * (100 / 30)));
-        if (ratio > 105) {
-          status = "good";
-          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - more men available.`;
-        } else if (ratio < 95) {
-          status = "bad";
-          explanation = `Ratio of ${ratio.toFixed(1)} males per 100 females - fewer men available.`;
-        } else {
-          explanation = `Gender ratio of ${ratio.toFixed(1)} is near balanced.`;
-        }
+        if (ratio > 105) poolExplanation = `Favorable ratio (${ratio.toFixed(1)} M/100F)`;
+        else if (ratio < 95) poolExplanation = `Unfavorable ratio (${ratio.toFixed(1)} M/100F)`;
+        else poolExplanation = `Balanced ratio (${ratio.toFixed(1)} M/100F)`;
       }
-
-      factors.push({
-        name: `Dating: Gender Ratio${ageRange ? ` (${ageRange})` : ""}`,
-        weight: Math.round(datingWeight * 0.4),
-        value: ratio.toFixed(1),
-        unit: " M/100F",
-        score,
-        status,
-        explanation,
-      });
     }
 
-    // Pool: Never Married %
+    // Singles adjustment
     const neverMarriedPct = seekingGender === "women" 
       ? census?.neverMarriedFemalePercent
       : census?.neverMarriedMalePercent;
     
     if (neverMarriedPct != null) {
-      let status: FactorAnalysis["status"] = "neutral";
-      let score = Math.min(100, 30 + neverMarriedPct * 1.5);
-      
-      if (neverMarriedPct >= 40) {
-        status = "good";
-      } else if (neverMarriedPct < 25) {
-        status = "warning";
-      }
-
-      factors.push({
-        name: `Dating: ${seekingGender === "women" ? "Single Women" : "Single Men"} %`,
-        weight: Math.round(datingWeight * 0.15),
-        value: neverMarriedPct.toFixed(0),
-        unit: "%",
-        score,
-        status,
-        explanation: neverMarriedPct >= 40
-          ? `${neverMarriedPct.toFixed(0)}% never married - large dating pool.`
-          : `${neverMarriedPct.toFixed(0)}% never married (15+).`,
-      });
+      const singleAdjustment = (neverMarriedPct - 55) * 1.5;
+      poolScore += singleAdjustment;
+      singlesValue = neverMarriedPct.toFixed(0);
+      poolExplanation += `, ${neverMarriedPct.toFixed(0)}% single`;
     }
+    
+    poolScore = Math.max(0, Math.min(100, poolScore));
+    if (poolScore >= 65) poolStatus = "good";
+    else if (poolScore < 40) poolStatus = "bad";
 
-    // Economic: Dating Affordability
-    if (bea && census?.medianHouseholdIncome) {
-      const income = census.medianHouseholdIncome;
+    factors.push({
+      name: `Dating Pool${ageRange ? ` (${ageRange})` : ""}`,
+      weight: toPercent(datingWeight * DATING_WEIGHTS.pool),
+      value: ratioValue ? `${ratioValue} M/100F` : null,
+      unit: singlesValue ? `, ${singlesValue}% single` : "",
+      score: poolScore,
+      status: poolStatus,
+      explanation: poolExplanation || "Gender ratio and singles data combined.",
+    });
+
+    // === 2. ECONOMIC SCORE (30%) - Disposable income ===
+    if (bea && census?.perCapitaIncome) {
+      const income = census.perCapitaIncome;
       const housingRPP = bea.regionalPriceParity?.housing || 100;
-      const estimatedAnnualRent = 16800 * (housingRPP / 100);
-      const disposableIncome = income - estimatedAnnualRent;
-      const rentToIncomeRatio = estimatedAnnualRent / income;
+      const estimatedRent = 16800 * (housingRPP / 100);
+      const disposable = income - estimatedRent;
       
-      let status: FactorAnalysis["status"] = "neutral";
-      let score = Math.min(100, 20 + (disposableIncome / 1000));
+      // Match actual scoring: $25k = 50pts, $45k = 75pts ($800 per point)
+      let econScore = 50 + ((disposable - 25000) / 800);
+      econScore = Math.max(0, Math.min(100, econScore));
       
-      if (rentToIncomeRatio < 0.25) {
-        status = "good";
-        score += 10;
-      } else if (rentToIncomeRatio > 0.35) {
-        status = "bad";
-        score -= 15;
-      }
-      score = Math.max(0, Math.min(100, score));
+      let econStatus: FactorAnalysis["status"] = "neutral";
+      if (econScore >= 65) econStatus = "good";
+      else if (econScore < 40) econStatus = "bad";
 
       factors.push({
         name: "Dating: Affordability",
-        weight: Math.round(datingWeight * 0.3),
-        value: `$${(disposableIncome / 1000).toFixed(0)}K`,
-        unit: "/yr",
-        score,
-        status,
-        explanation: rentToIncomeRatio < 0.25
-          ? `${(rentToIncomeRatio * 100).toFixed(0)}% rent burden - affordable for dating.`
-          : rentToIncomeRatio > 0.35
-          ? `${(rentToIncomeRatio * 100).toFixed(0)}% rent burden - limited disposable income.`
-          : `${(rentToIncomeRatio * 100).toFixed(0)}% rent burden - moderate dating budget.`,
+        weight: toPercent(datingWeight * DATING_WEIGHTS.economic),
+        value: `$${(disposable / 1000).toFixed(0)}K`,
+        unit: " disposable",
+        score: econScore,
+        status: econStatus,
+        explanation: econScore >= 65
+          ? `$${(disposable / 1000).toFixed(0)}K disposable income - great for dating.`
+          : econScore < 40
+          ? `Limited disposable income after rent.`
+          : `$${(disposable / 1000).toFixed(0)}K disposable - moderate dating budget.`,
       });
     }
 
-    // Walk Score for dating
-    if (qol?.walkability?.walkScore != null) {
-      const ws = qol.walkability.walkScore;
-      let status: FactorAnalysis["status"] = "neutral";
-      let score = ws >= 70 ? Math.min(100, 60 + ws * 0.5) 
-                : ws >= 50 ? 50 + (ws - 50) * 0.5
-                : Math.max(20, ws);
-      
-      if (ws >= 70) {
-        status = "good";
-      } else if (ws < 40) {
-        status = "warning";
-      }
+    // === 3. ALIGNMENT SCORE (20%) - Political match ===
+    const political = cultural?.political;
+    const valuesPrefs = preferences.advanced?.values;
+    const targetPi = valuesPrefs?.partisanPreference === "neutral" ? null :
+      (valuesPrefs?.partisanPreference === "strong-dem" ? 0.6 :
+       valuesPrefs?.partisanPreference === "lean-dem" ? 0.2 :
+       valuesPrefs?.partisanPreference === "lean-rep" ? -0.2 :
+       valuesPrefs?.partisanPreference === "strong-rep" ? -0.6 : 0);
 
-      factors.push({
-        name: "Dating: Walkability",
-        weight: Math.round(datingWeight * 0.1),
-        value: ws,
-        unit: "",
-        score,
-        status,
-        explanation: ws >= 70
-          ? `Walk Score® ${ws} - great for meeting people organically.`
-          : ws < 40
-          ? `Walk Score® ${ws} - car-dependent, harder to meet casually.`
-          : `Walk Score® ${ws} - moderate walkability.`,
+    let alignScore = 50;
+    let alignStatus: FactorAnalysis["status"] = "neutral";
+    let alignExplanation = "Political alignment not configured.";
+
+    if (political?.partisanIndex != null && targetPi !== null) {
+      const dist = Math.abs(political.partisanIndex - targetPi);
+      // Match actual scoring: Gaussian decay, k ≈ 4.3
+      alignScore = 100 * Math.exp(-4.3 * dist * dist);
+      
+      if (alignScore >= 70) alignStatus = "good";
+      else if (alignScore < 40) alignStatus = "warning";
+      
+      const cityLean = political.partisanIndex > 0 ? "Democratic" : "Republican";
+      alignExplanation = alignScore >= 70
+        ? `City leans ${cityLean} - matches your preference.`
+        : `City leans ${cityLean} (PI: ${political.partisanIndex.toFixed(2)}).`;
+    } else if (targetPi === null) {
+      alignExplanation = "Set political preference in Values to see alignment.";
+    }
+
+    factors.push({
+      name: "Dating: Alignment",
+      weight: toPercent(datingWeight * DATING_WEIGHTS.alignment),
+      value: political?.democratPercent?.toFixed(0) || null,
+      unit: political?.democratPercent ? "% Dem" : "",
+      score: Math.round(alignScore),
+      status: alignStatus,
+      explanation: alignExplanation,
+    });
+
+    // === 4. WALK/SAFETY SCORE (10%) - Walkability + crime ===
+    let vibeScore = 50;
+    let vibeStatus: FactorAnalysis["status"] = "neutral";
+    let vibeExplanation = "";
+    
+    const ws = qol?.walkability?.walkScore;
+    const crimeRate = qol?.crime?.violentCrimeRate;
+    
+    if (ws != null && crimeRate != null) {
+      // Match actual scoring: Walk 48 = 50pts, Crime 380 = 50pts
+      const wScore = 50 + (ws - 48);
+      const cScore = 50 + (380 - crimeRate) / 5;
+      vibeScore = Math.max(0, Math.min(100, (wScore + cScore) / 2));
+      
+      if (vibeScore >= 65) vibeStatus = "good";
+      else if (vibeScore < 40) vibeStatus = "warning";
+      
+      vibeExplanation = `Walk Score® ${ws}, crime ${crimeRate.toFixed(0)}/100K`;
+      if (ws >= 70 && crimeRate < 300) vibeExplanation += " - great for meeting people safely.";
+    } else if (ws != null) {
+      vibeScore = ws >= 70 ? 75 : ws >= 50 ? 55 : 40;
+      vibeExplanation = `Walk Score® ${ws}`;
+      if (ws >= 70) vibeStatus = "good";
+      else if (ws < 40) vibeStatus = "warning";
+    }
+
+    factors.push({
+      name: "Dating: Walk/Safety",
+      weight: toPercent(datingWeight * DATING_WEIGHTS.walkSafety),
+      value: ws ?? null,
+      unit: ws ? " Walk Score®" : "",
+      score: Math.round(vibeScore),
+      status: vibeStatus,
+      explanation: vibeExplanation || "Walkability for meeting people organically.",
+    });
+
+    // Add note about dating weight dominance if other factors are at 0
+    const nonDatingWeight = totalWeight - datingWeight;
+    if (nonDatingWeight === 0 && factors.length > 0) {
+      // Insert an info factor at the beginning explaining the score composition
+      factors.unshift({
+        name: "ℹ️ Dating Focus Mode",
+        weight: 0,
+        value: `${Math.round((datingWeight / totalWeight) * 100)}%`,
+        unit: " of score",
+        score: 50,
+        status: "neutral",
+        explanation: "Other demographic factors (diversity, age, education) are set to 0 weight. Adjust in Advanced Preferences to include them.",
       });
     }
   }
