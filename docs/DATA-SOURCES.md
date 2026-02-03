@@ -381,6 +381,38 @@ GET https://www.airnowapi.org/aq/observation/latLong/historical/?
 
 ---
 
+## Urban Lifestyle Data (Entertainment)
+
+**Status:** ✅ Integrated via `/api/admin/urbanlife-pull`
+
+**Source:** OpenStreetMap via Overpass API + manual curation
+
+**Integrated Metrics:**
+- Nightlife: Bars/clubs per 10K, total venues, late-night venues
+- Arts: Museums, theaters, galleries, music venues
+- Dining: Restaurants per 10K, cuisine diversity, breweries, fine dining count
+- Sports: NFL, NBA, MLB, NHL, MLS team presence
+
+**Scoring Calibration (Jan 2026):**
+
+The scoring constants are calibrated to actual OSM data distribution:
+
+| Metric | Min | Plateau | Max | Notes |
+|--------|-----|---------|-----|-------|
+| Bars/clubs per 10K | 0.5 | 5 | 10 | Portland (7.7), LA (0.4) |
+| Restaurants per 10K | 3 | 20 | 45 | SF (42), Houston (4.2) |
+| Museums | 5 | 30 | 150 | NYC (162), small cities (8-15) |
+
+**Known Data Quirks:**
+- **Las Vegas:** The famous Strip is in Paradise, NV (unincorporated), not City of Las Vegas. 
+  Data manually adjusted to include Strip venues (barsAndClubsPer10K: 5.8).
+- **Per-capita metrics:** Mega-cities (NYC, LA) may score lower than expected because their 
+  huge population denominators dilute the per-capita figures even with massive absolute venue counts.
+
+**Update Frequency:** As needed (OSM data is relatively stable)
+
+---
+
 ## Political / Religious Data
 
 **Status:** ✅ Integrated via `/api/admin/cultural-pull`

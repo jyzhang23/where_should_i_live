@@ -339,8 +339,11 @@ Scores are **relative to U.S. geographic extremes**, not absolute values:
 
 3. **Logarithmic "Critical Mass"** (`urbanAmenityScore`): Diminishing returns curve
    ```typescript
-   // Example: 30 bars/10K is "enough" - more provides marginal benefit
-   urbanAmenityScore(50, 2, 30, 80) // → ~82 (above plateau, into diminishing returns)
+   // Example: 5 bars/10K is "critical mass" - more provides marginal benefit
+   // Constants calibrated to actual OpenStreetMap data (Jan 2026):
+   // barsAndClubsPer10K: min=0.5, plateau=5, max=10
+   urbanAmenityScore(7.7, 0.5, 5, 10) // → ~92 (Portland - above plateau)
+   urbanAmenityScore(2.7, 0.5, 5, 10) // → ~60 (average city - below plateau)
    ```
 
 4. **Gaussian Decay** (`calculateValuesScore` - political): Continuous distance-based decay

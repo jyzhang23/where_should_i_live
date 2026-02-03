@@ -765,15 +765,19 @@ export default function HelpPage() {
                 <h4>Urban Amenities</h4>
                 <p className="text-xs text-muted-foreground mb-2">
                   Uses logarithmic &quot;critical mass&quot; scoring — diminishing returns after a threshold.
+                  Constants are calibrated to actual OpenStreetMap data distribution (Jan 2026).
                 </p>
                 <ul className="text-xs space-y-1">
-                  <li><strong>Nightlife:</strong> Bars/clubs per 10K (plateaus at ~30)</li>
-                  <li><strong>Arts:</strong> Museums, theaters, galleries (plateaus at ~20)</li>
-                  <li><strong>Dining:</strong> Restaurant density, cuisine diversity, breweries</li>
+                  <li><strong>Nightlife:</strong> Bars/clubs per 10K residents. Range: 0.5 (min) → 5 (plateau) → 10 (max).
+                    Portland (7.7) and Las Vegas (5.8) score 85+; most cities are 2-4.</li>
+                  <li><strong>Arts:</strong> Museums, theaters, galleries. Plateau at ~30 museums. NYC/DC (100+) score 95+.</li>
+                  <li><strong>Dining:</strong> Restaurants per 10K. Range: 3 (min) → 20 (plateau) → 45 (max).
+                    SF (42) and Austin (38) score highest.</li>
                   <li><strong>Sports:</strong> NFL, NBA, MLB, NHL, MLS teams</li>
                 </ul>
                 <p className="text-xs text-muted-foreground mt-1">
-                  NYC: 1,500+ bars | DC: 70+ museums | Smaller cities: 50-100 bars, 10-20 museums
+                  Note: Per-capita metrics can undercount mega-cities (NYC, LA) where absolute venue count is huge
+                  but population denominator is also huge.
                 </p>
 
                 <h4>Recreation & Outdoors</h4>

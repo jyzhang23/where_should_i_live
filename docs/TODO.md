@@ -23,6 +23,14 @@
   - Added migration logic for existing users' saved preferences
   - Updated all UI components (preferences, radar chart, score cards, comparison, etc.)
 
+- [x] ~~Entertainment scoring calibration~~ ✅ DONE (2026-02-03)
+  - Recalibrated URBAN_LIFESTYLE_RANGES to match actual OpenStreetMap data distribution
+  - barsAndClubsPer10K: { min: 0.5, plateau: 5, max: 10 } (was plateau: 30!)
+  - restaurantsPer10K: { min: 3, plateau: 20, max: 45 } (was plateau: 50!)
+  - museums: { min: 5, plateau: 30, max: 150 }
+  - Fixed Las Vegas data to include Strip (Paradise, NV) venues
+  - Portland (7.7) now scores ~92 for nightlife instead of ~39
+
 ## Bugs
 
 ## Maintenance
