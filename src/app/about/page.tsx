@@ -242,7 +242,7 @@ export default function AboutPage() {
                 <strong>State:</strong> Zustand with localStorage persistence
               </li>
               <li>
-                <strong>Data:</strong> Static JSON (no database for scoring)
+                <strong>Data:</strong> PostgreSQL + JSON (scoring is client-side)
               </li>
               <li>
                 <strong>Hosting:</strong> Vercel

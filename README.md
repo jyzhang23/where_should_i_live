@@ -35,7 +35,7 @@ Lifestyle personas (Urban Explorer, Budget Conscious, etc.) to initialize prefer
 | Language | TypeScript (strict) |
 | Styling | Tailwind CSS + shadcn/ui |
 | State | Zustand + localStorage |
-| Data | Static JSON (client-side scoring) |
+| Data | PostgreSQL + JSON (client-side scoring) |
 | Charts | Recharts |
 | Hosting | Vercel |
 
