@@ -26,7 +26,7 @@ export const cityProfiles: CityProfile[] = [
     id: "new-york-city",
     name: "New York City",
     state: "NY",
-    image: "/cities/new-york-city.jpg",
+    image: "/cities/deploy/new-york-city.jpg",
     tagline: "The city that never sleeps",
     bio: "Maximum urban energy with world-class culture, dining, and nightlife. Walk everywhere, take the subway anywhere. Yes, it's expensive, but you'll never be bored.",
     traits: ["urban", "cultural", "expensive", "transit", "nightlife", "diverse", "progressive"],
@@ -35,7 +35,7 @@ export const cityProfiles: CityProfile[] = [
     id: "san-francisco",
     name: "San Francisco",
     state: "CA",
-    image: "/cities/san-francisco.jpg",
+    image: "/cities/deploy/san-francisco.jpg",
     tagline: "Tech, hills, and fog",
     bio: "Mild weather year-round, stunning views, and the heart of the tech world. Walkable neighborhoods, great food scene, and easy access to wine country and nature.",
     traits: ["mild", "walkable", "expensive", "tech", "cultural", "coastal", "progressive"],
@@ -44,7 +44,7 @@ export const cityProfiles: CityProfile[] = [
     id: "miami",
     name: "Miami",
     state: "FL",
-    image: "/cities/miami.jpg",
+    image: "/cities/deploy/miami.jpg",
     tagline: "Where the sun always shines",
     bio: "Endless summer vibes with beautiful beaches, vibrant Latin culture, and legendary nightlife. No state income tax and a truly international atmosphere.",
     traits: ["warm", "beaches", "nightlife", "diverse", "humid", "coastal"],
@@ -53,7 +53,7 @@ export const cityProfiles: CityProfile[] = [
     id: "denver",
     name: "Denver",
     state: "CO",
-    image: "/cities/denver.jpg",
+    image: "/cities/deploy/denver.jpg",
     tagline: "Mile high and loving it",
     bio: "300 days of sunshine with world-class skiing and hiking at your doorstep. Four distinct seasons, craft beer culture, and an active outdoor lifestyle.",
     traits: ["outdoors", "mountains", "fourSeasons", "active", "growing", "nature"],
@@ -64,7 +64,7 @@ export const cityProfiles: CityProfile[] = [
     id: "boise",
     name: "Boise",
     state: "ID",
-    image: "/cities/boise.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/boise.jpg", // PLACEHOLDER - needs image
     tagline: "The gem of the Northwest",
     bio: "Safe, affordable, and surrounded by nature. A fast-growing city that offers outdoor access without big-city hassle. Perfect for families seeking stability and space.",
     traits: ["affordable", "safe", "nature", "conservative", "growing", "suburban"],
@@ -73,7 +73,7 @@ export const cityProfiles: CityProfile[] = [
     id: "minneapolis",
     name: "Minneapolis",
     state: "MN",
-    image: "/cities/minneapolis.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/minneapolis.jpg", // PLACEHOLDER - needs image
     tagline: "The Nordic model in America",
     bio: "Excellent schools, low crime, and world-class parks—if you can handle the winters. A progressive city that proves you can have it all (except warm weather).",
     traits: ["fourSeasons", "safe", "education", "affordable", "progressive", "cold"],
@@ -82,7 +82,7 @@ export const cityProfiles: CityProfile[] = [
     id: "salt-lake-city",
     name: "Salt Lake City",
     state: "UT",
-    image: "/cities/salt-lake-city.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/salt-lake-city.jpg", // PLACEHOLDER - needs image
     tagline: "Mountains meet community",
     bio: "World-class skiing and stunning mountain access with a strong sense of community. Family-oriented with a unique cultural identity. Growing tech scene.",
     traits: ["mountains", "outdoors", "conservative", "religious", "safe", "fourSeasons"],
@@ -91,7 +91,7 @@ export const cityProfiles: CityProfile[] = [
     id: "new-orleans",
     name: "New Orleans",
     state: "LA",
-    image: "/cities/new-orleans.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/new-orleans.jpg", // PLACEHOLDER - needs image
     tagline: "Let the good times roll",
     bio: "Unmatched culture, legendary food, and music on every corner. Yes, the stats are rough (crime, economy), but no city has more soul. Live music any night of the week.",
     traits: ["cultural", "nightlife", "foodie", "music", "diverse", "humid", "historic"],
@@ -100,7 +100,7 @@ export const cityProfiles: CityProfile[] = [
     id: "seattle",
     name: "Seattle",
     state: "WA",
-    image: "/cities/seattle.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/seattle.jpg", // PLACEHOLDER - needs image
     tagline: "Emerald City in the clouds",
     bio: "Tech jobs, stunning nature, and world-class coffee—if you can handle the grey. Surrounded by mountains and water, with a laid-back Pacific Northwest vibe.",
     traits: ["tech", "nature", "cloudy", "progressive", "coastal", "outdoors", "expensive"],
@@ -109,7 +109,7 @@ export const cityProfiles: CityProfile[] = [
     id: "las-vegas",
     name: "Las Vegas",
     state: "NV",
-    image: "/cities/las-vegas.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/las-vegas.jpg", // PLACEHOLDER - needs image
     tagline: "Entertainment capital of the world",
     bio: "24/7 entertainment, world-class dining, and surprisingly affordable housing. Desert heat, no state income tax, and endless things to do. Not just for tourists.",
     traits: ["nightlife", "affordable", "warm", "entertainment", "sunny", "desert"],
@@ -118,7 +118,7 @@ export const cityProfiles: CityProfile[] = [
     id: "boston",
     name: "Boston",
     state: "MA",
-    image: "/cities/boston.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/boston.jpg", // PLACEHOLDER - needs image
     tagline: "Where history meets innovation",
     bio: "World-renowned universities, rich history, and passionate sports fans. Classic four-season New England weather with charming neighborhoods and excellent healthcare.",
     traits: ["fourSeasons", "education", "historic", "walkable", "healthcare", "cultural", "expensive", "cold"],
@@ -127,7 +127,7 @@ export const cityProfiles: CityProfile[] = [
     id: "houston",
     name: "Houston",
     state: "TX",
-    image: "/cities/houston.jpg", // PLACEHOLDER - needs image
+    image: "/cities/deploy/houston.jpg", // PLACEHOLDER - needs image
     tagline: "Space City with room to grow",
     bio: "Massive diversity, affordable housing, and no state income tax. Yes, you'll need a car and AC, but your dollar goes far. NASA, world-class medical center, and incredible food.",
     traits: ["affordable", "diverse", "sprawl", "warm", "humid", "growing", "suburban"],
