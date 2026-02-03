@@ -12,6 +12,7 @@ import {
   Database,
   Code,
   MessageSquarePlus,
+  MessageCircle,
   Lightbulb,
   ExternalLink,
 } from "lucide-react";
@@ -280,32 +281,30 @@ export default function AboutPage() {
               Don&apos;t see a city that matters to you? I&apos;d love to hear which ones you want
               added. This helps prioritize expansion of the dataset.
             </p>
-            <p>
+            <div className="flex flex-wrap gap-3 not-prose">
               <a
                 href="https://github.com/jyzhang23/where_should_i_live/issues/new?title=City%20Request:%20[City%20Name]&body=Please%20add%20[City,%20State]%20to%20the%20app.%0A%0AWhy%20this%20city%20matters%20to%20me:%0A"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 no-underline"
               >
-                <Button>
+                <Button variant="outline">
                   <MessageSquarePlus className="h-4 w-4 mr-2" />
-                  Request a City on GitHub
+                  Request a City
                   <ExternalLink className="h-3 w-3 ml-1" />
                 </Button>
               </a>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Have other feedback?{" "}
               <a
                 href="https://github.com/jyzhang23/where_should_i_live/issues/new?title=Feedback:%20[Topic]&body=**What%20feedback%20do%20you%20have%3F**%0A%0A**Is%20this%20a%20bug%2C%20feature%20request%2C%20or%20general%20comment%3F**%0A%0A"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline inline-flex items-center gap-1"
               >
-                Open a feedback issue
-                <ExternalLink className="h-3 w-3" />
+                <Button variant="outline">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Other Feedback
+                  <ExternalLink className="h-3 w-3 ml-1" />
+                </Button>
               </a>
-            </p>
+            </div>
           </CardContent>
         </Card>
 

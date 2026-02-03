@@ -2,7 +2,7 @@
 
 A personalized city comparison tool that ranks US cities based on **your** priorities—not generic "Best Places" lists.
 
-**Live Demo:** [where-should-i-live.vercel.app](https://where-should-i-live.vercel.app)
+**Live Demo:** [whereshouldilive.vercel.app](https://whereshouldilive.vercel.app)
 
 ## What Makes This Different
 
