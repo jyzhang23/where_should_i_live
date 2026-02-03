@@ -61,13 +61,23 @@ export const RECREATION_RANGES = {
 };
 
 // Urban lifestyle ranges for logarithmic/percentile normalization
+// CALIBRATED to actual OpenStreetMap data distribution (Jan 2026)
 export const URBAN_LIFESTYLE_RANGES = {
-  // Bars/clubs per 10K: uses logarithmic curve (critical mass at ~30)
-  barsAndClubsPer10K: { min: 2, plateau: 30, max: 80 },   // 2 (small city) to 80+ (NYC)
-  // Museums: uses logarithmic curve (critical mass at ~20)
-  museums: { min: 0, plateau: 20, max: 100 },              // 0 to 100+ (DC, NYC)
+  // Bars/clubs per 10K: uses logarithmic curve
+  // Data range: 0.4 (LA) to 7.7 (Portland). Avg ~2.5-4.0
+  // Portland/SF/NOLA should score 80+, Denver/Seattle/Austin should score 70+
+  barsAndClubsPer10K: { min: 0.5, plateau: 5, max: 10 },
+  
+  // Museums: uses logarithmic curve
+  // Data range: 8 to 162 (NYC). Most cities 15-60.
+  // NYC/DC (100+) should score 95+, mid-tier (30-50) should score 70+
+  museums: { min: 5, plateau: 30, max: 150 },
+  
   // Restaurants per 10K: uses logarithmic curve
-  restaurantsPer10K: { min: 10, plateau: 50, max: 150 },   // 10 (rural) to 150+ (big cities)
+  // Data range: 2.7 to 42.6 (SF). Most cities 10-25.
+  // SF/Austin (35+) should score 85+, mid-tier (15-25) should score 65+
+  restaurantsPer10K: { min: 3, plateau: 20, max: 45 },
+  
   // Cuisine diversity (number of distinct types)
   cuisineDiversity: { min: 5, max: 50 },                   // 5 (limited) to 50+ (diverse metros)
 };

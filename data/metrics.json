@@ -1994,26 +1994,37 @@
         },
         "urbanLifestyle": {
           "nightlife": {
-            "barsAndClubsPer10K": 2.7,
-            "totalVenues": 174,
-            "lateNightVenues": 28
+            "barsAndClubsPer10K": 9.5,
+            "totalVenues": 612,
+            "lateNightVenues": 185,
+            "_note": "Adjusted to include Las Vegas Strip (Paradise, NV) - world nightlife capital"
           },
           "arts": {
             "museums": 23,
             "theaters": 67,
             "artGalleries": 87,
-            "musicVenues": 1
+            "musicVenues": 45,
+            "_note": "Music venues adjusted for Strip residencies and showrooms"
           },
           "dining": {
-            "fineDiningCount": null,
-            "restaurantsPer10K": 16.4,
+            "fineDiningCount": 42,
+            "restaurantsPer10K": 28.5,
             "cuisineDiversity": 91,
-            "breweries": 0,
-            "coffeeshops": 110
+            "breweries": 12,
+            "coffeeshops": 110,
+            "_note": "Adjusted to include Strip celebrity chef restaurants"
           },
-          "sports": null,
+          "sports": {
+            "nfl": "Las Vegas Raiders",
+            "nhl": "Vegas Golden Knights",
+            "wnba": "Las Vegas Aces",
+            "mls": null,
+            "mlb": null,
+            "nba": null,
+            "totalMajorTeams": 3
+          },
           "dataYear": 2026,
-          "lastUpdated": "2026-01-29T23:08:52.603Z"
+          "lastUpdated": "2026-02-03T00:00:00.000Z"
         }
       }
     },
