@@ -19,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Shield, CheckCircle, XCircle, Loader2, Download, CloudSun, Users, ShieldAlert, Wind, Wifi, GraduationCap, Stethoscope, Footprints, Wine, TreePine } from "lucide-react";
+import { Shield, CheckCircle, XCircle, Loader2, Download, CloudSun, Users, ShieldAlert, Wind, Wifi, GraduationCap, Stethoscope, Wine, TreePine } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RefreshResult {
@@ -224,20 +224,6 @@ async function pullHRSAHealthData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-async function pullWalkScoreData(password: string): Promise<RefreshResult> {
-  const response = await fetch("/api/admin/walkscore-pull", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password }),
-  });
-  const text = await response.text();
-  if (!text) throw new Error("Server returned empty response.");
-  let data;
-  try { data = JSON.parse(text); } catch { throw new Error(`Invalid response: ${text.slice(0, 100)}`); }
-  if (!response.ok) throw new Error(data.error || "Walk Score pull failed");
-  return data;
-}
-
 async function pullCulturalData(password: string): Promise<RefreshResult> {
   const response = await fetch("/api/admin/cultural-pull", {
     method: "POST",
@@ -280,7 +266,7 @@ async function pullRecreationData(password: string): Promise<RefreshResult> {
   return data;
 }
 
-type ActionType = "zillow" | "bea" | "climate" | "census" | "fbi-crime" | "epa-air" | "fcc-broadband" | "nces-education" | "hrsa-health" | "walkscore" | "cultural" | "urbanlife" | "recreation";
+type ActionType = "zillow" | "bea" | "climate" | "census" | "fbi-crime" | "epa-air" | "fcc-broadband" | "nces-education" | "hrsa-health" | "cultural" | "urbanlife" | "recreation";
 
 export function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -381,13 +367,6 @@ export function AdminPanel() {
     onSettled: () => { setActiveAction(null); },
   });
 
-  const walkScoreMutation = useMutation({
-    mutationFn: pullWalkScoreData,
-    onSuccess: (data) => { setResult(data); queryClient.invalidateQueries({ queryKey: ["cities"] }); },
-    onError: (error: Error) => { setResult({ success: false, error: error.message }); },
-    onSettled: () => { setActiveAction(null); },
-  });
-
   const culturalMutation = useMutation({
     mutationFn: pullCulturalData,
     onSuccess: (data) => { setResult(data); queryClient.invalidateQueries({ queryKey: ["cities"] }); },
@@ -412,7 +391,7 @@ export function AdminPanel() {
   const isPending = zillowMutation.isPending || beaMutation.isPending || 
     climateMutation.isPending || censusMutation.isPending || fbiCrimeMutation.isPending || 
     epaAirMutation.isPending || fccBroadbandMutation.isPending || ncesEducationMutation.isPending || 
-    hrsaHealthMutation.isPending || walkScoreMutation.isPending || culturalMutation.isPending ||
+    hrsaHealthMutation.isPending || culturalMutation.isPending ||
     urbanLifeMutation.isPending || recreationMutation.isPending;
 
   const handleZillowPull = () => {
@@ -477,13 +456,6 @@ export function AdminPanel() {
     setResult(null);
     setActiveAction("hrsa-health");
     hrsaHealthMutation.mutate(password);
-  };
-
-  const handleWalkScorePull = () => {
-    if (!password) return;
-    setResult(null);
-    setActiveAction("walkscore");
-    walkScoreMutation.mutate(password);
   };
 
   const handleCulturalPull = () => {
@@ -784,23 +756,6 @@ export function AdminPanel() {
                   </div>
                 </div>
 
-                <div className="p-2 rounded-lg border bg-muted/30 opacity-50">
-                  <div className="flex items-center justify-between">
-                    <div className="min-w-0 flex-1">
-                      <p className="font-medium text-xs truncate line-through">Walk Score</p>
-                      <p className="text-[10px] text-muted-foreground truncate">Use CLI script</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      disabled={true}
-                      title="Deprecated: Use npx tsx scripts/fetch-walkscore.ts"
-                    >
-                      <Footprints className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -970,8 +925,6 @@ export function AdminPanel() {
                   ? "Fetching NCES education data..."
                   : activeAction === "hrsa-health"
                   ? "Fetching HRSA health data..."
-                  : activeAction === "walkscore"
-                  ? "Fetching Walk Score data..."
                   : activeAction === "urbanlife"
                   ? "Loading urban lifestyle data (nightlife, dining, arts)..."
                   : activeAction === "recreation"

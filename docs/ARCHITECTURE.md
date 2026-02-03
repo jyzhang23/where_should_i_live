@@ -157,7 +157,7 @@ cities-app/
 | **Cost of Living** | BEA Regional Data | `bea-pull` | Quarterly |
 | **Home Prices** | Zillow ZHVI | `zillow-pull` | Monthly |
 | **Demographics** | US Census ACS | `census-pull` | Annual |
-| **Walkability** | WalkScore.com | `walkscore-pull` | As needed |
+| **Walkability** | WalkScore.com | `fetch-walkscore.ts` | Annual |
 | **Crime** | FBI UCR | `fbi-crime-pull` | Annual |
 | **Air Quality** | EPA AQS | `epa-air-pull` | Annual |
 | **Broadband** | FCC Form 477 | `fcc-broadband-pull` | Annual |
@@ -457,7 +457,7 @@ interface PreferencesState {
 | `/api/admin/bea-pull` | Pull BEA economic data |
 | `/api/admin/climate-pull` | Pull NOAA climate data |
 | `/api/admin/zillow-pull` | Pull Zillow home prices |
-| `/api/admin/walkscore-pull` | Scrape Walk Score data |
+| _(removed)_ | Walk Score now via CLI script |
 | `/api/admin/fbi-crime-pull` | Pull FBI crime statistics |
 | `/api/admin/epa-air-pull` | Pull EPA air quality data |
 | `/api/admin/fcc-broadband-pull` | Pull FCC broadband data |

@@ -315,28 +315,38 @@ GET https://www.airnowapi.org/aq/observation/latLong/historical/?
 
 ## Walk Score
 
-**Status:** ⚠️ Partially implemented
+**Status:** ✅ Fully implemented via `scripts/fetch-walkscore.ts`
 
-**Official API:** https://www.walkscore.com/professional/api.php
-- NOT INTEGRATED (requires API key with paid tier for commercial use)
+**Source:** https://www.walkscore.com/ (web scraping)
 
-**Current Implementation:**
-- **Walk Score & Bike Score:** Derived from EPA National Walkability Index (free ArcGIS API)
-  - NatWalkInd (1-20) converted to 0-100 scale for walk score
-  - D3B (street intersection density) normalized for bike score
-- **Transit Score:** Manually researched from walkscore.com (January 2025)
-  - EPA transit metrics (D4A, D4C, D5BR) were tested but proved too noisy at metro scale
-  - Suburban census blocks dilute city-center scores, producing inaccurate national comparisons
-  - Hardcoded fallback data for ~45 major metros
+**Integrated Metrics:**
+- **Walk Score** (0-100) - City-wide average walkability
+- **Transit Score** (0-100) - Public transit accessibility
+- **Bike Score** (0-100) - Bikeability rating
 
-**Alternative Considered:** AllTransit API (Center for Neighborhood Technology)
-- Provides 0-10 Performance Score based on GTFS data
-- Would be more accurate but requires paid access
+**Implementation:**
+```bash
+# Fetch all cities
+npx tsx scripts/fetch-walkscore.ts
 
-**Future Improvements:**
-- [ ] Request Walk Score API key for automated transit data
-- [ ] Or integrate AllTransit if budget allows
-- Current manual data should be refreshed annually
+# Fetch single city
+npx tsx scripts/fetch-walkscore.ts --city=seattle
+
+# Dry run (preview without saving)
+npx tsx scripts/fetch-walkscore.ts --dry-run
+```
+
+**Key Features:**
+- Validates city pages vs address pages (address pages have inflated scores)
+- Extracts city-wide averages from badge images and page text
+- Warns about suspicious scores (e.g., multiple 100s)
+- URL overrides for cities with non-standard Walk Score URLs
+
+**Update Frequency:** Annual (January recommended)
+
+**Cost:** Free (public website scraping, no API key required)
+
+**Note:** The official Walk Score API requires a paid tier for commercial use. Web scraping provides the same data without cost but should be done respectfully (rate-limited to 1.5s between requests).
 
 ---
 
@@ -451,8 +461,7 @@ The scoring constants are calibrated to actual OSM data distribution:
 | Demographics | ✅ Implemented | Census ACS API | Annually |
 | Crime Rates | ✅ Implemented | FBI CDE API | Annually |
 | Weather/Climate | ✅ Implemented | NOAA ACIS + Open-Meteo | On change (rare) |
-| Walk/Bike Scores | ✅ Implemented | EPA Walkability Index API | Quarterly |
-| Transit Scores | ⚠️ Manual | walkscore.com (Jan 2025) | Annually (manual) |
+| Walk/Bike/Transit | ✅ Implemented | walkscore.com (web scrape) | Annually |
 | Air Quality | ✅ Implemented | EPA AQS API | Annually |
 | Broadband | ✅ Implemented | FCC Broadband Map API | Annually |
 | Education | ✅ Implemented | NCES EDGE API | Annually |
