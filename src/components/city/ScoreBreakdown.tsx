@@ -509,114 +509,229 @@ function analyzeClimate(
   preferences: UserPreferences
 ): { factors: FactorAnalysis[]; summary: string } {
   const factors: FactorAnalysis[] = [];
-  const metrics = city.metrics;
-  const noaa = metrics?.noaa;
+  const noaa = city.metrics?.noaa;
   const prefs = preferences.advanced.climate;
 
-  // Comfort Days
-  if (noaa?.comfortDays !== null && noaa?.comfortDays !== undefined) {
+  // Calculate total weight from actual preferences
+  let totalWeight = 0;
+  if (prefs.weightComfortDays > 0) totalWeight += prefs.weightComfortDays;
+  if (prefs.weightExtremeHeat > 0) totalWeight += prefs.weightExtremeHeat;
+  if (prefs.weightFreezeDays > 0) totalWeight += prefs.weightFreezeDays;
+  if (prefs.weightRainDays > 0) totalWeight += prefs.weightRainDays;
+  if (prefs.weightSnowDays > 0) totalWeight += prefs.weightSnowDays;
+  if (prefs.weightCloudyDays > 0) totalWeight += prefs.weightCloudyDays;
+  if (prefs.weightHumidity > 0) totalWeight += prefs.weightHumidity;
+  if (prefs.weightUtilityCosts > 0) totalWeight += prefs.weightUtilityCosts;
+  if (prefs.weightGrowingSeason > 0) totalWeight += prefs.weightGrowingSeason;
+  if (prefs.weightSeasonalStability > 0) totalWeight += prefs.weightSeasonalStability;
+  if (prefs.weightDiurnalSwing > 0) totalWeight += prefs.weightDiurnalSwing;
+
+  const toPercent = (w: number) => totalWeight > 0 ? Math.round((w / totalWeight) * 100) : 0;
+
+  // Helper: normalizeToRange matching actual scoring
+  const normalize = (value: number, min: number, max: number, invert: boolean) => {
+    const clamped = Math.max(min, Math.min(max, value));
+    const normalized = (clamped - min) / (max - min);
+    return Math.round(invert ? (1 - normalized) * 100 : normalized * 100);
+  };
+
+  // Climate ranges (matching constants.ts)
+  const RANGES = {
+    comfortDays: { min: 50, max: 280 },
+    extremeHeatDays: { min: 0, max: 90 },
+    freezeDays: { min: 0, max: 160 },
+    rainDays: { min: 30, max: 180 },
+    snowDays: { min: 0, max: 65 },
+    cloudyDays: { min: 50, max: 220 },
+    julyDewpoint: { min: 45, max: 75 },
+    degreeDays: { min: 2000, max: 9000 },
+    growingSeasonDays: { min: 120, max: 365 },
+    seasonalStability: { min: 5, max: 28 },
+    diurnalSwing: { min: 10, max: 35 },
+  };
+
+  // Comfort Days (more is better)
+  if (prefs.weightComfortDays > 0 && noaa?.comfortDays != null) {
     const days = noaa.comfortDays;
-    let status: FactorAnalysis["status"] = "neutral";
-    let explanation = "";
-
-    if (days >= 200) {
-      status = "good";
-      explanation = `${days} comfortable days/year is excellent (60-80°F, low humidity).`;
-    } else if (days < 100) {
-      status = "bad";
-      explanation = `Only ${days} comfortable days/year - extreme weather is common.`;
-    } else {
-      explanation = `${days} comfortable days/year is average.`;
-    }
-
+    const score = normalize(days, RANGES.comfortDays.min, RANGES.comfortDays.max, false);
     factors.push({
-      name: "Comfort Days",
-      weight: 25,
+      name: "Comfort Days (65-80°F)",
+      weight: toPercent(prefs.weightComfortDays),
       value: days,
       unit: " days",
-      score: Math.min(100, days / 2.5),
-      status,
-      explanation,
+      score,
+      status: score >= 70 ? "good" : score < 40 ? "bad" : "neutral",
+      explanation: `${days} comfortable days/year (US range: 50-280).`,
     });
   }
 
-  // Extreme Heat
-  if (noaa?.extremeHeatDays !== null && noaa?.extremeHeatDays !== undefined) {
+  // Extreme Heat (fewer is better)
+  if (prefs.weightExtremeHeat > 0 && noaa?.extremeHeatDays != null) {
     const days = noaa.extremeHeatDays;
-    const maxHeat = prefs.maxExtremeHeatDays;
-    let status: FactorAnalysis["status"] = "neutral";
-
-    if (days > maxHeat) {
-      status = "bad";
-    } else if (days <= 5) {
-      status = "good";
-    }
-
+    const score = normalize(days, RANGES.extremeHeatDays.min, RANGES.extremeHeatDays.max, true);
     factors.push({
-      name: "Extreme Heat Days (>95°F)",
-      weight: 15,
+      name: "Extreme Heat (>95°F)",
+      weight: toPercent(prefs.weightExtremeHeat),
       value: days,
       unit: " days",
-      threshold: { value: maxHeat, type: "max", label: "Your max" },
-      score: Math.max(0, 100 - days * 2),
-      status,
-      explanation: days > maxHeat 
-        ? `${days} extreme heat days exceeds your max of ${maxHeat}.`
-        : `${days} extreme heat days is within your tolerance.`,
+      threshold: { value: prefs.maxExtremeHeatDays, type: "max", label: "Your max" },
+      score,
+      status: days > prefs.maxExtremeHeatDays ? "bad" : days <= 5 ? "good" : "neutral",
+      explanation: days > prefs.maxExtremeHeatDays
+        ? `${days} extreme heat days exceeds your max of ${prefs.maxExtremeHeatDays}.`
+        : `${days} extreme heat days (Phoenix: 107, Seattle: 3).`,
     });
   }
 
-  // Sunshine
-  if (metrics?.daysOfSunshine !== null && metrics?.daysOfSunshine !== undefined) {
-    const days = metrics.daysOfSunshine;
-    const minSun = prefs.minSunshineDays;
-    let status: FactorAnalysis["status"] = "neutral";
-
-    if (days < minSun) {
-      status = "bad";
-    } else if (days >= 250) {
-      status = "good";
-    }
-
+  // Freeze Days (fewer is better)
+  if (prefs.weightFreezeDays > 0 && noaa?.freezeDays != null) {
+    const days = noaa.freezeDays;
+    const score = normalize(days, RANGES.freezeDays.min, RANGES.freezeDays.max, true);
     factors.push({
-      name: "Days of Sunshine",
-      weight: 20,
+      name: "Freeze Days (<32°F)",
+      weight: toPercent(prefs.weightFreezeDays),
       value: days,
       unit: " days",
-      threshold: minSun > 0 ? { value: minSun, type: "min", label: "Your min" } : undefined,
-      score: Math.min(100, days / 3),
-      status,
-      explanation: days < minSun
-        ? `${days} sunny days is below your minimum of ${minSun}.`
-        : `${days} sunny days per year.`,
+      threshold: { value: prefs.maxFreezeDays, type: "max", label: "Your max" },
+      score,
+      status: days > prefs.maxFreezeDays ? "bad" : days <= 10 ? "good" : "neutral",
+      explanation: days > prefs.maxFreezeDays
+        ? `${days} freeze days exceeds your max of ${prefs.maxFreezeDays}.`
+        : `${days} freeze days (Minneapolis: 156, Miami: 0).`,
     });
   }
 
-  // Summer Humidity (using July dewpoint as proxy)
-  if (noaa?.julyDewpoint !== null && noaa?.julyDewpoint !== undefined) {
-    const dewpoint = noaa.julyDewpoint;
-    const maxDewpoint = prefs.maxJulyDewpoint;
-    let status: FactorAnalysis["status"] = "neutral";
-
-    if (dewpoint > maxDewpoint) {
-      status = "bad";
-    } else if (dewpoint < 60) {
-      status = "good";
-    }
-
+  // Rain Days (fewer is better)
+  if (prefs.weightRainDays > 0 && noaa?.rainDays != null) {
+    const days = noaa.rainDays;
+    const score = normalize(days, RANGES.rainDays.min, RANGES.rainDays.max, true);
     factors.push({
-      name: "Summer Humidity (Dewpoint)",
-      weight: 15,
-      value: dewpoint,
+      name: "Rain Days",
+      weight: toPercent(prefs.weightRainDays),
+      value: days,
+      unit: " days",
+      threshold: { value: prefs.maxRainDays, type: "max", label: "Your max" },
+      score,
+      status: days > prefs.maxRainDays ? "bad" : days <= 60 ? "good" : "neutral",
+      explanation: `${days} rainy days (Seattle: 152, Phoenix: 36).`,
+    });
+  }
+
+  // Snow Days (direction depends on preferSnow)
+  if (prefs.weightSnowDays > 0 && noaa?.snowDays != null) {
+    const days = noaa.snowDays;
+    const lovesSnow = prefs.preferSnow ?? false;
+    const score = normalize(days, RANGES.snowDays.min, RANGES.snowDays.max, !lovesSnow);
+    factors.push({
+      name: lovesSnow ? "Snow Days ❄️" : "Snow Days",
+      weight: toPercent(prefs.weightSnowDays),
+      value: days,
+      unit: " days",
+      score,
+      status: lovesSnow ? (days >= 20 ? "good" : days < 5 ? "bad" : "neutral") 
+                        : (days <= 5 ? "good" : days > prefs.maxSnowDays ? "bad" : "neutral"),
+      explanation: lovesSnow 
+        ? `${days} snow days - ${days >= 20 ? "great for winter sports!" : "limited snow."}`
+        : `${days} snow days (Minneapolis: 40+, Miami: 0).`,
+    });
+  }
+
+  // Cloudy Days (fewer is better)
+  if (prefs.weightCloudyDays > 0 && noaa?.cloudyDays != null) {
+    const days = noaa.cloudyDays;
+    const score = normalize(days, RANGES.cloudyDays.min, RANGES.cloudyDays.max, true);
+    factors.push({
+      name: "Cloudy Days",
+      weight: toPercent(prefs.weightCloudyDays),
+      value: days,
+      unit: " days",
+      threshold: { value: prefs.maxCloudyDays, type: "max", label: "Your max" },
+      score,
+      status: days > prefs.maxCloudyDays ? "bad" : days <= 100 ? "good" : "neutral",
+      explanation: `${days} cloudy days (Seattle: 200+, Phoenix: 80).`,
+    });
+  }
+
+  // Humidity (lower dewpoint is better)
+  if (prefs.weightHumidity > 0 && noaa?.julyDewpoint != null) {
+    const dp = noaa.julyDewpoint;
+    const score = normalize(dp, RANGES.julyDewpoint.min, RANGES.julyDewpoint.max, true);
+    factors.push({
+      name: "Summer Humidity",
+      weight: toPercent(prefs.weightHumidity),
+      value: dp.toFixed(0),
+      unit: "°F dewpoint",
+      threshold: { value: prefs.maxJulyDewpoint, type: "max", label: "Your max" },
+      score,
+      status: dp > prefs.maxJulyDewpoint ? "bad" : dp < 60 ? "good" : "neutral",
+      explanation: dp > 70 ? `${dp}°F dewpoint - oppressively humid.`
+        : dp > 65 ? `${dp}°F dewpoint - muggy summers.`
+        : `${dp}°F dewpoint - comfortable humidity.`,
+    });
+  }
+
+  // Utility Costs (CDD+HDD, lower is better)
+  if (prefs.weightUtilityCosts > 0 && noaa?.coolingDegreeDays != null && noaa?.heatingDegreeDays != null) {
+    const total = noaa.coolingDegreeDays + noaa.heatingDegreeDays;
+    const score = normalize(total, RANGES.degreeDays.min, RANGES.degreeDays.max, true);
+    factors.push({
+      name: "Utility Costs (CDD+HDD)",
+      weight: toPercent(prefs.weightUtilityCosts),
+      value: total.toLocaleString(),
+      unit: " degree-days",
+      score,
+      status: score >= 70 ? "good" : score < 40 ? "bad" : "neutral",
+      explanation: `${total.toLocaleString()} degree-days (San Diego: 2000, Minneapolis: 9000).`,
+    });
+  }
+
+  // Growing Season (more is better) - only if enabled
+  if (prefs.weightGrowingSeason > 0 && noaa?.growingSeasonDays != null) {
+    const days = noaa.growingSeasonDays;
+    const score = normalize(days, RANGES.growingSeasonDays.min, RANGES.growingSeasonDays.max, false);
+    factors.push({
+      name: "Growing Season",
+      weight: toPercent(prefs.weightGrowingSeason),
+      value: days,
+      unit: " days",
+      score,
+      status: days >= 250 ? "good" : days < 150 ? "bad" : "neutral",
+      explanation: `${days} frost-free days for gardening.`,
+    });
+  }
+
+  // Seasonal Stability (direction depends on preferDistinctSeasons)
+  if (prefs.weightSeasonalStability > 0 && noaa?.seasonalStability != null) {
+    const stddev = noaa.seasonalStability;
+    const lovesFourSeasons = prefs.preferDistinctSeasons ?? false;
+    const score = normalize(stddev, RANGES.seasonalStability.min, RANGES.seasonalStability.max, !lovesFourSeasons);
+    factors.push({
+      name: lovesFourSeasons ? "Four Seasons 🍂" : "Weather Stability",
+      weight: toPercent(prefs.weightSeasonalStability),
+      value: stddev.toFixed(1),
+      unit: "°F stddev",
+      score,
+      status: lovesFourSeasons ? (stddev >= 20 ? "good" : stddev < 12 ? "bad" : "neutral")
+                               : (stddev <= 12 ? "good" : stddev > 20 ? "bad" : "neutral"),
+      explanation: lovesFourSeasons
+        ? `Temp variation ${stddev.toFixed(1)}°F - ${stddev >= 18 ? "distinct seasons!" : "mild seasons."}`
+        : `Temp variation ${stddev.toFixed(1)}°F (San Diego: 5, Chicago: 25).`,
+    });
+  }
+
+  // Diurnal Swing (smaller is better)
+  if (prefs.weightDiurnalSwing > 0 && noaa?.diurnalSwing != null) {
+    const swing = noaa.diurnalSwing;
+    const score = normalize(swing, RANGES.diurnalSwing.min, RANGES.diurnalSwing.max, true);
+    factors.push({
+      name: "Day/Night Swing",
+      weight: toPercent(prefs.weightDiurnalSwing),
+      value: swing.toFixed(0),
       unit: "°F",
-      threshold: { value: maxDewpoint, type: "max", label: "Your max" },
-      score: Math.max(0, 100 - (dewpoint - 50) * 2),
-      status,
-      explanation: dewpoint > maxDewpoint
-        ? `July dewpoint of ${dewpoint}°F exceeds your max of ${maxDewpoint}°F (muggy).`
-        : dewpoint < 60 
-        ? `July dewpoint of ${dewpoint}°F is comfortable and dry.`
-        : `July dewpoint of ${dewpoint}°F is moderate.`,
+      threshold: { value: prefs.maxDiurnalSwing, type: "max", label: "Your max" },
+      score,
+      status: swing > prefs.maxDiurnalSwing ? "bad" : swing <= 15 ? "good" : "neutral",
+      explanation: `${swing.toFixed(0)}°F day/night temp swing (Miami: 10, Denver: 28).`,
     });
   }
 
