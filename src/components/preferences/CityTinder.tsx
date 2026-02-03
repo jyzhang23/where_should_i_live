@@ -52,12 +52,14 @@ const cityGradients: Record<string, string> = {
   "san-francisco": "from-orange-600 to-amber-400",
   "miami": "from-cyan-400 to-blue-500",
   "denver": "from-blue-600 to-purple-500",
-  "phoenix": "from-orange-500 to-red-500",
+  "boise": "from-emerald-600 to-teal-400",
+  "minneapolis": "from-blue-500 to-cyan-400",
+  "salt-lake-city": "from-slate-500 to-blue-400",
+  "new-orleans": "from-purple-600 to-amber-500",
+  "seattle": "from-slate-600 to-emerald-500",
+  "las-vegas": "from-amber-500 to-red-500",
   "boston": "from-red-700 to-red-500",
-  "nashville": "from-amber-600 to-yellow-400",
-  "portland": "from-green-600 to-emerald-400",
-  "chicago": "from-blue-800 to-blue-600",
-  "austin": "from-purple-600 to-pink-500",
+  "houston": "from-orange-600 to-amber-500",
 };
 
 export function CityTinder({ onComplete }: CityTinderProps) {
@@ -112,9 +114,10 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     // Determine personality based on highest scoring trait categories
     const urbanScore = (traitScores["urban"] || 0) + (traitScores["transit"] || 0) + (traitScores["walkable"] || 0);
     const natureScore = (traitScores["outdoors"] || 0) + (traitScores["nature"] || 0) + (traitScores["mountains"] || 0);
-    const warmScore = (traitScores["warm"] || 0) + (traitScores["sunny"] || 0) + (traitScores["beaches"] || 0);
+    const warmScore = (traitScores["warm"] || 0) + (traitScores["sunny"] || 0) + (traitScores["beaches"] || 0) - (traitScores["cold"] || 0);
     const affordableScore = (traitScores["affordable"] || 0) - (traitScores["expensive"] || 0);
-    const culturalScore = (traitScores["cultural"] || 0) + (traitScores["nightlife"] || 0) + (traitScores["music"] || 0);
+    const culturalScore = (traitScores["cultural"] || 0) + (traitScores["nightlife"] || 0) + (traitScores["music"] || 0) + (traitScores["foodie"] || 0);
+    const safetyScore = (traitScores["safe"] || 0) + (traitScores["suburban"] || 0) - (traitScores["nightlife"] || 0) * 0.5;
     
     const scores = [
       { type: "urbanite", score: urbanScore },
@@ -122,6 +125,7 @@ export function CityTinder({ onComplete }: CityTinderProps) {
       { type: "sunChaser", score: warmScore },
       { type: "budgetMinded", score: affordableScore },
       { type: "culturalConnoisseur", score: culturalScore },
+      { type: "safetyFirst", score: safetyScore },
     ];
     
     const maxScore = Math.max(...scores.map(s => s.score));
@@ -132,7 +136,7 @@ export function CityTinder({ onComplete }: CityTinderProps) {
       return personalityTypes.find(p => p.type === "balanced")!;
     }
     
-    return personalityTypes.find(p => p.type === topType?.type) || personalityTypes[5];
+    return personalityTypes.find(p => p.type === topType?.type) || personalityTypes[6];
   };
 
   const applyPreferences = (results: SwipeResult[]) => {
@@ -142,6 +146,7 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     const qolDeltas: Record<string, number> = {};
     const entertainmentDeltas: Record<string, number> = {};
     const demographicsDeltas: Record<string, number> = {};
+    const valuesDeltas: Record<string, number> = {};
     
     for (const result of results) {
       const city = cityProfiles.find(c => c.id === result.cityId);
@@ -180,6 +185,11 @@ export function CityTinder({ onComplete }: CityTinderProps) {
             demographicsDeltas[key] = (demographicsDeltas[key] || 0) + (value as number) * multiplier;
           }
         }
+        if (mapping.values) {
+          for (const [key, value] of Object.entries(mapping.values)) {
+            valuesDeltas[key] = (valuesDeltas[key] || 0) + (value as number) * multiplier;
+          }
+        }
       }
     }
     
@@ -191,6 +201,7 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     if (weightDeltas.qualityOfLife) updateWeight("qualityOfLife", clamp(70 + weightDeltas.qualityOfLife));
     if (weightDeltas.demographics) updateWeight("demographics", clamp(50 + weightDeltas.demographics));
     if (weightDeltas.entertainment) updateWeight("entertainment", clamp(50 + weightDeltas.entertainment));
+    if (weightDeltas.values) updateWeight("values", clamp(0 + weightDeltas.values)); // Start from 0, only enable if user shows preference
     
     // Apply climate preferences
     if (climateDeltas.weightComfortDays) {
@@ -204,6 +215,12 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     }
     if (climateDeltas.maxSnowDays !== undefined) {
       updateAdvanced("climate", "maxSnowDays", clamp(15 + climateDeltas.maxSnowDays));
+    }
+    if (climateDeltas.weightCloudyDays) {
+      updateAdvanced("climate", "weightCloudyDays", clamp(40 + climateDeltas.weightCloudyDays));
+    }
+    if (climateDeltas.weightHumidity) {
+      updateAdvanced("climate", "weightHumidity", clamp(40 + climateDeltas.weightHumidity));
     }
     // Apply boolean climate preferences (only if user showed strong positive preference)
     if (climateDeltas.preferSnow && climateDeltas.preferSnow > 0) {
@@ -254,6 +271,22 @@ export function CityTinder({ onComplete }: CityTinderProps) {
     }
     if (demographicsDeltas.weightEconomicHealth) {
       updateAdvanced("demographics", "weightEconomicHealth", clamp(50 + demographicsDeltas.weightEconomicHealth));
+    }
+    
+    // Apply values preferences (political alignment)
+    // Only set if user showed clear preference through progressive/conservative city swipes
+    if (valuesDeltas.partisanWeight && valuesDeltas.partisanWeight > 10) {
+      updateAdvanced("values", "partisanWeight", clamp(valuesDeltas.partisanWeight));
+      
+      // Determine partisan preference direction
+      if (valuesDeltas.partisanPreference) {
+        if (valuesDeltas.partisanPreference > 5) {
+          updateAdvanced("values", "partisanPreference", "lean-dem");
+        } else if (valuesDeltas.partisanPreference < -5) {
+          updateAdvanced("values", "partisanPreference", "lean-rep");
+        }
+        // If between -5 and 5, leave as neutral
+      }
     }
   };
 

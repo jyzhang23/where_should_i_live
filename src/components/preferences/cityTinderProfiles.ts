@@ -1,8 +1,13 @@
 /**
- * City Tinder Profiles
+ * City Tinder Profiles - "The Dirty Dozen"
  * 
- * 10 diverse cities chosen to represent different lifestyle preferences.
- * Each city has traits that map to preference updates when swiped.
+ * 12 cities selected to maximize algorithmic variance across all 6 scoring categories.
+ * Each city acts as a "polarizing filter" to reveal user dealbreakers.
+ * 
+ * Design principles:
+ * - No two cities test the exact same combination of preferences
+ * - Creates triangulation for Safety, Urban Form, Winter, and Values
+ * - Replaces "trendy mid-sized cities" with distinct archetypes
  */
 
 export interface CityProfile {
@@ -16,14 +21,15 @@ export interface CityProfile {
 }
 
 export const cityProfiles: CityProfile[] = [
+  // === KEPT FROM ORIGINAL ===
   {
     id: "new-york-city",
     name: "New York City",
     state: "NY",
-    image: "/cities/new-york.jpg",
+    image: "/cities/new-york-city.jpg",
     tagline: "The city that never sleeps",
     bio: "Maximum urban energy with world-class culture, dining, and nightlife. Walk everywhere, take the subway anywhere. Yes, it's expensive, but you'll never be bored.",
-    traits: ["urban", "cultural", "expensive", "transit", "nightlife", "diverse"],
+    traits: ["urban", "cultural", "expensive", "transit", "nightlife", "diverse", "progressive"],
   },
   {
     id: "san-francisco",
@@ -32,7 +38,7 @@ export const cityProfiles: CityProfile[] = [
     image: "/cities/san-francisco.jpg",
     tagline: "Tech, hills, and fog",
     bio: "Mild weather year-round, stunning views, and the heart of the tech world. Walkable neighborhoods, great food scene, and easy access to wine country and nature.",
-    traits: ["mild", "walkable", "expensive", "tech", "cultural", "coastal"],
+    traits: ["mild", "walkable", "expensive", "tech", "cultural", "coastal", "progressive"],
   },
   {
     id: "miami",
@@ -41,7 +47,7 @@ export const cityProfiles: CityProfile[] = [
     image: "/cities/miami.jpg",
     tagline: "Where the sun always shines",
     bio: "Endless summer vibes with beautiful beaches, vibrant Latin culture, and legendary nightlife. No state income tax and a truly international atmosphere.",
-    traits: ["warm", "beaches", "nightlife", "diverse", "affordable", "coastal"],
+    traits: ["warm", "beaches", "nightlife", "diverse", "humid", "coastal"],
   },
   {
     id: "denver",
@@ -52,59 +58,79 @@ export const cityProfiles: CityProfile[] = [
     bio: "300 days of sunshine with world-class skiing and hiking at your doorstep. Four distinct seasons, craft beer culture, and an active outdoor lifestyle.",
     traits: ["outdoors", "mountains", "fourSeasons", "active", "growing", "nature"],
   },
+
+  // === NEW ADDITIONS ===
   {
-    id: "phoenix",
-    name: "Phoenix",
-    state: "AZ",
-    image: "/cities/phoenix.jpg",
-    tagline: "Valley of the Sun",
-    bio: "Affordable living with year-round warmth and over 300 sunny days. Sprawling suburbs, golf courses galore, and stunning desert landscapes.",
-    traits: ["warm", "affordable", "suburban", "sunny", "retirement", "growing"],
+    id: "boise",
+    name: "Boise",
+    state: "ID",
+    image: "/cities/boise.jpg", // PLACEHOLDER - needs image
+    tagline: "The gem of the Northwest",
+    bio: "Safe, affordable, and surrounded by nature. A fast-growing city that offers outdoor access without big-city hassle. Perfect for families seeking stability and space.",
+    traits: ["affordable", "safe", "nature", "conservative", "growing", "suburban"],
+  },
+  {
+    id: "minneapolis",
+    name: "Minneapolis",
+    state: "MN",
+    image: "/cities/minneapolis.jpg", // PLACEHOLDER - needs image
+    tagline: "The Nordic model in America",
+    bio: "Excellent schools, low crime, and world-class parks—if you can handle the winters. A progressive city that proves you can have it all (except warm weather).",
+    traits: ["fourSeasons", "safe", "education", "affordable", "progressive", "cold"],
+  },
+  {
+    id: "salt-lake-city",
+    name: "Salt Lake City",
+    state: "UT",
+    image: "/cities/salt-lake-city.jpg", // PLACEHOLDER - needs image
+    tagline: "Mountains meet community",
+    bio: "World-class skiing and stunning mountain access with a strong sense of community. Family-oriented with a unique cultural identity. Growing tech scene.",
+    traits: ["mountains", "outdoors", "conservative", "religious", "safe", "fourSeasons"],
+  },
+  {
+    id: "new-orleans",
+    name: "New Orleans",
+    state: "LA",
+    image: "/cities/new-orleans.jpg", // PLACEHOLDER - needs image
+    tagline: "Let the good times roll",
+    bio: "Unmatched culture, legendary food, and music on every corner. Yes, the stats are rough (crime, economy), but no city has more soul. Live music any night of the week.",
+    traits: ["cultural", "nightlife", "foodie", "music", "diverse", "humid", "historic"],
+  },
+  {
+    id: "seattle",
+    name: "Seattle",
+    state: "WA",
+    image: "/cities/seattle.jpg", // PLACEHOLDER - needs image
+    tagline: "Emerald City in the clouds",
+    bio: "Tech jobs, stunning nature, and world-class coffee—if you can handle the grey. Surrounded by mountains and water, with a laid-back Pacific Northwest vibe.",
+    traits: ["tech", "nature", "cloudy", "progressive", "coastal", "outdoors", "expensive"],
+  },
+  {
+    id: "las-vegas",
+    name: "Las Vegas",
+    state: "NV",
+    image: "/cities/las-vegas.jpg", // PLACEHOLDER - needs image
+    tagline: "Entertainment capital of the world",
+    bio: "24/7 entertainment, world-class dining, and surprisingly affordable housing. Desert heat, no state income tax, and endless things to do. Not just for tourists.",
+    traits: ["nightlife", "affordable", "warm", "entertainment", "sunny", "desert"],
   },
   {
     id: "boston",
     name: "Boston",
     state: "MA",
-    image: "/cities/boston.jpg",
+    image: "/cities/boston.jpg", // PLACEHOLDER - needs image
     tagline: "Where history meets innovation",
     bio: "World-renowned universities, rich history, and passionate sports fans. Classic four-season New England weather with charming neighborhoods and excellent healthcare.",
-    traits: ["fourSeasons", "education", "historic", "walkable", "healthcare", "cultural"],
+    traits: ["fourSeasons", "education", "historic", "walkable", "healthcare", "cultural", "expensive", "cold"],
   },
   {
-    id: "nashville",
-    name: "Nashville",
-    state: "TN",
-    image: "/cities/nashville.jpg",
-    tagline: "Music City, USA",
-    bio: "Live music on every corner, friendly Southern hospitality, and a booming economy. Affordable cost of living with hot summers and mild winters. No state income tax!",
-    traits: ["affordable", "music", "growing", "warm", "friendly", "nightlife"],
-  },
-  {
-    id: "portland",
-    name: "Portland",
-    state: "OR",
-    image: "/cities/portland.jpg",
-    tagline: "Keep it weird",
-    bio: "Quirky, sustainable, and surrounded by nature. Mild rainy winters, gorgeous summers, and a food/coffee/beer scene that punches way above its weight.",
-    traits: ["mild", "nature", "quirky", "sustainable", "foodie", "outdoors"],
-  },
-  {
-    id: "chicago",
-    name: "Chicago",
-    state: "IL",
-    image: "/cities/chicago.jpg",
-    tagline: "The Windy City with big shoulders",
-    bio: "World-class architecture, deep-dish pizza, and passionate sports culture. Affordable for a major city with excellent transit and distinct neighborhoods. Yes, winters are cold.",
-    traits: ["urban", "affordable", "fourSeasons", "sports", "transit", "cultural"],
-  },
-  {
-    id: "austin",
-    name: "Austin",
+    id: "houston",
+    name: "Houston",
     state: "TX",
-    image: "/cities/austin.jpg",
-    tagline: "Keep Austin Weird",
-    bio: "Live music capital with a booming tech scene and BBQ that'll change your life. Hot summers, mild winters, and no state income tax. Growing fast!",
-    traits: ["warm", "music", "tech", "growing", "affordable", "foodie"],
+    image: "/cities/houston.jpg", // PLACEHOLDER - needs image
+    tagline: "Space City with room to grow",
+    bio: "Massive diversity, affordable housing, and no state income tax. Yes, you'll need a car and AC, but your dollar goes far. NASA, world-class medical center, and incredible food.",
+    traits: ["affordable", "diverse", "sprawl", "warm", "humid", "growing", "suburban"],
   },
 ];
 
@@ -132,6 +158,8 @@ export interface TraitMapping {
     maxFreezeDays: number;
     weightSnowDays: number;
     maxSnowDays: number;
+    weightCloudyDays: number;
+    weightHumidity: number;
     preferSnow: boolean;
     preferDistinctSeasons: boolean;
   }>;
@@ -156,10 +184,14 @@ export interface TraitMapping {
     weightDiversity: number;
     weightEconomicHealth: number;
   }>;
+  values?: Partial<{
+    partisanWeight: number;
+    partisanPreference: number; // positive = dem, negative = rep
+  }>;
 }
 
 export const traitMappings: Record<string, TraitMapping> = {
-  // Climate traits
+  // === CLIMATE TRAITS ===
   warm: {
     climate: { weightComfortDays: 15, maxFreezeDays: -20, maxSnowDays: -10 },
   },
@@ -170,18 +202,34 @@ export const traitMappings: Record<string, TraitMapping> = {
     climate: { maxFreezeDays: 20, maxSnowDays: 15, weightComfortDays: -5, preferDistinctSeasons: true, preferSnow: true },
   },
   sunny: {
-    climate: { weightComfortDays: 10 },
+    climate: { weightComfortDays: 10, weightCloudyDays: 15 },
+  },
+  cloudy: {
+    climate: { weightCloudyDays: -15, weightComfortDays: -5 },
+  },
+  humid: {
+    climate: { weightHumidity: -10 },
+  },
+  cold: {
+    climate: { weightFreezeDays: -10, maxFreezeDays: 30, preferSnow: true },
+  },
+  desert: {
+    climate: { weightComfortDays: 10, weightHumidity: 15 },
   },
 
-  // Urban/lifestyle traits
+  // === URBAN/LIFESTYLE TRAITS ===
   urban: {
     weights: { qualityOfLife: 10, entertainment: 10 },
     qol: { walkability: 20 },
     entertainment: { nightlifeImportance: 15, diningImportance: 10 },
   },
   suburban: {
-    qol: { walkability: -10 },
+    qol: { walkability: -15, safety: 10 },
     entertainment: { nightlifeImportance: -15 },
+  },
+  sprawl: {
+    qol: { walkability: -25 },
+    entertainment: { nightlifeImportance: -10 },
   },
   walkable: {
     qol: { walkability: 20 },
@@ -189,22 +237,26 @@ export const traitMappings: Record<string, TraitMapping> = {
   transit: {
     qol: { walkability: 15 },
   },
+  safe: {
+    qol: { safety: 25 },
+    weights: { qualityOfLife: 10 },
+  },
 
-  // Cost traits
+  // === COST TRAITS ===
   expensive: {
-    weights: { costOfLiving: -10 },
+    weights: { costOfLiving: -15 },
   },
   affordable: {
-    weights: { costOfLiving: 15 },
+    weights: { costOfLiving: 20 },
   },
 
-  // Cultural/entertainment traits
+  // === CULTURAL/ENTERTAINMENT TRAITS ===
   cultural: {
     weights: { entertainment: 15 },
     entertainment: { artsImportance: 20 },
   },
   nightlife: {
-    entertainment: { nightlifeImportance: 20 },
+    entertainment: { nightlifeImportance: 25 },
   },
   music: {
     entertainment: { artsImportance: 15, nightlifeImportance: 10 },
@@ -215,8 +267,15 @@ export const traitMappings: Record<string, TraitMapping> = {
   sports: {
     entertainment: { sportsImportance: 20 },
   },
+  entertainment: {
+    weights: { entertainment: 20 },
+    entertainment: { nightlifeImportance: 15, diningImportance: 15 },
+  },
+  historic: {
+    entertainment: { artsImportance: 10 },
+  },
 
-  // Nature/outdoor traits
+  // === NATURE/OUTDOOR TRAITS ===
   outdoors: {
     entertainment: { recreationImportance: 25, natureWeight: 20 },
   },
@@ -224,10 +283,10 @@ export const traitMappings: Record<string, TraitMapping> = {
     entertainment: { recreationImportance: 20, natureWeight: 20 },
   },
   mountains: {
-    entertainment: { recreationImportance: 15, mountainWeight: 20 },
+    entertainment: { recreationImportance: 15, mountainWeight: 25 },
   },
   beaches: {
-    entertainment: { recreationImportance: 15, beachWeight: 20 },
+    entertainment: { recreationImportance: 15, beachWeight: 25 },
   },
   coastal: {
     entertainment: { beachWeight: 15 },
@@ -236,42 +295,39 @@ export const traitMappings: Record<string, TraitMapping> = {
     entertainment: { recreationImportance: 15 },
   },
 
-  // Demographics/community traits
+  // === DEMOGRAPHICS/COMMUNITY TRAITS ===
   diverse: {
-    weights: { demographics: 10 },
-    demographics: { weightDiversity: 15 },
-  },
-  friendly: {
-    demographics: { weightDiversity: 5 },
-  },
-  historic: {
-    entertainment: { artsImportance: 10 },
-  },
-
-  // Quality of life traits
-  education: {
-    qol: { schools: 20 },
-  },
-  healthcare: {
-    qol: { healthcare: 20 },
-  },
-  tech: {
-    qol: { internet: 15 },
-    demographics: { weightEconomicHealth: 10 },
+    weights: { demographics: 15 },
+    demographics: { weightDiversity: 20 },
   },
   growing: {
     demographics: { weightEconomicHealth: 15 },
   },
-  retirement: {
-    qol: { healthcare: 15, safety: 10 },
+
+  // === VALUES/POLITICAL TRAITS (NEW) ===
+  progressive: {
+    weights: { values: 15 },
+    values: { partisanWeight: 15, partisanPreference: 10 }, // leans dem
   },
-  sustainable: {
-    // Maps to general quality focus
-    weights: { qualityOfLife: 10 },
+  conservative: {
+    weights: { values: 15 },
+    values: { partisanWeight: 15, partisanPreference: -10 }, // leans rep
   },
-  quirky: {
-    weights: { entertainment: 10 },
-    demographics: { weightDiversity: 10 },
+  religious: {
+    weights: { values: 10 },
+    values: { partisanWeight: 10 },
+  },
+
+  // === QOL TRAITS ===
+  education: {
+    qol: { schools: 25 },
+  },
+  healthcare: {
+    qol: { healthcare: 25 },
+  },
+  tech: {
+    qol: { internet: 15 },
+    demographics: { weightEconomicHealth: 15 },
   },
 };
 
@@ -315,6 +371,12 @@ export const personalityTypes: PersonalityResult[] = [
     emoji: "🎭",
     title: "The Cultural Connoisseur",
     description: "Museums, music, food scenes - you want a city with soul and culture to explore.",
+  },
+  {
+    type: "safetyFirst",
+    emoji: "🛡️",
+    title: "The Safety Seeker",
+    description: "Low crime and good schools matter most. You prioritize stability and peace of mind.",
   },
   {
     type: "balanced",
