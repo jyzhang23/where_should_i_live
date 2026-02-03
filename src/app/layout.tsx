@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +37,8 @@ export default function RootLayout({
             <div className="min-h-screen bg-background">{children}</div>
           </TooltipProvider>
         </Providers>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
