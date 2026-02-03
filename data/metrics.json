@@ -1994,10 +1994,10 @@
         },
         "urbanLifestyle": {
           "nightlife": {
-            "barsAndClubsPer10K": 9.5,
-            "totalVenues": 612,
-            "lateNightVenues": 185,
-            "_note": "Adjusted to include Las Vegas Strip (Paradise, NV) - world nightlife capital"
+            "barsAndClubsPer10K": 5.8,
+            "totalVenues": 374,
+            "lateNightVenues": 95,
+            "_note": "Adjusted to include Las Vegas Strip (Paradise, NV)"
           },
           "arts": {
             "museums": 23,
