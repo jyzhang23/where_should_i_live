@@ -584,7 +584,7 @@ function CityCardBackground({
   children: React.ReactNode;
 }) {
   const [imageError, setImageError] = useState(false);
-  const imagePath = `/cities/${cityId}.jpg`;
+  const imagePath = `/cities/deploy/${cityId}.jpg`;
 
   return (
     <div className={cn(
